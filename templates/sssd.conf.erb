@@ -1,0 +1,15 @@
+[sssd]
+<% if not @description.empty? then -%>
+description = <%= @description %>
+<% end -%>
+domains = <%= Array(@domains).join(',') %>
+config_file_version = <%= @config_file_version %>
+services = <%= Array(@services).join(',') %>
+reconnection_retries = <%= @reconnection_retries %>
+<% if not @re_expression.empty? then -%>
+re_expression = <%= @re_expression %>
+<% end -%>
+<% if not @full_name_format.empty? then -%>
+full_name_format = <%= @full_name_format %>
+<% end -%>
+try_inotify = <%= @try_inotify %>

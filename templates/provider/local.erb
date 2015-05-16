@@ -1,0 +1,24 @@
+<% if not @default_shell.empty? then -%>
+default_shell = <%= @default_shell %>
+<% end -%>
+<% if not @base_directory.empty? then -%>
+base_directory = <%= @base_directory %>
+<% end -%>
+<% if not @create_homedir.empty? then -%>
+create_homedir = <%= @create_homedir %>
+<% end -%>
+<% if not @remove_homedir.empty? then -%>
+remove_homedir = <%= @remove_homedir %>
+<% end -%>
+<% if not @homedir_umask.empty? then -%>
+homedir_umask = <%= @homedir_umask %>
+<% end -%>
+<% if not @skel_dir.empty? then -%>
+skel_dir = <%= @skel_dir %>
+<% end -%>
+<% if not @mail_dir.empty? then -%>
+mail_dir = <%= @mail_dir %>
+<% end -%>
+<% if not @userdel_cmd.empty? then -%>
+userdel_cmd = <%= @userdel_cmd %>
+<% end -%>

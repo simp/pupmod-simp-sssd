@@ -1,0 +1,38 @@
+
+[domain/<%= @name %>]
+<% if not @description.empty? then -%>
+description = <%= @description %>
+<% end -%>
+min_id = <%= @min_id %>
+max_id = <%= @max_id %>
+id_provider = <%= @id_provider %>
+<% if not @auth_provider.empty? then -%>
+auth_provider = <%= @auth_provider %>
+<% end -%>
+<% if not @access_provider.empty? then -%>
+access_provider = <%= @access_provider %>
+<% end -%>
+<% if not @chpass_provider.empty? then -%>
+chpass_provider = <%= @chpass_provider %>
+<% end -%>
+domain_timeout = <%= @domain_timeout %>
+enumerate = <%= @enumerate %>
+entry_cache_timeout = <%= @entry_cache_timeout %>
+cache_credentials = <%= @cache_credentials %>
+account_cache_expiration = <%= @account_cache_expiration %>
+<% if not @use_fully_qualified_names.empty? then -%>
+use_fully_qualified_names = <%= @use_fully_qualified_names %>
+<% end -%>
+<% if not @lookup_family_order.empty? then -%>
+lookup_family_order = <%= @lookup_family_order %>
+<% end -%>
+dns_resolver_timeout = <%= @dns_resolver_timeout %>
+<% if not @dns_discovery_domain.empty? then %>
+dns_discovery_domain = <%= @dns_discovery_domain %>
+<% end -%>
+<% if not @proxy_pam_target.empty? then %>
+proxy_pam_target = <%= @proxy_pam_target %>
+<% end -%>
+<% if not @proxy_lib_name.empty? then %>
+proxy_lib_name = <%= @proxy_lib_name %>
+<% end -%>

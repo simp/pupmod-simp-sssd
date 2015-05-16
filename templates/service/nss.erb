@@ -1,0 +1,23 @@
+
+[nss]
+<% if not @description.empty? then -%>
+description = <%= @description %>
+<% end -%>
+<% if not @debug_level.empty? then -%>
+debug_level = <%= @debug_level %>
+<% end -%>
+<% if not @debug_timestamps.empty? then -%>
+debug_timestamps = <%= @debug_timestamps %>
+<% end -%>
+reconnection_retries = <%= @reconnection_retries %>
+<% if not @command.empty? then -%>
+command = <%= @command %>
+<% end -%>
+enum_cache_timeout = <%= @enum_cache_timeout %>
+entry_cache_nowait_percentage = <%= @entry_cache_nowait_percentage %>
+entry_negative_timeout = <%= @entry_negative_timeout %>
+filter_users = <%= @filter_users %>
+filter_groups = <%= @filter_groups %>
+<% if not @filter_users_in_groups.empty? then -%>
+filter_users_in_groups = <%= @filter_users_in_groups %>
+<% end -%>
