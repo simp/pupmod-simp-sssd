@@ -4,11 +4,11 @@ fixtures:
     auditd: "git://github.com/simp/pupmod-simp-auditd"
     augeasproviders_core: "git://github.com/simp/augeasproviders_core"
     augeasproviders_grub: "git://github.com/simp/augeasproviders_grub"
-    common: "git://github.com/simp/pupmod-simp-common"
     concat: "git://github.com/simp/pupmod-simp-concat"
     nscd: "git://github.com/simp/pupmod-simp-nscd"
     openldap: "git://github.com/simp/pupmod-simp-openldap"
     pki: "git://github.com/simp/pupmod-simp-pki"
+    simplib: "git://github.com/simp/pupmod-simp-simplib"
     stdlib: "git://github.com/simp/puppetlabs-stdlib"
   symlinks:
     sssd: "#{source_dir}"
