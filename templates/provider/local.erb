@@ -1,3 +1,12 @@
+<% unless @debug_level.empty? -%>
+debug_level = <%= @debug_level %>
+<% end -%>
+<% unless @debug_timestamps.empty? -%>
+debug_timestamps = <%= @debug_timestamps %>
+<% end -%>
+<% unless @debug_microseconds.empty? -%>
+debug_microseconds = <%= @debug_microseconds%>
+<% end -%>
 <% if not @default_shell.empty? then -%>
 default_shell = <%= @default_shell %>
 <% end -%>

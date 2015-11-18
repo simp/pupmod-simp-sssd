@@ -1,0 +1,15 @@
+
+[ssh]
+<% unless @description.empty? -%>
+description = <%= @description %>
+<% end -%>
+<% unless @debug_level.empty? -%>
+debug_level = <%= @debug_level %>
+<% end -%>
+<% unless @debug_timestamps.empty? -%>
+debug_timestamps = <%= @debug_timestamps %>
+<% end -%>
+ssh_hash_known_hosts = <%= @ssh_hash_known_hosts %>
+<% unless @ssh_known_hosts_timeout.empty? -%>
+ssh_known_hosts_timeout = <%= @ssh_known_hosts_timeout%>
+<% end -%>

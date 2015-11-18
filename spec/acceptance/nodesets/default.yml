@@ -1,0 +1,37 @@
+HOSTS:
+# For the future....
+#  centos7-svr:
+#    roles:
+#      - default
+#      - server
+#      - client
+#    platform: el-7-x86_64
+#    box: puppetlabs/centos-7.0-64-nocm
+#    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
+#    hypervisor: vagrant
+#  centos66-svr:
+#    roles:
+#      - server
+#    platform: el-6-x86_64
+#    box: puppetlabs/centos-6.6-64-nocm
+#    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-6.6-64-nocm
+#    hypervisor: vagrant
+  centos7-cli:
+    roles:
+      - default
+      - client
+    platform: el-7-x86_64
+    box: puppetlabs/centos-7.0-64-nocm
+    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
+    hypervisor: vagrant
+  centos66-cli:
+    roles:
+      - client
+    platform: el-6-x86_64
+    box: puppetlabs/centos-6.6-64-nocm
+    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-6.6-64-nocm
+    hypervisor: vagrant
+CONFIG:
+  log_level: verbose
+  type: foss
+  vagrant_memsize: 256

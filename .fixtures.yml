@@ -10,5 +10,8 @@ fixtures:
     pki: "git://github.com/simp/pupmod-simp-pki"
     simplib: "git://github.com/simp/pupmod-simp-simplib"
     stdlib: "git://github.com/simp/puppetlabs-stdlib"
+    # For acceptance testing
+    simp: "git://github.com/simp/pupmod-simp-simp"
+    tcpwrappers: "git://github.com/simp/pupmod-simp-tcpwrappers"
   symlinks:
     sssd: "#{source_dir}"

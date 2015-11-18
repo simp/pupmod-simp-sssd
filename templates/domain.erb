@@ -1,38 +1,114 @@
 
 [domain/<%= @name %>]
-<% if not @description.empty? then -%>
+<% unless @debug_level.empty? -%>
+debug_level = <%= @debug_level %>
+<% end -%>
+<% unless @debug_timestamps.empty? -%>
+debug_timestamps = <%= @debug_timestamps %>
+<% end -%>
+<% unless @debug_microseconds.empty? -%>
+debug_microseconds = <%= @debug_microseconds%>
+<% end -%>
+<% unless @description.empty? -%>
 description = <%= @description %>
 <% end -%>
 min_id = <%= @min_id %>
 max_id = <%= @max_id %>
-id_provider = <%= @id_provider %>
-<% if not @auth_provider.empty? then -%>
-auth_provider = <%= @auth_provider %>
-<% end -%>
-<% if not @access_provider.empty? then -%>
-access_provider = <%= @access_provider %>
-<% end -%>
-<% if not @chpass_provider.empty? then -%>
-chpass_provider = <%= @chpass_provider %>
-<% end -%>
-domain_timeout = <%= @domain_timeout %>
 enumerate = <%= @enumerate %>
+<% unless @subdomain_enumerate.empty? -%>
+subdomain_enumerate = <%= @subdomain_enumerate %>
+<% end -%>
+<% unless @force_timeout.empty? -%>
+force_timeout = <%= @force_timeout %>
+<% end -%>
+<% unless @entry_cache_timeout.empty? -%>
 entry_cache_timeout = <%= @entry_cache_timeout %>
+<% end -%>
+<% unless @entry_cache_user_timeout.empty? -%>
+entry_cache_user_timeout = <%= @entry_cache_user_timeout %>
+<% end -%>
+<% unless @entry_cache_group_timeout.empty? -%>
+entry_cache_group_timeout = <%= @entry_cache_group_timeout %>
+<% end -%>
+<% unless @entry_cache_netgroup_timeout.empty? -%>
+entry_cache_netgroup_timeout = <%= @entry_cache_netgroup_timeout %>
+<% end -%>
+<% unless @entry_cache_service_timeout.empty? -%>
+entry_cache_service_timeout = <%= @entry_cache_service_timeout %>
+<% end -%>
+<% unless @entry_cache_sudo_timeout.empty? -%>
+entry_cache_sudo_timeout = <%= @entry_cache_sudo_timeout %>
+<% end -%>
+<% unless @entry_cache_autofs_timeout.empty? -%>
+entry_cache_autofs_timeout = <%= @entry_cache_autofs_timeout %>
+<% end -%>
+<% unless @entry_cache_ssh_host_timeout.empty? -%>
+entry_cache_ssh_host_timeout = <%= @entry_cache_ssh_host_timeout %>
+<% end -%>
+<% unless @refresh_expired_interval.empty? -%>
+refresh_expired_interval = <%= @refresh_expired_interval %>
+<% end -%>
 cache_credentials = <%= @cache_credentials %>
 account_cache_expiration = <%= @account_cache_expiration %>
-<% if not @use_fully_qualified_names.empty? then -%>
+<% unless @pwd_expiration_warning.empty? -%>
+pwd_expiration_warning = <%= @pwd_expiration_warning %>
+<% end -%>
+<% unless @use_fully_qualified_names.empty? -%>
 use_fully_qualified_names = <%= @use_fully_qualified_names %>
 <% end -%>
-<% if not @lookup_family_order.empty? then -%>
+id_provider = <%= @id_provider %>
+<% unless @auth_provider.empty? -%>
+auth_provider = <%= @auth_provider %>
+<% end -%>
+<% unless @access_provider.empty? -%>
+access_provider = <%= @access_provider %>
+<% end -%>
+<% unless @chpass_provider.empty? -%>
+chpass_provider = <%= @chpass_provider %>
+<% end -%>
+<% unless @sudo_provider.empty? -%>
+sudo_provider = <%= @sudo_provider %>
+<% end -%>
+<% unless @selinux_provider.empty? -%>
+selinux_provider = <%= @selinux_provider %>
+<% end -%>
+<% unless @subdomains_provider.empty? -%>
+subdomains_provider = <%= @subdomains_provider %>
+<% end -%>
+<% unless @autofs_provider.empty? -%>
+autofs_provider = <%= @autofs_provider %>
+<% end -%>
+<% unless @hostid_provider.empty? -%>
+hostid_provider = <%= @hostid_provider %>
+<% end -%>
+<% unless @re_expression.empty? -%>
+re_expression = <%= @re_expression %>
+<% end -%>
+<% unless @full_name_format.empty? -%>
+full_name_format = <%= @full_name_format %>
+<% end -%>
+<% unless @lookup_family_order.empty? -%>
 lookup_family_order = <%= @lookup_family_order %>
 <% end -%>
 dns_resolver_timeout = <%= @dns_resolver_timeout %>
-<% if not @dns_discovery_domain.empty? then %>
+<% unless @dns_discovery_domain.empty? %>
 dns_discovery_domain = <%= @dns_discovery_domain %>
 <% end -%>
-<% if not @proxy_pam_target.empty? then %>
+<% unless @override_gid.empty? -%>
+override_gid = <%= @override_gid %>
+<% end -%>
+<% unless @case_sensitive.empty? -%>
+case_sensitive = <%= @case_sensitive %>
+<% end -%>
+<% unless @proxy_fast_alias.empty? -%>
+proxy_fast_alias = <%= @proxy_fast_alias %>
+<% end -%>
+<% unless @realmd_tags.empty? -%>
+realmd_tags = <%= @realmd_tags %>
+<% end -%>
+<% unless @proxy_pam_target.empty? %>
 proxy_pam_target = <%= @proxy_pam_target %>
 <% end -%>
-<% if not @proxy_lib_name.empty? then %>
+<% unless @proxy_lib_name.empty? %>
 proxy_lib_name = <%= @proxy_lib_name %>
 <% end -%>

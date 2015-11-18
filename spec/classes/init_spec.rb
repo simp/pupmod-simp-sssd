@@ -1,64 +1,53 @@
 require 'spec_helper'
 
 describe 'sssd' do
-  let(:facts) {{
-    :operatingsystem   => 'RedHat',
-    :lsbmajdistrelease => '6',
-    :fqdn              => 'example.test.domain',
-    # for auditd/templates/base.erb:
-    :hardwaremodel     => 'x86_64',
-    :root_audit_level  => 'none',
-    :grub_version      => '0',
-    # for auditd/manifests/init.pp:
-    :uid_min           => 500,
-  }}
+  context 'supported operating systems' do
+    on_supported_os.each do |os, facts|
+      context "on #{os}" do
+        let(:facts){ facts }
 
-  it { should create_class('sssd') }
-  it { should compile.with_all_deps }
-  it { should contain_class('pki') }
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to create_class('sssd') }
+        it { is_expected.to create_class('sssd::install').that_notifies('Class[sssd::service]') }
+        it { is_expected.to create_class('sssd::service') }
+        it { is_expected.to contain_class('pki') }
 
-  it { should contain_concat_build('sssd').with({
-      :target => '/etc/sssd/sssd.conf',
-      :notify => 'File[/etc/sssd/sssd.conf]'
-    })
-  }
+        it { is_expected.to contain_concat_build('sssd').with({
+            :target => '/etc/sssd/sssd.conf',
+            :notify => 'File[/etc/sssd/sssd.conf]'
+          })
+        }
 
-  it { should contain_file('/etc/init.d/sssd').with({
-      :ensure  => 'file',
-      :source  => 'puppet:///modules/sssd/sssd.sysinit',
-      :require => 'Package[sssd]',
-      :notify  => 'Service[sssd]'
-    })
-  }
+        it { is_expected.to contain_file('/etc/init.d/sssd').with({
+            :ensure  => 'file',
+            :source  => 'puppet:///modules/sssd/sssd.sysinit',
+            :notify  => 'Service[sssd]'
+          })
+        }
 
-  it { should contain_file('/etc/sssd').with({
-      :ensure  => 'directory',
-    })
-  }
+        it { is_expected.to contain_file('/etc/sssd').with({
+            :ensure  => 'directory'
+          })
+        }
 
-  it { should contain_file('/etc/sssd/sssd.conf').with({
-      :ensure  => 'file',
-      :require => 'Package[sssd]',
-      :notify  => 'Service[sssd]'
-    })
-  }
+        it { is_expected.to contain_file('/etc/sssd/sssd.conf').with({
+            :ensure  => 'file'
+          })
+        }
 
-  it { should contain_package('sssd').with_ensure('latest') }
-  it { should contain_service('nscd').with({
-      :ensure => 'stopped',
-      :enable => false,
-      :notify => 'Service[sssd]'
-    })
-  }
+        it { is_expected.to contain_package('sssd').with_ensure('latest') }
+        it { is_expected.to contain_service('nscd').with({
+            :ensure => 'stopped',
+            :enable => false,
+            :notify => 'Service[sssd]'
+          })
+        }
 
-  it { should contain_service('sssd').with({
-      :ensure    => 'running',
-      :require   => 'Package[sssd]',
-      :subscribe => [
-        'File[/etc/pki/cacerts]',
-        'File[/etc/pki/public/example.test.domain.pub]',
-        'File[/etc/pki/private/example.test.domain.pem]'
-      ]
-    })
-  }
+        it { is_expected.to contain_service('sssd').with({
+            :ensure    => 'running'
+          })
+        }
+      end
+    end
+  end
 end
