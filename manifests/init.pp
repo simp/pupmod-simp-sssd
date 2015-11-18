@@ -5,25 +5,77 @@
 # It will forcefully disable nscd which consequently prevents you from using an
 # nscd module at the same time, which is the correct behavior.  ---
 #
+# == Parameters:
+#
+# [*enable_pki*]
+# Type: Boolean
+# Default: true
+#   A flag, which if enabled, allows SIMP to distribute PKI certs/keys for Rsyslog.
+#
+# [*use_simp_pki*]
+# Type: String
+# Default: true
+#   If enabled, use the SIMP PKI module for supplying the PKI credentials to the system.
+#
+# [*cert_source*]
+# Type: String
+# Default: ''
+#   The path to client certificates dir, if using local (SIMP-independent) PKI
+#
 # == Authors
 #
 # * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 class sssd (
   $domains,
-  $description = '',
-  $config_file_version = '2',
-  $services = ['nss','pam'],
-  $reconnection_retries = '3',
-  $re_expression = '',
-  $full_name_format = '',
-  $try_inotify = true,
-  $use_auditd = true
+  $debug_level = '',
+  $debug_timestamps = '',
+  $debug_microseconds = '',
+  $description           = '',
+  $config_file_version   = '2',
+  $services              = ['nss','pam'],
+  $reconnection_retries  = '3',
+  $re_expression         = '',
+  $full_name_format      = '',
+  $try_inotify           = '',
+  $krb5_rcache_dir       = '',
+  $user                  = '',
+  $default_domain_suffix = '',
+  $override_space        = '',
+  $enable_auditd         = true,
+  $enable_pki            = defined('$::enable_pki') ? { true => $::enable_pki, default => hiera('enable_pki',true) },
+  $use_simp_pki          = true,
+  $cert_source           = '/etc/sssd/pki'
 ) {
-  include 'pki'
 
-  if $use_auditd {
-    include 'auditd'
+  validate_string($debug_level)
+  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
+  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
+  validate_integer($config_file_version)
+  validate_array_member($services,['nss','pam','sudo','autofs','ssh','pac'])
+  validate_integer($reconnection_retries)
+  unless empty($re_expression) { validate_string($re_expression) }
+  unless empty($full_name_format) { validate_string($full_name_format) }
+  unless empty($try_inotify) { validate_bool($try_inotify) }
+  unless empty($krb5_rcache_dir) {
+    unless $krb5_rcache_dir == '__LIBKRB5_DEFAULTS__' {
+      validate_absolute_path($krb5_rcache_dir)
+    }
+  }
+  validate_string($user)
+  validate_string($default_domain_suffix)
+  validate_string($override_space)
+  validate_bool($enable_auditd)
+  validate_bool($enable_pki)
+  validate_bool($use_simp_pki)
+  validate_absolute_path($cert_source)
+
+  include '::sssd::install'
+  include '::sssd::service'
+
+  if $enable_auditd {
+    include '::auditd'
+
     auditd::add_rules { 'sssd':
       content => '-w /etc/sssd/ -p wa -k CFG_sssd'
     }
@@ -39,58 +91,14 @@ class sssd (
     content => template('sssd/sssd.conf.erb')
   }
 
-  file { '/etc/init.d/sssd':
-    ensure  => 'file',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0754',
-    source  => 'puppet:///modules/sssd/sssd.sysinit',
-    require => Package['sssd'],
-    notify  => Service['sssd']
+  if $enable_pki {
+    if $use_simp_pki {
+      include '::sssd::config::pki'
+
+      Class['sssd::install'] -> Class['sssd::config::pki']
+      Class['sssd::config::pki'] ~> Class['sssd::service']
+    }
   }
 
-  file { '/etc/sssd':
-    ensure => 'directory',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0640'
-  }
-
-  file { '/etc/sssd/sssd.conf':
-    ensure  => 'file',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0600',
-    notify  => Service['sssd'],
-    require => Package['sssd']
-  }
-
-  package { 'sssd':
-    ensure => 'latest'
-  }
-
-  service { 'nscd':
-    ensure => 'stopped',
-    enable => false,
-    notify => Service['sssd']
-  }
-
-  service { 'sssd':
-    ensure     => 'running',
-    enable     => true,
-    hasrestart => true,
-    hasstatus  => true,
-    require    => Package['sssd'],
-    subscribe  => [
-      File['/etc/pki/cacerts'],
-      File["/etc/pki/public/${::fqdn}.pub"],
-      File["/etc/pki/private/${::fqdn}.pem"]
-    ]
-  }
-
-  validate_integer($config_file_version)
-  validate_array_member($services,['nss','pam','sudo','autofs','ssh','pac'])
-  validate_integer($reconnection_retries)
-  validate_bool($try_inotify)
-  validate_bool($use_auditd)
+  Class['sssd::install'] ~> Class['sssd::service']
 }

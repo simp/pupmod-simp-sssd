@@ -1,0 +1,14 @@
+
+[sudo]
+<% unless @description.empty? -%>
+description = <%= @description %>
+<% end -%>
+<% unless @debug_level.empty? -%>
+debug_level = <%= @debug_level %>
+<% end -%>
+<% unless @debug_timestamps.empty? -%>
+debug_timestamps = <%= @debug_timestamps %>
+<% end -%>
+<% unless @sudo_timed.empty? -%>
+sudo_timed = <%= @sudo_timed %>
+<% end -%>

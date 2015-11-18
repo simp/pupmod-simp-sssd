@@ -1,13 +1,16 @@
 ---
 fixtures:
   symlinks:
-    sssd: "#{source_dir}"
     auditd: "#{source_dir}/../auditd"
     augeasproviders_core: "#{source_dir}/../augeasproviders_core"
     augeasproviders_grub: "#{source_dir}/../augeasproviders_grub"
-    simplib: "#{source_dir}/../simplib"
     concat: "#{source_dir}/../concat"
     nscd: "#{source_dir}/../nscd"
     openldap: "#{source_dir}/../openldap"
     pki: "#{source_dir}/../pki"
+    simplib: "#{source_dir}/../simplib"
+    sssd: "#{source_dir}"
     stdlib: "#{source_dir}../stdlib"
+    # For acceptance testing
+    simp: "#{source_dir}/../simp"
+    tcpwrappers: "#{source_dir}/../tcpwrappers"

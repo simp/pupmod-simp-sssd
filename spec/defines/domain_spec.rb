@@ -1,12 +1,19 @@
 require 'spec_helper'
 
 describe 'sssd::domain' do
+  context 'supported operating systems' do
+    on_supported_os.each do |os, facts|
+      context "on #{os}" do
+        let(:facts){ facts }
 
-  let(:title) {'test_domain'}
-  let(:params) {{
-    :id_provider => 'test_provider'
-  }}
+        let(:title) {'ldap'}
+        let(:params) {{
+          :id_provider => 'ldap'
+        }}
 
-  it { should compile.with_all_deps }
-  it { should contain_concat_fragment('sssd+test_domain#.domain') }
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to contain_concat_fragment('sssd+ldap#.domain').without_content(%r(=\s*$)) }
+      end
+    end
+  end
 end

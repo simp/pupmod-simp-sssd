@@ -1,16 +1,19 @@
 
 [nss]
-<% if not @description.empty? then -%>
+<% unless @description.empty? -%>
 description = <%= @description %>
 <% end -%>
-<% if not @debug_level.empty? then -%>
+<% unless @debug_level.empty? -%>
 debug_level = <%= @debug_level %>
 <% end -%>
-<% if not @debug_timestamps.empty? then -%>
+<% unless @debug_timestamps.empty? -%>
 debug_timestamps = <%= @debug_timestamps %>
 <% end -%>
+<% unless @debug_microseconds.empty? -%>
+debug_microseconds = <%= @debug_microseconds%>
+<% end -%>
 reconnection_retries = <%= @reconnection_retries %>
-<% if not @command.empty? then -%>
+<% unless @command.empty? -%>
 command = <%= @command %>
 <% end -%>
 enum_cache_timeout = <%= @enum_cache_timeout %>
@@ -18,6 +21,30 @@ entry_cache_nowait_percentage = <%= @entry_cache_nowait_percentage %>
 entry_negative_timeout = <%= @entry_negative_timeout %>
 filter_users = <%= @filter_users %>
 filter_groups = <%= @filter_groups %>
-<% if not @filter_users_in_groups.empty? then -%>
+<% unless @filter_users_in_groups.empty? -%>
 filter_users_in_groups = <%= @filter_users_in_groups %>
+<% end -%>
+<% unless @override_homedir.empty? -%>
+override_homedir = <%= @override_homedir %>
+<% end -%>
+<% unless @fallback_homedir.empty? -%>
+fallback_homedir = <%= @fallback_homedir %>
+<% end -%>
+<% unless @override_shell.empty? -%>
+override_shell = <%= @override_shell %>
+<% end -%>
+<% unless @vetoed_shells.empty? -%>
+vetoed_shells = <%= @vetoed_shells%>
+<% end -%>
+<% unless @default_shell.empty? -%>
+default_shell = <%= @default_shell %>
+<% end -%>
+<% unless @get_domains_timeout.empty? -%>
+get_domains_timeout = <%= @get_domains_timeout %>
+<% end -%>
+<% unless @memcache_timeout.empty? -%>
+memcache_timeout = <%= @memcache_timeout %>
+<% end -%>
+<% unless @user_attributes.empty? -%>
+user_attributes = <%= @user_attributes %>
 <% end -%>

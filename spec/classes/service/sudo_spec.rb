@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe 'sssd::service::pam' do
+describe 'sssd::service::sudo' do
   context 'supported operating systems' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts){ facts }
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_concat_fragment('sssd+pam.service').without_content(%r(=\s*$)) }
+        it { is_expected.to create_concat_fragment('sssd+sudo.service').without_content(%r(=\s*$)) }
       end
     end
   end

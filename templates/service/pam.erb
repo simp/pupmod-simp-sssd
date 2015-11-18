@@ -1,16 +1,16 @@
 
 [pam]
-<% if not @description.empty? then -%>
+<% unless @description.empty? -%>
 description = <%= @description %>
 <% end -%>
-<% if not @debug_level.empty? then -%>
+<% unless @debug_level.empty? -%>
 debug_level = <%= @debug_level %>
 <% end -%>
-<% if not @debug_timestamps.empty? then -%>
+<% unless @debug_timestamps.empty? -%>
 debug_timestamps = <%= @debug_timestamps %>
 <% end -%>
 reconnection_retries = <%= @reconnection_retries %>
-<% if not @command.empty? then -%>
+<% unless @command.empty? -%>
 command = <%= @command %>
 <% end -%>
 offline_credentials_expiration = <%= @offline_credentials_expiration %>
@@ -19,3 +19,12 @@ offline_failed_login_delay = <%= @offline_failed_login_delay %>
 pam_verbosity = <%= @pam_verbosity %>
 pam_id_timeout = <%= @pam_id_timeout %>
 pam_pwd_expiration_warning = <%= @pam_pwd_expiration_warning %>
+<% unless @get_domains_timeout.empty? -%>
+get_domains_timeout = <%= @get_domains_timeout %>
+<% end -%>
+<% unless @pam_trusted_users.empty? -%>
+pam_trusted_users = <%= @pam_trusted_users %>
+<% end -%>
+<% unless @pam_public_domains.empty? -%>
+pam_public_domains = <%= @pam_public_domains %>
+<% end -%>

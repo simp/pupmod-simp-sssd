@@ -1,3 +1,12 @@
+<% unless @debug_level.empty? -%>
+debug_level = <%= @debug_level %>
+<% end -%>
+<% unless @debug_timestamps.empty? -%>
+debug_timestamps = <%= @debug_timestamps %>
+<% end -%>
+<% unless @debug_microseconds.empty? -%>
+debug_microseconds = <%= @debug_microseconds%>
+<% end -%>
 krb5_server = <%= @krb5_server %>
 krb5_realm = <%= @krb5_realm %>
 <% if not @krb5_kpasswd.empty? then -%>
