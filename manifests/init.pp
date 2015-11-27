@@ -33,7 +33,7 @@ class sssd (
   $debug_microseconds = '',
   $description           = '',
   $config_file_version   = '2',
-  $services              = ['nss','pam'],
+  $services              = ['nss','pam','ssh','sudo'],
   $reconnection_retries  = '3',
   $re_expression         = '',
   $full_name_format      = '',
