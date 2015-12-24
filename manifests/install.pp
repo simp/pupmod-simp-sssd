@@ -17,6 +17,7 @@
 class sssd::install (
   $install_user_tools = true
 ) {
+  contain '::sssd::install::client'
 
   validate_bool($install_user_tools)
 
