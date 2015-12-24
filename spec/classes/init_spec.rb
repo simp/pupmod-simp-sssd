@@ -14,7 +14,7 @@ describe 'sssd' do
 
         it { is_expected.to contain_concat_build('sssd').with({
             :target => '/etc/sssd/sssd.conf',
-            :notify => 'File[/etc/sssd/sssd.conf]'
+            :notify => '[File[/etc/sssd/sssd.conf]{:path=>"/etc/sssd/sssd.conf"}, Class[Sssd::Service]{:name=>"Sssd::Service"}]'
           })
         }
 

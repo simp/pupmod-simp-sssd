@@ -153,7 +153,7 @@
   }
 
   _output = []
-  _string_params.each do |param|
+  _string_params.sort.each do |param|
     value = eval(%(@#{param}))
 
     unless value.to_s.empty?
@@ -161,7 +161,7 @@
     end
   end
 
-  _array_params.keys.each do |param|
+  _array_params.keys.sort.each do |param|
     value = eval(%(@#{param}))
 
     if value && !value.empty?
