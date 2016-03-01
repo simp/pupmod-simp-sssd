@@ -332,6 +332,7 @@ define sssd::provider::ldap (
   validate_string($ldap_idmap_default_domain)
   unless empty($ldap_idmap_autorid_compat){ validate_bool($ldap_idmap_autorid_compat) }
 
+  compliance_map()
 
   include '::sssd'
 

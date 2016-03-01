@@ -14,5 +14,6 @@ fixtures:
     # For acceptance testing
     simp: "https://github.com/simp/pupmod-simp-simp.git"
     tcpwrappers: "https://github.com/simp/pupmod-simp-tcpwrappers.git"
+    compliance: "https://github.com/trevor-vaughan/pupmod-compliance"
   symlinks:
     sssd: "#{source_dir}"

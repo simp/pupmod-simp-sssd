@@ -22,6 +22,8 @@ class sssd::service::ssh (
   validate_bool($ssh_hash_known_hosts)
   unless empty($ssh_known_hosts_timeout) { validate_integer($ssh_known_hosts_timeout) }
 
+  compliance_map()
+
   concat_fragment { 'sssd+ssh.service':
     content => template('sssd/service/ssh.erb')
   }

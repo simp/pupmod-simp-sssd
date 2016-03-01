@@ -1,7 +1,7 @@
 Summary: SSSD Puppet Module
 Name: pupmod-sssd
 Version: 4.1.0
-Release: 8
+Release: 9
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -15,6 +15,7 @@ Requires: simp_bootstrap >= 4.1.0-2
 Buildarch: noarch
 Requires: simp-bootstrap >= 4.2.0
 Obsoletes: pupmod-sssd-test >= 0.0.1
+Requires: pupmod-onyxpoint-compliance_markup
 
 Prefix: %{_sysconfdir}/puppet/environments/simp/modules
 
@@ -59,6 +60,9 @@ fi
 # Post uninitall stuff
 
 %changelog
+* Tue Mar 01 2016 Ralph Wright <ralph.wright@onyxpoint.com> - 4.1.0-9
+- Added compliance function support
+
 * Thu Dec 24 2015 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.0-8
 - Added an sssd::install::client class for installing only the client
   libraries.

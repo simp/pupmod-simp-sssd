@@ -39,6 +39,8 @@ class sssd::service::pam (
   validate_string($pam_trusted_users)
   validate_string($pam_public_domains)
 
+  compliance_map()
+
   concat_fragment { 'sssd+pam.service':
     content => template('sssd/service/pam.erb')
   }
