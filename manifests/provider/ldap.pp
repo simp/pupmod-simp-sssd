@@ -31,7 +31,7 @@ define sssd::provider::ldap (
   $ldap_backup_uri = [],
   $ldap_chpass_uri = [],
   $ldap_chpass_backup_uri = [],
-  $ldap_chpass_updates_last_change = true,
+  $ldap_chpass_update_last_change = true,
   $ldap_search_base = hiera('ldap::base_dn'),
   $ldap_schema = 'rfc2307',
   $ldap_default_bind_dn = hiera('ldap::bind_dn'),
@@ -132,7 +132,6 @@ define sssd::provider::ldap (
   $ldap_referrals = '',
   $ldap_dns_service_name = '',
   $ldap_chpass_dns_service_name = '',
-  $ldap_chpass_update_last_change = '',
   $ldap_access_filter = '',
   $ldap_account_expire_policy = 'shadow',
   $ldap_access_order = ['expire','lockout'],
@@ -184,7 +183,6 @@ define sssd::provider::ldap (
   unless empty($ldap_backup_uri) { validate_uri_list($ldap_backup_uri) }
   validate_uri_list($ldap_chpass_uri)
   unless empty($ldap_chpass_backup_uri) { validate_uri_list($ldap_chpass_backup_uri) }
-  validate_bool($ldap_chpass_updates_last_change)
   validate_string($ldap_search_base)
   validate_string($ldap_schema)
   validate_array_member($ldap_schema,['rfc2307','rfc2307bis','IPA','AD'])
@@ -286,7 +284,7 @@ define sssd::provider::ldap (
   unless empty($ldap_referrals) { validate_bool($ldap_referrals) }
   validate_string($ldap_dns_service_name)
   validate_string($ldap_chpass_dns_service_name)
-  unless empty($ldap_chpass_update_last_change) { validate_bool($ldap_chpass_update_last_change) }
+  validate_bool($ldap_chpass_update_last_change)
   validate_string($ldap_access_filter)
   validate_string($ldap_account_expire_policy)
   validate_array_member($ldap_account_expire_policy,['shadow','ad','rhds','ipa','e89ds','nds'])

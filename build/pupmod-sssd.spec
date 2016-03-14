@@ -1,7 +1,7 @@
 Summary: SSSD Puppet Module
 Name: pupmod-sssd
-Version: 4.1.0
-Release: 9
+Version: 4.1.1
+Release: 0
 License: Apache License, Version 2.0
 Group: Applications/System
 Source: %{name}-%{version}-%{release}.tar.gz
@@ -10,12 +10,9 @@ Requires: pupmod-auditd >= 4.1.0-3
 Requires: pupmod-common >= 4.2.0-0
 Requires: pupmod-simplib >= 1.0.0-0
 Requires: pupmod-simpcat >= 4.0.0-0
-Requires: puppet >= 3.3.0
-Requires: simp_bootstrap >= 4.1.0-2
-Buildarch: noarch
-Requires: simp-bootstrap >= 4.2.0
-Obsoletes: pupmod-sssd-test >= 0.0.1
 Requires: pupmod-onyxpoint-compliance_markup
+Buildarch: noarch
+Obsoletes: pupmod-sssd-test >= 0.0.1
 
 Prefix: %{_sysconfdir}/puppet/environments/simp/modules
 
@@ -60,6 +57,15 @@ fi
 # Post uninitall stuff
 
 %changelog
+* Mon Mar 14 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-0
+- Moved to Semantic Versioning 2.0
+- Fixed a bug in the LDAP provider where we had
+  `ldap_chpass_updates_last_change` as well as
+  `ldap_chpass_update_last_change`. These were consolidated into a correct
+  single `ldap_chpass_update_last_change` Boolean.
+- Removed RPM dependencies on 'simp-boostrap' and 'puppet' since these are
+  technically not necessary for just installing the module.
+
 * Tue Mar 01 2016 Ralph Wright <ralph.wright@onyxpoint.com> - 4.1.0-9
 - Added compliance function support
 
