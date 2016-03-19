@@ -1,6 +1,6 @@
 Summary: SSSD Puppet Module
 Name: pupmod-sssd
-Version: 4.1.1
+Version: 4.1.2
 Release: 0
 License: Apache License, Version 2.0
 Group: Applications/System
@@ -57,6 +57,9 @@ fi
 # Post uninitall stuff
 
 %changelog
+* Sat Mar 19 2016 Trevor Vaughan <tvaughan@onyxpoint.comm> - 4.1.2-0
+- Migrated use_simp_pki to a global catalyst.
+
 * Mon Mar 14 2016 Trevor Vaughan <tvaughan@onyxpoint.com> - 4.1.1-0
 - Moved to Semantic Versioning 2.0
 - Fixed a bug in the LDAP provider where we had

@@ -1,6 +1,6 @@
 {
   "name":    "simp-sssd",
-  "version": "4.1.1",
+  "version": "4.1.2",
   "author":  "simp",
   "summary": "Manages SSSD",
   "license": "Apache-2.0",
@@ -10,19 +10,19 @@
   "tags": [ "simp", "sssd" ],
   "dependencies": [
     {
-      "name": "simp-auditd",
+      "name": "simp/auditd",
       "version_requirement": ">= 4.1.0"
     },
     {
-      "name": "simp-common",
+      "name": "simp/common",
       "version_requirement": ">= 4.2.0"
     },
     {
-      "name": "simp-simpcat",
+      "name": "simp/simpcat",
       "version_requirement": ">= 4.0.0"
     },
     {
-      "name": "simp-simplib",
+      "name": "simp/simplib",
       "version_requirement": ">= 1.0.0"
     },
     {
