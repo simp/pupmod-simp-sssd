@@ -1,0 +1,14 @@
+<% unless @debug_level.empty? -%>
+debug_level = <%= @debug_level %>
+<% end -%>
+<% unless @debug_timestamps.empty? -%>
+debug_timestamps = <%= @debug_timestamps %>
+<% end -%>
+<% unless @debug_microseconds.empty? -%>
+debug_microseconds = <%= @debug_microseconds%>
+<% end -%>
+ipa_hostname = <%= @ipa_hostname %>
+ipa_domain = <%= @ipa_domain %>
+ipa_server = <%= @ipa_server %>
+ldap_tls_cacert = <%= @ipa_ldap_tls_cacert %>
+krb5_store_password_if_offline = <%= @ipa_krb5_store_password_if_offline %>
