@@ -2,4 +2,5 @@
 --relative
 --no-class_inherits_from_params_class-check
 --no-80chars-check
---no-quoted_booleans-check
+--no-empty_string-check
+--no-trailing_comma-check
