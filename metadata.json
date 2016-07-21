@@ -14,10 +14,6 @@
       "version_requirement": ">= 4.1.0"
     },
     {
-      "name": "simp/common",
-      "version_requirement": ">= 4.2.0"
-    },
-    {
       "name": "simp/simpcat",
       "version_requirement": ">= 4.0.0"
     },
@@ -26,7 +22,7 @@
       "version_requirement": ">= 1.0.0"
     },
     {
-      "name": "onyxpoint/compliance_markup",
+      "name": "simp/compliance_markup",
       "version_requirement": ">= 1.0.0"
     }
   ],
