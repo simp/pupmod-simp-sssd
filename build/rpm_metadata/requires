@@ -1,0 +1,5 @@
+Requires: pupmod-auditd >= 4.1.0-3
+Requires: pupmod-simp-compliance_markup
+Requires: pupmod-simpcat >= 4.0.0-0
+Requires: pupmod-simplib >= 1.0.0-0
+Obsoletes: pupmod-sssd-test >= 0.0.1
