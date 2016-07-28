@@ -76,9 +76,9 @@
     'ldap_deref_threshold',
     'ldap_tls_reqcert',
     'ldap_tls_cacert',
-    'ldap_tls_cacertdir',
-    'ldap_tls_cert',
-    'ldap_tls_key',
+    '_ldap_tls_cacertdir',
+    '_ldap_tls_cert',
+    '_ldap_tls_key',
     'ldap_id_use_start_tls',
     'ldap_id_mapping',
     'ldap_min_id',
@@ -154,6 +154,7 @@
   _output = []
   _string_params.sort.each do |param|
     value = eval(%(@#{param}))
+    param.sub!(/^_/, '')
 
     unless value.to_s.empty?
       _output << %(#{param} = #{value.to_s})
