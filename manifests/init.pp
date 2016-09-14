@@ -93,6 +93,8 @@ class sssd (
   }
 
   concat_fragment { 'sssd+sssd.conf':
+    tag     => 'sssd_simp_fragment',
+    target  => '/etc/sssd/sssd.conf',
     content => template('sssd/sssd.conf.erb')
   }
 
