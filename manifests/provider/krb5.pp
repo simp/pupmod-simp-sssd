@@ -36,7 +36,7 @@ define sssd::provider::krb5 (
   unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
   unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
 
-  concat_fragment { "sssd+${name}#krb5_provider.domain":
+  simpcat_fragment { "sssd+${name}#krb5_provider.domain":
     content => template('sssd/provider/krb5.erb')
   }
 }

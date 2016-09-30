@@ -20,7 +20,7 @@ class sssd::service::pac (
   unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
   validate_array($allowed_uids)
 
-  concat_fragment { 'sssd+pac.service':
+  simpcat_fragment { 'sssd+pac.service':
     content => template('sssd/service/pac.erb')
   }
 }
