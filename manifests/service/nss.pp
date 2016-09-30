@@ -47,7 +47,7 @@ class sssd::service::nss (
   unless empty($memcache_timeout) { validate_integer($memcache_timeout) }
   validate_string($user_attributes)
 
-  concat_fragment { 'sssd+nss.service':
+  simpcat_fragment { 'sssd+nss.service':
     content => template('sssd/service/nss.erb')
   }
 

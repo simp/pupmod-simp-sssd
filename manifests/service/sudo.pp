@@ -20,7 +20,7 @@ class sssd::service::sudo (
   unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
   unless empty($sudo_timed) { validate_bool($sudo_timed) }
 
-  concat_fragment { 'sssd+sudo.service':
+  simpcat_fragment { 'sssd+sudo.service':
     content => template('sssd/service/sudo.erb')
   }
 }

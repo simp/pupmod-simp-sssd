@@ -41,7 +41,7 @@ class sssd::service::pam (
 
   compliance_map()
 
-  concat_fragment { 'sssd+pam.service':
+  simpcat_fragment { 'sssd+pam.service':
     content => template('sssd/service/pam.erb')
   }
 }

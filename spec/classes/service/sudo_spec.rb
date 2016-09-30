@@ -7,7 +7,7 @@ describe 'sssd::service::sudo' do
         let(:facts){ facts }
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_concat_fragment('sssd+sudo.service').without_content(%r(=\s*$)) }
+        it { is_expected.to create_simpcat_fragment('sssd+sudo.service').without_content(%r(=\s*$)) }
       end
     end
   end

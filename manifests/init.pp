@@ -83,7 +83,7 @@ class sssd (
     }
   }
 
-  concat_build { 'sssd':
+  simpcat_build { 'sssd':
     order  => ['*.conf', '*.service', '*.domain'],
     target => '/etc/sssd/sssd.conf',
     notify => [
@@ -92,7 +92,7 @@ class sssd (
     ]
   }
 
-  concat_fragment { 'sssd+sssd.conf':
+  simpcat_fragment { 'sssd+sssd.conf':
     content => template('sssd/sssd.conf.erb')
   }
 
