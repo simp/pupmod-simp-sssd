@@ -24,7 +24,7 @@ class sssd::service::ssh (
 
   compliance_map()
 
-  concat_fragment { 'sssd+ssh.service':
+  simpcat_fragment { 'sssd+ssh.service':
     content => template('sssd/service/ssh.erb')
   }
 }

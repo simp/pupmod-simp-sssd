@@ -20,7 +20,7 @@ class sssd::service::autofs (
   unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
   unless empty($autofs_negative_timeout) { validate_integer($autofs_negative_timeout) }
 
-  concat_fragment { 'sssd+autofs.service':
+  simpcat_fragment { 'sssd+autofs.service':
     content => template('sssd/service/autofs.erb')
   }
 }

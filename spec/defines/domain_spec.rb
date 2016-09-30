@@ -12,7 +12,7 @@ describe 'sssd::domain' do
         }}
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_concat_fragment('sssd+ldap#.domain').without_content(%r(=\s*$)) }
+        it { is_expected.to contain_simpcat_fragment('sssd+ldap#.domain').without_content(%r(=\s*$)) }
       end
     end
   end

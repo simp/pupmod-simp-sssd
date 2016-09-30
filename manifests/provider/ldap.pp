@@ -358,7 +358,7 @@ define sssd::provider::ldap (
     $_ldap_tls_key = $ldap_tls_key
   }
 
-  concat_fragment { "sssd+${name}#ldap_provider.domain":
+  simpcat_fragment { "sssd+${name}#ldap_provider.domain":
     content => template('sssd/provider/ldap.erb')
   }
 }

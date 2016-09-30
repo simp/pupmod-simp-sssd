@@ -125,7 +125,7 @@ define sssd::domain (
   validate_string($proxy_pam_target)
   validate_string($proxy_lib_name)
 
-  concat_fragment { "sssd+${name}#.domain":
+  simpcat_fragment { "sssd+${name}#.domain":
     content => template('sssd/domain.erb')
   }
 
