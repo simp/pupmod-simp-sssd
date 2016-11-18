@@ -21,7 +21,6 @@ class sssd::install (
 
   validate_bool($install_user_tools)
 
-  compliance_map()
 
   file { '/etc/sssd':
     ensure => 'directory',
