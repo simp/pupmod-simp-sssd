@@ -70,7 +70,6 @@ class sssd (
   validate_bool($use_simp_pki)
   validate_absolute_path($cert_source)
 
-  compliance_map()
 
   include '::sssd::install'
   include '::sssd::service'
