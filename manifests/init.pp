@@ -61,17 +61,12 @@ class sssd (
   Stdlib::Absolutepath    $app_pki_dir           = '/etc/sssd'
 ) {
 
-  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
-  validate_array_member($services,['nss','pam','sudo','autofs','ssh','pac'])
-  unless empty($re_expression) { validate_string($re_expression) }
-  unless empty($full_name_format) { validate_string($full_name_format) }
-  unless empty($try_inotify) { validate_bool($try_inotify) }
-  unless empty($krb5_rcache_dir) {
-    unless $krb5_rcache_dir == '__LIBKRB5_DEFAULTS__' {
-      validate_absolute_path($krb5_rcache_dir)
-    }
-  }
+#  validate_array_member($services,['nss','pam','sudo','autofs','ssh','pac'])
+#  unless empty($krb5_rcache_dir) {
+#    unless $krb5_rcache_dir == '__LIBKRB5_DEFAULTS__' {
+#      validate_absolute_path($krb5_rcache_dir)
+#    }
+#  }
 
 
   include '::sssd::install'

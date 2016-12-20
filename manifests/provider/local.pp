@@ -27,9 +27,9 @@ define sssd::provider::local (
   $userdel_cmd = ''
 ) {
 
-  validate_string($debug_level)
-  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
+#  validate_string($debug_level)
+#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
+#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
 
   simpcat_fragment { "sssd+${name}#local_provider.domain":
     content => template('sssd/provider/local.erb')

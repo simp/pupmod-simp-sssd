@@ -14,11 +14,11 @@ class sssd::service::sudo (
   $sudo_timed         = ''
 ) {
 
-  validate_string($description)
-  validate_string($debug_level)
-  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
-  unless empty($sudo_timed) { validate_bool($sudo_timed) }
+#  validate_string($description)
+#  validate_string($debug_level)
+#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
+#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
+#  unless empty($sudo_timed) { validate_bool($sudo_timed) }
 
   simpcat_fragment { 'sssd+sudo.service':
     content => template('sssd/service/sudo.erb')

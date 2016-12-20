@@ -15,12 +15,12 @@ class sssd::service::ssh (
   $ssh_known_hosts_timeout = ''
 ) {
 
-  validate_string($description)
-  validate_string($debug_level)
-  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
-  validate_bool($ssh_hash_known_hosts)
-  unless empty($ssh_known_hosts_timeout) { validate_integer($ssh_known_hosts_timeout) }
+#  validate_string($description)
+#  validate_string($debug_level)
+#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
+#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
+#  validate_bool($ssh_hash_known_hosts)
+#  unless empty($ssh_known_hosts_timeout) { validate_integer($ssh_known_hosts_timeout) }
 
 
   simpcat_fragment { 'sssd+ssh.service':

@@ -15,11 +15,10 @@
 # * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 class sssd::install (
-  $install_user_tools = true
+  Boolean  $install_user_tools = true
 ) {
   contain '::sssd::install::client'
 
-  validate_bool($install_user_tools)
 
   if ( $::operatingsystem in ['RedHat','CentOS'] ) and ( $::operatingsystemmajrelease > '6' ) { 
     $_sssd_user = 'sssd'
