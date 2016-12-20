@@ -1,8 +1,7 @@
 ---
-sssd::domains: 'example.domain'
-ldap::uri:
+sssd::domains: ['example.domain']
+simp_options::ldap::uri:
   - 'ldap://test.example.domain'
-ldap::master: 'test.example.domain'
-ldap::base_dn: 'dc=example,dc=domain'
-ldap::bind_dn: 'cn=hostAuth,ou=Hosts,dc=example,dc=domain'
-ldap::bind_pw: 'sup3r$3cur3P@ssw0r?'
+simp_options::ldap::base_dn: 'dc=example,dc=domain'
+simp_options::ldap::bind_dn: 'cn=hostAuth,ou=Hosts,dc=example,dc=domain'
+simp_options::ldap::bind_pw: 'sup3r$3cur3P@ssw0r?'

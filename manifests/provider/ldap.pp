@@ -27,16 +27,17 @@ define sssd::provider::ldap (
   $debug_level = '',
   $debug_timestamps = '',
   $debug_microseconds = '',
-  $ldap_uri = hiera('ldap::uri'),
+  Array[String]       $ldap_uri         = simplib::lookup('simp_options::ldap::uri',
+                                            { 'default_value' => ["ldap://${hiera('simp_options::puppet::server')}"] } ),
   $ldap_backup_uri = [],
   $ldap_chpass_uri = [],
   $ldap_chpass_backup_uri = [],
   $ldap_chpass_update_last_change = true,
-  $ldap_search_base = hiera('ldap::base_dn'),
-  $ldap_schema = 'rfc2307',
-  $ldap_default_bind_dn = hiera('ldap::bind_dn'),
+  String              $ldap_search_base     = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => '' }),
+  String              $ldap_schema          = 'rfc2307',
+  String              $ldap_default_bind_dn = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "cn=hostAuth,ou=Hosts,%{hiera('simp_options::ldap::base_dn')}" }),
   $ldap_default_authtok_type = '',
-  $ldap_default_authtok = hiera('ldap::bind_pw',''),
+  String              $ldap_default_authtok = simplib::lookup('simp_options::ldap::bind_hash',{ 'default_value' => '' }),
   $ldap_user_object_class = '',
   $ldap_user_name = '',
   $ldap_user_uid_number = '',
@@ -104,15 +105,11 @@ define sssd::provider::ldap (
   $ldap_sasl_minssf = '',
   $ldap_deref_threshold = '',
   $ldap_tls_reqcert = 'demand',
-  $ldap_tls_cacert = '',
-  $ldap_tls_cacertdir = '',
-  $ldap_tls_cert = '',
-  $ldap_tls_key = '',
-  $ldap_tls_cipher_suite = hiera('openssl::cipher_suite',[
-    'HIGH',
-    '-SSLv2'
-  ]),
-  $ldap_id_use_start_tls = true,
+  Stdlib::Absolutepath   $app_pki_ca_dir         = "/etc/sssd/pki/cacerts",
+  Stdlib::Absolutepath   $app_pki_key            = "/etc/sssd/pki/private/${::fqdn}.pem",
+  Stdlib::Absolutepath   $app_pki_cert           = "/etc/sssd/pki/public/${::fqdn}.pub",
+  Array[String]          $ldap_tls_cipher_suite  = simplib::lookup('simp_options::openssl::cipher_suite', { 'default_value' => ['HIGH','-SSLv2'] }),
+  Boolean                $ldap_id_use_start_tls  = true,
   $ldap_id_mapping = '',
   $ldap_min_id = '',
   $ldap_max_id = '',
@@ -179,17 +176,13 @@ define sssd::provider::ldap (
   unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
   unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
   validate_array($ldap_uri)
-  validate_uri_list($ldap_uri)
   unless empty($ldap_backup_uri) { validate_uri_list($ldap_backup_uri) }
   validate_uri_list($ldap_chpass_uri)
   unless empty($ldap_chpass_backup_uri) { validate_uri_list($ldap_chpass_backup_uri) }
-  validate_string($ldap_search_base)
   validate_string($ldap_schema)
   validate_array_member($ldap_schema,['rfc2307','rfc2307bis','IPA','AD'])
-  validate_string($ldap_default_bind_dn)
   validate_string($ldap_default_authtok_type)
   unless empty($ldap_default_authtok_type) { validate_array_member($ldap_default_authtok_type,['password','obfuscated_password']) }
-  validate_string($ldap_default_authtok)
   validate_string($ldap_user_object_class)
   validate_string($ldap_user_name)
   validate_string($ldap_user_uid_number)
@@ -258,12 +251,6 @@ define sssd::provider::ldap (
   unless empty($ldap_deref_threshold) { validate_integer($ldap_deref_threshold) }
   validate_string($ldap_tls_reqcert)
   validate_array_member($ldap_tls_reqcert,['never','allow','try','demand','hard'])
-  unless empty($ldap_tls_cacert) { validate_absolute_path($ldap_tls_cacert) }
-  unless empty($ldap_tls_cacertdir) { validate_absolute_path($ldap_tls_cacertdir) }
-  unless empty($ldap_tls_cert) { validate_absolute_path($ldap_tls_cert) }
-  unless empty($ldap_tls_key) { validate_absolute_path($ldap_tls_key) }
-  validate_array($ldap_tls_cipher_suite)
-  validate_bool($ldap_id_use_start_tls)
   unless empty($ldap_id_mapping) { validate_bool($ldap_id_mapping) }
   unless empty($ldap_min_id) { validate_integer($ldap_min_id) }
   unless empty($ldap_max_id) { validate_integer($ldap_max_id) }
@@ -330,32 +317,13 @@ define sssd::provider::ldap (
   validate_string($ldap_idmap_default_domain)
   unless empty($ldap_idmap_autorid_compat){ validate_bool($ldap_idmap_autorid_compat) }
 
-
   include '::sssd'
+  
+ $ldap_tls_cacertdir = $app_pki_cert_dir
 
-  $_cert_source = $::sssd::cert_source
-  $_use_simp_pki = $::sssd::use_simp_pki
+ $ldap_tls_cert = $app_pki_cert
 
-  if empty($ldap_tls_cacertdir) {
-    $_ldap_tls_cacertdir = "${_cert_source}/cacerts"
-  }
-  else {
-    $_ldap_tls_cacertdir = $ldap_tls_cacertdir
-  }
-
-  if empty($ldap_tls_cert) {
-    $_ldap_tls_cert = "${_cert_source}/public/${::fqdn}.pub"
-  }
-  else {
-    $_ldap_tls_cert = $ldap_tls_cert
-  }
-
-  if empty($ldap_tls_key) {
-    $_ldap_tls_key = "${_cert_source}/private/${::fqdn}.pem"
-  }
-  else {
-    $_ldap_tls_key = $ldap_tls_key
-  }
+ $ldap_tls_key = $app_pki_key
 
   simpcat_fragment { "sssd+${name}#ldap_provider.domain":
     content => template('sssd/provider/ldap.erb')
