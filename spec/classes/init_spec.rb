@@ -12,7 +12,7 @@ describe 'sssd' do
           it { is_expected.to create_class('sssd::install').that_notifies('Class[sssd::service]') }
           it { is_expected.to create_class('sssd::service') }
           it { is_expected.to_not contain_class('pki') }
-          it { is_expected.to_not create_pki__copy('/etc/sssd') }
+          it { is_expected.to_not create_pki__copy('/etc/pki/sssd') }
 
           it { is_expected.to contain_simpcat_build('sssd').with({
             :target => '/etc/sssd/sssd.conf',
@@ -70,7 +70,7 @@ describe 'sssd' do
                   :use_tls  => true }}
 
           it { is_expected.to create_class('sssd::config::pki') }
-          it { is_expected.to create_pki__copy('/etc/sssd').with({
+          it { is_expected.to create_pki__copy('/etc/pki/sssd').with({
             :source => '/etc/pki/simp' }) }
           it { is_expected.to_not create_class('pki')}
         end
@@ -79,7 +79,7 @@ describe 'sssd' do
           let(:params) {{ :pki => 'simp',
                           :use_tls => true }}
 
-          it { is_expected.to create_pki__copy('/etc/sssd').with({
+          it { is_expected.to create_pki__copy('/etc/pki/sssd').with({
             :source => '/etc/pki/simp' }) }
           it { is_expected.to create_class('pki') }
         end

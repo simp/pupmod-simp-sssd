@@ -28,7 +28,7 @@
 #
 # [*app_pki_dir*]
 # Type: Stdlib::Absolutepath
-# Default: '/etc/sssd'
+# Default: '/etc/pki/sssd'
 # This is the directory where the active certs are.  If pki = true or simp, pki::copy
 # will copy the certs into this directory.  if pki is false, put the certs under 
 # here.  Make sure you use the directory structure used by pki or set the app_pki* 
@@ -58,7 +58,7 @@ class sssd (
   Boolean                         $auditd        = simplib::lookup('simp_options::auditd', { 'default_value' => false}),
   Variant[Boolean,Enum['simp']]   $pki           = simplib::lookup('simp_options::pki', { 'default_value' => false}),
   Stdlib::Absolutepath    $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp'}),
-  Stdlib::Absolutepath    $app_pki_dir           = '/etc/sssd'
+  Stdlib::Absolutepath    $app_pki_dir           = '/etc/pki/sssd'
 ) {
 
 #  validate_array_member($services,['nss','pam','sudo','autofs','ssh','pac'])
