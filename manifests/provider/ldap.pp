@@ -25,7 +25,8 @@
 #
 define sssd::provider::ldap (
   Optional[Variant[Integer[0,9],
-    Pattern[/^0x[01248][01248][01248]0/]]] $debug_level                       = undef,
+    Pattern[/^0x[01248][01248][01248]0/]
+    ]]                           $debug_level                       = undef,
   Optional[String]               $debug_timestamps                  = undef,
   Enum['true','false']           $debug_microseconds                = 'false',
   Array[Simplib::URI]            $ldap_uri                          = simplib::lookup('simp_options::ldap::uri', { 'default_value' => ["ldap://${hiera('simp_options::puppet::server')}"] } ),
@@ -108,9 +109,9 @@ define sssd::provider::ldap (
   Optional[Integer[0]]           $ldap_deref_threshold              = undef,
   Enum['never','allow',
     'try','demand','hard']       $ldap_tls_reqcert                  = 'demand',
-  Stdlib::Absolutepath           $app_pki_ca_dir                    = "${::sssd::app_pki_dir}/pki/cacerts",
-  Stdlib::Absolutepath           $app_pki_key                       = "${::sssd::app_pki_dir}/pki/private/${::fqdn}.pem",
-  Stdlib::Absolutepath           $app_pki_cert                      = "${::sssd::app_pki_dir}/pki/public/${::fqdn}.pub",
+  Optional[Stdlib::Absolutepath] $app_pki_ca_dir                    = undef,
+  Optional[Stdlib::Absolutepath] $app_pki_key                       = undef,
+  Optional[Stdlib::Absolutepath] $app_pki_cert                      = undef,
   Array[String]                  $ldap_tls_cipher_suite             = ['HIGH','-SSLv2'],
   Optional[Enum['true','false']] $ldap_id_use_start_tls             = 'true',
   Optional[Enum['true','false']] $ldap_id_mapping                   = undef,
@@ -185,11 +186,23 @@ define sssd::provider::ldap (
 
   include '::sssd'
 
-  $ldap_tls_cacertdir = $app_pki_cert_dir
+  if $app_pki_ca_dir {
+    $ldap_tls_cacertdir = $app_pki_ca_dir
+  } else {
+    $ldap_tls_cacertdir = "${sssd::app_pki_dir}/pki/cacerts"
+  }
 
-  $ldap_tls_cert = $app_pki_cert
+  if $app_pki_key {
+    $ldap_tls_key = $app_pki_key
+  } else {
+    $ldap_tls_key = "${sssd::app_pki_dir}/pki/private/${::fqdn}.pem"
+  }
 
-  $ldap_tls_key = $app_pki_key
+  if $app_pki_cert {
+    $ldap_tls_cert = $app_pki_cert
+  } else {
+    $ldap_tls_cert = "${sssd::app_pki_dir}/pki/public/${::fqdn}.pub"
+  }
 
   simpcat_fragment { "sssd+${name}#ldap_provider.domain":
     content => template('sssd/provider/ldap.erb')
