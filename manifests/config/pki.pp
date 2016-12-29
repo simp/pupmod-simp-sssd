@@ -1,6 +1,6 @@
 # == Class: sssd::pki
 #
-#  
+#
 #
 class sssd::config::pki
 {
@@ -24,5 +24,5 @@ class sssd::config::pki
       pki    => $pki
     }
   }
-    
+
 }

@@ -20,7 +20,7 @@ class sssd::install (
   contain '::sssd::install::client'
 
 
-  if ( $::operatingsystem in ['RedHat','CentOS'] ) and ( $::operatingsystemmajrelease > '6' ) { 
+  if ( $::operatingsystem in ['RedHat','CentOS'] ) and ( $::operatingsystemmajrelease > '6' ) {
     $_sssd_user = 'sssd'
   } else {
     $_sssd_user = 'root'

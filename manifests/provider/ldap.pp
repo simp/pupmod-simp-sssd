@@ -25,8 +25,7 @@
 #
 define sssd::provider::ldap (
   Optional[Variant[Integer[0,9],
-          Pattern[/^0x[01248][01248][01248]0/]]]
-                                 $debug_level                       = undef,
+    Pattern[/^0x[01248][01248][01248]0/]]] $debug_level                       = undef,
   Optional[String]               $debug_timestamps                  = undef,
   Enum['true','false']           $debug_microseconds                = 'false',
   Array[Simplib::URI]            $ldap_uri                          = simplib::lookup('simp_options::ldap::uri', { 'default_value' => ["ldap://${hiera('simp_options::puppet::server')}"] } ),
@@ -139,7 +138,7 @@ define sssd::provider::ldap (
     'ipa','e89ds','nds']         $ldap_account_expire_policy        = 'shadow',
   Array[Enum['filter','lockout',
     'expire','authorized_service'
-   ,'host']]                     $ldap_access_order                 = ['expire','lockout'],
+    ,'host']]                     $ldap_access_order                 = ['expire','lockout'],
   Optional[String]               $ldap_pwdlockout_dn                = undef,
   Optional[Enum['never',
     'searching',
@@ -186,11 +185,11 @@ define sssd::provider::ldap (
 
   include '::sssd'
 
- $ldap_tls_cacertdir = $app_pki_cert_dir
+  $ldap_tls_cacertdir = $app_pki_cert_dir
 
- $ldap_tls_cert = $app_pki_cert
+  $ldap_tls_cert = $app_pki_cert
 
- $ldap_tls_key = $app_pki_key
+  $ldap_tls_key = $app_pki_key
 
   simpcat_fragment { "sssd+${name}#ldap_provider.domain":
     content => template('sssd/provider/ldap.erb')
