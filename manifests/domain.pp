@@ -25,104 +25,66 @@
 # * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 define sssd::domain (
-  String $id_provider,
-  String $debug_level = '',
-  $debug_timestamps = '',
-  $debug_microseconds = '',
-  $description = '',
-  $min_id = $::uid_min,
-  $max_id = '0',
-  $enumerate = false,
-  $subdomain_enumerate = '',
-  $force_timeout = '',
-  $entry_cache_timeout = '',
-  $entry_cache_user_timeout = '',
-  $entry_cache_group_timeout = '',
-  $entry_cache_netgroup_timeout = '',
-  $entry_cache_service_timeout = '',
-  $entry_cache_sudo_timeout = '',
-  $entry_cache_autofs_timeout = '',
-  $entry_cache_ssh_host_timeout = '',
-  $refresh_expired_interval = '',
-  $cache_credentials = false,
-  $account_cache_expiration = '0',
-  $pwd_expiration_warning = '',
-  $use_fully_qualified_names = '',
-  $ignore_group_members = '',
-  $auth_provider = '',
-  $access_provider = '',
-  $chpass_provider = '',
-  $sudo_provider = '',
-  $selinux_provider = '',
-  $subdomains_provider = '',
-  $autofs_provider = '',
-  $hostid_provider = '',
-  $re_expression = '',
-  $full_name_format = '',
-  $lookup_family_order = '',
-  $dns_resolver_timeout = '5',
-  $dns_discovery_domain = '',
-  $override_gid = '',
-  $case_sensitive = '',
-  $proxy_fast_alias = '',
-  $realmd_tags = '',
-  $proxy_pam_target = '',
-  $proxy_lib_name = ''
+  Enum['proxy','local',
+    'ldap','ipa','ad']    $id_provider,
+  Optional[String]        $debug_level                  = undef,
+  Boolean                 $debug_timestamps             = false,
+  Boolean                 $debug_microseconds           = false,
+  Optional[String]        $description                  = undef,
+  Integer                 $min_id                       = to_integer($facts['uid_min']),
+  Integer                 $max_id                       = 0,
+  Boolean                 $enumerate                    = false,
+  Optional[Boolean]       $subdomain_enumerate          = undef,
+  Optional[Integer]       $force_timeout                = undef,
+  Optional[Integer]       $entry_cache_timeout          = undef,
+  Optional[Integer]       $entry_cache_user_timeout     = undef,
+  Optional[Integer]       $entry_cache_group_timeout    = undef,
+  Optional[Integer]       $entry_cache_netgroup_timeout = undef,
+  Optional[Integer]       $entry_cache_service_timeout  = undef,
+  Optional[Integer]       $entry_cache_sudo_timeout     = undef,
+  Optional[Integer]       $entry_cache_autofs_timeout   = undef,
+  Optional[Integer]       $entry_cache_ssh_host_timeout = undef,
+  Optional[Integer]       $refresh_expired_interval     = undef,
+  Boolean                 $cache_credentials            = false,
+  Integer                 $account_cache_expiration     = 0,
+  Optional[Integer]       $pwd_expiration_warning       = undef,
+  Optional[Boolean]       $use_fully_qualified_names    = undef,
+  Optional[Boolean]       $ignore_group_members         = undef,
+  Optional[Enum['permit',
+    'deny','ldap','ipa',
+    'ad','simple']]       $access_provider              = undef,
+  Optional[Enum['ldap',
+    'krb5','ipa','ad',
+    'proxy','local',
+    'none']]              $auth_provider                = undef,
+  Optional[Enum['ldap',
+    'krb5','ipa','ad',
+    'proxy','none']]      $chpass_provider              = undef,
+  Optional[Enum['ldap',
+    'ipa','ad','none']]   $sudo_provider                = undef,
+  Optional[Enum['ipa',
+    'none']]              $selinux_provider             = undef,
+  Optional[Enum['ipa',
+    'ad','none']]         $subdomains_provider          = undef,
+  Optional[Enum['ldap',
+    'ipa','none']]        $autofs_provider              = undef,
+  Optional[Enum['ipa',
+    'none']]              $hostid_provider              = undef,
+  Optional[String]        $re_expression                = undef,
+  Optional[String]        $full_name_format             = undef,
+  Optional[String]        $lookup_family_order          = undef,
+  Integer                 $dns_resolver_timeout         = 5,
+  Optional[String]        $dns_discovery_domain         = undef,
+  Optional[String]        $override_gid                 = undef,
+  Optional[Enum['true',
+    'false',
+    'preserving']]        $case_sensitive               = undef,
+  Optional[Boolean]       $proxy_fast_alias             = undef,
+  Optional[String]        $realmd_tags                  = undef,
+  Optional[String]        $proxy_pam_target             = undef,
+  Optional[String]        $proxy_lib_name               = undef
 ) {
 
-#  validate_array_member($id_provider,['proxy','local','ldap','ipa','ad'])
-#  validate_string($debug_level)
-#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
-#  validate_integer($min_id)
-#  validate_integer($max_id)
-#  validate_bool($enumerate)
-#  validate_string($subdomain_enumerate)
-#  unless empty($subdomain_enumerate) { validate_array_member($subdomain_enumerate,['all','none']) }
-#  unless empty($force_timeout) { validate_integer($force_timeout) }
-#  unless empty($entry_cache_timeout) { validate_integer($entry_cache_timeout) }
-#  unless empty($entry_cache_user_timeout) { validate_integer($entry_cache_user_timeout) }
-#  unless empty($entry_cache_group_timeout) { validate_integer($entry_cache_group_timeout) }
-#  unless empty($entry_cache_netgroup_timeout) { validate_integer($entry_cache_netgroup_timeout) }
-#  unless empty($entry_cache_service_timeout) { validate_integer($entry_cache_service_timeout) }
-#  unless empty($entry_cache_sudo_timeout) { validate_integer($entry_cache_sudo_timeout) }
-#  unless empty($entry_cache_autofs_timeout) { validate_integer($entry_cache_autofs_timeout) }
-#  unless empty($entry_cache_ssh_host_timeout) { validate_integer($entry_cache_ssh_host_timeout) }
-#  unless empty($refresh_expired_interval) { validate_integer($refresh_expired_interval) }
-#  validate_bool($cache_credentials)
-#  validate_integer($account_cache_expiration)
-#  unless empty($pwd_expiration_warning) { validate_integer($pwd_expiration_warning) }
-#  unless empty($use_fully_qualified_names) { validate_bool($use_fully_qualified_names) }
-#  unless empty($ignore_group_members) { validate_bool($ignore_group_members) }
-#  validate_string($auth_provider)
-#  unless empty($auth_provider) { validate_array_member($auth_provider,['ldap','krb5','ipa','ad','proxy','local','none']) }
-#  validate_string($access_provider)
-#  unless empty($access_provider) { validate_array_member($access_provider,['permit','deny','ldap','ipa','ad','simple']) }
-#  validate_string($chpass_provider)
-#  unless empty($chpass_provider) { validate_array_member($chpass_provider,['ldap','krb5','ipa','ad','proxy','none']) }
-#  validate_string($sudo_provider)
-#  unless empty($sudo_provider) { validate_array_member($sudo_provider,['ldap','ipa','ad','none']) }
-#  validate_string($selinux_provider)
-#  unless empty($selinux_provider) { validate_array_member($selinux_provider,['ipa','none']) }
-#  validate_string($subdomains_provider)
-#  unless empty($subdomains_provider) { validate_array_member($subdomains_provider,['ipa','ad','none']) }
-#  validate_string($autofs_provider)
-#  unless empty($autofs_provider) { validate_array_member($autofs_provider,['ldap','ipa','none']) }
-#  validate_string($hostid_provider)
-#  unless empty($hostid_provider) { validate_array_member($hostid_provider,['ipa','none']) }
-#  validate_string($re_expression)
-#  validate_string($full_name_format)
-#  validate_string($lookup_family_order)
-#  unless empty($lookup_family_order) { validate_array_member($lookup_family_order,['ipv4_first','ipv4_only','ipv6_first','ipv6_only']) }
-#  validate_integer($dns_resolver_timeout)
-#  validate_string($dns_discovery_domain)
-#  validate_string($override_gid)
-#  validate_string($case_sensitive)
-#  unless empty($case_sensitive) { validate_array_member($case_sensitive,['true','false','preserving']) }
-#  unless empty($proxy_fast_alias) { validate_bool($proxy_fast_alias) }
-#  validate_string($realmd_tags)
-#  validate_string($proxy_pam_target)
-#  validate_string($proxy_lib_name)
 
   simpcat_fragment { "sssd+${name}#.domain":
     content => template('sssd/domain.erb')
