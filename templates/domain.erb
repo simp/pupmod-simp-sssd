@@ -98,7 +98,7 @@ dns_discovery_domain = <%= @dns_discovery_domain %>
 override_gid = <%= @override_gid %>
 <% end -%>
 <% if @case_sensitive -%>
-case_sensitive = <%= @case_sensitive %>
+case_sensitive = <%= @case_sensitive.to_s %>
 <% end -%>
 <% if @proxy_fast_alias -%>
 proxy_fast_alias = <%= @proxy_fast_alias %>

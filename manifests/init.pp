@@ -10,8 +10,8 @@
 # [*pki*]
 # Type: Variant[Boolean,Enum['simp']]
 # Default: false
-#   A flag, which if enabled, allows SIMP to distribute PKI certs/keys from 
-#   app_pki_cert_source. 
+#   A flag, which if enabled, allows SIMP to distribute PKI certs/keys from
+#   app_pki_cert_source.
 #   If set to 'simp' then copy the keys, plus install pki module so simp will
 #   copy certs from puppet server.
 #
@@ -22,7 +22,7 @@
 #
 # [*app_pki_cert_source*]
 # Type: Stdlib::Absolutepath
-# Default: '/etc/pki/simp' 
+# Default: '/etc/pki/simp'
 #   The path from where certificates are copied if pki = true or simp. Put your certs here
 #   using pki directory format if pki = true.
 #
@@ -30,8 +30,8 @@
 # Type: Stdlib::Absolutepath
 # Default: '/etc/pki/sssd'
 # This is the directory where the active certs are.  If pki = true or simp, pki::copy
-# will copy the certs into this directory.  if pki is false, put the certs under 
-# here.  Make sure you use the directory structure used by pki or set the app_pki* 
+# will copy the certs into this directory.  if pki is false, put the certs under
+# here.  Make sure you use the directory structure used by pki or set the app_pki*
 # variables used by the ldap provider.
 #
 # == Authors
@@ -39,26 +39,26 @@
 # * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 class sssd (
-  Array                   $domains,
-  String                  $debug_level           = '',
-  Variant[Boolean,String] $debug_timestamps      = '',
-  Variant[Boolean,String] $debug_microseconds    = '',
-  String                  $description           = '',
-  Stdlib::Compat::Integer $config_file_version   = '2',
-  Array[String]           $services              = ['nss','pam','ssh','sudo'],
-  Stdlib::Compat::Integer $reconnection_retries  = '3',
-  String                  $re_expression         = '',
-  String                  $full_name_format      = '',
-  Variant[Boolean,String] $try_inotify           = '',
-  String                  $krb5_rcache_dir       = '',
-  String                  $user                  = '',
-  String                  $default_domain_suffix = '',
-  String                  $override_space        = '',
-  Boolean                         $use_tls       = true,
-  Boolean                         $auditd        = simplib::lookup('simp_options::auditd', { 'default_value' => false}),
-  Variant[Boolean,Enum['simp']]   $pki           = simplib::lookup('simp_options::pki', { 'default_value' => false}),
-  Stdlib::Absolutepath    $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp'}),
-  Stdlib::Absolutepath    $app_pki_dir           = '/etc/pki/sssd'
+  Array                          $domains,
+  String                         $debug_level           = '',
+  Variant[Boolean,String]        $debug_timestamps      = '',
+  Variant[Boolean,String]        $debug_microseconds    = '',
+  String                         $description           = '',
+  Stdlib::Compat::Integer        $config_file_version   = '2',
+  Array[String]                  $services              = ['nss','pam','ssh','sudo'],
+  Stdlib::Compat::Integer        $reconnection_retries  = '3',
+  String                         $re_expression         = '',
+  String                         $full_name_format      = '',
+  Variant[Boolean,String]        $try_inotify           = '',
+  String                         $krb5_rcache_dir       = '',
+  String                         $user                  = '',
+  String                         $default_domain_suffix = '',
+  String                         $override_space        = '',
+  Boolean                        $use_tls               = true,
+  Boolean                        $auditd                = simplib::lookup('simp_options::auditd', { 'default_value' => false}),
+  Variant[Boolean,Enum['simp']]  $pki                   = simplib::lookup('simp_options::pki', { 'default_value' => false}),
+  Stdlib::Absolutepath           $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp'}),
+  Stdlib::Absolutepath           $app_pki_dir           = '/etc/pki/sssd'
 ) {
 
 #  validate_array_member($services,['nss','pam','sudo','autofs','ssh','pac'])
@@ -67,7 +67,6 @@ class sssd (
 #      validate_absolute_path($krb5_rcache_dir)
 #    }
 #  }
-
 
   include '::sssd::install'
   include '::sssd::service'

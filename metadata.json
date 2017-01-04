@@ -26,7 +26,11 @@
     },
     {
       "name": "simp/simplib",
-      "version_requirement": ">= 2.1.0 < 3.0.0"
+      "version_requirement": ">= 3.1.0 < 4.0.0"
+    },
+    {
+      "name": "simp/simp_options",
+      "version_requirement": ">= 1.0.0 < 2.0.0"
     }
   ],
   "operatingsystem_support": [

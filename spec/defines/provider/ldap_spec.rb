@@ -16,7 +16,7 @@ describe 'sssd::provider::ldap' do
           :ldap_search_base => 'dc=example,dc=domain',
           :ldap_default_bind_dn => 'cn=hostAuth,ou=Hosts,dc=example,dc=domain',
           :ldap_default_authtok => 'sup3r$3cur3P@ssw0r?',
-          :ldap_id_use_start_tls => 'true'
+          :ldap_id_use_start_tls => true
         }}
 
         it { is_expected.to compile.with_all_deps }

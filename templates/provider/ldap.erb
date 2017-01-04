@@ -156,7 +156,7 @@
     value = eval(%(@#{param}))
     param.sub!(/^_/, '')
 
-    unless value.to_s.empty?
+    if value
       _output << %(#{param} = #{value.to_s})
     end
   end
