@@ -3,59 +3,54 @@
 <% if @debug_level -%>
 debug_level = <%= @debug_level %>
 <% end -%>
-<% if @debug_timestamps -%>
-debug_timestamps = <%= @debug_timestamps %>
-<% end -%>
-<% if @debug_microseconds -%>
-debug_microseconds = <%= @debug_microseconds%>
-<% end -%>
+debug_timestamps = <%= @debug_timestamps.to_s %>
+debug_microseconds = <%= @debug_microseconds.to_s %>
 <% if @description -%>
 description = <%= @description %>
 <% end -%>
-min_id = <%= @min_id %>
-max_id = <%= @max_id %>
-enumerate = <%= @enumerate %>
+min_id = <%= @min_id.to_s %>
+max_id = <%= @max_id.to_s %>
+enumerate = <%= @enumerate.to_s %>
 <% if @subdomain_enumerate -%>
 subdomain_enumerate = <%= @subdomain_enumerate %>
 <% end -%>
 <% if @force_timeout -%>
-force_timeout = <%= @force_timeout %>
+force_timeout = <%= @force_timeout.to_s %>
 <% end -%>
 <% if @entry_cache_timeout -%>
-entry_cache_timeout = <%= @entry_cache_timeout %>
+entry_cache_timeout = <%= @entry_cache_timeout.to_s %>
 <% end -%>
 <% if @entry_cache_user_timeout -%>
-entry_cache_user_timeout = <%= @entry_cache_user_timeout %>
+entry_cache_user_timeout = <%= @entry_cache_user_timeout.to_s %>
 <% end -%>
 <% if @entry_cache_group_timeout -%>
-entry_cache_group_timeout = <%= @entry_cache_group_timeout %>
+entry_cache_group_timeout = <%= @entry_cache_group_timeout.to_s %>
 <% end -%>
 <% if @entry_cache_netgroup_timeout -%>
-entry_cache_netgroup_timeout = <%= @entry_cache_netgroup_timeout %>
+entry_cache_netgroup_timeout = <%= @entry_cache_netgroup_timeout.to_s %>
 <% end -%>
 <% if @entry_cache_service_timeout -%>
-entry_cache_service_timeout = <%= @entry_cache_service_timeout %>
+entry_cache_service_timeout = <%= @entry_cache_service_timeout.to_s %>
 <% end -%>
 <% if @entry_cache_sudo_timeout -%>
-entry_cache_sudo_timeout = <%= @entry_cache_sudo_timeout %>
+entry_cache_sudo_timeout = <%= @entry_cache_sudo_timeout.to_s %>
 <% end -%>
 <% if @entry_cache_autofs_timeout -%>
-entry_cache_autofs_timeout = <%= @entry_cache_autofs_timeout %>
+entry_cache_autofs_timeout = <%= @entry_cache_autofs_timeout.to_s %>
 <% end -%>
 <% if @entry_cache_ssh_host_timeout -%>
-entry_cache_ssh_host_timeout = <%= @entry_cache_ssh_host_timeout %>
+entry_cache_ssh_host_timeout = <%= @entry_cache_ssh_host_timeout.to_s %>
 <% end -%>
 <% if @refresh_expired_interval -%>
-refresh_expired_interval = <%= @refresh_expired_interval %>
+refresh_expired_interval = <%= @refresh_expired_interval.to_s %>
 <% end -%>
-cache_credentials = <%= @cache_credentials %>
-account_cache_expiration = <%= @account_cache_expiration %>
+cache_credentials = <%= @cache_credentials.to_s %>
+account_cache_expiration = <%= @account_cache_expiration.to_s %>
 <% if @pwd_expiration_warning -%>
-pwd_expiration_warning = <%= @pwd_expiration_warning %>
+pwd_expiration_warning = <%= @pwd_expiration_warning.to_s %>
 <% end -%>
-<% if @use_fully_qualified_names -%>
-use_fully_qualified_names = <%= @use_fully_qualified_names %>
-<% end -%>
+use_fully_qualified_names = <%= @use_fully_qualified_names.to_s %>
+ignore_group_members = <%= @ignore_group_members.to_s %>
 id_provider = <%= @id_provider %>
 <% if @auth_provider -%>
 auth_provider = <%= @auth_provider %>
@@ -90,19 +85,15 @@ full_name_format = <%= @full_name_format %>
 <% if @lookup_family_order -%>
 lookup_family_order = <%= @lookup_family_order %>
 <% end -%>
-dns_resolver_timeout = <%= @dns_resolver_timeout %>
+dns_resolver_timeout = <%= @dns_resolver_timeout.to_s %>
 <% if @dns_discovery_domain %>
 dns_discovery_domain = <%= @dns_discovery_domain %>
 <% end -%>
 <% if @override_gid -%>
 override_gid = <%= @override_gid %>
 <% end -%>
-<% if @case_sensitive -%>
 case_sensitive = <%= @case_sensitive.to_s %>
-<% end -%>
-<% if @proxy_fast_alias -%>
-proxy_fast_alias = <%= @proxy_fast_alias %>
-<% end -%>
+proxy_fast_alias = <%= @proxy_fast_alias.to_s %>
 <% if @realmd_tags -%>
 realmd_tags = <%= @realmd_tags %>
 <% end -%>

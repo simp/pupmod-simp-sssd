@@ -39,34 +39,27 @@
 # * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 class sssd (
-  Array                          $domains,
-  String                         $debug_level           = '',
-  Variant[Boolean,String]        $debug_timestamps      = '',
-  Variant[Boolean,String]        $debug_microseconds    = '',
-  String                         $description           = '',
-  Stdlib::Compat::Integer        $config_file_version   = '2',
-  Array[String]                  $services              = ['nss','pam','ssh','sudo'],
-  Stdlib::Compat::Integer        $reconnection_retries  = '3',
-  String                         $re_expression         = '',
-  String                         $full_name_format      = '',
-  Variant[Boolean,String]        $try_inotify           = '',
-  String                         $krb5_rcache_dir       = '',
-  String                         $user                  = '',
-  String                         $default_domain_suffix = '',
-  String                         $override_space        = '',
+  Array[String]                  $domains,
+  Optional[String]               $debug_level           = undef,
+  Boolean                        $debug_timestamps      = true,
+  Boolean                        $debug_microseconds    = false,
+  Optional[String]               $description           = undef,
+  Integer                        $config_file_version   = 2,
+  Sssd::Services                 $services              = ['nss','pam','ssh','sudo'],
+  Integer                        $reconnection_retries  = 3,
+  Optional[String]               $re_expression         = undef,
+  Optional[String]               $full_name_format      = undef,
+  Boolean                        $try_inotify           = true,
+  Optional[String]               $krb5_rcache_dir       = undef,
+  Optional[String]               $user                  = undef,
+  Optional[String]               $default_domain_suffix = undef,
+  Optional[String]               $override_space        = undef,
   Boolean                        $use_tls               = true,
   Boolean                        $auditd                = simplib::lookup('simp_options::auditd', { 'default_value' => false}),
   Variant[Boolean,Enum['simp']]  $pki                   = simplib::lookup('simp_options::pki', { 'default_value' => false}),
   Stdlib::Absolutepath           $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp'}),
   Stdlib::Absolutepath           $app_pki_dir           = '/etc/pki/sssd'
 ) {
-
-#  validate_array_member($services,['nss','pam','sudo','autofs','ssh','pac'])
-#  unless empty($krb5_rcache_dir) {
-#    unless $krb5_rcache_dir == '__LIBKRB5_DEFAULTS__' {
-#      validate_absolute_path($krb5_rcache_dir)
-#    }
-#  }
 
   include '::sssd::install'
   include '::sssd::service'

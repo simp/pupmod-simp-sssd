@@ -1,14 +1,13 @@
 
 [autofs]
-<% unless @description.empty? -%>
+<% if @description -%>
 description = <%= @description %>
 <% end -%>
-<% unless @debug_level.empty? -%>
-debug_level = <%= @debug_level %>
+<% if @debug_level -%>
+debug_level = <%= @debug_level.to_s %>
 <% end -%>
-<% unless @debug_timestamps.empty? -%>
-debug_timestamps = <%= @debug_timestamps %>
-<% end -%>
-<% unless @autofs_negative_timeout.empty? -%>
-autofs_negative_timeout = <%= @autofs_negative_timeout %>
+debug_timestamps = <%= @debug_timestamps.to_s %>
+debug_microseconds = <%= @debug_microseconds.to_s %>
+<% if @autofs_negative_timeout -%>
+autofs_negative_timeout = <%= @autofs_negative_timeout.to_s %>
 <% end -%>

@@ -1,42 +1,32 @@
-<% unless @debug_level.empty? -%>
+<% if @debug_level -%>
 debug_level = <%= @debug_level %>
 <% end -%>
-<% unless @debug_timestamps.empty? -%>
-debug_timestamps = <%= @debug_timestamps %>
-<% end -%>
-<% unless @debug_microseconds.empty? -%>
-debug_microseconds = <%= @debug_microseconds%>
-<% end -%>
+debug_timestamps = <%= @debug_timestamps.to_s %>
+debug_microseconds = <%= @debug_microseconds.to_s %>
 krb5_server = <%= @krb5_server %>
 krb5_realm = <%= @krb5_realm %>
-<% if not @krb5_kpasswd.empty? then -%>
+<% if @krb5_kpasswd then -%>
 krb5_kpasswd = <%= @krb5_kpasswd %>
 <% end -%>
-<% if not @krb5_ccachedir.empty? then -%>
+<% if @krb5_ccachedir then -%>
 krb5_ccachedir = <%= @krb5_ccachedir %>
 <% end -%>
-<% if not @krb5_ccname_template.empty? then -%>
+<% if @krb5_ccname_template then -%>
 krb5_ccname_template = <%= @krb5_ccname_template %>
 <% end -%>
-krb5_auth_timeout = <%= @krb5_auth_timeout %>
-<% if not @krb5_validate.empty? then -%>
-krb5_validate = <%= @krb5_validate %>
-<% end -%>
-<% if not @krb5_keytab.empty? then -%>
+krb5_auth_timeout = <%= @krb5_auth_timeout.to_s %>
+krb5_validate = <%= @krb5_validate.to_s %>
+<% if @krb5_keytab then -%>
 krb5_keytab = <%= @krb5_keytab %>
 <% end -%>
-<% if not @krb5_store_password_if_offline.empty? then -%>
-krb5_store_password_if_offline = <%= @krb5_store_password_if_offline %>
-<% end -%>
-<% if not @krb5_renewable_lifetime.empty? then -%>
+krb5_store_password_if_offline = <%= @krb5_store_password_if_offline.to_s %>
+<% if @krb5_renewable_lifetime then -%>
 krb5_renewable_lifetime = <%= @krb5_renewable_lifetime %>
 <% end -%>
-<% if not @krb5_lifetime.empty? then -%>
+<% if @krb5_lifetime then -%>
 krb5_lifetime = <%= @krb5_lifetime %>
 <% end -%>
-<% if not @krb5_renew_interval.empty? then -%>
-krb5_renew_interval = <%= @krb5_renew_interval %>
-<% end -%>
-<% if not @krb5_use_fast.empty? then -%>
+krb5_renew_interval = <%= @krb5_renew_interval.to_s %>
+<% if @krb5_use_fast then -%>
 krb5_use_fast = <%= @krb_use_fast %>
 <% end -%>
