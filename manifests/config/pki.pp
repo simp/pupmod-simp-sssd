@@ -1,19 +1,24 @@
 # == Class: sssd::pki
 #
-# Ensures that there are PKI certificates readable by the rsyslog user in
-# /etc/sssd/pki
-#
-class sssd::config::pki {
+class sssd::config::pki
+{
   assert_private()
 
-  unless empty($::sssd::cert_source) { validate_absolute_path($::sssd::cert_source) }
+  file { $::sssd::app_pki_dir :
+    ensure => 'directory',
+    owner  => 'root',
+    group  => 'root',
+    mode   => '0640'
+  }
 
-  if $::sssd::use_simp_pki {
-    include '::pki'
-    ::pki::copy { '/etc/sssd': }
+  if $::sssd::pki {
+    ::pki::copy { $::sssd::app_pki_dir :
+      source => $::sssd::app_pki_cert_source,
+      pki    => $::sssd::pki
+    }
   }
   else {
-    file { '/etc/sssd/pki':
+    file { "${::sssd::app_pki_dir}/pki" :
       ensure => 'directory',
       owner  => 'root',
       group  => 'root',

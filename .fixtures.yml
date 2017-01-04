@@ -9,16 +9,14 @@ fixtures:
       repo: https://github.com/simp/augeasproviders_grub
       branch: simp-master
     logrotate: https://github.com/simp/pupmod-simp-logrotate
-    nscd: https://github.com/simp/pupmod-simp-nscd
     openldap: https://github.com/simp/pupmod-simp-openldap
     pki: https://github.com/simp/pupmod-simp-pki
     rsyslog: https://github.com/simp/pupmod-simp-rsyslog
     simp: https://github.com/simp/pupmod-simp-simp
     simpcat: https://github.com/simp/pupmod-simp-simpcat
+    simp_options: https://github.com/simp/pupmod-simp-simp_options
     simplib: https://github.com/simp/pupmod-simp-simplib
-    stdlib:
-      repo: https://github.com/simp/puppetlabs-stdlib
-      branch: simp-master
+    stdlib: https://github.com/simp/puppetlabs-stdlib
     tcpwrappers: https://github.com/simp/pupmod-simp-tcpwrappers
   symlinks:
     sssd: "#{source_dir}"

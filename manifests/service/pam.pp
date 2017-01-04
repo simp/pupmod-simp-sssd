@@ -25,19 +25,19 @@ class sssd::service::pam (
   $pam_public_domains             = ''
 ) {
 
-  validate_string($description)
-  validate_string($debug_level)
-  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
-  validate_integer($offline_credentials_expiration)
-  validate_integer($offline_failed_login_attempts)
-  validate_integer($offline_failed_login_delay)
-  validate_integer($pam_verbosity)
-  validate_integer($pam_id_timeout)
-  validate_integer($pam_pwd_expiration_warning)
-  unless empty($get_domains_timeout) { validate_integer($get_domains_timeout) }
-  validate_string($pam_trusted_users)
-  validate_string($pam_public_domains)
+#  validate_string($description)
+#  validate_string($debug_level)
+#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
+#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
+#  validate_integer($offline_credentials_expiration)
+#  validate_integer($offline_failed_login_attempts)
+#  validate_integer($offline_failed_login_delay)
+#  validate_integer($pam_verbosity)
+#  validate_integer($pam_id_timeout)
+#  validate_integer($pam_pwd_expiration_warning)
+#  unless empty($get_domains_timeout) { validate_integer($get_domains_timeout) }
+#  validate_string($pam_trusted_users)
+#  validate_string($pam_public_domains)
 
 
   simpcat_fragment { 'sssd+pam.service':

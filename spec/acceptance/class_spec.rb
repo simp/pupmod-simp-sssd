@@ -9,11 +9,11 @@ describe 'sssd class' do
   let(:default_hieradata) {
     {
       'sssd::domains'       => [ 'LOCAL' ],
-      'sssd::enable_pki'    => true,
-      'sssd::use_simp_pki'  => false,
-      'sssd::cert_source'   => '/etc/pki/simp-testing/pki',
+      'sssd::pki'           => true,
+      'sssd::use_tls'       => true,
+      'sssd::app_pki_cert_source'   => '/etc/pki/simp-testing/pki',
       # This causes a lot of noise and reboots
-      'sssd::enable_auditd' => false
+      'sssd::auditd'        => false
     }
   }
 

@@ -14,11 +14,11 @@ class sssd::service::pac (
   $allowed_uids = []
 ) {
 
-  validate_string($description)
-  validate_string($debug_level)
-  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
-  validate_array($allowed_uids)
+#  validate_string($description)
+#  validate_string($debug_level)
+#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
+#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
+#  validate_array($allowed_uids)
 
   simpcat_fragment { 'sssd+pac.service':
     content => template('sssd/service/pac.erb')

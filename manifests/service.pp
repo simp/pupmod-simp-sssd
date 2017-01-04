@@ -9,12 +9,13 @@
 class sssd::service {
 
   file { '/etc/init.d/sssd':
-    ensure => 'file',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0754',
-    source => 'puppet:///modules/sssd/sssd.sysinit',
-    notify => Service['sssd']
+    ensure  => 'file',
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0754',
+    seltype => 'sssd_initrc_exec_t',
+    source  => 'puppet:///modules/sssd/sssd.sysinit',
+    notify  => Service['sssd']
   }
 
   service { 'nscd':

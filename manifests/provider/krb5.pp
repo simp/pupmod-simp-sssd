@@ -32,9 +32,9 @@ define sssd::provider::krb5 (
   $krb5_use_fast = ''
 ) {
 
-  validate_string($debug_level)
-  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
+#  validate_string($debug_level)
+#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
+#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
 
   simpcat_fragment { "sssd+${name}#krb5_provider.domain":
     content => template('sssd/provider/krb5.erb')

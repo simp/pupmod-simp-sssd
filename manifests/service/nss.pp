@@ -31,21 +31,21 @@ class sssd::service::nss (
   $user_attributes = ''
 ) {
 
-  validate_string($description)
-  validate_string($debug_level)
-  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
-  validate_integer($enum_cache_timeout)
-  validate_integer($entry_cache_nowait_percentage)
-  validate_integer($entry_negative_timeout)
-  validate_string($override_homedir)
-  validate_string($fallback_homedir)
-  validate_string($override_shell)
-  validate_string($vetoed_shells)
-  validate_string($default_shell)
-  unless empty($get_domains_timeout) { validate_integer($get_domains_timeout) }
-  unless empty($memcache_timeout) { validate_integer($memcache_timeout) }
-  validate_string($user_attributes)
+#  validate_string($description)
+#  validate_string($debug_level)
+#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
+#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
+#  validate_integer($enum_cache_timeout)
+#  validate_integer($entry_cache_nowait_percentage)
+#  validate_integer($entry_negative_timeout)
+#  validate_string($override_homedir)
+#  validate_string($fallback_homedir)
+#  validate_string($override_shell)
+#  validate_string($vetoed_shells)
+#  validate_string($default_shell)
+#  unless empty($get_domains_timeout) { validate_integer($get_domains_timeout) }
+#  unless empty($memcache_timeout) { validate_integer($memcache_timeout) }
+#  validate_string($user_attributes)
 
   simpcat_fragment { 'sssd+nss.service':
     content => template('sssd/service/nss.erb')
