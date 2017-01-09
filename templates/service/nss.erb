@@ -1,50 +1,44 @@
 
 [nss]
-<% unless @description.empty? -%>
+<% if @description -%>
 description = <%= @description %>
 <% end -%>
-<% unless @debug_level.empty? -%>
+<% if @debug_level -%>
 debug_level = <%= @debug_level %>
 <% end -%>
-<% unless @debug_timestamps.empty? -%>
-debug_timestamps = <%= @debug_timestamps %>
-<% end -%>
-<% unless @debug_microseconds.empty? -%>
-debug_microseconds = <%= @debug_microseconds%>
-<% end -%>
-reconnection_retries = <%= @reconnection_retries %>
-<% unless @command.empty? -%>
+debug_timestamps = <%= @debug_timestamps.to_s %>
+debug_microseconds = <%= @debug_microseconds.to_s %>
+reconnection_retries = <%= @reconnection_retries.to_s %>
+<% if @command -%>
 command = <%= @command %>
 <% end -%>
-enum_cache_timeout = <%= @enum_cache_timeout %>
-entry_cache_nowait_percentage = <%= @entry_cache_nowait_percentage %>
-entry_negative_timeout = <%= @entry_negative_timeout %>
+enum_cache_timeout = <%= @enum_cache_timeout.to_s %>
+entry_cache_nowait_percentage = <%= @entry_cache_nowait_percentage.to_s %>
+entry_negative_timeout = <%= @entry_negative_timeout.to_s %>
 filter_users = <%= @filter_users %>
 filter_groups = <%= @filter_groups %>
-<% unless @filter_users_in_groups.empty? -%>
-filter_users_in_groups = <%= @filter_users_in_groups %>
-<% end -%>
-<% unless @override_homedir.empty? -%>
+filter_users_in_groups = <%= @filter_users_in_groups.to_s %>
+<% if @override_homedir -%>
 override_homedir = <%= @override_homedir %>
 <% end -%>
-<% unless @fallback_homedir.empty? -%>
+<% if @fallback_homedir -%>
 fallback_homedir = <%= @fallback_homedir %>
 <% end -%>
-<% unless @override_shell.empty? -%>
+<% if @override_shell -%>
 override_shell = <%= @override_shell %>
 <% end -%>
-<% unless @vetoed_shells.empty? -%>
+<% if @vetoed_shells -%>
 vetoed_shells = <%= @vetoed_shells%>
 <% end -%>
-<% unless @default_shell.empty? -%>
+<% if @default_shell -%>
 default_shell = <%= @default_shell %>
 <% end -%>
-<% unless @get_domains_timeout.empty? -%>
-get_domains_timeout = <%= @get_domains_timeout %>
+<% if @get_domains_timeout -%>
+get_domains_timeout = <%= @get_domains_timeout.to_s %>
 <% end -%>
-<% unless @memcache_timeout.empty? -%>
-memcache_timeout = <%= @memcache_timeout %>
+<% if @memcache_timeout -%>
+memcache_timeout = <%= @memcache_timeout.to_s %>
 <% end -%>
-<% unless @user_attributes.empty? -%>
+<% if @user_attributes -%>
 user_attributes = <%= @user_attributes %>
 <% end -%>

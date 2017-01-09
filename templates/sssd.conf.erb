@@ -1,38 +1,32 @@
 [sssd]
-<% unless @debug_level.empty? -%>
+<% if @debug_level -%>
 debug_level = <%= @debug_level %>
 <% end -%>
-<% unless @debug_timestamps.empty? -%>
-debug_timestamps = <%= @debug_timestamps %>
-<% end -%>
-<% unless @debug_microseconds.empty? -%>
-debug_microseconds = <%= @debug_microseconds%>
-<% end -%>
-<% unless @description.empty? -%>
+debug_timestamps = <%= @debug_timestamps.to_s %>
+debug_microseconds = <%= @debug_microseconds.to_s %>
+<% if @description -%>
 description = <%= @description %>
 <% end -%>
 domains = <%= Array(@domains).join(',') %>
-config_file_version = <%= @config_file_version %>
+config_file_version = <%= @config_file_version.to_s %>
 services = <%= Array(@services).join(',') %>
-reconnection_retries = <%= @reconnection_retries %>
-<% unless @re_expression.empty? -%>
+reconnection_retries = <%= @reconnection_retries.to_s %>
+<% if @re_expression -%>
 re_expression = <%= @re_expression %>
 <% end -%>
-<% unless @full_name_format.empty? -%>
+<% if @full_name_format -%>
 full_name_format = <%= @full_name_format %>
 <% end -%>
-<% unless @try_inotify -%>
-try_inotify = <%= @try_inotify %>
-<% end -%>
-<% unless @krb5_rcache_dir -%>
+try_inotify = <%= @try_inotify.to_s %>
+<% if @krb5_rcache_dir -%>
 krb5_rcache_dir = <%= @krb5_rcache_dir %>
 <% end -%>
-<% unless @user -%>
+<% if @user -%>
 user = <%= @user %>
 <% end -%>
-<% unless @default_domain_suffix -%>
+<% if @default_domain_suffix -%>
 default_domain_suffix = <%= @default_domain_suffix %>
 <% end -%>
-<% unless @override_space-%>
+<% if @override_space-%>
 override_space = <%= @override_space%>
 <% end -%>

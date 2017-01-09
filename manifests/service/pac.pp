@@ -7,19 +7,12 @@
 # == Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 class sssd::service::pac (
-  $description        = '',
-  $debug_level        = '',
-  $debug_timestamps   = '',
-  $debug_microseconds = '',
-  $allowed_uids = []
+  Optional[String]   $description        = undef,
+  Optional[String]   $debug_level        = undef,
+  Boolean            $debug_timestamps   = true,
+  Boolean            $debug_microseconds = false,
+  Array[String]      $allowed_uids       = []
 ) {
-
-#  validate_string($description)
-#  validate_string($debug_level)
-#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
-#  validate_array($allowed_uids)
-
   simpcat_fragment { 'sssd+pac.service':
     content => template('sssd/service/pac.erb')
   }

@@ -1,14 +1,13 @@
 
 [pac]
-<% unless @description.empty? -%>
+<% if @description -%>
 description = <%= @description %>
 <% end -%>
-<% unless @debug_level.empty? -%>
+<% if @debug_level -%>
 debug_level = <%= @debug_level %>
 <% end -%>
-<% unless @debug_timestamps.empty? -%>
-debug_timestamps = <%= @debug_timestamps %>
-<% end -%>
+debug_timestamps = <%= @debug_timestamps.to_s %>
+debug_microseconds = <%= @debug_microseconds.to_s %>
 <% unless @allowed_uids.empty? -%>
 allowed_uids = <%= Array(@allowed_uids).join(',') %>
 <% end -%>

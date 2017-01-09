@@ -14,22 +14,18 @@
 # * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 define sssd::provider::local (
-  $debug_level = '',
-  $debug_timestamps = '',
-  $debug_microseconds = '',
-  $default_shell = '',
-  $base_directory = '',
-  $create_homedir = '',
-  $remove_homedir = '',
-  $homedir_umask = '',
-  $skel_dir = '',
-  $mail_dir = '',
-  $userdel_cmd = ''
+  Optional[String]                $debug_level        = undef,
+  Boolean                         $debug_timestamps   = true,
+  Boolean                         $debug_microseconds = false,
+  Optional[String]                $default_shell      = undef,
+  Optional[Stdlib::Absolutepath]  $base_directory     = undef,
+  Boolean                         $create_homedir     = true,
+  Boolean                         $remove_homedir     = true,
+  Optional[Simplib::Umask]        $homedir_umask      = undef,
+  Optional[Stdlib::Absolutepath]  $skel_dir           = undef,
+  Optional[Stdlib::Absolutepath]  $mail_dir           = undef,
+  Optional[String]                $userdel_cmd        = undef
 ) {
-
-#  validate_string($debug_level)
-#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
 
   simpcat_fragment { "sssd+${name}#local_provider.domain":
     content => template('sssd/provider/local.erb')

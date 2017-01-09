@@ -14,27 +14,23 @@
 # * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 define sssd::provider::krb5 (
-  $krb5_server,
-  $krb5_realm,
-  $debug_level = '',
-  $debug_timestamps = '',
-  $debug_microseconds = '',
-  $krb5_kpasswd = '',
-  $krb5_ccachedir = '',
-  $krb5_ccname_template = '',
-  $krb5_auth_timeout = '15',
-  $krb5_validate = '',
-  $krb5_keytab = '',
-  $krb5_store_password_if_offline = '',
-  $krb5_renewable_lifetime = '',
-  $krb5_lifetime = '',
-  $krb5_renew_interval = '',
-  $krb5_use_fast = ''
+  Simplib::Host                           $krb5_server,
+  String                                  $krb5_realm,
+  Optional[String]                        $debug_level                    = undef,
+  Boolean                                 $debug_timestamps               = true,
+  Boolean                                 $debug_microseconds             = false,
+  Optional[String]                        $krb5_kpasswd                   = undef,
+  Optional[Stdlib::Absolutepath]          $krb5_ccachedir                 = undef,
+  Optional[Stdlib::Absolutepath]          $krb5_ccname_template           = undef,
+  Integer                                 $krb5_auth_timeout              = 15,
+  Boolean                                 $krb5_validate                  = false,
+  Optional[Stdlib::Absolutepath]          $krb5_keytab                    = undef,
+  Boolean                                 $krb5_store_password_if_offline = false,
+  Optional[String]                        $krb5_renewable_lifetime        = undef,
+  Optional[String]                        $krb5_lifetime                  = undef,
+  Integer                                 $krb5_renew_interval            = 0,
+  Optional[Enum['never','try','demand']]  $krb5_use_fast                  = undef
 ) {
-
-#  validate_string($debug_level)
-#  unless empty($debug_timestamps) { validate_bool($debug_timestamps) }
-#  unless empty($debug_microseconds) { validate_bool($debug_microseconds) }
 
   simpcat_fragment { "sssd+${name}#krb5_provider.domain":
     content => template('sssd/provider/krb5.erb')
