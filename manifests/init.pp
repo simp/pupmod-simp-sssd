@@ -7,32 +7,29 @@
 #
 # == Parameters:
 #
-# [*pki*]
-# Type: Variant[Boolean,Enum['simp']]
-# Default: false
-#   A flag, which if enabled, allows SIMP to distribute PKI certs/keys from
-#   app_pki_cert_source.
-#   If set to 'simp' then copy the keys, plus install pki module so simp will
-#   copy certs from puppet server.
+# @param pki
+#   * If 'simp', include SIMP's pki module and use pki::copy to manage
+#     application certs in /etc/pki/simp_apps/sssd/x509
+#   * If true, do *not* include SIMP's pki module, but still use pki::copy
+#     to manage certs in /etc/pki/simp_apps/sssd/x509
+#   * If false, do not include SIMP's pki module and do not use pki::copy
+#     to manage certs.  You will need to appropriately assign a subset of:
+#     * app_pki_dir
+#     * app_pki_key
+#     * app_pki_cert
+#     * app_pki_ca
+#     * app_pki_ca_dir
 #
-# [*use_tls*]
-# Type: Boolean
-# Default: true
-#   If enabled, use encryption on connections .
+# @param app_pki_external_source
+#   * If pki = 'simp' or true, this is the directory from which certs will be
+#     copied, via pki::copy.  Defaults to /etc/pki/simp/x509.
 #
-# [*app_pki_cert_source*]
-# Type: Stdlib::Absolutepath
-# Default: '/etc/pki/simp'
-#   The path from where certificates are copied if pki = true or simp. Put your certs here
-#   using pki directory format if pki = true.
+#   * If pki = false, this variable has no effect.
 #
-# [*app_pki_dir*]
-# Type: Stdlib::Absolutepath
-# Default: '/etc/pki/sssd'
-# This is the directory where the active certs are.  If pki = true or simp, pki::copy
-# will copy the certs into this directory.  if pki is false, put the certs under
-# here.  Make sure you use the directory structure used by pki or set the app_pki*
-# variables used by the ldap provider.
+# @param app_pki_dir
+#   This variable controls the basepath of $app_pki_key, $app_pki_cert,
+#   $app_pki_ca, $app_pki_ca_dir, and $app_pki_crl.
+#   It defaults to /etc/pki/simp_apps/sssd/x509.
 #
 # == Authors
 #
@@ -54,11 +51,10 @@ class sssd (
   Optional[String]               $user                  = undef,
   Optional[String]               $default_domain_suffix = undef,
   Optional[String]               $override_space        = undef,
-  Boolean                        $use_tls               = true,
   Boolean                        $auditd                = simplib::lookup('simp_options::auditd', { 'default_value' => false}),
   Variant[Boolean,Enum['simp']]  $pki                   = simplib::lookup('simp_options::pki', { 'default_value' => false}),
-  Stdlib::Absolutepath           $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp'}),
-  Stdlib::Absolutepath           $app_pki_dir           = '/etc/pki/sssd'
+  Stdlib::Absolutepath           $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509'}),
+  Stdlib::Absolutepath           $app_pki_dir           = '/etc/pki/simp_apps/sssd/x509'
 ) {
 
   include '::sssd::install'
@@ -85,12 +81,12 @@ class sssd (
     content => template('sssd/sssd.conf.erb')
   }
 
-  if $use_tls {
-      include '::sssd::config::pki'
+  if $pki {
+    include '::sssd::pki'
 
-      Class['sssd::install'] -> Class['sssd::config::pki']
-      Class['sssd::config::pki'] ~> Class['sssd::service']
-    }
+    Class['sssd::install'] -> Class['sssd::pki']
+    Class['sssd::pki'] ~> Class['sssd::service']
+  }
 
   Class['sssd::install'] ~> Class['sssd::service']
 }

@@ -56,8 +56,7 @@ Hiera values to use additional SIMP compontents:
 To enable PKI
 
 ```yaml
-enable_pki: true
-use_simp_pki: true
+simp_options::pki: true
 ```
 
 ### Beginning with SIMP SSSD
@@ -143,7 +142,7 @@ Please see sssd::service::<class> for more options on configuration
 * sssd::service::sudo
 
 ### Private Classes
-* sssd::config::pki
+* sssd::pki
 
 ## Limitations
 

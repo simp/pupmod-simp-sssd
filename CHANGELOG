@@ -1,3 +1,7 @@
+* Thu Jan 12 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.0.0-0
+- Updated to use new pki scheme.
+- Application certs now managed in /etc/pki/simp_apps/sssd/x509
+
 * Wed Jan 04 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.0.0-0
 - Strongly typed
 

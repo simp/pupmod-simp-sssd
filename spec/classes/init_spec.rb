@@ -5,14 +5,17 @@ describe 'sssd' do
     on_supported_os.each do |os, facts|
       context "on #{os}" do
         let(:facts){ facts }
-        
-        context 'with_defaults' do 
+
+        context 'with_defaults' do
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd') }
           it { is_expected.to create_class('sssd::install').that_notifies('Class[sssd::service]') }
           it { is_expected.to create_class('sssd::service') }
+          it { is_expected.to_not create_class('sssd::pki') }
           it { is_expected.to_not contain_class('pki') }
           it { is_expected.to_not create_pki__copy('/etc/pki/sssd') }
+          it { is_expected.to_not create_file('/etc/pki/simp_apps/sssd/x509')}
+          it { is_expected.to_not create_class('auditd') }
 
           it { is_expected.to contain_simpcat_build('sssd').with({
             :target => '/etc/sssd/sssd.conf',
@@ -50,10 +53,6 @@ describe 'sssd' do
             })
           }
 
-         it { is_expected.to_not create_class('auditd') }
-         it { is_expected.to_not create_class('pki') }
-         it { is_expected.to create_class('sssd::config::pki') }
-
         end
 
         context 'with_auditd_true' do
@@ -64,24 +63,24 @@ describe 'sssd' do
             :content => '-w /etc/sssd/ -p wa -k CFG_sssd' }) }
         end
 
-        context 'with_pki_true' do
-          let(:params) {{ 
-                  :pki => true,
-                  :use_tls  => true }}
+        context 'with pki = true' do
+          let(:params) {{ :pki      => true}}
 
-          it { is_expected.to create_class('sssd::config::pki') }
-          it { is_expected.to create_pki__copy('/etc/pki/sssd').with({
-            :source => '/etc/pki/simp' }) }
+          it { is_expected.to create_class('sssd::pki') }
+          it { is_expected.to create_pki__copy('sssd').with({
+            :source => '/etc/pki/simp/x509' }) }
           it { is_expected.to_not create_class('pki')}
+          it { is_expected.to create_file('/etc/pki/simp_apps/sssd/x509')}
         end
 
-        context 'with_pki_simp' do
-          let(:params) {{ :pki => 'simp',
-                          :use_tls => true }}
+        context 'with pki = simp' do
+          let(:params) {{ :pki     => 'simp'}}
 
-          it { is_expected.to create_pki__copy('/etc/pki/sssd').with({
-            :source => '/etc/pki/simp' }) }
+          it { is_expected.to create_class('sssd::pki') }
+          it { is_expected.to create_pki__copy('sssd').with({
+            :source => '/etc/pki/simp/x509' }) }
           it { is_expected.to create_class('pki') }
+          it { is_expected.to create_file('/etc/pki/simp_apps/sssd/x509')}
         end
       end
     end
