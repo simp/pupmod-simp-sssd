@@ -1,0 +1,121 @@
+<% if @ad_domain -%>
+ad_domain = <%= @ad_domain %>
+<% end -%>
+<% if @ad_enabled_domains -%>
+ad_enabled_domains = <%= @ad_enabled_domains.join(', ') %>
+<% end -%>
+<% if @ad_servers -%>
+ad_server = <%= @ad_servers.join(', ') %>
+<%   if @ad_backup_servers -%>
+ad_backup_server = <%= @ad_backup_servers.join(', ') %>
+<%   end -%>
+<% end -%>
+<% if @ad_hostname -%>
+ad_hostname = <%= @ad_hostname %>
+<% end -%>
+<% if @ad_enable_dns_sites -%>
+ad_enable_dns_sites = <%= @ad_enable_dns_sites %>
+<% end -%>
+<% if @ad_access_filters -%>
+ad_access_filter = <%= @ad_access_filters.join('?') %>
+<% end -%>
+<% if @ad_site -%>
+ad_site = <%= @ad_site %>
+<% end -%>
+<% if @ad_enable_gc -%>
+ad_enable_gc = <%= @ad_enable_gc %>
+<% end -%>
+<% if @ad_gpo_access_control -%>
+ad_gpo_access_control = <%= @ad_gpo_access_control %>
+<% end -%>
+<% if @ad_gpo_cache_timeout -%>
+ad_gpo_cache_timeout = <%= @ad_gpo_cache_timeout %>
+<% end -%>
+<% if @ad_gpo_map_interactive -%>
+ad_gpo_map_interactive = <%= @ad_gpo_map_interactive %>
+<% end -%>
+<% if @ad_gpo_map_remote_interactive -%>
+ad_gpo_map_remote_interactive = <%= @ad_gpo_map_remote_interactive %>
+<% end -%>
+<% if @ad_gpo_map_network -%>
+ad_gpo_map_network = <%= @ad_gpo_map_network %>
+<% end -%>
+<% if @ad_gpo_map_batch -%>
+ad_gpo_map_batch = <%= @ad_gpo_map_batch %>
+<% end -%>
+<% if @ad_gpo_map_service -%>
+ad_gpo_map_service = <%= @ad_gpo_map_service %>
+<% end -%>
+<% if @ad_gpo_map_permit -%>
+ad_gpo_map_permit = <%= @ad_gpo_map_permit %>
+<% end -%>
+<% if @ad_gpo_map_deny -%>
+ad_gpo_map_deny = <%= @ad_gpo_map_deny %>
+<% end -%>
+<% if @ad_gpo_default_right -%>
+ad_gpo_default_right = <%= @ad_gpo_default_right %>
+<% end -%>
+<% if @ad_maximum_machine_account_password_age -%>
+ad_maximum_machine_account_password_age = <%= @ad_maximum_machine_account_password_age %>
+<% end -%>
+<% if @ad_machine_account_password_renewal_opts -%>
+ad_machine_account_password_renewal_opts = <%= @ad_machine_account_password_renewal_opts %>
+<% end -%>
+<% if @dyndns_update -%>
+dyndns_update = <%= @dyndns_update %>
+<%   if @dyndns_ttl -%>
+dyndns_ttl = <%= @dyndns_ttl %>
+<%   end -%>
+<%   if @dyndns_iface -%>
+dyndns_iface = <%= @dyndns_iface %>
+<%   end -%>
+<%   if @dyndns_refresh_interval -%>
+dyndns_refresh_interval = <%= @dyndns_refresh_interval %>
+<%   end -%>
+<%   if @dyndns_update_ptr -%>
+dyndns_update_ptr = <%= @dyndns_update_ptr %>
+<%   end -%>
+<%   if @dyndns_force_tcp -%>
+dyndns_force_tcp = <%= @dyndns_force_tcp %>
+<%   end -%>
+<%   if @dyndns_server -%>
+dyndns_server = <%= @dyndns_server %>
+<%   end -%>
+<% end -%>
+<% if @override_homedir -%>
+override_homedir = <%= @override_homedir %>
+<% end -%>
+<% if @homedir_substring -%>
+homedir_substring = <%= @homedir_substring %>
+<% end -%>
+<% if @krb5_use_enterprise_principal -%>
+krb5_use_enterprise_principal = <%= @krb5_use_enterprise_principal %>
+<% end -%>
+<% if @krb5_confd_path -%>
+krb5_confd_path = <%= @krb5_confd_path %>
+<% end -%>
+<% if @ldap_id_mapping -%>
+ldap_id_mapping = <%= @ldap_id_mapping %>
+ldap_schema = ad
+<%   if @ldap_idmap_range_min -%>
+ldap_idmap_range_min = <%= @ldap_idmap_range_min %>
+<%   end -%>
+<%   if @ldap_idmap_range_max -%>
+ldap_idmap_range_max = <%= @ldap_idmap_range_max %>
+<%   end -%>
+<%   if @ldap_idmap_range_size -%>
+ldap_idmap_range_size = <%= @ldap_idmap_range_size %>
+<%   end -%>
+<%   if @ldap_idmap_default_domain_sid -%>
+ldap_idmap_default_domain_sid = <%= @ldap_idmap_default_domain_sid %>
+<%   end -%>
+<%   if @ldap_idmap_default_domain -%>
+ldap_idmap_default_domain = <%= @ldap_idmap_default_domain %>
+<%   end -%>
+<%   if @ldap_idmap_autorid_compat -%>
+ldap_idmap_autorid_compat = <%= @ldap_idmap_autorid_compat %>
+<%   end -%>
+<%   if @ldap_idmap_helper_table_size -%>
+ldap_idmap_helper_table_size = <%= @ldap_idmap_helper_table_size %>
+<%   end -%>
+<% end -%>

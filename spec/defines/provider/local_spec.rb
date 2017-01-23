@@ -9,7 +9,7 @@ describe 'sssd::provider::local' do
         let(:title) {'test_local_domain'}
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_simpcat_fragment('sssd+test_local_domain#local_provider.domain').without_content(%r(=\s*$)) }
+        it { is_expected.to create_concat__fragment("sssd_#{title}_local_provider.domain").without_content(%r(=\s*$)) }
       end
     end
   end

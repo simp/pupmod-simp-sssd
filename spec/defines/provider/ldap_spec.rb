@@ -20,7 +20,7 @@ describe 'sssd::provider::ldap' do
         }}
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_simpcat_fragment('sssd+test_ldap_provider#ldap_provider.domain').without_content(%r(=\s*$)) }
+        it { is_expected.to create_concat__fragment("sssd_#{title}_ldap_provider.domain").without_content(%r(=\s*$)) }
       end
     end
   end

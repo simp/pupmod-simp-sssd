@@ -13,8 +13,10 @@ class sssd::service::sudo (
   Boolean           $debug_microseconds = false,
   Boolean           $sudo_timed         = false
 ) {
+  include '::sssd'
 
-  simpcat_fragment { 'sssd+sudo.service':
-    content => template('sssd/service/sudo.erb')
+  concat::fragment { 'sssd_sudo.service':
+    target  => '/etc/sssd/sssd.conf',
+    content => template("${module_name}/service/sudo.erb")
   }
 }

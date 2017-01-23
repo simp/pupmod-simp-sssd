@@ -24,8 +24,10 @@ class sssd::service::pam (
   Optional[String]   $pam_trusted_users              = undef,
   Optional[String]   $pam_public_domains             = undef
 ) {
+  include '::sssd'
 
-  simpcat_fragment { 'sssd+pam.service':
-    content => template('sssd/service/pam.erb')
+  concat::fragment { 'sssd_pam.service':
+    target  => '/etx/sssd/sssd.conf',
+    content => template("${module_name}/service/pam.erb")
   }
 }

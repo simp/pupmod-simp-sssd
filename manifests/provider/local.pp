@@ -26,8 +26,10 @@ define sssd::provider::local (
   Optional[Stdlib::Absolutepath]  $mail_dir           = undef,
   Optional[String]                $userdel_cmd        = undef
 ) {
+  include '::sssd'
 
-  simpcat_fragment { "sssd+${name}#local_provider.domain":
+  concat::fragment { "sssd_${name}_local_provider.domain":
+    target  => '/etc/sssd/sssd.conf',
     content => template('sssd/provider/local.erb')
   }
 }

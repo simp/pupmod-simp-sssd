@@ -13,7 +13,10 @@ class sssd::service::autofs (
   Boolean           $debug_microseconds       = false,
   Optional[Integer] $autofs_negative_timeout  = undef,
 ) {
-  simpcat_fragment { 'sssd+autofs.service':
-    content => template('sssd/service/autofs.erb')
+  include '::sssd'
+
+  concat::fragment { 'sssd_autofs.service':
+    target  => '/etc/sssd/sssd.conf',
+    content => template("${module_name}/service/autofs.erb")
   }
 }
