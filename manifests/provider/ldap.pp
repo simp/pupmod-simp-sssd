@@ -27,14 +27,14 @@ define sssd::provider::ldap (
   Optional[Sssd::DebugLevel]            $debug_level                       = undef,
   Optional[String]                      $debug_timestamps                  = undef,
   Boolean                               $debug_microseconds                = false,
-  Array[Simplib::URI]                   $ldap_uri                          = simplib::lookup('simp_options::ldap::uri', { 'default_value' => ["ldap://${hiera('simp_options::puppet::server')}"] } ),
+  Array[Simplib::URI]                   $ldap_uri                          = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
   Optional[Array[Simplib::URI]]         $ldap_backup_uri                   = undef,
   Optional[Array[Simplib::URI]]         $ldap_chpass_uri                   = undef,
   Optional[Array[Simplib::URI]]         $ldap_chpass_backup_uri            = undef,
   Boolean                               $ldap_chpass_update_last_change    = true,
   String                                $ldap_search_base                  = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => undef }),
   Sssd::LdapSchema                      $ldap_schema                       = 'rfc2307',
-  String                                $ldap_default_bind_dn              = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => "cn=hostAuth,ou=Hosts,%{hiera('simp_options::ldap::base_dn')}" }),
+  String                                $ldap_default_bind_dn              = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => undef }),
   Optional[Sssd::LdapDefaultAuthtok]    $ldap_default_authtok_type         = undef,
   Optional[String]                      $ldap_default_authtok              = simplib::lookup('simp_options::ldap::bind_hash', { 'default_value' => undef }),
   Optional[String]                      $ldap_user_object_class            = undef,
@@ -171,7 +171,6 @@ define sssd::provider::ldap (
   Optional[String]                      $ldap_idmap_default_domain         = undef,
   Boolean                               $ldap_idmap_autorid_compat         = false
 ) {
-
   include '::sssd'
 
   if $app_pki_ca_dir {
@@ -192,7 +191,8 @@ define sssd::provider::ldap (
     $ldap_tls_cert = "${sssd::app_pki_dir}/public/${::fqdn}.pub"
   }
 
-  simpcat_fragment { "sssd+${name}#ldap_provider.domain":
+  concat::fragment { "sssd_${name}_ldap_provider.domain":
+    target  => '/etc/sssd/sssd.conf',
     content => template('sssd/provider/ldap.erb')
   }
 }

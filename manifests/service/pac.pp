@@ -13,7 +13,10 @@ class sssd::service::pac (
   Boolean            $debug_microseconds = false,
   Array[String]      $allowed_uids       = []
 ) {
-  simpcat_fragment { 'sssd+pac.service':
-    content => template('sssd/service/pac.erb')
+  include '::sssd'
+
+  concat::fragment { 'sssd_pac.service':
+    target  => '/etc/sssd/sssd.conf',
+    content => template("${module_name}/service/pac.erb")
   }
 }

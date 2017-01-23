@@ -69,8 +69,10 @@ define sssd::domain (
   Optional[String]                           $proxy_pam_target             = undef,
   Optional[String]                           $proxy_lib_name               = undef
 ) {
+  include '::sssd'
 
-  simpcat_fragment { "sssd+${name}#.domain":
+  concat::fragment { "sssd_${name}_.domain":
+    target  => '/etc/sssd/sssd.conf',
     content => template('sssd/domain.erb')
   }
 }

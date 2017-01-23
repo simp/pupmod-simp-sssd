@@ -17,9 +17,14 @@ describe 'sssd' do
           it { is_expected.to_not create_file('/etc/pki/simp_apps/sssd/x509')}
           it { is_expected.to_not create_class('auditd') }
 
-          it { is_expected.to contain_simpcat_build('sssd').with({
-            :target => '/etc/sssd/sssd.conf',
-            :notify => '[File[/etc/sssd/sssd.conf]{:path=>"/etc/sssd/sssd.conf"}, Class[Sssd::Service]{:name=>"Sssd::Service"}]'
+          it { is_expected.to contain_concat('/etc/sssd/sssd.conf').with({
+            :notify => 'Class[Sssd::Service]'
+            })
+          }
+
+          it { is_expected.to contain_concat__fragment('sssd_main_config').with({
+              :target  => '/etc/sssd/sssd.conf',
+              :content => /\[sssd\]/
             })
           }
 
@@ -32,11 +37,6 @@ describe 'sssd' do
 
           it { is_expected.to contain_file('/etc/sssd').with({
               :ensure  => 'directory'
-            })
-          }
-
-          it { is_expected.to contain_file('/etc/sssd/sssd.conf').with({
-              :ensure  => 'file'
             })
           }
 

@@ -30,7 +30,10 @@ class sssd::service::nss (
   Optional[Integer]  $memcache_timeout              = undef,
   Optional[String]   $user_attributes               = undef
 ) {
-  simpcat_fragment { 'sssd+nss.service':
-    content => template('sssd/service/nss.erb')
+  include '::sssd'
+
+  concat::fragment { 'sssd_nss.service':
+    target  => '/etc/sssd/sssd.conf',
+    content => template("${module_name}/service/nss.erb")
   }
 }

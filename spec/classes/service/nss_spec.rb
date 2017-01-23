@@ -8,7 +8,7 @@ describe 'sssd::service::nss' do
 
         it { is_expected.to create_class('sssd::service::nss') }
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to contain_simpcat_fragment('sssd+nss.service').without_content(%r(=\s*$)) }
+        it { is_expected.to contain_concat__fragment('sssd_nss.service').without_content(%r(=\s*$)) }
       end
     end
   end

@@ -68,17 +68,18 @@ class sssd (
     }
   }
 
-  simpcat_build { 'sssd':
-    order  => ['*.conf', '*.service', '*.domain'],
-    target => '/etc/sssd/sssd.conf',
-    notify => [
-      File['/etc/sssd/sssd.conf'],
-      Class['sssd::service']
-    ]
+  concat { '/etc/sssd/sssd.conf':
+    owner          => 'root',
+    group          => 'root',
+    mode           => '0640',
+    ensure_newline => true,
+    warn           => true,
+    notify         => Class['sssd::service']
   }
 
-  simpcat_fragment { 'sssd+sssd.conf':
-    content => template('sssd/sssd.conf.erb')
+  concat::fragment { 'sssd_main_config':
+    target  => '/etc/sssd/sssd.conf',
+    content => template("${module_name}/sssd.conf.erb")
   }
 
   if $pki {

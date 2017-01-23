@@ -14,8 +14,10 @@ class sssd::service::ssh (
   Boolean            $ssh_hash_known_hosts    = true,
   Optional[Integer]  $ssh_known_hosts_timeout = undef
 ) {
+  include '::sssd'
 
-  simpcat_fragment { 'sssd+ssh.service':
-    content => template('sssd/service/ssh.erb')
+  concat::fragment { 'sssd_ssh.service':
+    target  => '/etc/sssd/sssd.conf',
+    content => template("${module_name}/service/ssh.erb")
   }
 }
