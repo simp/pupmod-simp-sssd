@@ -10,7 +10,6 @@ fixtures:
       branch: simp-master
     concat: https://github.com/simp/puppetlabs-concat
     logrotate: https://github.com/simp/pupmod-simp-logrotate
-    openldap: https://github.com/simp/pupmod-simp-openldap
     pki: https://github.com/simp/pupmod-simp-pki
     rsyslog: https://github.com/simp/pupmod-simp-rsyslog
     simp: https://github.com/simp/pupmod-simp-simp
