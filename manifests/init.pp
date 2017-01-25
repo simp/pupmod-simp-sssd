@@ -63,7 +63,7 @@ class sssd (
   if $auditd {
     include '::auditd'
 
-    auditd::add_rules { 'sssd':
+    auditd::rule { 'sssd':
       content => '-w /etc/sssd/ -p wa -k CFG_sssd'
     }
   }

@@ -59,7 +59,7 @@ describe 'sssd' do
           let(:params) {{ :auditd => true }}
 
           it { is_expected.to create_class('auditd')}
-          it { is_expected.to create_auditd__add_rules('sssd').with({
+          it { is_expected.to create_auditd__rule('sssd').with({
             :content => '-w /etc/sssd/ -p wa -k CFG_sssd' }) }
         end
 
