@@ -27,7 +27,7 @@ class sssd::service::pam (
   include '::sssd'
 
   concat::fragment { 'sssd_pam.service':
-    target  => '/etx/sssd/sssd.conf',
+    target  => '/etc/sssd/sssd.conf',
     content => template("${module_name}/service/pam.erb")
   }
 }
