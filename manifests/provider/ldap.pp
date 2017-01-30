@@ -36,7 +36,7 @@ define sssd::provider::ldap (
   Sssd::LdapSchema                      $ldap_schema                       = 'rfc2307',
   String                                $ldap_default_bind_dn              = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => undef }),
   Optional[Sssd::LdapDefaultAuthtok]    $ldap_default_authtok_type         = undef,
-  Optional[String]                      $ldap_default_authtok              = simplib::lookup('simp_options::ldap::bind_hash', { 'default_value' => undef }),
+  Optional[String]                      $ldap_default_authtok              = simplib::lookup('simp_options::ldap::bind_pw', { 'default_value' => undef }),
   Optional[String]                      $ldap_user_object_class            = undef,
   Optional[String]                      $ldap_user_name                    = undef,
   Optional[String]                      $ldap_user_uid_number              = undef,
