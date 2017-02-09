@@ -16,7 +16,7 @@
 define sssd::provider::krb5 (
   Simplib::Host                          $krb5_server,
   String                                 $krb5_realm,
-  Optional[String]                       $debug_level                    = undef,
+  Optional[Sssd::DebugLevel]             $debug_level                    = undef,
   Boolean                                $debug_timestamps               = true,
   Boolean                                $debug_microseconds             = false,
   Optional[String]                       $krb5_kpasswd                   = undef,

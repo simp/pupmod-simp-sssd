@@ -7,11 +7,11 @@
 # == Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 class sssd::service::autofs (
-  Optional[String]  $description              = undef,
-  Optional[String]  $debug_level              = undef,
-  Boolean           $debug_timestamps         = true,
-  Boolean           $debug_microseconds       = false,
-  Optional[Integer] $autofs_negative_timeout  = undef,
+  Optional[String]            $description              = undef,
+  Optional[Sssd::DebugLevel]  $debug_level              = undef,
+  Boolean                     $debug_timestamps         = true,
+  Boolean                     $debug_microseconds       = false,
+  Optional[Integer]           $autofs_negative_timeout  = undef,
 ) {
   include '::sssd'
 

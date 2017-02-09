@@ -14,7 +14,7 @@
 # * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 define sssd::provider::local (
-  Optional[String]                $debug_level        = undef,
+  Optional[Sssd::DebugLevel]      $debug_level        = undef,
   Boolean                         $debug_timestamps   = true,
   Boolean                         $debug_microseconds = false,
   Optional[String]                $default_shell      = undef,
