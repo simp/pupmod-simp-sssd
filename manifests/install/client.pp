@@ -2,8 +2,6 @@
 #
 # Install the sssd-client package
 #
-class sssd::install::client (
-  $ensure = 'latest'
-){
-  package { 'sssd-client': ensure => $ensure }
+class sssd::install::client {
+  package { $sssd::client_package_name: ensure => $sssd::client_package_version }
 }

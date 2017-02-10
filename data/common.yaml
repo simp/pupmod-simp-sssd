@@ -1,0 +1,76 @@
+---
+
+### These parameters control the installation and configuration of the sssd
+### package and its dependencies:
+sssd::client_package_name:     'sssd-client'
+sssd::client_package_version:  'latest'
+sssd::conf_file_path:          '/etc/sssd/sssd.conf'
+sssd::conf_dir_owner:          'root'      # RH / CentOS 6 - root, 7 - sssd
+sssd::conf_dir_path:           '/etc/sssd'
+sssd::install_user_tools:      true
+sssd::nscd_service_name:       'nscd'
+sssd::package_name:            'sssd'
+sssd::package_version:         'latest'
+sssd::sssd_service_path:       '/etc/init.d/sssd'
+sssd::sssd_service_name:       'sssd'
+sssd::tools_package_name:      'sssd-tools'
+sssd::tools_package_version:   'latest'
+
+### These parameters control the integration of the sssd module with
+### other SIMP modules and services. The variables that are commented out
+### are resolved using simplib::lookup, a special function that helps SIMP
+### integrate existing modules. Setting these values in hiera will supersede
+### simplib::lookup, and is not recommended. 
+sssd::app_pki_dir:              '/etc/pki/simp_apps/sssd/x509'
+# sssd::auditd:                 false      
+# sssd::pki:                    false          
+# sssd::app_pki_cert_source:    '/etc/pki/simp/x509' 
+
+### These parameters are only used inside templates that set values 
+### inside of the sssd config file (usually /etc/sssd/sssd.conf). 
+### You can find information about which variables a template is used in
+### in the init.pp manifest, and you can find a full list of the variables
+### used by a specific template inside that template's manifest. 
+sssd::allowed_uids:                      []
+sssd::autofs_negative_timeout:           null
+sssd::command:                           null
+sssd::config_file_version:               2
+sssd::debug_level:                       null
+sssd::debug_timestamps:                  true
+sssd::debug_microseconds:                false
+sssd::default_domain_suffix:             null
+sssd::default_shell:                     null
+sssd::description:                       null
+sssd::domains:                           null 
+sssd::entry_negative_timeout:            15
+sssd::entry_cache_nowait_percentage:     0
+sssd::enum_cache_timeout:                120
+sssd::fallback_homedir:                  null
+sssd::filter_groups:                     'root'
+sssd::filter_users:                      'root'  
+sssd::filter_users_in_groups:            true
+sssd::full_name_format:                  null
+sssd::get_domains_timeout:               null
+sssd::krb5_rcache_dir:                   null
+sssd::memcache_timeout:                  null
+sssd::offline_credentials_expiration:    0 
+sssd::offline_failed_login_attempts:     3
+sssd::offline_failed_login_delay:        5
+sssd::override_homedir:                  null
+sssd::override_shell:                    null
+sssd::override_space:                    null
+sssd::pam_verbosity:                     1
+sssd::pam_id_timeout:                    5
+sssd::pam_pwd_expiration_warning:        7
+sssd::pam_trusted_users:                 null
+sssd::pam_public_domains:                null
+sssd::reconnection_retries:              3
+sssd::re_expression:                     null
+sssd::services:                          ['nss','pam','ssh','sudo']
+sssd::ssh_hash_known_hosts:              true
+sssd::ssh_known_hosts_timeout:           null
+sssd::sudo_timed:                        false
+sssd::try_inotify:                       true
+sssd::user:                              null
+sssd::user_attributes:                   null
+sssd::vetoed_shells:                     null
