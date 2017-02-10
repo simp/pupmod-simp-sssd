@@ -1,3 +1,6 @@
+* Thu Feb 09 2017 Jeanne Greulich <jeanne.greulich@onyxpoint.com> - 6.0.0-0
+- Changed type of debug level to be consistent for all modules.
+
 * Mon Jan 23 2017 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.0.0-0
 - Migrated to using puppetlabs-concat
 - Added support for Active Directory Domains

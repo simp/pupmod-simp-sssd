@@ -7,11 +7,11 @@
 # == Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 class sssd::service::pac (
-  Optional[String]   $description        = undef,
-  Optional[String]   $debug_level        = undef,
-  Boolean            $debug_timestamps   = true,
-  Boolean            $debug_microseconds = false,
-  Array[String]      $allowed_uids       = []
+  Optional[String]             $description        = undef,
+  Optional[Sssd::DebugLevel]   $debug_level        = undef,
+  Boolean                      $debug_timestamps   = true,
+  Boolean                      $debug_microseconds = false,
+  Array[String]                $allowed_uids       = []
 ) {
   include '::sssd'
 

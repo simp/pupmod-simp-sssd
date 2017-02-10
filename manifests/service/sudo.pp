@@ -7,11 +7,11 @@
 # == Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
 class sssd::service::sudo (
-  Optional[String]  $description        = undef,
-  Optional[String]  $debug_level        = undef,
-  Boolean           $debug_timestamps   = true,
-  Boolean           $debug_microseconds = false,
-  Boolean           $sudo_timed         = false
+  Optional[String]            $description        = undef,
+  Optional[Sssd::Debuglevel]  $debug_level        = undef,
+  Boolean                     $debug_timestamps   = true,
+  Boolean                     $debug_microseconds = false,
+  Boolean                     $sudo_timed         = false
 ) {
   include '::sssd'
 
