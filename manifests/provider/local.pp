@@ -24,12 +24,13 @@ define sssd::provider::local (
   Optional[Simplib::Umask]        $homedir_umask      = undef,
   Optional[Stdlib::Absolutepath]  $skel_dir           = undef,
   Optional[Stdlib::Absolutepath]  $mail_dir           = undef,
-  Optional[String]                $userdel_cmd        = undef
+  Optional[String]                $userdel_cmd        = undef,
+  Stdlib::Absolutepath            $conf_file_path     = simplib::lookup('sssd::conf_file_path', { 'default_value' => '/etc/sssd/sssd.conf' })
 ) {
   include '::sssd'
 
   concat::fragment { "sssd_${name}_local_provider.domain":
-    target  => '/etc/sssd/sssd.conf',
+    target  => $conf_file_path,
     content => template('sssd/provider/local.erb')
   }
 }

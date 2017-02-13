@@ -29,12 +29,13 @@ define sssd::provider::krb5 (
   Optional[String]                       $krb5_renewable_lifetime        = undef,
   Optional[String]                       $krb5_lifetime                  = undef,
   Integer                                $krb5_renew_interval            = 0,
-  Optional[Enum['never','try','demand']] $krb5_use_fast                  = undef
+  Optional[Enum['never','try','demand']] $krb5_use_fast                  = undef,
+  Stdlib::Absolutepath                   $conf_file_path                 = simplib::lookup('sssd::conf_file_path', { 'default_value' => '/etc/sssd/sssd.conf' })
 ) {
   include '::sssd'
 
   concat::fragment { "sssd_${name}_krb5_provider.domain":
-    target  => '/etc/sssd/sssd.conf',
+    target  => $conf_file_path,
     content => template("${module_name}/provider/krb5.erb")
   }
 }

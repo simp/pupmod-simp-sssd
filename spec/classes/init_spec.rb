@@ -6,6 +6,15 @@ describe 'sssd' do
       context "on #{os}" do
         let(:facts){ facts }
 
+        # on RHEL / CentOS 7, owner is sssd.
+        # on RHEL / CentOS 6, owner is root. 
+        if (facts[:os][:name] == 'RedHat' || facts[:os][:name] == 'CentOS') &&
+           (facts[:os][:release][:major] > '6')
+          let(:sssd_owner){ 'sssd' }
+        else 
+          let(:sssd_owner){ 'root' }
+        end
+
         context 'with_defaults' do
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd') }
@@ -36,7 +45,8 @@ describe 'sssd' do
           }
 
           it { is_expected.to contain_file('/etc/sssd').with({
-              :ensure  => 'directory'
+              :ensure  => 'directory',
+              :owner   => sssd_owner
             })
           }
 

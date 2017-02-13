@@ -124,12 +124,13 @@ define sssd::provider::ad (
   Optional[String]                                           $ldap_idmap_default_domain_sid            = undef,
   Optional[String]                                           $ldap_idmap_default_domain                = undef,
   Optional[Boolean]                                          $ldap_idmap_autorid_compat                = undef,
-  Optional[Integer[1]]                                       $ldap_idmap_helper_table_size             = undef
+  Optional[Integer[1]]                                       $ldap_idmap_helper_table_size             = undef,
+  Stdlib::Absolutepath                                       $conf_file_path                           = simplib::lookup('sssd::conf_file_path', { 'default_value' =>  '/etc/sssd/sssd.conf' })
 ) {
   include '::sssd'
 
   concat::fragment { "sssd_${name}_ad_provider.domain":
-    target  => '/etc/sssd/sssd.conf',
+    target  => $conf_file_path,
     content => template("${module_name}/provider/ad.erb")
   }
 }

@@ -2,48 +2,35 @@
 #
 # Install the required packages for SSSD
 #
-# == Parameters:
-#
-# [*install_user_tools*]
-# Type: Boolean
-# Default: true
-#   If true, install the 'sssd-tools' for administrative changes to the SSSD
-#   databases.
-#
 # == Authors
 #
 # * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
 #
-class sssd::install (
-  Boolean  $install_user_tools = true
-) {
+class sssd::install {
   contain '::sssd::install::client'
 
-
-  if ( $::operatingsystem in ['RedHat','CentOS'] ) and ( $::operatingsystemmajrelease > '6' ) {
-    $_sssd_user = 'sssd'
-  } else {
-    $_sssd_user = 'root'
-  }
-
-  file { '/etc/sssd':
+  file { $sssd::conf_dir_path:
     ensure  => 'directory',
-    owner   => $_sssd_user,
+    owner   => $sssd::conf_dir_owner,
     group   => 'root',
     mode    => '0640',
-    require => Package['sssd']
+    require => Package[$sssd::package_name]
   }
 
-  file { '/etc/sssd/sssd.conf':
+  file { $sssd::conf_file_path:
     ensure => 'file',
     owner  => 'root',
     group  => 'root',
     mode   => '0600'
   }
 
-  package { 'sssd': ensure => 'latest' }
+  package { $sssd::package_name:
+    ensure => $sssd::package_version
+  }
 
-  if $install_user_tools {
-    package { 'sssd-tools': ensure => 'latest' }
+  if $sssd::install_user_tools {
+    package { $sssd::tools_package_name:
+      ensure => $sssd::tools_package_version
+    }
   }
 }

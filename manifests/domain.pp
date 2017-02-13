@@ -67,12 +67,13 @@ define sssd::domain (
   Boolean                                    $proxy_fast_alias             = false,
   Optional[String]                           $realmd_tags                  = undef,
   Optional[String]                           $proxy_pam_target             = undef,
-  Optional[String]                           $proxy_lib_name               = undef
+  Optional[String]                           $proxy_lib_name               = undef,
+  Stdlib::Absolutepath                       $conf_file_path               = simplib::lookup('sssd::conf_file_path', { 'default_value' => '/etc/sssd/sssd.conf' })
 ) {
   include '::sssd'
 
   concat::fragment { "sssd_${name}_.domain":
-    target  => '/etc/sssd/sssd.conf',
+    target  => $conf_file_path,
     content => template('sssd/domain.erb')
   }
 }

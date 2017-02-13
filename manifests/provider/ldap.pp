@@ -169,7 +169,8 @@ define sssd::provider::ldap (
   Optional[Integer[0]]                  $ldap_idmap_range_size             = undef,
   Optional[String]                      $ldap_idmap_default_domain_sid     = undef,
   Optional[String]                      $ldap_idmap_default_domain         = undef,
-  Boolean                               $ldap_idmap_autorid_compat         = false
+  Boolean                               $ldap_idmap_autorid_compat         = false,
+  Stdlib::Absolutepath                  $conf_file_path                    = simplib::lookup('sssd::conf_file_path', { 'default_value' => '/etc/sssd/sssd.conf' })
 ) {
   include '::sssd'
 
@@ -192,7 +193,7 @@ define sssd::provider::ldap (
   }
 
   concat::fragment { "sssd_${name}_ldap_provider.domain":
-    target  => '/etc/sssd/sssd.conf',
+    target  => $conf_file_path,
     content => template('sssd/provider/ldap.erb')
   }
 }

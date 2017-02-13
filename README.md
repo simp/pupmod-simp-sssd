@@ -59,6 +59,11 @@ To enable PKI
 simp_options::pki: true
 ```
 
+To enable Auditd
+```yaml
+simp_options::auditd: true
+```
+
 ### Beginning with SIMP SSSD
 
 The following will install and manage the service for SSSD, but will include no
@@ -121,6 +126,7 @@ The following services can be managed by `simp/sssd`:
 * sudo
 
 Please see sssd::service::<class> for more options on configuration
+Template files for these services are found in templates/services/class.erb
 
 ## Reference
 

@@ -1,0 +1,3 @@
+---
+
+sssd::conf_dir_owner: 'root'
