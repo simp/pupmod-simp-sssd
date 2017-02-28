@@ -44,7 +44,7 @@ It allows connection via krb5, ldap and local authentication.
 Files managed by `simp/sssd`:
 * /etc/sssd/sssd.conf
 * /etc/init.d/sssd
-* () /etc/sssd/pki with `simp/pki` enabled
+* (Optional) /etc/sssd/pki with `simp/pki` enabled
 
 Services and operations managed or affected:
 * sssd (running)
@@ -115,10 +115,11 @@ that you can pass to the ldap section of the sssd config file.
 
 ```puppet
 sssd::provider::ldap { 'ldapusers':
-  ldap_access_filter => 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com'
-  ldap_chpass_uri: empty
-  ldap_access_order: 'expire'
+  ldap_access_filter => 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com',
+  ldap_chpass_uri    => empty,
+  ldap_access_order  => 'expire',
   ...etc
+}
 ```
 
 #### I want to use Kerberos
@@ -126,7 +127,7 @@ sssd::provider::ldap { 'ldapusers':
 This will provide a basic connection to Kerberos
 
 ```puppet
-sssd::provider::krb5 {'kerberos':
+sssd::provider::krb5 { 'kerberos':
   krb5_server    => 'my.kerberos.server',
   krb5_realm     => 'mykrbrealm',
   krb5_password  => hiera('use_eyaml'),
@@ -156,11 +157,11 @@ You can pass values to the keys of the [nss] section of the config file
 by including the nss service subclass, and passing values to the corresponding keys:
 
 ```puppet
-class { '::sssd::service::nss':
-  description          => 'The nss section of the config file'
-  filter_users         => 'root'
-  filter_groups        => 'root'
-  reconnection_retries => 3
+class { 'sssd::service::nss':
+  description          => 'The nss section of the config file',
+  filter_users         => 'root',
+  filter_groups        => 'root',
+  reconnection_retries => 3,
   ...
 }
 ```
@@ -197,7 +198,6 @@ class { '::sssd::service::nss':
 ## Parameters
 
 Many of the parameters and variables below have a one-to-one correspondance to the keys in the sssd man pages. Because of this, we strongly suggest searching the man pages in the event of confusion or ambiguity regarding any one parameter.
-
 
 
 ### sssd
@@ -445,22 +445,22 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 
 ##### `description`:
   a brief description of this section of the config file.
-  * Valid Options: optional[string]
+  * Valid Options: Optional[String]
   * Default value: undef
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
-  * Valid Options: optional[sssd::debuglevel]
+  * Valid Options: Optional[Sssd::Debuglevel]
   * Default value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: false
 
 ##### `allowed_uids`:
@@ -474,22 +474,22 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 
 ##### `description`:
   a brief description of this section of the config file.
-  * Valid Options: optional[string]
+  * Valid Options: Optional[String]
   * Default value: undef
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
-  * Valid Options: optional[sssd::debuglevel]
+  * Valid Options: Optional[Sssd::Debuglevel]
   * Default value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: false
 
 ##### `reconnection_retries`:
@@ -552,22 +552,22 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 
 ##### `description`:
   a brief description of this section of the config file.
-  * Valid Options: optional[string]
+  * Valid Options: Optional[String]
   * Default value: undef
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
-  * Valid Options: optional[sssd::debuglevel]
+  * Valid Options: Optional[Sssd::Debuglevel]
   * Default value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: false
 
 ##### `ssh_hash_known_hosts`:
@@ -586,22 +586,22 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 
 ##### `description`:
   a brief description of this section of the config file.
-  * Valid Options: optional[string]
+  * Valid Options: Optional[String]
   * Default value: undef
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
-  * Valid Options: optional[sssd::debuglevel]
+  * Valid Options: Optional[Sssd::Debuglevel]
   * Default value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: false
 
 ##### `sudo_timed`:
@@ -622,22 +622,22 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 
 ##### `description`:
   a brief description of this section of the config file.
-  * Valid Options: optional[string]
+  * Valid Options: Optional[String]
   * Default value: undef
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
-  * Valid Options: optional[sssd::debuglevel]
+  * Valid Options: Optional[Sssd::Debuglevel]
   * Default value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: false
 
 ##### `min_id`:
@@ -1020,17 +1020,17 @@ For each variable listed below that begins with `ad_`, please reference the SSSD
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
-  * Valid Options: optional[sssd::debuglevel]
+  * Valid Options: Optional[Sssd::Debuglevel]
   * Default value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: false
 
 ##### `default_shell`:
@@ -1082,17 +1082,17 @@ For each variable listed below that begins with `krb5_`, please reference the SS
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
-  * Valid Options: optional[sssd::debuglevel]
+  * Valid Options: Optional[Sssd::Debuglevel]
   * Default value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: false
 
 ##### `krb5_server`:
@@ -1159,17 +1159,17 @@ Defaults for these variables can be found in the sssd::provider::ldap manifest
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
-  * Valid Options: optional[sssd::debuglevel]
+  * Valid Options: Optional[Sssd::Debuglevel]
   * Default value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
-  * Valid Options: boolean
+  * Valid Options: Boolean
   * Default value: false
 
 ##### `ldap_uri`
