@@ -1,3 +1,7 @@
+* Fri Mar 17 2017 Clayton Mentzer, Liz Nemsick 6.0.0-1
+- Updated README
+- Update puppet version in .travis.yaml
+
 * Thu Feb 09 2017 Jeanne Greulich <jeanne.greulich@onyxpoint.com> - 6.0.0-0
 - Changed type of debug level to be consistent for all modules.
 
