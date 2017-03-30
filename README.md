@@ -139,7 +139,7 @@ This will provide a basic connection to Kerberos
 sssd::provider::krb5 { 'kerberos':
   krb5_server    => 'my.kerberos.server',
   krb5_realm     => 'mykrbrealm',
-  krb5_password  => hiera('use_eyaml'),
+  krb5_password  => lookup('use_eyaml'),
 }
 ```
 
