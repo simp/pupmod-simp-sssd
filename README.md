@@ -114,9 +114,9 @@ sssd::provider::local { 'localusers':
 
 #### I want to use LDAP users
 
-Instatiating the LDAP provdier will automatically set
+Instantiating the LDAP provider will automatically set
 access_provider = 'ldap', and you can pass configuration
-options to the declaration of the defined tyep. The options below
+options to the declaration of the defined type. The options below
 are only useful as example syntax, you may need to check
 [the sssd man page](https://linux.die.net/man/5/sssd-ldap) or the code
 for sssd::provider::ldap for a full list of options and examples
@@ -139,7 +139,7 @@ This will provide a basic connection to Kerberos
 sssd::provider::krb5 { 'kerberos':
   krb5_server    => 'my.kerberos.server',
   krb5_realm     => 'mykrbrealm',
-  krb5_password  => hiera('use_eyaml'),
+  krb5_password  => lookup('use_eyaml'),
 }
 ```
 
