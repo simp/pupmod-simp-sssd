@@ -12,7 +12,7 @@
 #
 # [*strip_128_bit_ciphers*]
 #   If set, on EL6 systems, all 128 bit ciphers will be removed from
-#   ``tls_cihper_suite`` prior to being written to the system.
+#   ``tls_cipher_suite`` prior to being written to the system.
 #
 #   This is due to a bug in the LDAP client libraries that will drop the SSF
 #   level to 128 when connecting over StartTLS which will be rejected by the
