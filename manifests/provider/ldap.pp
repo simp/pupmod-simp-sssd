@@ -10,6 +10,16 @@
 # [*name*]
 #   The name of the associated domain section in the configuration file
 #
+# [*strip_128_bit_ciphers*]
+#   If set, on EL6 systems, all 128 bit ciphers will be removed from
+#   ``tls_cihper_suite`` prior to being written to the system.
+#
+#   This is due to a bug in the LDAP client libraries that will drop the SSF
+#   level to 128 when connecting over StartTLS which will be rejected by the
+#   standard SIMP LDAP implementation.
+#
+#   This has no effect on EL7+ systems.
+#
 # == Notes
 #
 # Regarding: POODLE - CVE-2014-3566
@@ -107,6 +117,7 @@ define sssd::provider::ldap (
   Optional[Stdlib::Absolutepath]        $app_pki_ca_dir                    = undef,
   Optional[Stdlib::Absolutepath]        $app_pki_key                       = undef,
   Optional[Stdlib::Absolutepath]        $app_pki_cert                      = undef,
+  Boolean                               $strip_128_bit_ciphers             = true,
   Array[String]                         $ldap_tls_cipher_suite             = ['HIGH','-SSLv2'],
   Boolean                               $ldap_id_use_start_tls             = true,
   Boolean                               $ldap_id_mapping                   = false,
@@ -172,6 +183,21 @@ define sssd::provider::ldap (
   Boolean                               $ldap_idmap_autorid_compat         = false
 ) {
   include '::sssd'
+
+  if $strip_128_bit_ciphers {
+    # This is here due to a bug in the LDAP client library on EL6 that will set
+    # the SSF to 128 when connecting over StartTLS if there are *any* 128-bit
+    # ciphers in the list.
+    if $facts['os']['name'] in ['RedHat','CentOS'] and (versioncmp($facts['os']['release']['major'],'7') < 0) {
+      $_ldap_tls_cipher_suite = $ldap_tls_cipher_suite + ['-AES128']
+    }
+    else {
+      $_ldap_tls_cipher_suite = $ldap_tls_cipher_suite
+    }
+  }
+  else {
+    $_ldap_tls_cipher_suite = $ldap_tls_cipher_suite
+  }
 
   if $app_pki_ca_dir {
     $ldap_tls_cacertdir = $app_pki_ca_dir

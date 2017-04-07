@@ -21,6 +21,15 @@ describe 'sssd::provider::ldap' do
 
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to create_concat__fragment("sssd_#{title}_ldap_provider.domain").without_content(%r(=\s*$)) }
+        it { is_expected.to create_concat__fragment("sssd_#{title}_ldap_provider.domain").without_content(%r(^\s*_.+=)) }
+
+        if ['RedHat','CentOS'].include?(facts[:os][:name])
+          if facts[:os][:release][:major] < '7'
+            it { is_expected.to create_concat__fragment("sssd_#{title}_ldap_provider.domain").with_content(%r(ldap_tls_cipher_suite.*-AES128)) }
+          else
+            it { is_expected.to create_concat__fragment("sssd_#{title}_ldap_provider.domain").without_content(%r(ldap_tls_cipher_suite.*-AES128)) }
+          end
+        end
       end
     end
   end
