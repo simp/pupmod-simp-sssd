@@ -143,7 +143,7 @@
     'ldap_chpass_uri' => ',',
     'ldap_chpass_backup_uri' => ',',
     'ldap_user_extra_attrs' => ',',
-    'ldap_tls_cipher_suite' => ':',
+    '_ldap_tls_cipher_suite' => ':',
     'ldap_access_order' => ',',
     'ldap_sudo_hostnames' => ' ',
     'ldap_sudo_ip' => ' ',
@@ -154,10 +154,9 @@
   _output = []
   _string_params.sort.each do |param|
     value = eval(%(@#{param}))
-    param.sub!(/^_/, '')
 
     if value
-      _output << %(#{param} = #{value.to_s})
+      _output << %(#{param.sub(/^_/,'')} = #{value.to_s})
     end
   end
 
@@ -165,7 +164,7 @@
     value = eval(%(@#{param}))
 
     if value && !value.empty?
-      _output << %(#{param} = #{Array(value).uniq.join(_array_params[param])})
+      _output << %(#{param.sub(/^_/,'')} = #{Array(value).uniq.join(_array_params[param])})
     end
   end
 -%>
