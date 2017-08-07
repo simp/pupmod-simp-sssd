@@ -7,6 +7,10 @@ require 'pathname'
 
 # RSpec Material
 fixture_path = File.expand_path(File.join(__FILE__, '..', 'fixtures'))
+puts '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
+puts "Caller = #{caller[0]}"
+puts "Fixture path = #{fixture_path}"
+puts "__FILE__ = #{__FILE__}"
 module_name = File.basename(File.expand_path(File.join(__FILE__,'../..')))
 
 # Add fixture lib dirs to LOAD_PATH. Work-around for PUP-3336
