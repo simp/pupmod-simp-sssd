@@ -37,7 +37,7 @@
 #
 class sssd (
   Array[String]                  $domains,
-  Optional[String]               $debug_level           = undef,
+  Optional[Sssd::DebugLevel]     $debug_level           = undef,
   Boolean                        $debug_timestamps      = true,
   Boolean                        $debug_microseconds    = false,
   Optional[String]               $description           = undef,

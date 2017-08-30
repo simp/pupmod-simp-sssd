@@ -1,3 +1,7 @@
+* Wed Aug 30 2017 Nick Markowski <nmarkowski@keywcorp.com> - 6.0.3-0
+- Sssd::DebugLevel now handles all variants specfied in sssd.conf man page
+- All instances of debug_level are now typed as Sssd::DebugLevel
+
 * Thu Jul 06 2017 Liz Nemsick <lnemsick.simp@gmail.com> - 6.0.2-0
 - Confine puppet version in metadata.json
 
