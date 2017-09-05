@@ -218,7 +218,7 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 
 ##### `debug_level`:
   Sets the debug verbosity for the main section of the config file.
-  * Valid Options: String
+  * Valid Options: Sssd::DebugLevel
   * Default Value: undef,
 
 ##### `debug_timestamps`:
