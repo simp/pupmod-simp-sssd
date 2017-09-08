@@ -34,6 +34,7 @@ define sssd::domain (
   Integer                                    $max_id                       = 0,
   Boolean                                    $enumerate                    = false,
   Boolean                                    $subdomain_enumerate          = false,
+  Boolean                                    $try_inotify                  = true,
   Optional[Integer]                          $force_timeout                = undef,
   Optional[Integer]                          $entry_cache_timeout          = undef,
   Optional[Integer]                          $entry_cache_user_timeout     = undef,
