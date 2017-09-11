@@ -1,11 +1,7 @@
-# == Class: sssd
-#
 # This class allows you to install and configure SSSD.
 #
 # It will forcefully disable nscd which consequently prevents you from using an
-# nscd module at the same time, which is the correct behavior.  ---
-#
-# == Parameters:
+# nscd module at the same time, which is the correct behavior
 #
 # @param pki
 #   * If 'simp', include SIMP's pki module and use pki::copy to manage
@@ -31,9 +27,7 @@
 #   $app_pki_ca, $app_pki_ca_dir, and $app_pki_crl.
 #   It defaults to /etc/pki/simp_apps/sssd/x509.
 #
-# == Authors
-#
-# * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd (
   Array[String]                  $domains,
@@ -46,7 +40,7 @@ class sssd (
   Integer                        $reconnection_retries  = 3,
   Optional[String]               $re_expression         = undef,
   Optional[String]               $full_name_format      = undef,
-  Boolean                        $try_inotify           = true,
+  Optional[Boolean]              $try_inotify           = undef,
   Optional[String]               $krb5_rcache_dir       = undef,
   Optional[String]               $user                  = undef,
   Optional[String]               $default_domain_suffix = undef,

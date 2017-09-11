@@ -55,7 +55,35 @@ describe 'sssd' do
 
         end
 
-        context 'with_auditd_true' do
+        context 'try_inotify = ' do
+          context 'unset' do
+            it {
+              is_expected.to contain_concat__fragment('sssd_main_config')
+
+              is_expected.to_not contain_concat__fragment('sssd_main_config').
+                with_content(/try_inotify/)
+            }
+          end
+          context 'true' do
+            let(:params) {{ :try_inotify => true }}
+
+            it {
+              is_expected.to contain_concat__fragment('sssd_main_config').
+                with_content(/try_inotify = true/)
+            }
+          end
+
+          context 'false' do
+            let(:params) {{ :try_inotify => false }}
+
+            it {
+              is_expected.to contain_concat__fragment('sssd_main_config').
+                with_content(/try_inotify = false/)
+            }
+          end
+        end
+
+        context 'with_auditd = true' do
           let(:params) {{ :auditd => true }}
 
           it { is_expected.to create_class('auditd')}
