@@ -55,6 +55,18 @@ describe 'sssd' do
 
         end
 
+        context 'when domains is set to the empty array' do
+          let(:params) {{ domains: [] }}
+
+          it { is_expected.to compile.and_raise_error(/parameter 'domains' expects size to be at least 1/) }
+        end
+
+        context 'when domains contains the empty string' do
+          let(:params) {{ domains: [''] }}
+
+          it { is_expected.to compile.and_raise_error(/parameter 'domains' index 0 expects a String\[1, 255\] value, got String/) }
+        end
+
         context 'try_inotify = ' do
           context 'unset' do
             it {
