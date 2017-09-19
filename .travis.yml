@@ -15,6 +15,7 @@ before_script:
 bundler_args: --without development system_tests --path .vendor
 before_install: rm Gemfile.lock || true
 script:
+  - bundle exec rake compare_latest_tag
   - bundle exec rake test
 notifications:
   email: false
