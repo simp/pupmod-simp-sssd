@@ -24,11 +24,19 @@ class sssd::service {
     notify => Service['sssd']
   }
 
+  if hiera_array('classes','ipa_server',false) {
+    $required_deps = [File['/etc/init.d/sssd'],Service['ipa']]
+  }
+  else
+  {
+    $required_deps = File['/etc/init.d/sssd']
+  }
+
   service { 'sssd':
     ensure     => 'running',
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
-    require    => File['/etc/init.d/sssd']
+    require    => [$required_deps],
   }
 }
