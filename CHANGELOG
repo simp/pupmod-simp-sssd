@@ -1,3 +1,6 @@
+* Fri Dec 08 2017 Liz Nemsick <lnemsick.simp@gmail.com> - 6.1.0-0
+- Leveraged PR from Mark Fitch to add ima provider configuration
+
 * Mon Sep 18 2017 Lucas Yamanishi <lucas.yamanishi@onyxpoint.com> - 6.0.4-0
 - Set minimum length on sssd::domains
 

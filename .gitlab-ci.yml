@@ -88,10 +88,18 @@ unit-test-puppet4.7-ruby-2.3:
     - PUPPET_VERSION=4.7 bundle install
     - PUPPET_VERSION=4.7 bundle exec rake spec
 
-acceptance-test: 
+acceptance-test-no-fips: 
   stage: test
   tags: 
     - beaker
   script: 
     - bundle install --no-binstubs --path=vendor
-    - bundle exec rake acceptance
+    - bundle exec rake beaker:suites
+
+acceptance-test-fips: 
+  stage: test
+  tags: 
+    - beaker
+  script: 
+    - bundle install --no-binstubs --path=vendor
+    - BEAKER_fips=yes bundle exec rake beaker:suites
