@@ -1,6 +1,6 @@
 {
   "name": "simp-sssd",
-  "version": "6.0.4",
+  "version": "6.0.5",
   "author": "SIMP Team",
   "summary": "Manages SSSD",
   "license": "Apache-2.0",
@@ -26,7 +26,7 @@
     },
     {
       "name": "simp/simplib",
-      "version_requirement": ">= 3.1.0 < 4.0.0"
+      "version_requirement": ">= 3.10.0 < 4.0.0"
     },
     {
       "name": "simp/simp_options",
