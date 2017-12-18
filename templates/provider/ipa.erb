@@ -1,0 +1,64 @@
+ipa_domain = <%= @ipa_domain %>
+ipa_server = <%= @_ipa_server.join(',') %>
+<% unless @ipa_backup_server.nil? -%>
+ipa_backup_server = <%= @ipa_backup_server.join(',') %>
+<% end -%>
+ipa_enable_dns_sites = <%= @ipa_enable_dns_sites %>
+ipa_hostname = <%= @ipa_hostname %>
+ipa_server_mode = <%= @ipa_server_mode %>
+dyndns_auth = <%= @dyndns_auth %>
+<% unless @dyndns_force_tcp.nil? -%>
+dyndns_force_tcp = <%= @dyndns_force_tcp %>
+<% end -%>
+<% unless @dyndns_iface.nil? -%>
+dyndns_iface = <%= @dyndns_iface.join(',') %>
+<% end -%>
+<% unless @dyndns_refresh_interval.nil? -%>
+dyndns_refresh_interval = <%= @dyndns_refresh_interval %>
+<% end -%>
+<% unless @dyndns_server.nil? -%>
+dyndns_server = <%= @dyndns_server %>
+<% end -%>
+<% unless @dyndns_ttl.nil? -%>
+dyndns_ttl = <%= @dyndns_ttl %>
+<% end -%>
+dyndns_update = <%= @dyndns_update %>
+<% unless @dyndns_update_ptr.nil? -%>
+dyndns_update_ptr = <%= @dyndns_update_ptr %>
+<% end -%>
+<% unless @ipa_automount_location.nil? -%>
+ipa_automount_location = <%= @ipa_automount_location %>
+<% end -%>
+<% unless @ipa_hbac_refresh.nil? -%>
+ipa_hbac_refresh = <%= @ipa_hbac_refresh %>
+<% end -%>
+<% unless @ipa_hbac_search_base.nil? -%>
+ipa_hbac_search_base = <%= @ipa_hbac_search_base %>
+<% end -%>
+<% unless @ipa_hbac_selinux.nil? -%>
+ipa_hbac_selinux = <%= @ipa_hbac_selinux %>
+<% end -%>
+<% unless @ipa_host_search_base.nil? -%>
+ipa_host_search_base = <%= @ipa_host_search_base  %>
+<% end -%>
+<% unless @ipa_master_domains_search_base.nil? -%>
+ipa_master_domains_search_base = <%= @ipa_master_domains_search_base %>
+<% end -%>
+<% unless @ipa_selinux_search_base.nil? -%>
+ipa_selinux_search_base = <%= @ipa_selinux_search_base %>
+<% end -%>
+<% unless @ipa_subdomains_search_base.nil? -%>
+ipa_subdomains_search_base = <%= @ipa_subdomains_search_base %>
+<% end -%>
+<% unless @ipa_views_search_base.nil? -%>
+ipa_views_search_base = <%= @ipa_views_search_base %>
+<% end -%>
+<% unless @krb5_confd_path.nil? -%>
+krb5_confd_path = <%= @krb5_confd_path %>
+<% end -%>
+<% unless @krb5_realm.nil? -%>
+krb5_realm = <%= @krb5_realm %>
+<% end -%>
+krb5_store_password_if_offline = <%= @krb5_store_password_if_offline %>
+ldap_tls_cacert = <%= @ldap_tls_cacert %>
+ldap_tls_cipher_suite = <%= @ldap_tls_cipher_suite.join(':') %>

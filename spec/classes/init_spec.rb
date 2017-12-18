@@ -135,9 +135,12 @@ describe 'sssd' do
           it { is_expected.to create_class('sssd') }
         end
 
-        context 'with debug_level as an invalid Sssd::DebugLevel' do
+        context 'with debug_level as an invalid hex Sssd::DebugLevel' do
           let(:params) {{ :debug_level => '0x123z' }}
           it { is_expected.to compile.and_raise_error(/parameter 'debug_level' expects a/)}
+        end
+
+        context 'with debug_level as an invalid integer Sssd::DebugLevel' do
           let(:params) {{ :debug_level => 99 }}
           it { is_expected.to compile.and_raise_error(/parameter 'debug_level' expects a/)}
         end
