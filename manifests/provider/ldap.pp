@@ -1,16 +1,39 @@
-# == Define: sssd::provider::ldap
+# Define: sssd::provider::ldap
 #
 # This define sets up the 'ldap' provider section of a particular domain.
 # $name should be the name of the associated domain in sssd.conf.
 #
-# See sssd-ldap.conf(5) for additional information.
+# Configuration notes:
 #
-# == Parameters
+# * See sssd-ldap.conf(5) for additional information.
+# * Be careful with the following configuration:
+#     * ldap_netgroup_search_base
+#     * ldap_user_search_base
+#     * ldap_group_search_base
+#     * ldap_sudo_search_base
+#     * ldap_autofs_search_base
 #
-# [*name*]
+# * Be sure to read the man page for the following advanced
+#   configuration:
+#     * ldap_idmap_range_min
+#     * ldap_idmap_range_max
+#     * ldap_idmap_range_size
+#     * ldap_idmap_default_domain_sid
+#     * ldap_idmap_default_domain
+#     * ldap_idmap_autorid_compat
+#
+#
+# Regarding: POODLE - CVE-2014-3566
+#
+# The tls_cipher_suite variable is set to HIGH:-SSLv2 by default because
+# OpenLDAP cannot set the SSL provider natively. By default, it will run TLSv1
+# but cannot handle TLSv1.2 therefore the SSLv3 ciphers cannot be eliminated.
+# Take care to ensure that your clients only connect with TLSv1 if possible.
+#
+# @param name
 #   The name of the associated domain section in the configuration file
 #
-# [*strip_128_bit_ciphers*]
+# @param strip_128_bit_ciphers
 #   If set, on EL6 systems, all 128 bit ciphers will be removed from
 #   ``tls_cipher_suite`` prior to being written to the system.
 #
@@ -20,18 +43,156 @@
 #
 #   This has no effect on EL7+ systems.
 #
-# == Notes
+# @param debug_level
+# @param debug_timestamps
+# @param debug_microseconds
+# @param ldap_uri
+# @param ldap_backup_uri
+# @param ldap_chpass_uri
+# @param ldap_chpass_backup_uri
+# @param ldap_chpass_update_last_change
+# @param ldap_search_base
+# @param ldap_schema
+# @param ldap_default_bind_dn
+# @param ldap_default_authtok_type
+# @param ldap_default_authtok
+# @param ldap_user_object_class
+# @param ldap_user_name
+# @param ldap_user_uid_number
+# @param ldap_user_gid_number
+# @param ldap_user_gecos
+# @param ldap_user_home_directory
+# @param ldap_user_shell
+# @param ldap_user_uuid
+# @param ldap_user_objectsid
+# @param ldap_user_modify_timestamp
+# @param ldap_user_shadow_last_change
+# @param ldap_user_shadow_min
+# @param ldap_user_shadow_max
+# @param ldap_user_shadow_warning
+# @param ldap_user_shadow_inactive
+# @param ldap_user_shadow_expire
+# @param ldap_user_krb_last_pwd_change
+# @param ldap_user_krb_password_expiration
+# @param ldap_user_ad_account_expires
+# @param ldap_user_ad_user_account_control
+# @param ldap_ns_account_lock
+# @param ldap_user_nds_login_disabled
+# @param ldap_user_nds_login_expiration_time
+# @param ldap_user_nds_login_allowed_time_map
+# @param ldap_user_principal
+# @param ldap_user_extra_attrs
+# @param ldap_user_ssh_public_key
+# @param ldap_force_upper_case_realm
+# @param ldap_enumeration_refresh_timeout
+# @param ldap_purge_cache_timeout
+# @param ldap_user_fullname
+# @param ldap_user_member_of
+# @param ldap_user_authorized_service
+# @param ldap_user_authorized_host
+# @param ldap_group_object_class
+# @param ldap_group_name
+# @param ldap_group_gid_number
+# @param ldap_group_member
+# @param ldap_group_uuid
+# @param ldap_group_objectsid
+# @param ldap_group_modify_timestamp
+# @param ldap_group_type
+# @param ldap_group_nesting_level
+# @param ldap_groups_use_matching_rule_in_chain
+# @param ldap_initgroups_use_matching_rule_in_chain
+# @param ldap_use_tokengroups
+# @param ldap_netgroup_object_class
+# @param ldap_netgroup_name
+# @param ldap_netgroup_member
+# @param ldap_netgroup_triple
+# @param ldap_netgroup_uuid
+# @param ldap_netgroup_modify_timestamp
+# @param ldap_service_name
+# @param ldap_service_port
+# @param ldap_service_proto
+# @param ldap_service_search_base
+# @param ldap_search_timeout
+# @param ldap_enumeration_search_timeout
+# @param ldap_network_timeout
+# @param ldap_opt_timeout
+# @param ldap_connection_expire_timeout
+# @param ldap_page_size
+# @param ldap_disable_paging
+# @param ldap_disable_range_retrieval
+# @param ldap_sasl_minssf
+# @param ldap_deref_threshold
+# @param ldap_tls_reqcert
+# @param app_pki_ca_dir
+# @param app_pki_key
+# @param app_pki_cert
+# @param strip_128_bit_ciphers
+# @param ldap_tls_cipher_suite
+# @param ldap_id_use_start_tls
+# @param ldap_id_mapping
+# @param ldap_min_id
+# @param ldap_max_id
+# @param ldap_sasl_mech
+# @param ldap_sasl_authid
+# @param ldap_sasl_realm
+# @param ldap_sasl_canonicalize
+# @param ldap_krb5_keytab
+# @param ldap_krb5_init_creds
+# @param ldap_krb5_ticket_lifetime
+# @param krb5_server
+# @param krb5_backup_server
+# @param krb5_realm
+# @param krb5_canonicalize
+# @param krb5_use_kdcinfo
+# @param ldap_pwd_policy
+# @param ldap_referrals
+# @param ldap_dns_service_name
+# @param ldap_chpass_dns_service_name
+# @param ldap_access_filter
+# @param ldap_account_expire_policy
+# @param ldap_access_order
+# @param ldap_pwdlockout_dn
+# @param ldap_deref
+# @param ldap_sudorule_object_class
+# @param ldap_sudorule_name
+# @param ldap_sudorule_command
+# @param ldap_sudorule_host
+# @param ldap_sudorule_user
+# @param ldap_sudorule_option
+# @param ldap_sudorule_runasuser
+# @param ldap_sudorule_runasgroup
+# @param ldap_sudorule_notbefore
+# @param ldap_sudorule_notafter
+# @param ldap_sudorule_order
+# @param ldap_sudo_full_refresh_interval
+# @param ldap_sudo_smart_refresh_interval
+# @param ldap_sudo_use_host_filter
+# @param ldap_sudo_hostnames
+# @param ldap_sudo_ip
+# @param ldap_sudo_include_netgroups
+# @param ldap_sudo_include_regexp
+# @param ldap_autofs_map_master_name
+# @param ldap_autofs_map_object_class
+# @param ldap_autofs_map_name
+# @param ldap_autofs_entry_object_class
+# @param ldap_autofs_entry_key
+# @param ldap_autofs_entry_value
+# @param ldap_netgroup_search_base
+# @param ldap_user_search_base
+# @param ldap_group_search_base
+# @param ldap_sudo_search_base
+# @param ldap_autofs_search_base
 #
-# Regarding: POODLE - CVE-2014-3566
+# Advanced Configuration - Read the man page
 #
-# The tls_cipher_suite variable is set to HIGH:-SSLv2 by default because
-# OpenLDAP cannot set the SSL provider natively. By default, it will run TLSv1
-# but cannot handle TLSv1.2 therefore the SSLv3 ciphers cannot be eliminated.
-# Take care to ensure that your clients only connect with TLSv1 if possible.
+# @param ldap_idmap_range_min
+# @param ldap_idmap_range_max
+# @param ldap_idmap_range_size
+# @param ldap_idmap_default_domain_sid
+# @param ldap_idmap_default_domain
+# @param ldap_idmap_autorid_compat
 #
-# == Authors
-#
-# * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 define sssd::provider::ldap (
   Optional[Sssd::DebugLevel]            $debug_level                       = undef,

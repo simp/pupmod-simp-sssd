@@ -1,34 +1,34 @@
 [sssd]
-<% if @debug_level -%>
-debug_level = <%= @debug_level %>
+<% if @_description -%>
+description = <%= @_description %>
 <% end -%>
-debug_timestamps = <%= @debug_timestamps.to_s %>
-debug_microseconds = <%= @debug_microseconds.to_s %>
-<% if @description -%>
-description = <%= @description %>
+domains = <%= Array(@_domains).join(',') %>
+services = <%= Array(@_services).join(',') %>
+config_file_version = <%= @_config_file_version.to_s %>
+reconnection_retries = <%= @_reconnection_retries.to_s %>
+<% if @_re_expression -%>
+re_expression = <%= @_re_expression %>
 <% end -%>
-domains = <%= Array(@domains).join(',') %>
-config_file_version = <%= @config_file_version.to_s %>
-services = <%= Array(@services).join(',') %>
-reconnection_retries = <%= @reconnection_retries.to_s %>
-<% if @re_expression -%>
-re_expression = <%= @re_expression %>
+<% if @_full_name_format -%>
+full_name_format = <%= @_full_name_format %>
 <% end -%>
-<% if @full_name_format -%>
-full_name_format = <%= @full_name_format %>
+<% unless @_try_inotify.nil? -%>
+try_inotify = <%= @_try_inotify.to_s %>
 <% end -%>
-<% unless @try_inotify.nil? -%>
-try_inotify = <%= @try_inotify.to_s %>
+<% if @_krb5_rcache_dir -%>
+krb5_rcache_dir = <%= @_krb5_rcache_dir %>
 <% end -%>
-<% if @krb5_rcache_dir -%>
-krb5_rcache_dir = <%= @krb5_rcache_dir %>
+<% if @_user -%>
+user = <%= @_user %>
 <% end -%>
-<% if @user -%>
-user = <%= @user %>
+<% if @_default_domain_suffix -%>
+default_domain_suffix = <%= @_default_domain_suffix %>
 <% end -%>
-<% if @default_domain_suffix -%>
-default_domain_suffix = <%= @default_domain_suffix %>
+<% if @_override_space-%>
+override_space = <%= @_override_space%>
 <% end -%>
-<% if @override_space-%>
-override_space = <%= @override_space%>
+<% unless @_debug_level.nil? -%>
+debug_level = <%= @_debug_level %>
 <% end -%>
+debug_timestamps = <%= @_debug_timestamps.to_s %>
+debug_microseconds = <%= @_debug_microseconds.to_s %>

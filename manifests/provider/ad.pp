@@ -28,7 +28,7 @@
 #   * Ignored if ``autodiscovery`` is enabled
 #
 # @param ad_hostname
-# @param @ad_enable_dns_sites
+# @param ad_enable_dns_sites
 #
 # @param ad_access_filters
 #   A list of access filters for the system
@@ -57,6 +57,7 @@
 #   * Has no effect if ``dyndns_update`` is not set
 #
 # @param dyndns_refresh_interval
+# @param dyndns_update_ptr
 # @param dyndns_force_tcp
 # @param dyndns_server
 # @param override_homedir
@@ -72,7 +73,7 @@
 # @param ldap_idmap_autorid_compat
 # @param ldap_idmap_helper_table_size
 #
-# @author Trevor Vaughan <tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 define sssd::provider::ad (
   Optional[String]                                           $ad_domain                                = undef,

@@ -1,11 +1,33 @@
-# == Class: sssd::service::nss
-#
 # This class sets up the [nss] section of /etc/sssd.conf.
 # You may only have one of these per system.
 #
-# == Authors
+# The class parameters map directly to SSSD configuration.  Full
+# documentation of these configuration options can be found in the
+# sssd.conf(5) man page.
 #
-# * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
+# @param description
+# @param debug_level
+# @param debug_timestamps
+# @param debug_microseconds
+# @param reconnection_retries
+# @param fd_limit
+# @param command
+# @param enum_cache_timeout
+# @param entry_cache_nowait_percentage
+# @param entry_negative_timeout
+# @param filter_users
+# @param filter_groups
+# @param filter_users_in_groups
+# @param override_homedir
+# @param fallback_homedir
+# @param override_shell
+# @param vetoed_shells
+# @param default_shell
+# @param get_domains_timeout
+# @param memcache_timeout
+# @param user_attributes
+#
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::service::nss (
   Optional[String]             $description                   = undef,

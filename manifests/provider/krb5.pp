@@ -1,17 +1,31 @@
-# == Define: sssd::provider::krb5
+# Define: sssd::provider::krb5
 #
 # This define sets up the 'krb5' provider section of a particular domain.
 # $name should be the name of the associated domain in sssd.conf.
 #
-# == Parameters
 # See sssd-krb5.conf(5) for additional information.
 #
-# [*name*]
+# @param name
 #   The name of the associated domain section in the configuration file.
 #
-# == Authors
+# @param krb5_server
+# @param krb5_realm
+# @param debug_level
+# @param debug_timestamps
+# @param debug_microseconds
+# @param krb5_kpasswd
+# @param krb5_ccachedir
+# @param krb5_ccname_template
+# @param krb5_auth_timeout
+# @param krb5_validate
+# @param krb5_keytab
+# @param krb5_store_password_if_offline
+# @param krb5_renewable_lifetime
+# @param krb5_lifetime
+# @param krb5_renew_interval
+# @param krb5_use_fast
 #
-# * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 define sssd::provider::krb5 (
   Simplib::Host                          $krb5_server,

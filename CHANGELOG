@@ -1,3 +1,7 @@
+* Fri Jan 19 2018 Liz Nemsick <lnemsick.simp@gmail.com> - 6.1.0-0
+- Added sssd class option to automatically configure SSSD for an IPA
+  domain, when the host is joined to an IPA domain.
+
 * Fri Dec 15 2017 Liz Nemsick <lnemsick.simp@gmail.com> - 6.1.0-0
 - Leveraged PR from Mark Fitch to add ima provider configuration
 
