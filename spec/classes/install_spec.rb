@@ -44,8 +44,8 @@ describe 'sssd::install' do
           it { is_expected.to contain_package('sssd-client').with_ensure('latest') }
         end
 
-        context 'when ensure = installed' do
-          let(:params) {{ :ensure =>  'installed' }}
+        context 'when package_ensure = installed' do
+          let(:params) {{ :package_ensure =>  'installed' }}
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to contain_package('sssd').with_ensure('installed') }

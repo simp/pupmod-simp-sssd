@@ -4,14 +4,14 @@
 #   If ``true``, install the 'sssd-tools' package for administrative
 #   changes to the SSSD databases
 #
-# @param ensure
+# @param package_ensure
 #   Ensure setting for all packages installed by this module
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::install (
   Boolean  $install_user_tools = true,
-  String   $ensure             = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'latest' }),
+  String   $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'latest' }),
 ) {
   contain 'sssd::install::client'
 
@@ -29,9 +29,9 @@ class sssd::install (
     require => Package['sssd']
   }
 
-  package { 'sssd': ensure => $ensure }
+  package { 'sssd': ensure => $package_ensure }
 
   if $install_user_tools {
-    package { 'sssd-tools': ensure => $ensure }
+    package { 'sssd-tools': ensure => $package_ensure }
   }
 }

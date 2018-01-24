@@ -6,7 +6,7 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::install::client (
-  $ensure = $::sssd::install::ensure
+  $ensure = $::sssd::install::package_ensure
 ){
   package { 'sssd-client': ensure => $ensure }
 }
