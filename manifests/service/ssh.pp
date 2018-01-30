@@ -1,10 +1,17 @@
-# == Class: sssd::service::ssh
-#
 # This class sets up the [ssh] section of /etc/sssd.conf.
 #
-# == Authors
+# The class parameters map directly to SSSD configuration.  Full
+# documentation of these configuration options can be found in the
+# sssd.conf(5) man page.
 #
-# == Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
+# @param description
+# @param debug_level
+# @param debug_timestamps
+# @param debug_microseconds
+# @param ssh_hash_known_hosts
+# @param ssh_known_hosts_timeout
+#
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::service::ssh (
   Optional[String]             $description             = undef,

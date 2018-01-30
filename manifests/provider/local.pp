@@ -1,17 +1,26 @@
-# == Define: sssd::provider::local
+# Define: sssd::provider::local
 #
 # This define sets up the 'local' id_provider section of a particular domain.
 # $name should be the name of the associated domain in sssd.conf.
 #
-# == Parameters
 # See 'The local domain section' in sssd.conf(5) for additional information.
 #
-# [*name*]
+# @param name
 #   The name of the associated domain section in the configuration file.
 #
-# == Authors
+# @param debug_level
+# @param debug_timestamps
+# @param debug_microseconds
+# @param default_shell
+# @param base_directory
+# @param create_homedir
+# @param remove_homedir
+# @param homedir_umask
+# @param skel_dir
+# @param mail_dir
+# @param userdel_cmd
 #
-# * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 define sssd::provider::local (
   Optional[Sssd::DebugLevel]      $debug_level        = undef,

@@ -1,26 +1,21 @@
-# == Class: sssd::install
-#
 # Install the required packages for SSSD
 #
-# == Parameters:
+# @param install_user_tools
+#   If ``true``, install the 'sssd-tools' package for administrative
+#   changes to the SSSD databases
 #
-# [*install_user_tools*]
-# Type: Boolean
-# Default: true
-#   If true, install the 'sssd-tools' for administrative changes to the SSSD
-#   databases.
+# @param package_ensure
+#   Ensure setting for all packages installed by this module
 #
-# == Authors
-#
-# * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::install (
-  Boolean  $install_user_tools = true
+  Boolean  $install_user_tools = true,
+  String   $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'latest' }),
 ) {
-  contain '::sssd::install::client'
+  contain 'sssd::install::client'
 
-
-  if ( $::operatingsystem in ['RedHat','CentOS'] ) and ( $::operatingsystemmajrelease > '6' ) {
+  if ( $facts['operatingsystem'] in ['RedHat','CentOS'] ) and ( $facts['operatingsystemmajrelease'] > '6' ) {
     $_sssd_user = 'sssd'
   } else {
     $_sssd_user = 'root'
@@ -34,16 +29,9 @@ class sssd::install (
     require => Package['sssd']
   }
 
-  file { '/etc/sssd/sssd.conf':
-    ensure => 'file',
-    owner  => 'root',
-    group  => 'root',
-    mode   => '0600'
-  }
-
-  package { 'sssd': ensure => 'latest' }
+  package { 'sssd': ensure => $package_ensure }
 
   if $install_user_tools {
-    package { 'sssd-tools': ensure => 'latest' }
+    package { 'sssd-tools': ensure => $package_ensure }
   }
 }

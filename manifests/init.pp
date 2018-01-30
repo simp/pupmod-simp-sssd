@@ -1,8 +1,38 @@
 # This class allows you to install and configure SSSD.
 #
-# It will forcefully disable nscd which consequently prevents you from using an
-# nscd module at the same time, which is the correct behavior
+# It will forcefully disable nscd which consequently prevents you from
+# using an nscd module at the same time, which is the correct behavior.
 #
+# Full documentation of the parameters that map directly to SSSD
+# configuration options can be found in the sssd.conf(5) man page.
+#
+# @param domains
+# @param debug_level
+# @param debug_timestamps
+# @param debug_microseconds
+# @param description
+# @param config_file_version
+# @param services
+# @param reconnection_retries
+# @param re_expression
+# @param full_name_format
+# @param try_inotify
+# @param krb5_rcache_dir
+# @param user
+# @param default_domain_suffix
+# @param override_space
+# @param enumerate_users
+#   Have SSSD list and cache all the users that it can find on the remote system
+#
+#   * Take care that you don't overwhelm your server if you enable this
+#
+# @param cache_credentials
+#   Have SSSD cache the credentials of users that login to the system
+#
+# @param min_id
+#   The lowest user ID that SSSD should recognize from the server.
+#
+# @param auditd
 # @param pki
 #   * If 'simp', include SIMP's pki module and use pki::copy to manage
 #     application certs in /etc/pki/simp_apps/sssd/x509
@@ -16,7 +46,7 @@
 #     * app_pki_ca
 #     * app_pki_ca_dir
 #
-# @param app_pki_external_source
+# @param app_pki_cert_source
 #   * If pki = 'simp' or true, this is the directory from which certs will be
 #     copied, via pki::copy.  Defaults to /etc/pki/simp/x509.
 #
@@ -27,6 +57,12 @@
 #   $app_pki_ca, $app_pki_ca_dir, and $app_pki_crl.
 #   It defaults to /etc/pki/simp_apps/sssd/x509.
 #
+# @param auto_add_ipa_domain
+#   Whether to configure sssd for an IPA domain, when the host is joined
+#   to an IPA domain. When enabled, this feature helps to prevent user
+#   lockout for IPA-managed user accounts.  Otherwise, you must
+#   configure the IPA domain yourself.
+#
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd (
@@ -34,25 +70,34 @@ class sssd (
   Optional[Sssd::DebugLevel]     $debug_level           = undef,
   Boolean                        $debug_timestamps      = true,
   Boolean                        $debug_microseconds    = false,
-  Optional[String]               $description           = undef,
+  Optional[String[1]]            $description           = undef,
   Integer                        $config_file_version   = 2,
   Sssd::Services                 $services              = ['nss','pam','ssh','sudo'],
   Integer                        $reconnection_retries  = 3,
-  Optional[String]               $re_expression         = undef,
-  Optional[String]               $full_name_format      = undef,
+  Optional[String[1]]            $re_expression         = undef,
+  Optional[String[1]]            $full_name_format      = undef,
   Optional[Boolean]              $try_inotify           = undef,
-  Optional[String]               $krb5_rcache_dir       = undef,
-  Optional[String]               $user                  = undef,
-  Optional[String]               $default_domain_suffix = undef,
-  Optional[String]               $override_space        = undef,
+  Optional[String[1]]            $krb5_rcache_dir       = undef,
+  Optional[String[1]]            $user                  = undef,
+  Optional[String[1]]            $default_domain_suffix = undef,
+  Optional[String[1]]            $override_space        = undef,
+  Boolean                        $enumerate_users       = false,
+  Boolean                        $cache_credentials     = true,
+  Integer                        $min_id                = 500,
   Boolean                        $auditd                = simplib::lookup('simp_options::auditd', { 'default_value' => false}),
   Variant[Boolean,Enum['simp']]  $pki                   = simplib::lookup('simp_options::pki', { 'default_value' => false}),
   Stdlib::Absolutepath           $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509'}),
-  Stdlib::Absolutepath           $app_pki_dir           = '/etc/pki/simp_apps/sssd/x509'
+  Stdlib::Absolutepath           $app_pki_dir           = '/etc/pki/simp_apps/sssd/x509',
+  Boolean                        $auto_add_ipa_domain   = true
 ) {
 
-  include '::sssd::install'
-  include '::sssd::service'
+  include 'sssd::install'
+  include 'sssd::config'
+  include 'sssd::service'
+
+  Class['sssd::install']
+  -> Class['sssd::config']
+  ~> Class['sssd::service']
 
   if $auditd {
     include '::auditd'
@@ -62,26 +107,10 @@ class sssd (
     }
   }
 
-  concat { '/etc/sssd/sssd.conf':
-    owner          => 'root',
-    group          => 'root',
-    mode           => '0640',
-    ensure_newline => true,
-    warn           => true,
-    notify         => Class['sssd::service']
-  }
-
-  concat::fragment { 'sssd_main_config':
-    target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/sssd.conf.erb")
-  }
-
   if $pki {
     include '::sssd::pki'
 
     Class['sssd::install'] -> Class['sssd::pki']
     Class['sssd::pki'] ~> Class['sssd::service']
   }
-
-  Class['sssd::install'] ~> Class['sssd::service']
 }

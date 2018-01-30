@@ -1,6 +1,9 @@
-# == Class: sssd::pki
+# Class: sssd::pki
 #
-# @param pki
+# Uses the following sssd class parameters to copy certs into
+# a directory for the sssd application
+#
+# $::sssd::pki
 #   * If 'simp', include SIMP's pki module and use pki::copy to manage
 #     application certs in /etc/pki/simp_apps/sssd/x509
 #   * If true, do *not* include SIMP's pki module, but still use pki::copy
@@ -13,16 +16,11 @@
 #     * app_pki_ca
 #     * app_pki_ca_dir
 #
-# @param app_pki_external_source
-#   * If pki = 'simp' or true, this is the directory from which certs will be
+# $::ssd::app_pki_cert_source
+#   * If $::sssd::pki = 'simp' or true, this is the directory from which certs will be
 #     copied, via pki::copy.  Defaults to /etc/pki/simp/x509.
 #
-#   * If pki = false, this variable has no effect.
-#
-# @param app_pki_dir
-#   This variable controls the basepath of $app_pki_key, $app_pki_cert,
-#   $app_pki_ca, $app_pki_ca_dir, and $app_pki_crl.
-#   It defaults to /etc/pki/simp_apps/sssd/x509.
+#   * If $::sssd::pki = false, this variable has no effect.
 #
 class sssd::pki
 {

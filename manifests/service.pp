@@ -1,10 +1,7 @@
 # == Class: sssd::service
-#
 # Control the SSSD services
 #
-# == Authors
-#
-# * Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::service {
 

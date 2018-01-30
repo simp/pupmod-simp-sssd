@@ -1,11 +1,27 @@
-# == Class: sssd::service::pam
-#
 # This class sets up the [pam] section of /etc/sssd.conf.
 # You may only have one of these per system.
 #
-# == Authors
+# The class parameters map directly to SSSD configuration.  Full
+# documentation of these configuration options can be found in the
+# sssd.conf(5) man page.
 #
-# == Trevor Vaughan <mailto:tvaughan@onyxpoint.com>
+# @param description
+# @param debug_level
+# @param debug_timestamps
+# @param debug_microseconds
+# @param reconnection_retries
+# @param command
+# @param offline_credentials_expiration
+# @param offline_failed_login_attempts
+# @param offline_failed_login_delay
+# @param pam_verbosity
+# @param pam_id_timeout
+# @param pam_pwd_expiration_warning
+# @param get_domains_timeout
+# @param pam_trusted_users
+# @param pam_public_domains
+#
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::service::pam (
   Optional[String]             $description                    = undef,

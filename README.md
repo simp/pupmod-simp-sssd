@@ -61,6 +61,7 @@ Services and operations managed or affected:
 
 Packages installed by `simp/pki`:
 * sssd (latest by Default)
+* sssd-tools (optionally, latest by Default)
 
 ## Usage
 
@@ -142,6 +143,29 @@ sssd::provider::krb5 { 'kerberos':
   krb5_password  => lookup('use_eyaml'),
 }
 ```
+#### I want to use IPA users
+
+The `sssd` class, by default, configures SSSD for an IPA domain,
+when the host is joined to an IPA domain.  If you want to manage this
+configuration yourself, set `sssd::auto_add_ipa_domain` to false.
+Then, configure the domain and `ipa` provider as follows
+
+```puppet
+sssd::domain { 'my.domain':
+  description       => "IPA Domain my.domain",
+  id_provider       => 'ipa',
+  auth_provider     => 'ipa',
+  chpass_provider   => 'ipa',
+  access_provider   => 'ipa',
+  sudo_provider     => 'ipa',
+  autofs_provider   => 'ipa',
+}
+
+sssd::provider::ipa { 'my.domain':
+  ipa_domain => 'my.domain'
+  ipa_server => [ 'ipaserver.my.domain' ]
+}
+```
 
 ### Services
 
@@ -194,12 +218,15 @@ class { 'sssd::service::nss':
 
 #### Private Classes
 
+* sssd::config
+* sssd::config::ipa_domain
 * sssd::pki
 
 #### Defined Types
 
 * sssd::domain
 * sssd::provider::ad
+* sssd::provider::ipa
 * sssd::provider::krb5
 * sssd::provider::ldap
 * sssd::provider::local
@@ -219,98 +246,126 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 ##### `debug_level`:
   Sets the debug verbosity for the main section of the config file.
   * Valid Options: Sssd::DebugLevel
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `debug_timestamps`:
   Enable or disable timestamps in debug file for this section of the config file.
   * Valid Options: Boolean
-  * Default Value: true,
+  * Default Value: true
 
 ##### `debug_microseconds`:
   Enable or disable microseconds in the debug timestamps for this section of the config file.
   * Valid Options: Boolean
-  * Default Value: false,
+  * Default Value: false
 
 ##### `description`:
   A brief description of this section of the config file.
   * Valid Options: String
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `config_file_version`:
   * Valid Options: Integer
-  * Default Value: 2,
+  * Default Value: 2
 
 ##### `services`:
   A list of the services that SSSD will integrate with. Each entry here corresponds to one section of the config file at sssd.conf. Each of the services that you include here will be managed by the corresponding sssd::service::service_name subclass.
   * Valid Options: Sssd::Services
-  * Default Value: ['nss','pam','ssh','sudo'],
+  * Default Value: ['nss','pam','ssh','sudo']
 
 ##### `reconnection_retries`:
   Number of times services should attempt to reconnect in the event of a Data Provider crash or restart before they give up
   * Valid Options: Integer
-  * Default Value: 3,
+  * Default Value: 3
 
 ##### `re_expression`:
   Default regular expression that describes how to parse the string containing user name and domain into these components.
   * Valid Options: String
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `full_name_format`:
   The Default format that describes how to translate a (name, domain) tuple into a fully qualified name.
   * Valid Options: String
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `try_inotify`:
   Determines if inotify should be used to query resolv.conf
   * Valid Options: Boolean
-  * Default Value: true,
+  * Default Value: true
 
 ##### `krb5_rcache_dir`:
   Directory where krb5 files should be cached.
   * Valid Options: String
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `user`:
   * Valid Options: String
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `Default_domain_suffix`:
   Used as the default domain for instances where none is provided
   * Valid Options: String
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `override_space`:
   * Valid Options: String
-  * Default Value: undef,
+  * Default Value: undef
+
+##### `enumerate_users`:
+  Have SSSD list and cache all the users that it can find on the remote system
+  * Take care that you don't overwhelm your server if you enable this
+  * Valid Options: Boolean
+  * Default Value: false
+
+##### `cache_credentials`:
+  Have SSSD cache the credentials of users that login to the system
+  * Valid Options: Boolean
+  * Default Value: true
+
+##### `min_id`:
+  The lowest user ID that SSSD should recognize from the server.
+  * Valid Options: Boolean
+  * Default Value: 500
 
 ##### `auditd`:
   This is a special SIMP level key, which determines automatically if the simp/auditd module is installed on your system. If it is, this module will enable some Defaults to ensure the two modules interact cleanly together
   * Valid Options: BooleanS
-  * Default Value: simplib::lookup('simp_options::auditd', { 'Default_value' => false}),
+  * Default Value: simplib::lookup('simp_options::auditd', { 'Default_value' => false})
 
 ##### `pki`:
   This is a special SIMP level key, which determines automatically if the simp/pki module is installed on your system. If it is, this module will enable some Defaults to ensure the two modules interact cleanly together
-  * Type Options: Boolean,'simp'
-  * Default Value: simplib::lookup('simp_options::pki', { 'Default_value' => false}),
+  * Valid Options: Boolean,'simp'
+  * Default Value: simplib::lookup('simp_options::pki', { 'Default_value' => false})
 
 ##### `app_pki_cert_source`:
   If the PKI module is enabled, this attempts to automatically detect the location on your system where certs are stored by Default.
   * Valid Options: Stdlib::Absolutepath
-  * Default Value: simplib::lookup('simp_options::pki::source', { 'Default_value' => '/etc/pki/simp/x509'}),
+  * Default Value: simplib::lookup('simp_options::pki::source', { 'Default_value' => '/etc/pki/simp/x509'})
 
 ##### `app_pki_dir`:
   Default PKI dir if the above lookup fails to find a set directory.
   * Valid Options: Stdlib::Absolutepath
   * Default Value: '/etc/pki/simp_apps/sssd/x509'
 
+##### `auto_add_ipa_domain`:
+  Whether to configure sssd for an IPA domain, when the host is joined
+  to an IPA domain. When enabled, this feature helps to prevent user
+  lockout for IPA-managed user accounts.  Otherwise, you must
+  configure the IPA domain yourself.
+  * Valid Options: Boolean
+  * Default Value: true
 
 
 ### sssd::install
 
 ##### `install_user_tools`:
   If true, install the sssd-tools package in addition to the sssd package.
-	* Valid Options: Boolean
-	* Default: True
+  * Valid Options: Boolean
+  * Default Value: true
+
+##### `ensure`:
+  Ensure setting for all packages installed by this module
+  * Valid Options: String
+  * Default Value: simplib::lookup('simp_options::package_ensure', { 'default_value' => 'latest' })
 
 
 
@@ -338,8 +393,8 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 
 ##### `autofs_negative_timeout`:
   Specifies for how many seconds should the autofs responder negative cache hits (that is, queries for invalid map entries, like nonexistent ones) before asking the back end again.
-	* Valid Options: Integer
-	* Default Value: undef
+   * Valid Options: Integer
+   * Default Value: undef
 
 
 
@@ -377,7 +432,7 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 
 ##### `command`:
   * Valid Options: String
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `enum_cache_timeout`:
   How many seconds should nss_sss cache enumerations
@@ -455,27 +510,27 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 ##### `description`:
   a brief description of this section of the config file.
   * Valid Options: Optional[String]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
   * Valid Options: Optional[Sssd::Debuglevel]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
   * Valid Options: Boolean
-  * Default value: true
+  * Default Value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
   * Valid Options: Boolean
-  * Default value: false
+  * Default Value: false
 
 ##### `allowed_uids`:
   Specifies the comma-separated list of UID values or user names that are allowed to access the PAC responder. User names are resolved to UIDs at startup.
-	* Valid Options: ArrayString
-	* Default Value: []
+  * Valid Options: ArrayString
+  * Default Value: []
 
 
 
@@ -484,22 +539,22 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 ##### `description`:
   a brief description of this section of the config file.
   * Valid Options: Optional[String]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
   * Valid Options: Optional[Sssd::Debuglevel]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
   * Valid Options: Boolean
-  * Default value: true
+  * Default Value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
   * Valid Options: Boolean
-  * Default value: false
+  * Default Value: false
 
 ##### `reconnection_retries`:
   The number of times the service will attempt to reconnect in the event of timeout.
@@ -562,22 +617,22 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 ##### `description`:
   a brief description of this section of the config file.
   * Valid Options: Optional[String]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
   * Valid Options: Optional[Sssd::Debuglevel]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
   * Valid Options: Boolean
-  * Default value: true
+  * Default Value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
   * Valid Options: Boolean
-  * Default value: false
+  * Default Value: false
 
 ##### `ssh_hash_known_hosts`:
   Whether or not to hash host names and addresses in the managed known_hosts file.
@@ -596,27 +651,27 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 ##### `description`:
   a brief description of this section of the config file.
   * Valid Options: Optional[String]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
   * Valid Options: Optional[Sssd::Debuglevel]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
   * Valid Options: Boolean
-  * Default value: true
+  * Default Value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
   * Valid Options: Boolean
-  * Default value: false
+  * Default Value: false
 
 ##### `sudo_timed`:
   Whether or not to evaluate the sudoNotBefore and sudoNotAfter attributes that implement time-dependent sudoers entries.
   * Valid Options: Boolean
-	* Default Value: false
+  * Default Value: false
 
 
 ## Defined Type Variables
@@ -632,22 +687,22 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 ##### `description`:
   a brief description of this section of the config file.
   * Valid Options: Optional[String]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
   * Valid Options: Optional[Sssd::Debuglevel]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
   * Valid Options: Boolean
-  * Default value: true
+  * Default Value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
   * Valid Options: Boolean
-  * Default value: false
+  * Default Value: false
 
 ##### `min_id`:
   UID and GID limits for the domain. If a domain contains an entry that is outside these limits, it is ignored.
@@ -834,7 +889,7 @@ Many of the parameters and variables below have a one-to-one correspondance to t
 
 ##### `proxy_lib_name`:
   The name of the NSS library to use in proxy domains. The NSS functions searched for in the library are in the form of _nss_$(libName)_$(function), for example _nss_files_getpwent.
-	* Valid Options: String
+  * Valid Options: String
   * Default Value: undef
 
 
@@ -1030,17 +1085,17 @@ For each variable listed below that begins with `ad_`, please reference the SSSD
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
   * Valid Options: Optional[Sssd::Debuglevel]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
   * Valid Options: Boolean
-  * Default value: true
+  * Default Value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
   * Valid Options: Boolean
-  * Default value: false
+  * Default Value: false
 
 ##### `default_shell`:
   The default shell for users created with SSSD userspace tools.
@@ -1083,6 +1138,44 @@ For each variable listed below that begins with `ad_`, please reference the SSSD
   * Default Value: undef
 
 
+### sssd::provider::ipa
+
+See sssd-ipa.conf(5) for additional information.
+
+##### `ipa_domain`
+##### `ipa_server`
+##### `ipa_backup_server`
+##### `ipa_enable_dns_sites`
+##### `ipa_hostname`
+##### `ipa_server_mode`
+##### `dyndns_auth`
+##### `dyndns_force_tcp`
+##### `dyndns_iface`
+##### `dyndns_refresh_interval`
+##### `dyndns_server`
+##### `dyndns_ttl`
+##### `dyndns_update`
+##### `dyndns_update_ptr`
+##### `ipa_automount_location`
+##### `ipa_hbac_refresh`
+##### `ipa_hbac_search_base`
+##### `ipa_hbac_selinux`
+##### `ipa_host_search_base`
+##### `ipa_master_domains_search_base`
+##### `ipa_selinux_search_base`
+##### `ipa_subdomains_search_base`
+##### `ipa_views_search_base`
+##### `krb5_confd_path`
+##### `krb5_realm`
+##### `krb5_store_password_if_offline`
+##### `ldap_tls_cacert`
+##### `ldap_tls_cipher_suite`
+
+##### `use_service_discovery`:
+  Whether to add '_srv_' to the list of IPA servers,
+  thereby enabling service discovery of these servers
+
+
 
 ### sssd::provider::krb5
 
@@ -1092,17 +1185,17 @@ For each variable listed below that begins with `krb5_`, please reference the SS
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
   * Valid Options: Optional[Sssd::Debuglevel]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
   * Valid Options: Boolean
-  * Default value: true
+  * Default Value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
   * Valid Options: Boolean
-  * Default value: false
+  * Default Value: false
 
 ##### `krb5_server`:
   * Valid Options: Simplib::Host
@@ -1114,43 +1207,43 @@ For each variable listed below that begins with `krb5_`, please reference the SS
 
 ##### `krb5_kpasswd`:
   * Valid Options: Optional[String]
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `krb5_ccachedir`:
   * Valid Options: Optional[Stdlib::Absolutepath]
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `krb5_ccname_template`:
   * Valid Options: Optional[Stdlib::Absolutepath]
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `krb5_auth_timeout`:
   * Valid Options: Integer
-  * Default Value: 15,
+  * Default Value: 15
 
 ##### `krb5_validate`:
   * Valid Options: Boolean
-  * Default Value: false,
+  * Default Value: false
 
 ##### `krb5_keytab`:
   * Valid Options: Optional[Stdlib::Absolutepath]
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `krb5_store_password_if_offline`:
   * Valid Options: Boolean
-  * Default Value: false,
+  * Default Value: false
 
 ##### `krb5_renewable_lifetime`:
   * Valid Options: Optional[String]
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `krb5_lifetime`:
   * Valid Options: Optional[String]
-  * Default Value: undef,
+  * Default Value: undef
 
 ##### `krb5_renew_interval`:
   * Valid Options: Integer
-  * Default Value: 0,
+  * Default Value: 0
 
 ##### `krb5_use_fast`:
   * Valid Options: 'never','try','demand'
@@ -1169,17 +1262,17 @@ Defaults for these variables can be found in the sssd::provider::ldap manifest
 ##### `debug_level`:
   level of verbosity of debug of this section of the config file.
   * Valid Options: Optional[Sssd::Debuglevel]
-  * Default value: undef
+  * Default Value: undef
 
 ##### `debug_timestamps`:
   determines if the log file for this section of the config file will use timestamps
   * Valid Options: Boolean
-  * Default value: true
+  * Default Value: true
 
 ##### `debug_microseconds`:
   determines if the log file will use microseconds in timestamps
   * Valid Options: Boolean
-  * Default value: false
+  * Default Value: false
 
 ##### `ldap_uri`
 ##### `ldap_backup_uri`
