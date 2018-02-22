@@ -1,0 +1,32 @@
+HOSTS:
+  ad:
+    roles:
+      - windows
+      - ad
+    platform: windows-server-amd64
+    box: opentable/win-2012r2-standard-amd64-nocm # VBOX ONLY
+    hypervisor: vagrant
+    vagrant_memsize: 2048
+    vagrant_cpus: 2
+    user: vagrant
+    communicator: winrm
+    is_cygwin: false
+  centos7:
+    roles:
+      - default
+      - client
+    platform: el-7-x86_64
+    box: centos/7
+    hypervisor: vagrant
+  # Commented out to speed up testing, it is unused at the moment until
+  # the process to get an AD server up is more solid
+  # centos6:
+  #   roles:
+  #     - client
+  #   platform: el-6-x86_64
+  #   box: centos/6
+  #   hypervisor: vagrant
+CONFIG:
+  log_level: verbose
+  type: aio
+  vagrant_memsize: 256
