@@ -56,6 +56,7 @@ class sssd::service::nss (
 
   concat::fragment { 'sssd_nss.service':
     target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/service/nss.erb")
+    content => template("${module_name}/service/nss.erb"),
+    order   => '30'
   }
 }

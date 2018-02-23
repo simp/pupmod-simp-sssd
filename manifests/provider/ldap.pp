@@ -380,6 +380,7 @@ define sssd::provider::ldap (
 
   concat::fragment { "sssd_${name}_ldap_provider.domain":
     target  => '/etc/sssd/sssd.conf',
-    content => template('sssd/provider/ldap.erb')
+    content => template('sssd/provider/ldap.erb'),
+    order   => $name
   }
 }

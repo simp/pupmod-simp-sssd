@@ -19,6 +19,8 @@ describe 'sssd::provider::ipa' do
           it { is_expected.to compile.with_all_deps }
           it {
             expected_content = <<EOM
+
+# sssd::provider::ipa
 ipa_domain = #{facts[:domain]}
 ipa_server = _srv_,ipaserver.#{facts[:domain]}
 ipa_enable_dns_sites = false
@@ -72,6 +74,8 @@ EOM
           it { is_expected.to compile.with_all_deps }
           it {
             expected_content = <<EOM
+
+# sssd::provider::ipa
 ipa_domain = #{facts[:domain]}
 ipa_server = ipaserver1.#{facts[:domain]}
 ipa_backup_server = ipaserver2.#{facts[:domain]}

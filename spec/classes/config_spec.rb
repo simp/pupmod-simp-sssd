@@ -1,22 +1,26 @@
 require 'spec_helper'
 
 default_content  = <<EOM
+
+# sssd::config
 [sssd]
-domains = LOCAL,LDAP
-services = nss,pam,ssh,sudo
+domains = LOCAL, LDAP
+services = nss, pam, ssh, sudo
 config_file_version = 2
 reconnection_retries = 3
 debug_timestamps = true
 debug_microseconds = false
 EOM
 
-default_content_with_ipa_domain = default_content.gsub(/LOCAL,LDAP/,'LOCAL,LDAP,ipa.example.com')
+default_content_with_ipa_domain = default_content.gsub(/LOCAL, LDAP/,'LOCAL, LDAP, ipa.example.com')
 
 default_content_plus_optional = <<EOM
+
+# sssd::config
 [sssd]
 description = sssd section description
-domains = LOCAL,LDAP
-services = nss,pam,ssh,sudo
+domains = LOCAL, LDAP
+services = nss, pam, ssh, sudo
 config_file_version = 2
 reconnection_retries = 3
 re_expression = (.+)@(.+)

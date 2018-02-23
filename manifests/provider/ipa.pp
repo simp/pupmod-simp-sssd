@@ -87,6 +87,7 @@ define sssd::provider::ipa (
 
   concat::fragment { "sssd_${name}_ipa_provider.domain":
     target  => '/etc/sssd/sssd.conf',
-    content => template('sssd/provider/ipa.erb')
+    content => template('sssd/provider/ipa.erb'),
+    order   => $name
   }
 }

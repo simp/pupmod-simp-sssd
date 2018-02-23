@@ -1,0 +1,18 @@
+HOSTS:
+  centos7:
+    roles:
+      - default
+      - client
+    platform: el-7-x86_64
+    box: centos/7
+    hypervisor: vagrant
+  centos6:
+    roles:
+      - client
+    platform: el-6-x86_64
+    box: centos/6
+    hypervisor: vagrant
+CONFIG:
+  log_level: verbose
+  type: aio
+  vagrant_memsize: 256

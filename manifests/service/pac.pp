@@ -23,6 +23,7 @@ class sssd::service::pac (
 
   concat::fragment { 'sssd_pac.service':
     target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/service/pac.erb")
+    content => template("${module_name}/service/pac.erb"),
+    order   => '30'
   }
 }

@@ -23,6 +23,7 @@ class sssd::service::autofs (
 
   concat::fragment { 'sssd_autofs.service':
     target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/service/autofs.erb")
+    content => template("${module_name}/service/autofs.erb"),
+    order   => '30'
   }
 }

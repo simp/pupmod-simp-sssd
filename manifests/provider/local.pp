@@ -39,6 +39,7 @@ define sssd::provider::local (
 
   concat::fragment { "sssd_${name}_local_provider.domain":
     target  => '/etc/sssd/sssd.conf',
-    content => template('sssd/provider/local.erb')
+    content => template('sssd/provider/local.erb'),
+    order   => $name
   }
 }

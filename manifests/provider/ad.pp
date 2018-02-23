@@ -94,20 +94,11 @@ define sssd::provider::ad (
   Optional[Array[String]]                                    $ad_gpo_map_service                       = undef,
   Optional[Array[String]]                                    $ad_gpo_map_permit                        = undef,
   Optional[Array[String]]                                    $ad_gpo_map_deny                          = undef,
-  Optional[
-    Enum[
-      'interactive',
-      'remote_interactive',
-      'network',
-      'batch',
-      'service',
-      'permit',
-      'deny'
-      ]
-  ]                                                          $ad_gpo_default_right                     = undef,
+  Optional[Sssd::ADDefaultRight]                             $ad_gpo_default_right                     = undef,
   Optional[Integer[0]]                                       $ad_maximum_machine_account_password_age  = undef,
   Optional[Pattern['^\d+:\d+$']]                             $ad_machine_account_password_renewal_opts = undef,
-  Boolean                                                    $dyndns_update                            = true,
+  Optional[String]                                           $default_shell                            = undef,
+  Optional[Boolean]                                          $dyndns_update                            = true,
   Optional[Integer]                                          $dyndns_ttl                               = undef,
   Optional[Array[String]]                                    $dyndns_ifaces                            = undef,
   Optional[Integer]                                          $dyndns_refresh_interval                  = undef,
@@ -115,9 +106,12 @@ define sssd::provider::ad (
   Optional[Boolean]                                          $dyndns_force_tcp                         = undef,
   Optional[Simplib::Hostname]                                $dyndns_server                            = undef,
   Optional[String]                                           $override_homedir                         = undef,
+  Optional[String]                                           $fallback_homedir                         = undef,
   Optional[Stdlib::Absolutepath]                             $homedir_substring                        = undef,
-  Optional[Boolean]                                          $krb5_use_enterprise_principal            = undef,
+  Optional[String]                                           $krb5_realm                               = $ad_domain,
   Optional[Variant[Enum['none'],Stdlib::Absolutepath]]       $krb5_confd_path                          = undef,
+  Optional[Boolean]                                          $krb5_use_enterprise_principal            = undef,
+  Optional[Boolean]                                          $krb5_store_password_if_offline           = false,
   Boolean                                                    $ldap_id_mapping                          = true,
   Optional[Integer[0]]                                       $ldap_idmap_range_min                     = undef,
   Optional[Integer[1]]                                       $ldap_idmap_range_max                     = undef,
@@ -131,6 +125,7 @@ define sssd::provider::ad (
 
   concat::fragment { "sssd_${name}_ad_provider.domain":
     target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/provider/ad.erb")
+    content => template("${module_name}/provider/ad.erb"),
+    order   => $name
   }
 }

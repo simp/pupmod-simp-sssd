@@ -75,7 +75,7 @@ define sssd::domain (
   Optional[String]                           $description                  = undef,
   Integer[0]                                 $min_id                       = simplib::lookup('simp_options::uid::min', { 'default_value' => pick(fact('login_defs.uid_min'), 1000) }),
   Integer[0]                                 $max_id                       = simplib::lookup('simp_options::uid::max', { 'default_value' => pick(fact('login_defs.uid_max'), 0 ) }),
-  Boolean                                    $enumerate                    = false,
+  Optional[Boolean]                          $enumerate                    = false,
   Boolean                                    $subdomain_enumerate          = false,
   Optional[Integer]                          $force_timeout                = undef,
   Optional[Integer]                          $entry_cache_timeout          = undef,
@@ -116,6 +116,7 @@ define sssd::domain (
 
   concat::fragment { "sssd_${name}_.domain":
     target  => '/etc/sssd/sssd.conf',
-    content => template('sssd/domain.erb')
+    content => template('sssd/domain.erb'),
+    order   => $name
   }
 }
