@@ -47,6 +47,7 @@
 # @param ad_gpo_default_right
 # @param ad_maximum_machine_account_password_age
 # @param ad_machine_account_password_renewal_opts
+# @param default_shell
 # @param dyndns_update
 # @param dyndns_ttl
 #
@@ -61,8 +62,11 @@
 # @param dyndns_force_tcp
 # @param dyndns_server
 # @param override_homedir
+# @param fallback_homedir
 # @param homedir_substring
+# @param krb5_realm
 # @param krb5_use_enterprise_principal
+# @param krb5_store_password_if_offline
 # @param krb5_confd_path
 # @param ldap_id_mapping
 # @param ldap_idmap_range_min
