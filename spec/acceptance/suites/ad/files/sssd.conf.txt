@@ -1,0 +1,104 @@
+# This file is managed by Puppet. DO NOT EDIT.
+
+# sssd::config
+[sssd]
+domains = LOCAL, test.case
+services = nss, pam, ssh, sudo
+config_file_version = 2
+reconnection_retries = 3
+debug_timestamps = true
+debug_microseconds = false
+
+# sssd::service::autofs
+[autofs]
+debug_timestamps = true
+debug_microseconds = false
+
+# sssd::service::nss
+[nss]
+debug_timestamps = true
+debug_microseconds = false
+reconnection_retries = 3
+enum_cache_timeout = 120
+entry_cache_nowait_percentage = 0
+entry_negative_timeout = 15
+filter_users = root
+filter_groups = root
+filter_users_in_groups = true
+
+# sssd::service::pam
+[pam]
+debug_timestamps = true
+debug_microseconds = false
+reconnection_retries = 3
+offline_credentials_expiration = 0
+offline_failed_login_attempts = 3
+offline_failed_login_delay = 5
+pam_verbosity = 1
+pam_id_timeout = 5
+pam_pwd_expiration_warning = 7
+
+# sssd::service::ssh
+[ssh]
+debug_timestamps = true
+debug_microseconds = false
+ssh_hash_known_hosts = true
+
+# sssd::service::sudo
+[sudo]
+debug_timestamps = true
+debug_microseconds = false
+sudo_timed = false
+
+# sssd::domain LOCAL
+[domain/LOCAL]
+debug_timestamps = true
+debug_microseconds = false
+description = LOCAL Users Domain
+min_id = 1000
+max_id = 60000
+enumerate = false
+cache_credentials = false
+account_cache_expiration = 0
+use_fully_qualified_names = false
+ignore_group_members = true
+id_provider = local
+auth_provider = local
+access_provider = permit
+dns_resolver_timeout = 5
+case_sensitive = true
+proxy_fast_alias = false
+
+# sssd::provider::local
+debug_timestamps = true
+debug_microseconds = false
+create_homedir = true
+remove_homedir = true
+
+# sssd::domain test.case
+[domain/test.case]
+debug_timestamps = true
+debug_microseconds = false
+min_id = 1000
+max_id = 0
+enumerate = false
+cache_credentials = true
+account_cache_expiration = 0
+use_fully_qualified_names = true
+ignore_group_members = true
+id_provider = ad
+access_provider = ad
+dns_resolver_timeout = 5
+case_sensitive = true
+proxy_fast_alias = false
+realmd_tags = manages-system joined-with-samba
+
+# sssd::provider::ad
+ad_domain = test.case
+ad_server = ad.test.case
+default_shell = /bin/bash
+dyndns_update = true
+fallback_homedir = /home/%u@%d
+krb5_realm = TEST.CASE
+krb5_store_password_if_offline = true
+ldap_id_mapping = true

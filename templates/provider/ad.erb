@@ -110,7 +110,9 @@ krb5_store_password_if_offline = <%= @krb5_store_password_if_offline.to_s %>
 <% end -%>
 ldap_id_mapping = <%= @ldap_id_mapping %>
 <% if @ldap_id_mapping -%>
-ldap_schema = ad
+<%   if @ldap_schema -%>
+ldap_schema = <%= @ldap_schema %>
+<%   end -%>
 <%   if @ldap_idmap_range_min -%>
 ldap_idmap_range_min = <%= @ldap_idmap_range_min %>
 <%   end -%>

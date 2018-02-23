@@ -1,3 +1,15 @@
+* Wed Feb 28 2018 Nick Miller <nick.miller@onyxpoint.com> - 6.1.0-0
+- Some template and concat changes to make debugging the module easier
+  - Add headers to more easily diagnose where to stick params
+  - Order the concat sections
+- Add some missing params from sssd::provider::ad
+  - default_shell
+  - dyndns_update
+  - fallback_homedir
+  - krb5_realm
+  - krb5_store_password_if_offline
+  - ldap_schema
+
 * Fri Jan 19 2018 Liz Nemsick <lnemsick.simp@gmail.com> - 6.1.0-0
 - Added sssd class option to automatically configure SSSD for an IPA
   domain, when the host is joined to an IPA domain.

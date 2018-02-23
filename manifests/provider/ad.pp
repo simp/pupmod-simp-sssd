@@ -69,6 +69,7 @@
 # @param krb5_store_password_if_offline
 # @param krb5_confd_path
 # @param ldap_id_mapping
+# @param ldap_schema
 # @param ldap_idmap_range_min
 # @param ldap_idmap_range_max
 # @param ldap_idmap_range_size
@@ -117,6 +118,7 @@ define sssd::provider::ad (
   Optional[Boolean]                                          $krb5_use_enterprise_principal            = undef,
   Optional[Boolean]                                          $krb5_store_password_if_offline           = false,
   Boolean                                                    $ldap_id_mapping                          = true,
+  Optional[Boolean]                                          $ldap_schema                              = undef,
   Optional[Integer[0]]                                       $ldap_idmap_range_min                     = undef,
   Optional[Integer[1]]                                       $ldap_idmap_range_max                     = undef,
   Optional[Integer[1]]                                       $ldap_idmap_range_size                    = undef,
