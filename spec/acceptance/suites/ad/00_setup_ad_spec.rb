@@ -39,9 +39,11 @@ describe 'AD' do
     end
 
     it 'should be a healthy AD server' do
+      # Need to remove all old Event Viewer messages first
+      on(server, exec_ps_cmd('wevtutil el | Foreach-Object {wevtutil cl "$_"}'))
+
       # https://technet.microsoft.com/en-us/library/cc758753(v=ws.10).aspx
       result = on(server, exec_ps_cmd('dcdiag'))
-      require 'pry'; binding.pry
       expect(result.stdout).not_to match(/failed/)
     end
 
