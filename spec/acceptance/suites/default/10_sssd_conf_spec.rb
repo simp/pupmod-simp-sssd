@@ -94,7 +94,7 @@ describe 'sssd' do
         apply_manifest_on(host, manifest)
       end
       describe file('/etc/sssd/sssd.conf') do
-        expected = File.read('spec/acceptance/suites/SIMP_4438/files/sssd.conf.txt')
+        expected = File.read('spec/acceptance/suites/default/files/sssd.conf.txt')
         it { is_expected.to be_file }
         its(:content) { is_expected.to match(expected) }
       end
