@@ -45,5 +45,6 @@ class sssd::config {
   concat::fragment { 'sssd_main_config':
     target  => '/etc/sssd/sssd.conf',
     content => template("${module_name}/sssd.conf.erb")
+    # add ordering so this is first
   }
 }
