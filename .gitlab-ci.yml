@@ -196,8 +196,6 @@ acceptance-default:
     - beaker
   <<: *cache_bundler
   <<: *setup_env_beaker
-  variables:
-    PUPPET_VERSION: '4.10'
   script:
     - bundle exec rake beaker:suites[default]
 
@@ -208,7 +206,6 @@ acceptance-fips-default:
   <<: *cache_bundler
   <<: *setup_env_beaker
   variables:
-    PUPPET_VERSION: '4.10'
     BEAKER_fips: 'yes'
   script:
     - bundle exec rake beaker:suites[default]
@@ -219,7 +216,5 @@ acceptance-ad:
     - beaker
   <<: *cache_bundler
   <<: *setup_env_beaker
-  variables:
-    PUPPET_VERSION: '4.10'
   script:
     - bundle exec rake beaker:suites[default]
