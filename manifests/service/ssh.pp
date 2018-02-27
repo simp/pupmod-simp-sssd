@@ -25,6 +25,7 @@ class sssd::service::ssh (
 
   concat::fragment { 'sssd_ssh.service':
     target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/service/ssh.erb")
+    content => template("${module_name}/service/ssh.erb"),
+    order   => '30'
   }
 }

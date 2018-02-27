@@ -1,3 +1,5 @@
+
+# sssd::provider::ad
 <% if @ad_domain -%>
 ad_domain = <%= @ad_domain %>
 <% end -%>
@@ -61,6 +63,9 @@ ad_maximum_machine_account_password_age = <%= @ad_maximum_machine_account_passwo
 <% if @ad_machine_account_password_renewal_opts -%>
 ad_machine_account_password_renewal_opts = <%= @ad_machine_account_password_renewal_opts %>
 <% end -%>
+<% if @default_shell -%>
+default_shell = <%= @default_shell %>
+<% end -%>
 <% if @dyndns_update -%>
 dyndns_update = <%= @dyndns_update %>
 <%   if @dyndns_ttl -%>
@@ -88,14 +93,23 @@ override_homedir = <%= @override_homedir %>
 <% if @homedir_substring -%>
 homedir_substring = <%= @homedir_substring %>
 <% end -%>
-<% if @krb5_use_enterprise_principal -%>
-krb5_use_enterprise_principal = <%= @krb5_use_enterprise_principal %>
+<% if @fallback_homedir -%>
+fallback_homedir = <%= @fallback_homedir %>
+<% end -%>
+<% if @krb5_realm -%>
+krb5_realm = <%= @krb5_realm %>
 <% end -%>
 <% if @krb5_confd_path -%>
 krb5_confd_path = <%= @krb5_confd_path %>
 <% end -%>
-<% if @ldap_id_mapping -%>
+<% if @krb5_use_enterprise_principal -%>
+krb5_use_enterprise_principal = <%= @krb5_use_enterprise_principal %>
+<% end -%>
+<% if @krb5_store_password_if_offline -%>
+krb5_store_password_if_offline = <%= @krb5_store_password_if_offline.to_s %>
+<% end -%>
 ldap_id_mapping = <%= @ldap_id_mapping %>
+<% if @ldap_id_mapping -%>
 ldap_schema = ad
 <%   if @ldap_idmap_range_min -%>
 ldap_idmap_range_min = <%= @ldap_idmap_range_min %>

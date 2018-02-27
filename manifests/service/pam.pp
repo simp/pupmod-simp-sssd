@@ -44,6 +44,7 @@ class sssd::service::pam (
 
   concat::fragment { 'sssd_pam.service':
     target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/service/pam.erb")
+    content => template("${module_name}/service/pam.erb"),
+    order   => '30'
   }
 }

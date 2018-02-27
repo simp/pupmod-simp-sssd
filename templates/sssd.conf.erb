@@ -1,9 +1,11 @@
+
+# sssd::config
 [sssd]
 <% if @_description -%>
 description = <%= @_description %>
 <% end -%>
-domains = <%= Array(@_domains).join(',') %>
-services = <%= Array(@_services).join(',') %>
+domains = <%= Array(@_domains).join(', ') %>
+services = <%= Array(@_services).join(', ') %>
 config_file_version = <%= @_config_file_version.to_s %>
 reconnection_retries = <%= @_reconnection_retries.to_s %>
 <% if @_re_expression -%>

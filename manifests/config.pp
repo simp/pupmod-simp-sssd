@@ -9,6 +9,7 @@
 #
 class sssd::config {
   assert_private()
+
   concat { '/etc/sssd/sssd.conf':
     owner          => 'root',
     group          => 'root',
@@ -44,7 +45,7 @@ class sssd::config {
 
   concat::fragment { 'sssd_main_config':
     target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/sssd.conf.erb")
-    # add ordering so this is first
+    content => template("${module_name}/sssd.conf.erb"),
+    order   => '10'
   }
 }

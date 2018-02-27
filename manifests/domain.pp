@@ -116,6 +116,7 @@ define sssd::domain (
 
   concat::fragment { "sssd_${name}_.domain":
     target  => '/etc/sssd/sssd.conf',
-    content => template('sssd/domain.erb')
+    content => template('sssd/domain.erb'),
+    order   => $name
   }
 }

@@ -23,6 +23,7 @@ class sssd::service::sudo (
 
   concat::fragment { 'sssd_sudo.service':
     target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/service/sudo.erb")
+    content => template("${module_name}/service/sudo.erb"),
+    order   => '30'
   }
 }

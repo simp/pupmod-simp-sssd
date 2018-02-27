@@ -49,6 +49,7 @@ define sssd::provider::krb5 (
 
   concat::fragment { "sssd_${name}_krb5_provider.domain":
     target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/provider/krb5.erb")
+    content => template("${module_name}/provider/krb5.erb"),
+    order   => $name
   }
 }
