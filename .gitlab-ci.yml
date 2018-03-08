@@ -217,4 +217,4 @@ ad:
   <<: *cache_bundler
   <<: *setup_env_beaker
   script:
-    - bundle exec rake beaker:suites[default]
+    - bundle exec rake beaker:suites[ad]
