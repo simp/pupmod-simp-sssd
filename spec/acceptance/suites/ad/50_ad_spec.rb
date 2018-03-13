@@ -89,19 +89,25 @@ describe 'sssd class' do
 
   context 'fix the hosts file' do
     clients.each do |host|
+      # On windows hosts, beaker does not detect the domain (that or it
+      #  isn't set yet), so the bunk value must be removed and replaced with
+      #  the FQDN of the AD server
       it 'should have the ad host with its fqdn' do
         require 'yaml'
-        # domain = fact_on(host, 'domain')
+        # Find the IP of the AD host and make a new host entry with FQDN and IP
         ad_host = YAML.load(on(host, 'puppet resource host ad. --to_yaml').stdout)
         ip = ad_host['host']['ad.']['ip']
         on(host, "puppet resource host ad.test.case ensure=present ip=#{ip} host_aliases=ad")
+        # Remove incorrect and incomplete hosts entry
         on(host, 'puppet resource host ad. ensure=absent')
+        # Also remove hosts entry with just a host shortname
         on(host, "puppet resource host #{host} ensure=absent")
       end
       it 'should make sure /etc/hosts only has the new domain in it' do
         on(host, "sed -i 's/#{domain}/test.case/' /etc/hosts")
       end
       it 'should install the realm or adcli packages' do
+        # Some of these packages only exist on EL6 or EL7
         pp = "package { ['realmd','adcli','oddjob','oddjob-mkhomedir','samba-common-tools','pam_krb5','samba4-common','krb5-workstation']: ensure => installed }"
         apply_manifest_on(host, pp)
       end
