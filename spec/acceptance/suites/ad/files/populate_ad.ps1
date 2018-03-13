@@ -24,4 +24,11 @@ Add-ADGroupMember -Identity SecurePrinting -Member CostCenter-125
 
 Add-ADGroupMember -Identity CostCenter-125 -Member mike.hammer
 Add-ADGroupMember -Identity CostCenter-123 -Member john.franklin
-Add-ADGroupMember -Identity CostCenter-123 -Member davegrohl
+
+Get-AdUser -Filter * -SearchBase "OU=Users,OU=HeadQuarter,OU=Locations,DC=test,DC=case" -Properties msSFU30NisDomain | Set-ADUser -Replace @{msSFU30NisDomain = 'test'}
+Get-AdUser -Filter * -SearchBase "OU=Users,OU=HeadQuarter,OU=Locations,DC=test,DC=case" -Properties gidnumber | Set-ADUser -Replace @{gidnumber = 40000}
+
+
+Get-AdUser -Filter {samaccountname -like "davegrohl"} | Set-ADUser -Replace @{uidnumber = 60000}
+Get-AdUser -Filter {samaccountname -like "mike.hammer"} | Set-ADUser -Replace @{uidnumber = 60001}
+Get-AdUser -Filter {samaccountname -like "john.franklin"} | Set-ADUser -Replace @{uidnumber = 60002}

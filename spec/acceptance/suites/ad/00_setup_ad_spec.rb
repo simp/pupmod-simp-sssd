@@ -28,6 +28,12 @@ describe 'AD' do
       on(server, exec_ps_cmd(forest_cmd), expect_connection_failure: true)
     end
 
+    it 'should add unix compatibility' do
+      # on(server, exec_ps_cmd('dism.exe /online /enable-feature /featurename:adminui /featurename:nis /all /quiet'))
+      on(server, exec_ps_cmd('Enable-WindowsOptionalFeature -Online -FeatureName NIS -All -NoRestart'))
+      on(server, exec_ps_cmd('Enable-WindowsOptionalFeature -Online -FeatureName AdminUI -All -NoRestart'))
+    end
+
     it 'should set the time' do
       time_cmd = 'w32tm.exe /config /manualpeerlist:"time.nist.gov" /syncfromflags:manual /reliable:YES /update'
       on(server, time_cmd)
@@ -36,31 +42,46 @@ describe 'AD' do
       server.reboot
     end
 
-    it 'should be a healthy AD server' do
-      # Need to remove all old Event Viewer messages first
-      on(server, exec_ps_cmd('wevtutil el | Foreach-Object {wevtutil cl "$_"}'))
-
-      # https://technet.microsoft.com/en-us/library/cc758753(v=ws.10).aspx
-      result = on(server, 'dcdiag')
-      expect(result.stdout).not_to match(/failed/)
+    context 'should be a healthy AD server' do
+      it 'has clean logs' do
+        # Need to remove all old Event Viewer messages first
+        on(server, exec_ps_cmd('wevtutil el | Foreach-Object {wevtutil cl "$_"}'))
+      end
+      it 'with a healthy forest' do
+        # https://technet.microsoft.com/en-us/library/cc758753(v=ws.10).aspx
+        result = on(server, 'dcdiag')
+        expect(result.stdout).not_to match(/failed/)
+      end
+      # it 'with a healthy DDNS service' do
+      #   result = on(server, 'dcdiag /test:dns /DnsDynamicUpdate')
+      #   expect(result.stdout).not_to match(/fail/)
+      # end
     end
 
-    it 'should create a test user' do
+    it 'should set the Administrator password' do
+      cmd = [
+        '([adsi]\\"WinNT://TEST/Administrator\\").SetPassword(\\"',
+        domain_pass,
+        '\\")'
+      ].join
+      on(server, exec_ps_cmd(cmd))
+    end
+
+    it 'should create test users' do
       users_csv = <<-EOF.gsub(/^\s{8}/,'')
         SamAccountName;GivenName;Surname;Name;Password
-        mike.hammer;Mike;Hammer;Mike Hammer;Pa$sw0rd
-        john.franklin;John;Franklin;John Franklin;Pa$sw0rd
-        davegrohl;Dave;Grohl;Dave Grohl;Pa$sw0rd
+        mike.hammer;Mike;Hammer;Mike Hammer;suP3rP@ssw0r!
+        john.franklin;John;Franklin;John Franklin;suP3rP@ssw0r!
+        davegrohl;Dave;Grohl;Dave Grohl;suP3rP@ssw0r!
       EOF
       create_remote_file(server, 'C:\users.csv', users_csv)
 
       sleep 90
       exec_ps_script_on(server, File.read('spec/acceptance/suites/ad/files/populate_ad.ps1'))
       sleep 40
-
     end
 
-    it 'should have users TestUser and vagrant' do
+    it 'should have users from the CSV and vagrant' do
       # https://social.technet.microsoft.com/Forums/ie/en-US/67aab9d3-1ced-4d33-8252-66a6f88713b0/exporting-ad-user-list-to-a-text-or-excel-document?forum=winserverDS
       result = exec_ps_script_on(server, 'Get-ADUser -Filter * -SearchBase "DC=test,DC=case" | select Name')
       expect(result.stdout).to match(/vagrant/)
