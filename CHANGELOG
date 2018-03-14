@@ -1,4 +1,4 @@
-* Wed Mar 14 2018 Philippe Muller <pmuller@users.github.com> - 6.1.0-0
+* Wed Mar 14 2018 Philippe Muller <philippe.muller@gmail.com> - 6.1.0-0
 - Allow passing ldap_tls_cacert to sssd::provider::ldap
 
 * Wed Feb 28 2018 Nick Miller <nick.miller@onyxpoint.com> - 6.1.0-0
