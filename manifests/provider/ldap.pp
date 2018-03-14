@@ -123,6 +123,7 @@
 # @param ldap_sasl_minssf
 # @param ldap_deref_threshold
 # @param ldap_tls_reqcert
+# @param ldap_tls_cacert
 # @param app_pki_ca_dir
 # @param app_pki_key
 # @param app_pki_cert
@@ -275,6 +276,7 @@ define sssd::provider::ldap (
   Optional[Integer]                     $ldap_sasl_minssf                  = undef,
   Optional[Integer[0]]                  $ldap_deref_threshold              = undef,
   Sssd::LdapTlsReqcert                  $ldap_tls_reqcert                  = 'demand',
+  Optional[String]                      $ldap_tls_cacert                   = undef,
   Optional[Stdlib::Absolutepath]        $app_pki_ca_dir                    = undef,
   Optional[Stdlib::Absolutepath]        $app_pki_key                       = undef,
   Optional[Stdlib::Absolutepath]        $app_pki_cert                      = undef,

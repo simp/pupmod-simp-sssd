@@ -22,6 +22,7 @@ describe 'sssd::provider::ldap' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to create_concat__fragment("sssd_#{title}_ldap_provider.domain").without_content(%r(=\s*$)) }
         it { is_expected.to create_concat__fragment("sssd_#{title}_ldap_provider.domain").without_content(%r(^\s*_.+=)) }
+        it { is_expected.to create_concat__fragment("sssd_#{title}_ldap_provider.domain").without_content('ldap_tls_cacert = ') }
 
         if ['RedHat','CentOS'].include?(facts[:os][:name])
           if facts[:os][:release][:major] < '7'
@@ -29,6 +30,25 @@ describe 'sssd::provider::ldap' do
           else
             it { is_expected.to create_concat__fragment("sssd_#{title}_ldap_provider.domain").without_content(%r(ldap_tls_cipher_suite.*-AES128)) }
           end
+        end
+      end
+    end
+  end
+end
+
+describe 'sssd::provider::ldap' do
+  context 'ldap_tls_cacert' do
+    on_supported_os.each do |os, facts|
+      context "on #{os}" do
+        let(:facts) { facts }
+        let(:title) {'test_ldap_provider'}
+        let(:precondition) { 'include ::sssd' }
+        let(:params) {{ :ldap_tls_cacert => '/path/to/cacert.pem' }}
+
+        it do
+          is_expected.to compile.with_all_deps
+          is_expected.to create_concat__fragment("sssd_#{title}_ldap_provider.domain")
+            .with_content(%r(ldap_tls_cacert = /path/to/cacert.pem\n))
         end
       end
     end

@@ -1351,6 +1351,7 @@ Defaults for these variables can be found in the sssd::provider::ldap manifest
 ##### `ldap_sasl_minssf`
 ##### `ldap_deref_threshold`
 ##### `ldap_tls_reqcert`
+##### `ldap_tls_cacert`
 ##### `app_pki_ca_dir`
 ##### `app_pki_key`
 ##### `app_pki_cert`
