@@ -11,6 +11,11 @@ include BeakerWindows::Powershell
 include BeakerWindows::Registry
 include BeakerWindows::WindowsFeature
 
+if ENV['PUPPET_VERSION']
+  # have to tell run_puppet_install_helper the version of
+  # puppet-agent that corresponds to PUPPET_VERSION
+  ENV['PUPPET_INSTALL_VERSION'] = latest_puppet_agent_version_for(ENV['PUPPET_VERSION'])
+end
 run_puppet_install_helper
 
 hosts.each do |host|
