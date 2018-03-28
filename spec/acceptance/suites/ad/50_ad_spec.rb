@@ -4,10 +4,10 @@ test_name 'SSSD connecting to an AD'
 
 describe 'sssd class' do
 
-  clients = hosts_with_role(hosts,'client')
-  ad = hosts_with_role(hosts,'ad').first
+  clients     = hosts_with_role(hosts,'client')
+  ad          = hosts_with_role(hosts,'ad').first
   domain_pass = '@dm1n=P@ssw0r'
-  domain = fact_on(clients.first, 'domain')
+  domain      = fact_on(clients.first, 'domain')
 
   let(:ad_ip) {
     require 'json'
@@ -77,9 +77,10 @@ describe 'sssd class' do
         ad_servers        => ['ad.test.case'],
         # ad_access_filters => 'test.case:OU=HeadQuarter,OU=Locations,DC=test,DC=case'
         ldap_id_mapping   => true,
+        ldap_schema       => 'ad',
         krb5_realm        => 'TEST.CASE',
-        dyndns_update     => true,
-        dyndns_ifaces     => ['eth1'],
+        dyndns_update     => true,     # add the host to dns
+        dyndns_ifaces     => ['eth1'], # vagrant uses 2 interfaces, we want the second
         default_shell     => '/bin/bash',
         fallback_homedir  => '/home/%u@%d',
         krb5_store_password_if_offline => true,

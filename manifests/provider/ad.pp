@@ -118,7 +118,7 @@ define sssd::provider::ad (
   Optional[Boolean]                                          $krb5_use_enterprise_principal            = undef,
   Optional[Boolean]                                          $krb5_store_password_if_offline           = false,
   Boolean                                                    $ldap_id_mapping                          = true,
-  Optional[Boolean]                                          $ldap_schema                              = undef,
+  Optional[String]                                           $ldap_schema                              = undef,
   Optional[Integer[0]]                                       $ldap_idmap_range_min                     = undef,
   Optional[Integer[1]]                                       $ldap_idmap_range_max                     = undef,
   Optional[Integer[1]]                                       $ldap_idmap_range_size                    = undef,
