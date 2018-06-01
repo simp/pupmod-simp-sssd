@@ -1,3 +1,7 @@
+* Fri Jun 01 2018 Adam Yohrling <adam.yohrling@onyxpoint.com> - 6.1.2-0
+- Added ldap_use_tokengroups, ldap_group_objectsid, ldap_user_objectsid to sssd::provider::ad
+- Updated required version of puppetlabs-stdlib to 4.19.0 since fact function is used
+
 * Wed Mar 28 2018 Nick Miller <nick.miller@onyxpoint.com> - 6.1.1-0
 - sssd::provider::ad::ldap_schema should be a string, not a boolean
 - AD test cleanup
