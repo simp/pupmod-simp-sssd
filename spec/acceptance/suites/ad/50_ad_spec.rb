@@ -190,8 +190,12 @@ describe 'sssd class' do
 
     clients.each do |host|
       it 'should install packages for testing' do
-        host.install_package('epel-release')
-        host.install_package('sshpass')
+        retry_on(host,
+          'yum install -y epel-release ; yum install -y sshpass',
+          :max_retries    => 5,
+          :retry_interval => 15,
+          :verbose        => true
+        )
       end
       users.each do |user,pass|
         it 'should be able to log in with password' do
