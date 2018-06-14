@@ -90,6 +90,10 @@ describe 'sssd class' do
 
   context 'fix the hosts file' do
     clients.each do |host|
+      it 'should install packages for testing' do
+        host.install_package('epel-release')
+        host.install_package('sshpass')
+      end
       # On windows hosts, beaker does not detect the domain (that or it
       #  isn't set yet), so the bunk value must be removed and replaced with
       #  the FQDN of the AD server
@@ -189,14 +193,6 @@ describe 'sssd class' do
     }
 
     clients.each do |host|
-      it 'should install packages for testing' do
-        retry_on(host,
-          'yum install -y epel-release ; yum install -y sshpass',
-          :max_retries    => 5,
-          :retry_interval => 15,
-          :verbose        => true
-        )
-      end
       users.each do |user,pass|
         it 'should be able to log in with password' do
           ssh_cmd = [
