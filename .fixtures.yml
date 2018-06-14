@@ -4,24 +4,22 @@ fixtures:
     auditd: https://github.com/simp/pupmod-simp-auditd
     augeasproviders_core: https://github.com/simp/augeasproviders_core
     augeasproviders_grub: https://github.com/simp/augeasproviders_grub
-    augeasproviders_ssh: https://github.com/simp/augeasproviders_ssh
     concat:
       # master is beyond 4.1.1, but has breaking changes to
       # how fragments are ordered (MODULES-6625)
       repo: https://github.com/simp/puppetlabs-concat
       ref: 4.1.1
-    logrotate: https://github.com/simp/pupmod-simp-logrotate
+    pki: https://github.com/simp/pupmod-simp-pki
+    simplib: https://github.com/simp/pupmod-simp-simplib
+    stdlib: https://github.com/simp/puppetlabs-stdlib
+
+    # Fixtures for the AD acceptance test
+    augeasproviders_ssh: https://github.com/simp/augeasproviders_ssh
     nsswitch: https://github.com/simp/puppet-nsswitch
     pam: https://github.com/simp/pupmod-simp-pam
-    pki: https://github.com/simp/pupmod-simp-pki
     oddjob: https://github.com/simp/pupmod-simp-oddjob
     resolv: https://github.com/simp/pupmod-simp-resolv
-    rsyslog: https://github.com/simp/pupmod-simp-rsyslog
     simp: https://github.com/simp/pupmod-simp-simp
-    simp_options: https://github.com/simp/pupmod-simp-simp_options
-    simplib: https://github.com/simp/pupmod-simp-simplib
     ssh: https://github.com/simp/pupmod-simp-ssh
-    stdlib: https://github.com/simp/puppetlabs-stdlib
-    tcpwrappers: https://github.com/simp/pupmod-simp-tcpwrappers
   symlinks:
     sssd: "#{source_dir}"

@@ -172,7 +172,7 @@ describe 'sssd class' do
       it 'should be able to id one of the test users' do
         ['mike.hammer','john.franklin','davegrohl'].each do |user|
           id = on(host, "id #{user}@test.case")
-          expect(id.stdout).to match(/domain users@test.case/)
+          expect(id.stdout).to match(/#{user}@test.case/)
 
           su = on(host, "su #{user}@test.case -c 'cd; pwd; exit'")
           expect(su.stdout).to match(%r{/home/#{user}@test.case})
