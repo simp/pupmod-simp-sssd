@@ -1,5 +1,5 @@
 * Thu Jun 14 2018 Nick Miller <nick.miller@onyxpoint.com> - 6.1.2-0
-- Update systemd fixtures and CI assets
+- Cleanup unneeded fixtures and update CI assets
 
 * Wed Mar 28 2018 Nick Miller <nick.miller@onyxpoint.com> - 6.1.1-0
 - sssd::provider::ad::ldap_schema should be a string, not a boolean
