@@ -10,26 +10,12 @@ describe 'sssd::install' do
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd::install') }
           it { is_expected.to create_class('sssd::install::client') }
-          it {
-            if facts[:operatingsystemmajrelease] > '6'
-              is_expected.to contain_file('/etc/sssd').with({
-                :ensure  => 'directory',
-                :owner   => 'sssd',
-                :group   => 'root',
-                :mode   => '0640',
-                :require   => 'Package[sssd]',
-              })
-            else
-              is_expected.to contain_file('/etc/sssd').with({
-                :ensure  => 'directory',
-                :owner   => 'root',
-                :group   => 'root',
-                :mode   => '0640',
-                :require   => 'Package[sssd]',
-              })
-            end
-          }
-
+          it { is_expected.to contain_file('/etc/sssd').with({
+            :ensure  => 'directory',
+            :group   => 'root',
+            :mode    => '0711',
+            :require => 'Package[sssd]',
+          }) }
           it { is_expected.to contain_package('sssd').with_ensure('latest') }
           it { is_expected.to contain_package('sssd-tools').with_ensure('latest') }
           it { is_expected.to contain_package('sssd-client').with_ensure('latest') }
