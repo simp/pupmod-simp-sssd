@@ -9,7 +9,7 @@ class sssd::service {
     ensure  => 'file',
     owner   => 'root',
     group   => 'root',
-    mode    => '0754',
+    mode    => '0755',
     seltype => 'sssd_initrc_exec_t',
     source  => 'puppet:///modules/sssd/sssd.sysinit',
     notify  => Service['sssd']
