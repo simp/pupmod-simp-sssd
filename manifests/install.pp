@@ -15,17 +15,10 @@ class sssd::install (
 ) {
   contain 'sssd::install::client'
 
-  if ( $facts['operatingsystem'] in ['RedHat','CentOS'] ) and ( $facts['operatingsystemmajrelease'] > '6' ) {
-    $_sssd_user = 'sssd'
-  } else {
-    $_sssd_user = 'root'
-  }
-
   file { '/etc/sssd':
     ensure  => 'directory',
-    owner   => $_sssd_user,
     group   => 'root',
-    mode    => '0640',
+    mode    => '0711',
     require => Package['sssd']
   }
 
