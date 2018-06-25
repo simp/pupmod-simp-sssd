@@ -195,6 +195,7 @@ default:
   <<: *cache_bundler
   <<: *setup_bundler_env
   script:
+    - bundle exec rake spec_clean
     - bundle exec rake beaker:suites[default]
 
 fips-default:
@@ -206,6 +207,7 @@ fips-default:
   variables:
     BEAKER_fips: 'yes'
   script:
+    - bundle exec rake spec_clean
     - bundle exec rake beaker:suites[default]
 
 ad:
@@ -215,4 +217,6 @@ ad:
   <<: *cache_bundler
   <<: *setup_bundler_env
   script:
+    - bundle exec rake spec_clean
     - bundle exec rake beaker:suites[ad]
+  retry: 1

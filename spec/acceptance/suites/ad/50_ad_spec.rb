@@ -90,6 +90,10 @@ describe 'sssd class' do
 
   context 'fix the hosts file' do
     clients.each do |host|
+      it 'should install packages for testing' do
+        host.install_package('epel-release')
+        host.install_package('sshpass')
+      end
       # On windows hosts, beaker does not detect the domain (that or it
       #  isn't set yet), so the bunk value must be removed and replaced with
       #  the FQDN of the AD server
@@ -172,7 +176,7 @@ describe 'sssd class' do
       it 'should be able to id one of the test users' do
         ['mike.hammer','john.franklin','davegrohl'].each do |user|
           id = on(host, "id #{user}@test.case")
-          expect(id.stdout).to match(/domain users@test.case/)
+          expect(id.stdout).to match(/#{user}@test.case/)
 
           su = on(host, "su #{user}@test.case -c 'cd; pwd; exit'")
           expect(su.stdout).to match(%r{/home/#{user}@test.case})
@@ -189,10 +193,6 @@ describe 'sssd class' do
     }
 
     clients.each do |host|
-      it 'should install packages for testing' do
-        host.install_package('epel-release')
-        host.install_package('sshpass')
-      end
       users.each do |user,pass|
         it 'should be able to log in with password' do
           ssh_cmd = [
