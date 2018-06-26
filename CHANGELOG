@@ -3,6 +3,7 @@
   - /etc/sssd/ owner is no longer managed
   - /etc/sssd/ perms went from 0640 to 0711
   - /etc/init.d/sssd went from 0754 to 0755 on EL6
+- Update version range of auditd dependency in metadata.json
 - Cleanup requires in metadata.json
 - Cleanup unneeded fixtures and update CI assets
 
