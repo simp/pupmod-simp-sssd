@@ -13,24 +13,16 @@
   ],
   "dependencies": [
     {
-      "name": "simp/auditd",
-      "version_requirement": ">= 7.0.0 < 8.0.0"
-    },
-    {
       "name": "puppetlabs/stdlib",
       "version_requirement": ">= 4.19.0 < 5.0.0"
     },
     {
-      "name": "simp/simpcat",
-      "version_requirement": ">= 6.0.0 < 7.0.0"
+      "name": "simp/auditd",
+      "version_requirement": ">= 7.0.0 < 9.0.0"
     },
     {
       "name": "simp/simplib",
       "version_requirement": ">= 3.9.0 < 4.0.0"
-    },
-    {
-      "name": "simp/simp_options",
-      "version_requirement": ">= 1.0.0 < 2.0.0"
     }
   ],
   "operatingsystem_support": [

@@ -219,3 +219,4 @@ ad:
   script:
     - bundle exec rake spec_clean
     - bundle exec rake beaker:suites[ad]
+  retry: 1
