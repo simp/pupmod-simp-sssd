@@ -149,3 +149,4 @@ fallback_homedir = /home/%u@%d
 krb5_realm = TEST.CASE
 krb5_store_password_if_offline = true
 ldap_id_mapping = false
+ldap_use_tokengroups = true

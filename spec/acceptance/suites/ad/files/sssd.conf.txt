@@ -103,3 +103,4 @@ krb5_realm = TEST.CASE
 krb5_store_password_if_offline = true
 ldap_id_mapping = true
 ldap_schema = ad
+ldap_use_tokengroups = true
