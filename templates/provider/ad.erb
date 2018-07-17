@@ -135,3 +135,10 @@ ldap_idmap_autorid_compat = <%= @ldap_idmap_autorid_compat %>
 ldap_idmap_helper_table_size = <%= @ldap_idmap_helper_table_size %>
 <%   end -%>
 <% end -%>
+ldap_use_tokengroups = <%= @ldap_use_tokengroups %>
+<% if @ldap_group_objectsid -%>
+ldap_group_objectsid = <%= @ldap_group_objectsid %>
+<% end -%>
+<% if @ldap_user_objectsid -%>
+ldap_user_objectsid = <%= @ldap_user_objectsid %>
+<% end -%>

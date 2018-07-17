@@ -77,6 +77,9 @@
 # @param ldap_idmap_default_domain
 # @param ldap_idmap_autorid_compat
 # @param ldap_idmap_helper_table_size
+# @param ldap_use_tokengroups
+# @param ldap_group_objectsid
+# @param ldap_user_objectsid
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
@@ -125,7 +128,10 @@ define sssd::provider::ad (
   Optional[String]                                           $ldap_idmap_default_domain_sid            = undef,
   Optional[String]                                           $ldap_idmap_default_domain                = undef,
   Optional[Boolean]                                          $ldap_idmap_autorid_compat                = undef,
-  Optional[Integer[1]]                                       $ldap_idmap_helper_table_size             = undef
+  Optional[Integer[1]]                                       $ldap_idmap_helper_table_size             = undef,
+  Boolean                                                    $ldap_use_tokengroups                     = true,
+  Optional[String]                                           $ldap_group_objectsid                     = undef,
+  Optional[String]                                           $ldap_user_objectsid                      = undef,
 ) {
   include '::sssd'
 
