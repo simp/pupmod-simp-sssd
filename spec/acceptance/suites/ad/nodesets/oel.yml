@@ -18,18 +18,18 @@ HOSTS:
     user: vagrant
     communicator: winrm
     is_cygwin: false
-  centos7:
+  oel7:
     roles:
       - default
       - client
     platform: el-7-x86_64
-    box: centos/7
+    box: elastic/oel-7-x86_64
     hypervisor: vagrant
-  centos6:
+  oel6:
     roles:
       - client
     platform: el-6-x86_64
-    box: centos/6
+    box: elastic/oel-6-x86_64
     hypervisor: <%= hypervisor %>
 CONFIG:
   log_level: verbose

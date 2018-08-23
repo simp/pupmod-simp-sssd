@@ -6,30 +6,33 @@
   end
 -%>
 HOSTS:
-  ad:
-    roles:
-      - windows
-      - ad
-    platform: windows-server-amd64
-    box: opentable/win-2012r2-standard-amd64-nocm # VBOX ONLY
-    hypervisor: <%= hypervisor %>
-    vagrant_memsize: 2048
-    vagrant_cpus: 2
-    user: vagrant
-    communicator: winrm
-    is_cygwin: false
-  centos7:
+# For the future....
+#  centos7-svr:
+#    roles:
+#      - default
+#      - server
+#      - client
+#    platform: el-7-x86_64
+#    box: elastic/oel-7-x86_64
+#    hypervisor: <%= hypervisor %>
+#  centos66-svr:
+#    roles:
+#      - server
+#    platform: el-6-x86_64
+#    box: elastic/oel-6-x86_64
+#    hypervisor: <%= hypervisor %>
+  oel7-cli:
     roles:
       - default
       - client
     platform: el-7-x86_64
-    box: centos/7
-    hypervisor: vagrant
-  centos6:
+    box: elastic/oel-7-x86_64
+    hypervisor: <%= hypervisor %>
+  oel6-cli:
     roles:
       - client
     platform: el-6-x86_64
-    box: centos/6
+    box: elastic/oel-6-x86_64
     hypervisor: <%= hypervisor %>
 CONFIG:
   log_level: verbose
