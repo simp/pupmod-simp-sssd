@@ -53,9 +53,9 @@
 #
 # @param dyndns_ifaces
 #   List of interfaces whose IP Addresses should be used for dynamic DNS
-#   updates
+#   updates.  Used for the dyndns_iface setting.
 #
-#   * Has no effect if ``dyndns_update`` is not set
+#   * Has no effect if ``dyndns_update`` is not set to ``true``
 #
 # @param dyndns_refresh_interval
 # @param dyndns_update_ptr
@@ -85,30 +85,30 @@
 #
 define sssd::provider::ad (
   Optional[String]                                           $ad_domain                                = undef,
-  Optional[Array[String]]                                    $ad_enabled_domains                       = undef,
+  Optional[Array[String,1]]                                  $ad_enabled_domains                       = undef,
   Optional[Array[Variant[Simplib::Hostname, Enum['_srv_']]]] $ad_servers                               = undef,
-  Optional[Array[Simplib::Hostname]]                         $ad_backup_servers                        = undef,
+  Optional[Array[Simplib::Hostname,1]]                       $ad_backup_servers                        = undef,
   Optional[Simplib::Hostname]                                $ad_hostname                              = undef,
   Optional[Boolean]                                          $ad_enable_dns_sites                      = undef,
-  Optional[Array[String]]                                    $ad_access_filters                        = undef,
+  Optional[Array[String,1]]                                  $ad_access_filters                        = undef,
   Optional[String]                                           $ad_site                                  = undef,
   Optional[Boolean]                                          $ad_enable_gc                             = undef,
   Optional[Enum['disabled','enforcing','permissive']]        $ad_gpo_access_control                    = undef,
   Optional[Integer[1]]                                       $ad_gpo_cache_timeout                     = undef,
-  Optional[Array[String]]                                    $ad_gpo_map_interactive                   = undef,
-  Optional[Array[String]]                                    $ad_gpo_map_remote_interactive            = undef,
-  Optional[Array[String]]                                    $ad_gpo_map_network                       = undef,
-  Optional[Array[String]]                                    $ad_gpo_map_batch                         = undef,
-  Optional[Array[String]]                                    $ad_gpo_map_service                       = undef,
-  Optional[Array[String]]                                    $ad_gpo_map_permit                        = undef,
-  Optional[Array[String]]                                    $ad_gpo_map_deny                          = undef,
+  Optional[Array[String,1]]                                  $ad_gpo_map_interactive                   = undef,
+  Optional[Array[String,1]]                                  $ad_gpo_map_remote_interactive            = undef,
+  Optional[Array[String,1]]                                  $ad_gpo_map_network                       = undef,
+  Optional[Array[String,1]]                                  $ad_gpo_map_batch                         = undef,
+  Optional[Array[String,1]]                                  $ad_gpo_map_service                       = undef,
+  Optional[Array[String,1]]                                  $ad_gpo_map_permit                        = undef,
+  Optional[Array[String,1]]                                  $ad_gpo_map_deny                          = undef,
   Optional[Sssd::ADDefaultRight]                             $ad_gpo_default_right                     = undef,
   Optional[Integer[0]]                                       $ad_maximum_machine_account_password_age  = undef,
   Optional[Pattern['^\d+:\d+$']]                             $ad_machine_account_password_renewal_opts = undef,
   Optional[String]                                           $default_shell                            = undef,
   Optional[Boolean]                                          $dyndns_update                            = true,
   Optional[Integer]                                          $dyndns_ttl                               = undef,
-  Optional[Array[String]]                                    $dyndns_ifaces                            = undef,
+  Optional[Array[String,1]]                                  $dyndns_ifaces                            = undef,
   Optional[Integer]                                          $dyndns_refresh_interval                  = undef,
   Optional[Boolean]                                          $dyndns_update_ptr                        = undef,
   Optional[Boolean]                                          $dyndns_force_tcp                         = undef,

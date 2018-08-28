@@ -151,6 +151,9 @@
 # @param ldap_chpass_dns_service_name
 # @param ldap_access_filter
 # @param ldap_account_expire_policy
+#   Set this to '' when you want to omit this configuration
+#   in order to use the system default.
+#
 # @param ldap_access_order
 # @param ldap_pwdlockout_dn
 # @param ldap_deref
@@ -197,12 +200,12 @@
 #
 define sssd::provider::ldap (
   Optional[Sssd::DebugLevel]            $debug_level                       = undef,
-  Optional[String]                      $debug_timestamps                  = undef,
+  Optional[Boolean]                     $debug_timestamps                  = undef,
   Boolean                               $debug_microseconds                = false,
-  Array[Simplib::URI]                   $ldap_uri                          = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
-  Optional[Array[Simplib::URI]]         $ldap_backup_uri                   = undef,
-  Optional[Array[Simplib::URI]]         $ldap_chpass_uri                   = undef,
-  Optional[Array[Simplib::URI]]         $ldap_chpass_backup_uri            = undef,
+  Array[Simplib::URI,1]                 $ldap_uri                          = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
+  Optional[Array[Simplib::URI,1]]       $ldap_backup_uri                   = undef,
+  Optional[Array[Simplib::URI,1]]       $ldap_chpass_uri                   = undef,
+  Optional[Array[Simplib::URI,1]]       $ldap_chpass_backup_uri            = undef,
   Boolean                               $ldap_chpass_update_last_change    = true,
   String                                $ldap_search_base                  = simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => undef }),
   Sssd::LdapSchema                      $ldap_schema                       = 'rfc2307',
@@ -234,10 +237,10 @@ define sssd::provider::ldap (
   Optional[String]                      $ldap_user_nds_login_expiration_time = undef,
   Optional[String]                      $ldap_user_nds_login_allowed_time_map = undef,
   Optional[String]                      $ldap_user_principal               = undef,
-  Optional[Array[String]]               $ldap_user_extra_attrs             = undef,
+  Optional[Array[String,1]]             $ldap_user_extra_attrs             = undef,
   Optional[String]                      $ldap_user_ssh_public_key          = undef,
   Boolean                               $ldap_force_upper_case_realm       = false,
-  Optional[Integer]                     $ldap_enumeration_refresh_timeout  = undef,
+  Optional[Integer[0]]                  $ldap_enumeration_refresh_timeout  = undef,
   Optional[Integer[0]]                  $ldap_purge_cache_timeout          = undef,
   Optional[String]                      $ldap_user_fullname                = undef,
   Optional[String]                      $ldap_user_member_of               = undef,
@@ -265,7 +268,7 @@ define sssd::provider::ldap (
   Optional[String]                      $ldap_service_port                 = undef,
   Optional[String]                      $ldap_service_proto                = undef,
   Optional[String]                      $ldap_service_search_base          = undef,
-  Optional[String]                      $ldap_search_timeout               = undef,
+  Optional[Integer[0]]                  $ldap_search_timeout               = undef,
   Optional[Integer[0]]                  $ldap_enumeration_search_timeout   = undef,
   Optional[Integer[0]]                  $ldap_network_timeout              = undef,
   Optional[Integer[0]]                  $ldap_opt_timeout                  = undef,
@@ -293,8 +296,8 @@ define sssd::provider::ldap (
   Optional[Stdlib::Absolutepath]        $ldap_krb5_keytab                  = undef,
   Boolean                               $ldap_krb5_init_creds              = true,
   Optional[Integer]                     $ldap_krb5_ticket_lifetime         = undef,
-  Optional[Array[String]]               $krb5_server                       = undef,
-  Optional[Array[String]]               $krb5_backup_server                = undef,
+  Optional[Array[String,1]]             $krb5_server                       = undef,
+  Optional[Array[String,1]]             $krb5_backup_server                = undef,
   Optional[String]                      $krb5_realm                        = undef,
   Boolean                               $krb5_canonicalize                 = false,
   Boolean                               $krb5_use_kdcinfo                  = true,
@@ -321,8 +324,8 @@ define sssd::provider::ldap (
   Optional[Integer[0]]                  $ldap_sudo_full_refresh_interval   = undef,
   Optional[Integer[0]]                  $ldap_sudo_smart_refresh_interval  = undef,
   Boolean                               $ldap_sudo_use_host_filter         = true,
-  Optional[Array]                       $ldap_sudo_hostnames               = undef,
-  Optional[Array]                       $ldap_sudo_ip                      = undef,
+  Optional[Array[String,1]]             $ldap_sudo_hostnames               = undef,
+  Optional[Array[String,1]]             $ldap_sudo_ip                      = undef,
   Boolean                               $ldap_sudo_include_netgroups       = true,
   Boolean                               $ldap_sudo_include_regexp          = true,
   Optional[String]                      $ldap_autofs_map_master_name       = undef,
@@ -360,6 +363,13 @@ define sssd::provider::ldap (
   }
   else {
     $_ldap_tls_cipher_suite = $ldap_tls_cipher_suite
+  }
+
+  if empty($ldap_account_expire_policy) {
+    $_ldap_account_expire_policy = undef
+  }
+  else {
+    $_ldap_account_expire_policy = $ldap_account_expire_policy
   }
 
   if $app_pki_ca_dir {
