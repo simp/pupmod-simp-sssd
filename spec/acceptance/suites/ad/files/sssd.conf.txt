@@ -98,6 +98,7 @@ ad_domain = test.case
 ad_server = ad.test.case
 default_shell = /bin/bash
 dyndns_update = true
+dyndns_iface = eth1
 fallback_homedir = /home/%u@%d
 krb5_realm = TEST.CASE
 krb5_store_password_if_offline = true

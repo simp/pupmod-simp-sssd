@@ -1,3 +1,25 @@
+* Tue Aug 28 2018 Liz Nemsick <lnemsick.simp@gmail.com> - 6.1.3-0
+- Fixed a bug in which the ldap_account_expire_policy setting
+  for the LDAP provider could not be configured to use the system
+  default. Now, when sssd::provider::ldap::ldap_account_expire_policy
+  is set to '', that configuration parameter will not be written
+  to the sssd configuration file. This allows the system default to
+  be applied.
+- Fixed a bug in which any boolean setting for the LDAP provider
+  configuration could not be configured to be 'false'.
+- Fixed bugs in which sssd::provider::ldap::debug_timestamps and
+  sssd::provider::ldap::ldap_search_timeout were erroneously typed to
+  be strings, instead of a Boolean and an Integer, respectively.
+- Fixed bugs in which ad_enable_dns_sites, ad_enable_gc settings,
+  dyndns_update, dyndns_update_ptr, krb5_use_enterprise_principal,
+  and ldap_idmap_autorid_compat settings for the AD provider could
+  not be configured to be 'false'.
+- Fixed bugs in which ad_gpo_map_interactive, ad_gpo_map_remote_interactive,
+  ad_gpo_map_network, ad_gpo_map_batch, ad_gpo_map_service, ad_gpo_map_permit
+  and ad_gpo_map_deny settings for the AD provider were incorrectly formatted.
+- Fixed a bug in which the dyndns_iface setting for the AD provider was not
+  set from sssd::provider::ad::dyndns_ifaces.
+
 * Fri Jul 13 2018 Adam Yohrling <adam.yohrling@onyxpoint.com> - 6.1.3-0
 - Added ldap_use_tokengroups, ldap_group_objectsid, ldap_user_objectsid to sssd::provider::ad
 - Updated required version of puppetlabs-stdlib to 4.19.0 since fact function is used

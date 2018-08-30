@@ -15,7 +15,7 @@ ad_backup_server = <%= @ad_backup_servers.join(', ') %>
 <% if @ad_hostname -%>
 ad_hostname = <%= @ad_hostname %>
 <% end -%>
-<% if @ad_enable_dns_sites -%>
+<% unless @ad_enable_dns_sites.nil? -%>
 ad_enable_dns_sites = <%= @ad_enable_dns_sites %>
 <% end -%>
 <% if @ad_access_filters -%>
@@ -24,7 +24,7 @@ ad_access_filter = <%= @ad_access_filters.join('?') %>
 <% if @ad_site -%>
 ad_site = <%= @ad_site %>
 <% end -%>
-<% if @ad_enable_gc -%>
+<% unless @ad_enable_gc.nil? -%>
 ad_enable_gc = <%= @ad_enable_gc %>
 <% end -%>
 <% if @ad_gpo_access_control -%>
@@ -34,25 +34,25 @@ ad_gpo_access_control = <%= @ad_gpo_access_control %>
 ad_gpo_cache_timeout = <%= @ad_gpo_cache_timeout %>
 <% end -%>
 <% if @ad_gpo_map_interactive -%>
-ad_gpo_map_interactive = <%= @ad_gpo_map_interactive %>
+ad_gpo_map_interactive = <%= @ad_gpo_map_interactive.join(', ') %>
 <% end -%>
 <% if @ad_gpo_map_remote_interactive -%>
-ad_gpo_map_remote_interactive = <%= @ad_gpo_map_remote_interactive %>
+ad_gpo_map_remote_interactive = <%= @ad_gpo_map_remote_interactive.join(', ') %>
 <% end -%>
 <% if @ad_gpo_map_network -%>
-ad_gpo_map_network = <%= @ad_gpo_map_network %>
+ad_gpo_map_network = <%= @ad_gpo_map_network.join(', ') %>
 <% end -%>
 <% if @ad_gpo_map_batch -%>
-ad_gpo_map_batch = <%= @ad_gpo_map_batch %>
+ad_gpo_map_batch = <%= @ad_gpo_map_batch.join(', ') %>
 <% end -%>
 <% if @ad_gpo_map_service -%>
-ad_gpo_map_service = <%= @ad_gpo_map_service %>
+ad_gpo_map_service = <%= @ad_gpo_map_service.join(', ') %>
 <% end -%>
 <% if @ad_gpo_map_permit -%>
-ad_gpo_map_permit = <%= @ad_gpo_map_permit %>
+ad_gpo_map_permit = <%= @ad_gpo_map_permit.join(', ') %>
 <% end -%>
 <% if @ad_gpo_map_deny -%>
-ad_gpo_map_deny = <%= @ad_gpo_map_deny %>
+ad_gpo_map_deny = <%= @ad_gpo_map_deny.join(', ') %>
 <% end -%>
 <% if @ad_gpo_default_right -%>
 ad_gpo_default_right = <%= @ad_gpo_default_right %>
@@ -66,21 +66,23 @@ ad_machine_account_password_renewal_opts = <%= @ad_machine_account_password_rene
 <% if @default_shell -%>
 default_shell = <%= @default_shell %>
 <% end -%>
-<% if @dyndns_update -%>
+<% unless @dyndns_update.nil? -%>
 dyndns_update = <%= @dyndns_update %>
+<% end -%>
+<% if @dyndns_update -%>
 <%   if @dyndns_ttl -%>
 dyndns_ttl = <%= @dyndns_ttl %>
 <%   end -%>
-<%   if @dyndns_iface -%>
-dyndns_iface = <%= @dyndns_iface %>
+<%   if @dyndns_ifaces -%>
+dyndns_iface = <%= @dyndns_ifaces.join(', ') %>
 <%   end -%>
 <%   if @dyndns_refresh_interval -%>
 dyndns_refresh_interval = <%= @dyndns_refresh_interval %>
 <%   end -%>
-<%   if @dyndns_update_ptr -%>
+<%   unless @dyndns_update_ptr.nil? -%>
 dyndns_update_ptr = <%= @dyndns_update_ptr %>
 <%   end -%>
-<%   if @dyndns_force_tcp -%>
+<%   unless @dyndns_force_tcp.nil? -%>
 dyndns_force_tcp = <%= @dyndns_force_tcp %>
 <%   end -%>
 <%   if @dyndns_server -%>
@@ -102,10 +104,10 @@ krb5_realm = <%= @krb5_realm %>
 <% if @krb5_confd_path -%>
 krb5_confd_path = <%= @krb5_confd_path %>
 <% end -%>
-<% if @krb5_use_enterprise_principal -%>
+<% unless @krb5_use_enterprise_principal.nil? -%>
 krb5_use_enterprise_principal = <%= @krb5_use_enterprise_principal %>
 <% end -%>
-<% if @krb5_store_password_if_offline -%>
+<% unless @krb5_store_password_if_offline.nil? -%>
 krb5_store_password_if_offline = <%= @krb5_store_password_if_offline.to_s %>
 <% end -%>
 ldap_id_mapping = <%= @ldap_id_mapping %>
@@ -128,7 +130,7 @@ ldap_idmap_default_domain_sid = <%= @ldap_idmap_default_domain_sid %>
 <%   if @ldap_idmap_default_domain -%>
 ldap_idmap_default_domain = <%= @ldap_idmap_default_domain %>
 <%   end -%>
-<%   if @ldap_idmap_autorid_compat -%>
+<%   unless @ldap_idmap_autorid_compat.nil? -%>
 ldap_idmap_autorid_compat = <%= @ldap_idmap_autorid_compat %>
 <%   end -%>
 <%   if @ldap_idmap_helper_table_size -%>

@@ -101,7 +101,7 @@
     'ldap_chpass_dns_service_name',
     'ldap_chpass_update_last_change',
     'ldap_access_filter',
-    'ldap_account_expire_policy',
+    '_ldap_account_expire_policy',
     'ldap_pwdlockout_dn',
     'ldap_deref',
     'ldap_sudorule_object_class',
@@ -154,15 +154,17 @@
   }
 
   _output = []
-  _string_params.sort.each do |param|
+  _string_params.each do |param|
     value = eval(%(@#{param}))
 
-    if value
+    # Make sure to distinguish between nil and false, as we may need to
+    # set a parameter to false in this config!
+    unless value.nil?
       _output << %(#{param.sub(/^_/,'')} = #{value.to_s})
     end
   end
 
-  _array_params.keys.sort.each do |param|
+  _array_params.keys.each do |param|
     value = eval(%(@#{param}))
 
     if value && !value.empty?
@@ -170,4 +172,4 @@
     end
   end
 -%>
-<%= _output.join("\n") %>
+<%= _output.sort.join("\n") %>
