@@ -175,6 +175,8 @@ default:
     - beaker
   <<: *cache_bundler
   <<: *setup_bundler_env
+  variables:
+    PUPPET_VERSION: '~> 4.10'
   script:
     - bundle exec rake spec_clean
     - bundle exec rake beaker:suites[default]
@@ -186,6 +188,7 @@ fips-default:
   <<: *cache_bundler
   <<: *setup_bundler_env
   variables:
+    PUPPET_VERSION: '~> 4.10'
     BEAKER_fips: 'yes'
   script:
     - bundle exec rake spec_clean
@@ -198,7 +201,7 @@ default-puppet5:
   <<: *cache_bundler
   <<: *setup_bundler_env
   variables:
-    PUPPET_VERSION: '~> 5.0'
+    PUPPET_VERSION: '~> 5.5'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
   script:
     - bundle exec rake spec_clean
@@ -213,7 +216,7 @@ fips-default-puppet5:
   <<: *only_with_SIMP_FULL_MATRIX
   variables:
     BEAKER_fips: 'yes'
-    PUPPET_VERSION: '~> 5.0'
+    PUPPET_VERSION: '~> 5.5'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
   script:
     - bundle exec rake spec_clean
@@ -227,7 +230,7 @@ default-puppet5-oel:
   <<: *setup_bundler_env
   <<: *only_with_SIMP_FULL_MATRIX
   variables:
-    PUPPET_VERSION: '~> 5.0'
+    PUPPET_VERSION: '~> 5.5'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
   script:
     - bundle exec rake spec_clean
@@ -242,7 +245,7 @@ fips-default-puppet5-oel:
   <<: *only_with_SIMP_FULL_MATRIX
   variables:
     BEAKER_fips: 'yes'
-    PUPPET_VERSION: '~> 5.0'
+    PUPPET_VERSION: '~> 5.5'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
   script:
     - bundle exec rake spec_clean
@@ -267,7 +270,7 @@ ad-puppet5:
   <<: *setup_bundler_env
   <<: *only_with_SIMP_FULL_MATRIX
   variables:
-    PUPPET_VERSION: '~> 5.0'
+    PUPPET_VERSION: '~> 5.5'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
   script:
     - bundle exec rake spec_clean
@@ -282,7 +285,7 @@ ad-puppet5-oel:
   <<: *setup_bundler_env
   <<: *only_with_SIMP_FULL_MATRIX
   variables:
-    PUPPET_VERSION: '~> 5.0'
+    PUPPET_VERSION: '~> 5.5'
     BEAKER_PUPPET_COLLECTION: 'puppet5'
   script:
     - bundle exec rake spec_clean
