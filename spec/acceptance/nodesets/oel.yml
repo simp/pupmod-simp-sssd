@@ -26,13 +26,13 @@ HOSTS:
       - default
       - client
     platform: el-7-x86_64
-    box: elastic/oel-7-x86_64
+    box: onyxpoint/oel-7-x86_64
     hypervisor: <%= hypervisor %>
   oel6-cli:
     roles:
       - client
     platform: el-6-x86_64
-    box: elastic/oel-6-x86_64
+    box: onyxpoint/oel-6-x86_64
     hypervisor: <%= hypervisor %>
 CONFIG:
   log_level: verbose
