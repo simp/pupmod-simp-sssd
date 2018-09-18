@@ -354,7 +354,7 @@ define sssd::provider::ldap (
     # This is here due to a bug in the LDAP client library on EL6 that will set
     # the SSF to 128 when connecting over StartTLS if there are *any* 128-bit
     # ciphers in the list.
-    if $facts['os']['name'] in ['RedHat','CentOS'] and (versioncmp($facts['os']['release']['major'],'7') < 0) {
+    if $facts['os']['name'] in ['RedHat','CentOS','OracleLinux'] and (versioncmp($facts['os']['release']['major'],'7') < 0) {
       $_ldap_tls_cipher_suite = $ldap_tls_cipher_suite + ['-AES128']
     }
     else {
