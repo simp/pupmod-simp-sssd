@@ -20,6 +20,10 @@
 - Fixed a bug in which the dyndns_iface setting for the AD provider was not
   set from sssd::provider::ad::dyndns_ifaces.
 
+* Thu Aug 23 2018 Adam Yohrling <adam.yohrling@onyxpoint.com> - 6.1.3-0
+- Add support for Oracle Enterprise Linux
+- Add support for Puppet 5
+
 * Fri Jul 13 2018 Adam Yohrling <adam.yohrling@onyxpoint.com> - 6.1.3-0
 - Added ldap_use_tokengroups, ldap_group_objectsid, ldap_user_objectsid to sssd::provider::ad
 - Updated required version of puppetlabs-stdlib to 4.19.0 since fact function is used
