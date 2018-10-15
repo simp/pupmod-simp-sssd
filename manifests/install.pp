@@ -11,7 +11,7 @@
 #
 class sssd::install (
   Boolean  $install_user_tools = true,
-  String   $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'latest' }),
+  String   $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
 ) {
   contain 'sssd::install::client'
 
@@ -22,9 +22,13 @@ class sssd::install (
     require => Package['sssd']
   }
 
-  package { 'sssd': ensure => $package_ensure }
+  package { 'sssd':
+    ensure => $package_ensure
+  }
 
   if $install_user_tools {
-    package { 'sssd-tools': ensure => $package_ensure }
+    package { 'sssd-tools':
+      ensure => $package_ensure
+    }
   }
 }

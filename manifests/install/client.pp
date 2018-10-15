@@ -8,5 +8,7 @@
 class sssd::install::client (
   $ensure = $::sssd::install::package_ensure
 ){
-  package { 'sssd-client': ensure => $ensure }
+  package { 'sssd-client':
+    ensure => $ensure
+  }
 }
