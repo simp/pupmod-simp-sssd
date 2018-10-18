@@ -55,7 +55,7 @@ end
 
 RSpec.configure do |c|
   # ensure that environment OS is ready on each host
-  fix_errata_on hosts
+  fix_errata_on(hosts)
 
   # Readable test descriptions
   c.formatter = :documentation
@@ -69,7 +69,7 @@ RSpec.configure do |c|
       copy_fixture_modules_to( nonwin )
       begin
         server = only_host_with_role(nonwin, 'server')
-      rescue ArgumentError =>e
+      rescue ArgumentError => e
         server = only_host_with_role(nonwin, 'default')
       end
       # Generate and install PKI certificates on each SUT
