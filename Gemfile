@@ -29,6 +29,5 @@ group :system_tests do
   gem 'beaker'
   gem 'beaker-rspec'
   gem 'beaker-windows'
-  # gem 'simp-beaker-helpers', ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', '~> 1.10')
-  gem 'simp-beaker-helpers', git: 'https://github.com/jeefberkey/rubygem-simp-beaker-helpers', branch: 'skip-fips-windows'
+  gem 'simp-beaker-helpers', ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', '~> 1.10')
 end
