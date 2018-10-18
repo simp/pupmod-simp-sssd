@@ -64,7 +64,7 @@ RSpec.configure do |c|
   c.before :suite do
     begin
       nonwin = hosts.dup
-      nonwin.delete_if {|h| h[:platform] == 'windows-server-amd64' }
+      nonwin.delete_if {|h| h[:platform] =~ /windows/ }
       # Install modules and dependencies from spec/fixtures/modules
       copy_fixture_modules_to( nonwin )
       begin
