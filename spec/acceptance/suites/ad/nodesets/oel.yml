@@ -24,7 +24,7 @@ HOSTS:
       - client
     platform: el-7-x86_64
     box: onyxpoint/oel-7-x86_64
-    hypervisor: vagrant
+    hypervisor: <%= hypervisor %>
   oel6:
     roles:
       - client

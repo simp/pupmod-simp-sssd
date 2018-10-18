@@ -24,7 +24,7 @@ HOSTS:
       - client
     platform: el-7-x86_64
     box: centos/7
-    hypervisor: vagrant
+    hypervisor: <%= hypervisor %>
   centos6:
     roles:
       - client
