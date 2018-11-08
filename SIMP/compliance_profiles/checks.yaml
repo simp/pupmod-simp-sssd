@@ -1,0 +1,273 @@
+---
+version: 2.0.0
+checks:
+  oval:com.puppet.forge.simp.sssd.app_pki_dir:
+    settings:
+      parameter: sssd::app_pki_dir
+      value: "/etc/pki/simp_apps/sssd/x509"
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-8:1: true
+      nist_800_53_rev4:SC-8:2: true
+      nist_800_53_rev4:SC-23: true
+      disa_stig: true
+      RHEL-07-040240: true
+      SRG-OS-000403-GPOS-00182: true
+      cci:CCI-002470: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-8:1
+      - SC-8:2
+      - SC-23
+      disa_stig:
+      - RHEL-07-040240
+      - SRG-OS-000403-GPOS-00182
+      - CCI-002470
+  oval:com.puppet.forge.simp.sssd.auditd:
+    settings:
+      parameter: sssd::auditd
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AU-3:2: true
+      nist_800_53_rev4:AU-4:1: true
+      nist_800_53_rev4:AU-9: true
+      disa_stig: true
+      RHEL-07-030010: true
+      SRG-OS-000038-GPOS-00016: true
+      SRG-OS-000039-GPOS-00017: true
+      SRG-OS-000042-GPOS-00021: true
+      cci:CCI-000131: true
+      cci:CCI-000126: true
+    identifiers:
+      nist_800_53_rev4:
+      - AU-3:2
+      - AU-4:1
+      - AU-9
+      disa_stig:
+      - RHEL-07-030010
+      - SRG-OS-000038-GPOS-00016
+      - SRG-OS-000039-GPOS-00017
+      - SRG-OS-000042-GPOS-00021
+      - CCI-000131
+      - CCI-000126
+  oval:com.puppet.forge.simp.sssd.install.install_user_tools:
+    settings:
+      parameter: sssd::install::install_user_tools
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-1: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-1
+  oval:com.puppet.forge.simp.sssd.pki:
+    settings:
+      parameter: sssd::pki
+      value: simp
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-8:1: true
+      nist_800_53_rev4:SC-8:2: true
+      nist_800_53_rev4:SC-23: true
+      disa_stig: true
+      RHEL-07-040240: true
+      SRG-OS-000403-GPOS-00182: true
+      cci:CCI-002470: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-8:1
+      - SC-8:2
+      - SC-23
+      disa_stig:
+      - RHEL-07-040240
+      - SRG-OS-000403-GPOS-00182
+      - CCI-002470
+  oval:com.puppet.forge.simp.sssd.provider.ldap.ldap_chpass_updates_last_change:
+    settings:
+      parameter: sssd::provider::ldap::ldap_chpass_updates_last_change
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:1:d: true
+      disa_stig: true
+      RHEL-07-010000: true
+      SRG-OS-000001-GPOS-00001: true
+      cci:CCI-000015: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:1:d
+      disa_stig:
+      - RHEL-07-010000
+      - SRG-OS-000001-GPOS-00001
+      - CCI-000015
+  oval:com.puppet.forge.simp.sssd.provider.ldap.ldap_id_use_start_tls:
+    settings:
+      parameter: sssd::provider::ldap::ldap_id_use_start_tls
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-8: true
+      nist_800_53_rev4:SC-8:1: true
+      nist_800_53_rev4:SC-8:2: true
+      nist_800_53_rev4:SC-23: true
+      disa_stig: true
+      RHEL-07-040180: true
+      SRG-OS-000250-GPOS-00093: true
+      cci:CCI-001453: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-8
+      - SC-8:1
+      - SC-8:2
+      - SC-23
+      disa_stig:
+      - RHEL-07-040180
+      - SRG-OS-000250-GPOS-00093
+      - CCI-001453
+  oval:com.puppet.forge.simp.sssd.provider.ldap.ldap_tls_cipher_suite:
+    settings:
+      parameter: sssd::provider::ldap::ldap_tls_cipher_suite
+      value:
+      - HIGH
+      - "-SSLv2"
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:SC-8: true
+      nist_800_53_rev4:SC-8:1: true
+      nist_800_53_rev4:SC-8:2: true
+      nist_800_53_rev4:SC-23: true
+      disa_stig: true
+      RHEL-07-040180: true
+      SRG-OS-000250-GPOS-00093: true
+      cci:CCI-001453: true
+    identifiers:
+      nist_800_53_rev4:
+      - SC-8
+      - SC-8:1
+      - SC-8:2
+      - SC-23
+      disa_stig:
+      - RHEL-07-040180
+      - SRG-OS-000250-GPOS-00093
+      - CCI-001453
+  oval:com.puppet.forge.simp.sssd.service.pam.offline_failed_login_attempts:
+    settings:
+      parameter: sssd::service::pam::offline_failed_login_attempts
+      value: 3
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-12: true
+      disa_stig: true
+      RHEL-07-010000: true
+      SRG-OS-000001-GPOS-00001: true
+      cci:CCI-000015: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-12
+      disa_stig:
+      - RHEL-07-010000
+      - SRG-OS-000001-GPOS-00001
+      - CCI-000015
+  oval:com.puppet.forge.simp.sssd.service.pam.offline_failed_login_delay:
+    settings:
+      parameter: sssd::service::pam::offline_failed_login_delay
+      value: 5
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-7:b: true
+      disa_stig: true
+      RHEL-07-010000: true
+      SRG-OS-000001-GPOS-00001: true
+      cci:CCI-000015: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-7:b
+      disa_stig:
+      - RHEL-07-010000
+      - SRG-OS-000001-GPOS-00001
+      - CCI-000015
+  oval:com.puppet.forge.simp.sssd.service.pam.pam_id_timeout:
+    settings:
+      parameter: sssd::service::pam::pam_id_timeout
+      value: 5
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:AC-7:b: true
+      disa_stig: true
+      RHEL-07-010000: true
+      SRG-OS-000001-GPOS-00001: true
+      cci:CCI-000015: true
+    identifiers:
+      nist_800_53_rev4:
+      - AC-7:b
+      disa_stig:
+      - RHEL-07-010000
+      - SRG-OS-000001-GPOS-00001
+      - CCI-000015
+  oval:com.puppet.forge.simp.sssd.service.pam.pam_pwd_expiration_warning:
+    settings:
+      parameter: sssd::service::pam::pam_pwd_expiration_warning
+      value: 7
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:1:d: true
+      disa_stig: true
+      RHEL-07-010000: true
+      SRG-OS-000001-GPOS-00001: true
+      cci:CCI-000015: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:1:d
+      disa_stig:
+      - RHEL-07-010000
+      - SRG-OS-000001-GPOS-00001
+      - CCI-000015
+  oval:com.puppet.forge.simp.sssd.service.ssh.ssh_hash_known_hosts:
+    settings:
+      parameter: sssd::service::ssh::ssh_hash_known_hosts
+      value: true
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-5:c: true
+      nist_800_53_rev4:IA-5:h: true
+      disa_stig: true
+      RHEL-07-021830: true
+      SRG-OS-000364-GPOS-00151: true
+      cci:CCI-000293: true
+      cci:CCI-001812: true
+      cci:CCI-001813: true
+      cci:CCI-001814: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-5:c
+      - IA-5:h
+      disa_stig:
+      - RHEL-07-021830
+      - SRG-OS-000364-GPOS-00151
+      - CCI-000293
+      - CCI-001812
+      - CCI-001813
+      - CCI-001814
+  oval:com.puppet.forge.simp.sssd.services:
+    settings:
+      parameter: sssd::services
+      value:
+      - nss
+      - pam
+      - ssh
+      - sudo
+    type: puppet-class-parameter
+    controls:
+      nist_800_53_rev4:IA-1: true
+      disa_stig: true
+      RHEL-07-010000: true
+      SRG-OS-000001-GPOS-00001: true
+      cci:CCI-000015: true
+    identifiers:
+      nist_800_53_rev4:
+      - IA-1
+      disa_stig:
+      - RHEL-07-010000
+      - SRG-OS-000001-GPOS-00001
+      - CCI-000015
