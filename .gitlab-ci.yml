@@ -220,6 +220,16 @@ pup5.5.7-ad:
     - 'bundle exec rake beaker:suites[ad]'
   retry: 1
 
+pup5.5.7-ad-fips:
+  <<: *pup_5_5_7
+  <<: *acceptance_base
+  script:
+    - 'bundle exec rake spec_clean'
+    - 'BEAKER_fips=yes bundle exec rake beaker:suites[ad]'
+  retry: 1
+
+pup5.5.7-oel:
+
 pup5.5.7-oel:
   <<: *pup_5_5_7
   <<: *acceptance_base
