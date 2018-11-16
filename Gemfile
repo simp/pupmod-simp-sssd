@@ -29,5 +29,5 @@ group :system_tests do
   gem 'beaker'
   gem 'beaker-rspec'
   gem 'beaker-windows'
-  gem 'simp-beaker-helpers', ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', '~> 1.12')
+  gem 'simp-beaker-helpers', ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', '~> 1.13')
 end
