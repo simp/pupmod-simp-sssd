@@ -65,6 +65,59 @@ describe 'sssd::provider::ldap' do
         end
       end
 
+      context 'with sssd_version 1.14.0' do
+        let(:facts) {
+          os_facts.merge({:sssd_version => '1.14.0'})
+        }
+
+        it do
+          if ['RedHat','CentOS','OracleLinux'].include?(facts[:os][:name]) and facts[:os][:release][:major] < '7'
+            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2:-AES128'
+          else
+            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
+          end
+
+          expected = <<-EOM.gsub(/^[ ]+/,'')
+
+            # sssd::provider::ldap
+            debug_microseconds = false
+            krb5_canonicalize = false
+            krb5_use_kdcinfo = true
+            ldap_access_order = expire,lockout,ppolicy,pwd_expire_policy_reject,pwd_expire_policy_warn,pwd_expire_policy_renew
+            ldap_account_expire_policy = shadow
+            ldap_chpass_update_last_change = true
+            ldap_default_authtok = sup3r$3cur3P@ssw0r?
+            ldap_default_bind_dn = cn=hostAuth,ou=Hosts,dc=example,dc=domain
+            ldap_disable_paging = false
+            ldap_disable_range_retrieval = false
+            ldap_force_upper_case_realm = false
+            ldap_groups_use_matching_rule_in_chain = false
+            ldap_id_mapping = false
+            ldap_id_use_start_tls = true
+            ldap_idmap_autorid_compat = false
+            ldap_initgroups_use_matching_rule_in_chain = false
+            ldap_krb5_init_creds = true
+            ldap_pwd_policy = shadow
+            ldap_referrals = true
+            ldap_sasl_canonicalize = false
+            ldap_schema = rfc2307
+            ldap_search_base = dc=example,dc=domain
+            ldap_sudo_include_netgroups  = true
+            ldap_sudo_include_regexp = true
+            ldap_sudo_use_host_filter = true
+            ldap_tls_cacertdir = /etc/pki/simp_apps/sssd/x509/cacerts
+            ldap_tls_cert = /etc/pki/simp_apps/sssd/x509/public/foo.example.com.pub
+            #{ldap_tls_cipher_suite}
+            ldap_tls_key = /etc/pki/simp_apps/sssd/x509/private/foo.example.com.pem
+            ldap_tls_reqcert = demand
+            ldap_uri = ldap://test.example.domain
+            ldap_use_tokengroups = false
+          EOM
+
+          is_expected.to create_concat__fragment(frag_name).with_content(expected)
+        end
+      end
+
       context 'with app_pki_ca_dir set' do
         let(:params) {{ :app_pki_ca_dir => '/path/to/ca' }}
 

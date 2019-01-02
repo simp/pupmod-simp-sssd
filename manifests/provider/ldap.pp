@@ -307,7 +307,7 @@ define sssd::provider::ldap (
   Optional[String[1]]                   $ldap_chpass_dns_service_name      = undef,
   Optional[String[1]]                   $ldap_access_filter                = undef,
   Sssd::LdapAccountExpirePol            $ldap_account_expire_policy        = 'shadow',
-  Sssd::LdapAccessOrder                 $ldap_access_order                 = ['expire','lockout'],
+  Sssd::LdapAccessOrder                 $ldap_access_order                 = sssd::ldap_access_order_defaults(),
   Optional[String[1]]                   $ldap_pwdlockout_dn                = undef,
   Optional[Sssd::LdapDeref]             $ldap_deref                        = undef,
   Optional[String[1]]                   $ldap_sudorule_object_class        = undef,
