@@ -63,29 +63,6 @@ describe 'sssd' do
         app_pki_cert    => '/etc/pki/simp_apps/sssd/x509/public/host.test.case.pub',
         ldap_default_authtok_type => 'password',
       }
-
-      ####################################################################
-      # AD CONFIG
-      sssd::domain { 'test.case':
-        access_provider   => 'ad',
-        cache_credentials => true,
-        id_provider       => 'ad',
-        enumerate         => undef,
-        realmd_tags       => 'manages-system joined-with-adcli',
-        case_sensitive    => true,
-        ignore_group_members => true,
-        use_fully_qualified_names => true
-      }
-      sssd::provider::ad { 'test.case':
-        ad_domain        => 'test.case',
-        ad_servers       => ['ad.test.case'],
-        ldap_id_mapping  => false,
-        krb5_realm       => 'TEST.CASE',
-        dyndns_update    => undef,
-        default_shell    => '/bin/bash',
-        fallback_homedir => '/home/%u@%d',
-        krb5_store_password_if_offline => true,
-      }
     EOF
   context 'generate a good sssd.conf' do
     hosts.each do |host|
