@@ -6,7 +6,9 @@ require 'spec_helper'
 describe 'sssd::provider::ldap' do
   on_supported_os.each do |os, os_facts|
     context "on #{os}" do
-      let(:facts){ os_facts }
+      let(:facts){
+        os_facts.merge({:sssd_version => '1.13.0'})
+      }
 
       let(:title) {'test_ldap_provider'}
       let(:frag_name) { "sssd_#{title}_ldap_provider.domain" }
@@ -83,7 +85,7 @@ describe 'sssd::provider::ldap' do
             debug_microseconds = false
             krb5_canonicalize = false
             krb5_use_kdcinfo = true
-            ldap_access_order = expire,lockout,ppolicy,pwd_expire_policy_reject,pwd_expire_policy_warn,pwd_expire_policy_renew
+            ldap_access_order = expire,lockout,ppolicy,pwd_expire_policy_reject
             ldap_account_expire_policy = shadow
             ldap_chpass_update_last_change = true
             ldap_default_authtok = sup3r$3cur3P@ssw0r?

@@ -9,9 +9,9 @@ describe 'sssd::ldap_access_order_defaults' do
 
   sssd_versions = {
     '1.0.0' => defaults,
-    '1.14.0' => defaults + ['ppolicy','pwd_expire_policy_reject','pwd_expire_policy_warn','pwd_expire_policy_renew'],
-    '1.14.1' => defaults + ['ppolicy','pwd_expire_policy_reject','pwd_expire_policy_warn','pwd_expire_policy_renew'],
-    '1.15.0' => defaults + ['ppolicy','pwd_expire_policy_reject','pwd_expire_policy_warn','pwd_expire_policy_renew']
+    '1.14.0' => defaults + ['ppolicy','pwd_expire_policy_reject'],
+    '1.14.1' => defaults + ['ppolicy','pwd_expire_policy_reject'],
+    '1.15.0' => defaults + ['ppolicy','pwd_expire_policy_reject']
   }
 
   sssd_versions.each do |sssd_version, expected_result|
