@@ -63,29 +63,6 @@ describe 'sssd' do
         app_pki_cert    => '/etc/pki/simp_apps/sssd/x509/public/host.test.case.pub',
         ldap_default_authtok_type => 'password',
       }
-
-      ####################################################################
-      # AD CONFIG
-      sssd::domain { 'test.case':
-        access_provider   => 'ad',
-        cache_credentials => true,
-        id_provider       => 'ad',
-        enumerate         => undef,
-        realmd_tags       => 'manages-system joined-with-adcli',
-        case_sensitive    => true,
-        ignore_group_members => true,
-        use_fully_qualified_names => true
-      }
-      sssd::provider::ad { 'test.case':
-        ad_domain        => 'test.case',
-        ad_servers       => ['ad.test.case'],
-        ldap_id_mapping  => false,
-        krb5_realm       => 'TEST.CASE',
-        dyndns_update    => undef,
-        default_shell    => '/bin/bash',
-        fallback_homedir => '/home/%u@%d',
-        krb5_store_password_if_offline => true,
-      }
     EOF
   context 'generate a good sssd.conf' do
     hosts.each do |host|
@@ -93,10 +70,15 @@ describe 'sssd' do
         set_hieradata_on(host, hiera)
         apply_manifest_on(host, manifest)
       end
-      describe file('/etc/sssd/sssd.conf') do
-        expected = File.read('spec/acceptance/suites/default/files/sssd.conf.txt')
-        it { is_expected.to be_file }
-        its(:content) { is_expected.to match(expected) }
+
+      it 'should be idempotent' do
+        apply_manifest_on(host, manifest, :catch_changes => true)
+      end
+
+      it 'should be running sssd' do
+        response = YAML.load(on(host, %{puppet resource service sssd --to_yaml}).stdout.strip)
+        expect(response['service']['sssd']['ensure']).to eq('running')
+        expect(response['service']['sssd']['enable']).to eq('true')
       end
     end
   end

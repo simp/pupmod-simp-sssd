@@ -126,10 +126,15 @@ describe 'sssd class' do
         apply_manifest_on(host, manifest)
         apply_manifest_on(host, manifest) # pam needs one more
       end
-      describe file('/etc/sssd/sssd.conf') do
-        expected = File.read('spec/acceptance/suites/ad/files/sssd.conf.txt')
-        it { is_expected.to be_file }
-        its(:content) { is_expected.to match(expected) }
+
+      it 'should be idempotent' do
+        apply_manifest_on(host, manifest, catch_changes: true)
+      end
+
+      it 'should be running sssd' do
+        response = YAML.load(on(host, %{puppet resource service sssd --to_yaml}).stdout.strip)
+        expect(response['service']['sssd']['ensure']).to eq('running')
+        expect(response['service']['sssd']['enable']).to eq('true')
       end
     end
   end
