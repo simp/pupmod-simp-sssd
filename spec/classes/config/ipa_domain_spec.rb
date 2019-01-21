@@ -11,7 +11,7 @@ shared_examples_for 'a sssd::config::ipa_domain' do
       :access_provider   => 'ipa',
       :sudo_provider     => 'ipa',
       :autofs_provider   => 'ipa',
-      :min_id            => 500,
+      :min_id            => 1,
       :enumerate         => false,
       :cache_credentials => true
     })
