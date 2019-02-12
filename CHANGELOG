@@ -1,4 +1,8 @@
-* Wed Jan 02 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.1.4-0
+* Mon Jan 21 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.1.4-0
+- Generated a REFERENCE.md
+- Set the 'min_id' settings across the board to '1' to match the sssd defaults
+  since they really have nothing to do with the target system's relationship
+  with a centralized authentication service.
 - Update the sssd::provider::ldap::ldap_access_order parameter to support the
   ppolicy related options that were added in sssd 1.14.0
   - ppolicy
