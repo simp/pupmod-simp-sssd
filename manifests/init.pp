@@ -66,7 +66,7 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd (
-  Array[String[1, 255], 1]       $domains,
+  Array[String[1, 255], 1]       $domains               = ['LOCAL'],
   Optional[Sssd::DebugLevel]     $debug_level           = undef,
   Boolean                        $debug_timestamps      = true,
   Boolean                        $debug_microseconds    = false,
