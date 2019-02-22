@@ -1,3 +1,8 @@
+* Fri Feb 22 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.1.5-0
+- Change the sssd::provider::ldap::ldap_access_order defaults to
+  ['ppolicy','pwd_expire_policy_renew'] by default to prevent accidental system
+  lockouts on upgrade.
+
 * Mon Jan 21 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.1.4-0
 - Generated a REFERENCE.md
 - Set the 'min_id' settings across the board to '1' to match the sssd defaults

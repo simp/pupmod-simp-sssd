@@ -85,7 +85,7 @@ describe 'sssd::provider::ldap' do
             debug_microseconds = false
             krb5_canonicalize = false
             krb5_use_kdcinfo = true
-            ldap_access_order = expire,lockout,ppolicy,pwd_expire_policy_reject
+            ldap_access_order = expire,lockout,ppolicy,pwd_expire_policy_renew
             ldap_account_expire_policy = shadow
             ldap_chpass_update_last_change = true
             ldap_default_authtok = sup3r$3cur3P@ssw0r?
