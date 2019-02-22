@@ -13,7 +13,7 @@ function sssd::ldap_access_order_defaults {
     if versioncmp($facts['sssd_version'], '1.14.0') >= 0 {
       $_result = [
         'ppolicy',
-        'pwd_expire_policy_reject'
+        'pwd_expire_policy_renew'
       ]
     }
   }
