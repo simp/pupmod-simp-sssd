@@ -8,6 +8,7 @@ describe 'sssd class' do
   ad          = hosts_with_role(hosts,'ad').first
   domain_pass = '@dm1n=P@ssw0r'
   domain      = fact_on(clients.first, 'domain')
+  ldap_dc     = domain.split('.').map{|x| "DC=#{x}"}.join(',')
 
   let(:ad_ip) {
     require 'json'
@@ -15,21 +16,21 @@ describe 'sssd class' do
     f['values']['networking']['interfaces']['Ethernet 2']['ip']
   }
   let(:hiera) {{
-    'simp_options::sssd'          => true, # had to add because of the pam changes
-    'simp_options::pki'           => true,
-    'simp_options::pki::source'   => '/etc/pki/simp-testing/pki',
-    'simp_options::dns::servers'  => [ad_ip],
-    'simp_options::ldap::uri'     => ['ldap://FIXME'],
-    'simp_options::ldap::bind_dn' => 'cn=Administrator,cn=Users,dc=test,dc=case',
-    'simp_options::ldap::base_dn' => 'dc=test,dc=case',
-    'simp_options::ldap::bind_pw' => '<PASSWORD>',
+    'simp_options::sssd'                        => true, # had to add because of the pam changes
+    'simp_options::pki'                         => true,
+    'simp_options::pki::source'                 => '/etc/pki/simp-testing/pki',
+    'simp_options::dns::servers'                => [ad_ip],
+    'simp_options::ldap::uri'                   => ['ldap://FIXME'],
+    'simp_options::ldap::bind_dn'               => "CN=Administrator,CN=Users,#{ldap_dc}",
+    'simp_options::ldap::base_dn'               => ldap_dc,
+    'simp_options::ldap::bind_pw'               => '<PASSWORD>',
     # This causes a lot of noise and reboots
-    'sssd::auditd'                => false,
-    'sssd::domains'               => [ 'LOCAL','test.case' ],
-    'resolv::named_autoconf'      => false,
-    'resolv::caching'             => false,
-    'resolv::resolv_domain'       => 'test.case',
-    'pam::disable_authconfig'     => false,
+    'sssd::auditd'                              => false,
+    'sssd::domains'                             => [ 'LOCAL', domain ].compact,
+    'resolv::named_autoconf'                    => false,
+    'resolv::caching'                           => false,
+    'resolv::resolv_domain'                     => domain,
+    'pam::disable_authconfig'                   => false,
     'ssh::server::conf::permitrootlogin'        => true,
     'ssh::server::conf::authorizedkeysfile'     => '.ssh/authorized_keys',
     'ssh::server::conf::gssapiauthentication'   => true,
@@ -58,10 +59,12 @@ describe 'sssd class' do
         cache_credentials => false
       }
       sssd::provider::local { 'LOCAL': }
-
+    EOF
+  }
+  let(:ad_manifest) { <<-EOF
       ####################################################################
       # AD CONFIG
-      sssd::domain { 'test.case':
+      sssd::domain { '#{domain}':
         access_provider   => 'ad',
         cache_credentials => true,
         id_provider       => 'ad',
@@ -72,18 +75,18 @@ describe 'sssd class' do
         ignore_group_members => true,
         use_fully_qualified_names => true
       }
-      sssd::provider::ad { 'test.case':
-        ad_domain         => 'test.case',
-        ad_servers        => ['ad.test.case'],
-        # ad_access_filters => 'test.case:OU=HeadQuarter,OU=Locations,DC=test,DC=case'
+      sssd::provider::ad { '#{domain}':
+        ad_domain         => '#{domain}',
+        ad_servers        => ['ad.#{domain}'],
+        # ad_access_filters => '#{domain}:OU=HeadQuarter,OU=Locations,#{ldap_dc}'
         ldap_id_mapping   => true,
         ldap_schema       => 'ad',
-        krb5_realm        => 'TEST.CASE',
+        krb5_realm        => '#{domain.upcase}',
         dyndns_update     => true,     # add the host to dns
         dyndns_ifaces     => ['eth1'], # vagrant uses 2 interfaces, we want the second
         default_shell     => '/bin/bash',
         fallback_homedir  => '/home/%u@%d',
-        krb5_store_password_if_offline => true,
+        krb5_store_password_if_offline => true
       }
     EOF
   }
@@ -102,14 +105,11 @@ describe 'sssd class' do
         # Find the IP of the AD host and make a new host entry with FQDN and IP
         ad_host = YAML.load(on(host, 'puppet resource host ad. --to_yaml').stdout)
         ip = ad_host['host']['ad.']['ip']
-        on(host, "puppet resource host ad.test.case ensure=present ip=#{ip} host_aliases=ad")
+        on(host, "puppet resource host ad.#{domain} ensure=present ip=#{ip} host_aliases=ad")
         # Remove incorrect and incomplete hosts entry
         on(host, 'puppet resource host ad. ensure=absent')
         # Also remove hosts entry with just a host shortname
         on(host, "puppet resource host #{host} ensure=absent")
-      end
-      it 'should make sure /etc/hosts only has the new domain in it' do
-        on(host, "sed -i 's/#{domain}/test.case/' /etc/hosts")
       end
       it 'should install the realm or adcli packages' do
         # Some of these packages only exist on EL6 or EL7
@@ -119,72 +119,70 @@ describe 'sssd class' do
     end
   end
 
-  context 'generate a good sssd.conf' do
+  context 'configure basic SSSD' do
     clients.each do |host|
-      it 'should apply enough to generate sssd.conf' do
+      it 'should run puppet without error' do
         set_hieradata_on(host, hiera)
-        apply_manifest_on(host, manifest)
-        apply_manifest_on(host, manifest) # pam needs one more
+        apply_manifest_on(host, manifest, catch_failures: true)
       end
 
       it 'should be idempotent' do
         apply_manifest_on(host, manifest, catch_changes: true)
       end
-
-      it 'should be running sssd' do
-        response = YAML.load(on(host, %{puppet resource service sssd --to_yaml}).stdout.strip)
-        expect(response['service']['sssd']['ensure']).to eq('running')
-        expect(response['service']['sssd']['enable']).to eq('true')
-      end
     end
   end
 
-  context 'do realmd or adcli stuff' do
+  context 'joining AD' do
     clients.each do |host|
       case host[:platform]
       when /el-6-x86_64/
-        it 'should join test.case' do
-          on(host, "echo -n '#{domain_pass}' | adcli join -v -U Administrator test.case -H #{host}.test.case --stdin-password --show-details")
+        it 'should join the AD domain' do
+          on(host, "echo -n '#{domain_pass}' | adcli join -v -U Administrator #{domain} -H #{host}.#{domain} --stdin-password --show-details")
         end
         it 'should have a realm listed' do
-          result = on(host, 'adcli info test.case')
-          expect(result.stdout).to match(/domain-name = test.case/)
+          result = on(host, "adcli info #{domain}")
+          expect(result.stdout).to match(/domain-name = #{domain}/)
         end
       when /el-7-x86_64/
         it 'make sure it is not in a domain automatically' do
-          on(host, 'realm leave')
+          on(host, 'realm leave', :accept_all_exit_codes => true)
         end
-        it 'should join test.case' do
-          on(host, "echo '#{domain_pass}' | realm join -v -U Administrator test.case")
+        it 'should join AD' do
+          on(host, "echo '#{domain_pass}' | realm join -v -U Administrator #{domain}")
         end
         it 'should have a realm listed' do
           result = on(host, 'realm list')
-          expect(result.stdout).to match(/domain-name: test.case/)
+          expect(result.stdout).to match(/domain-name: #{domain}/)
         end
         it 'should have itself listed in DNS' do
-          ip = on(host, "dig #{host}.test.case A +short")
+          ip = on(host, "dig #{host}.#{domain} A +short")
           expect(ip.stdout).to match(/10.255/)
         end
       end
     end
   end
 
-  context 'run puppet and still work' do
+  context 'when connected to AD' do
+    let(:_ad_manifest) {
+      [manifest, ad_manifest].join("\n")
+    }
+
     clients.each do |host|
-      it 'should copy certs to new hostnames' do
-        on(host, "find /etc/pki/simp_apps/ -name #{host}.#{domain}* | sed -e \"p;s/#{domain}/test.case/\" | xargs -n2 cp")
-      end
       it 'should run puppet without error' do
-        apply_manifest_on(host, manifest, catch_failures: true)
-        apply_manifest_on(host, manifest, catch_changes: true)
+        apply_manifest_on(host, _ad_manifest, catch_failures: true)
       end
+
+      it 'should be idempotent' do
+        apply_manifest_on(host, _ad_manifest, catch_changes: true)
+      end
+
       it 'should be able to id one of the test users' do
         ['mike.hammer','john.franklin','davegrohl'].each do |user|
-          id = on(host, "id #{user}@test.case")
-          expect(id.stdout).to match(/#{user}@test.case/)
+          id = on(host, "id #{user}@#{domain}")
+          expect(id.stdout).to match(/#{user}@#{domain}/)
 
-          su = on(host, "su #{user}@test.case -c 'cd; pwd; exit'")
-          expect(su.stdout).to match(%r{/home/#{user}@test.case})
+          su = on(host, "su #{user}@#{domain} -c 'cd; pwd; exit'")
+          expect(su.stdout).to match(%r{/home/#{user}@#{domain}})
         end
       end
     end
@@ -205,13 +203,13 @@ describe 'sssd class' do
             "-p 'suP3rP@ssw0r!'",
             'ssh',
             '-o StrictHostKeyChecking=no',
-            "-l #{user}@test.case",
-            "#{host}.test.case",
+            "-l #{user}@#{domain}",
+            "#{host}.#{domain}",
             "'cd; pwd; exit'"
           ].join(' ')
           ssh = on(host, ssh_cmd)
 
-          expect(ssh.stdout).to match(%r{/home/#{user}@test.case})
+          expect(ssh.stdout).to match(%r{/home/#{user}@#{domain}})
         end
       end
     end

@@ -10,6 +10,9 @@ describe 'AD' do
   domain_pass = '@dm1n=P@ssw0r'
 
   ad_servers.each do |server|
+    domain = fact_on(server, 'domain').strip
+    ldap_dc = domain.split('.').map{|x| "DC=#{x}"}.join(',')
+
     it 'should install the AD feature' do
       # https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/install-active-directory-domain-services--level-100-#BKMK_PS
       exec_ps_script_on(server, 'Install-WindowsFeature AD-Domain-Services -IncludeManagementTools')
@@ -19,7 +22,7 @@ describe 'AD' do
         "$Pass = '#{domain_pass}' | ConvertTo-SecureString -AsPlainText -Force ;",
         'Install-ADDSForest',
         '-Force',
-        '-DomainName "test.case"',
+        %(-DomainName "#{domain}"),
         '-InstallDns',
         '-SafeModeAdministratorPassword $Pass',
         '-LogPath C:\Windows\Logs'
@@ -60,7 +63,7 @@ describe 'AD' do
 
     it 'should set the Administrator password' do
       cmd = [
-        '([adsi]\\"WinNT://TEST/Administrator\\").SetPassword(\\"',
+        '([adsi]\\"WinNT://' + domain.split('.').first.upcase + '/Administrator\\").SetPassword(\\"',
         domain_pass,
         '\\")'
       ].join
@@ -77,13 +80,15 @@ describe 'AD' do
       create_remote_file(server, 'C:\users.csv', users_csv)
 
       sleep 90
-      exec_ps_script_on(server, File.read('spec/acceptance/suites/ad/files/populate_ad.ps1'))
+      @ldap_dc = ldap_dc
+      @domain = domain
+      exec_ps_script_on(server, ERB.new(File.read(File.join(File.dirname(__FILE__), 'files/populate_ad.ps1'))).result(binding))
       sleep 40
     end
 
     it 'should have users from the CSV and vagrant' do
       # https://social.technet.microsoft.com/Forums/ie/en-US/67aab9d3-1ced-4d33-8252-66a6f88713b0/exporting-ad-user-list-to-a-text-or-excel-document?forum=winserverDS
-      result = exec_ps_script_on(server, 'Get-ADUser -Filter * -SearchBase "DC=test,DC=case" | select Name')
+      result = exec_ps_script_on(server, 'Get-ADUser -Filter * -SearchBase "' + ldap_dc + '" | select Name')
       expect(result.stdout).to match(/vagrant/)
       expect(result.stdout).to match(/Mike Hammer/)
       expect(result.stdout).to match(/John Franklin/)
