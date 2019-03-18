@@ -1,3 +1,6 @@
+* Thu Mar 14 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.1.6-0
+- Fix the Active Directory tests
+
 * Mon Mar 04 2019 Liz Nemsick <lnemsick.simp@gmail.com> - 6.1.6-0
 - Expanded the upper limit of the stdlib Puppet module version
 - Updated URLs in the README.md
