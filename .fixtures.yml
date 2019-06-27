@@ -22,6 +22,7 @@ fixtures:
     oddjob: https://github.com/simp/pupmod-simp-oddjob
     resolv: https://github.com/simp/pupmod-simp-resolv
     simp: https://github.com/simp/pupmod-simp-simp
+    simp_options: https://github.com/simp/pupmod-simp-simp_options
     ssh: https://github.com/simp/pupmod-simp-ssh
   symlinks:
     sssd: "#{source_dir}"
