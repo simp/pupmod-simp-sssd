@@ -35,9 +35,32 @@ checks:
     identifiers:
       nist_800_53:rev4:
       - IA-1
-  oval:com.puppet.forge.simp.sssd.provider.ldap.ldap_chpass_updates_last_change:
+  oval:com.puppet.forge.simp.sssd.pki:
     settings:
-      parameter: sssd::provider::ldap::ldap_chpass_updates_last_change
+      parameter: sssd::pki
+      value: simp
+    type: puppet-class-parameter
+    controls:
+      nist_800_53:rev4: true
+      nist_800_53:rev4:SC-8:1: true
+      nist_800_53:rev4:SC-8:2: true
+      nist_800_53:rev4:SC-23: true
+      disa_stig: true
+      RHEL-07-040240: true
+      SRG-OS-000403-GPOS-00182: true
+      cci:CCI-002470: true
+    identifiers:
+      nist_800_53:rev4:
+      - SC-8:1
+      - SC-8:2
+      - SC-23
+      disa_stig:
+      - RHEL-07-040240
+      - SRG-OS-000403-GPOS-00182
+      - CCI-002470
+  oval:com.puppet.forge.simp.sssd.provider.ldap.ldap_chpass_update_last_change:
+    settings:
+      parameter: sssd::provider::ldap::ldap_chpass_update_last_change
       value: true
     type: puppet-class-parameter
     controls:
