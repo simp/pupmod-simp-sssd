@@ -2,10 +2,18 @@
 fixtures:
   repositories:
     auditd: https://github.com/simp/pupmod-simp-auditd
+    augeas_core: https://github.com/puppetlabs/puppetlabs-augeas_core
     augeasproviders_core: https://github.com/simp/augeasproviders_core
     augeasproviders_grub: https://github.com/simp/augeasproviders_grub
-    concat: https://github.com/simp/puppetlabs-concat
+    compliance_markup: https://github.com/simp/pupmod-simp-compliance_markup
+    concat:
+      # master is beyond 4.1.1, but has breaking changes to
+      # how fragments are ordered (MODULES-6625)
+      repo: https://github.com/simp/puppetlabs-concat
+      ref: 4.1.1
+    logrotate: https://github.com/simp/pupmod-simp-logrotate
     pki: https://github.com/simp/pupmod-simp-pki
+    rsyslog: https://github.com/simp/pupmod-simp-rsyslog
     simplib: https://github.com/simp/pupmod-simp-simplib
     stdlib: https://github.com/simp/puppetlabs-stdlib
 
@@ -16,6 +24,10 @@ fixtures:
     oddjob: https://github.com/simp/pupmod-simp-oddjob
     resolv: https://github.com/simp/pupmod-simp-resolv
     simp: https://github.com/simp/pupmod-simp-simp
+    simp_options: https://github.com/simp/pupmod-simp-simp_options
     ssh: https://github.com/simp/pupmod-simp-ssh
+    systemd:
+      repo: https://github.com/simp/puppet-systemd
+      branch: simp-master
   symlinks:
     sssd: "#{source_dir}"

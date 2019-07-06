@@ -1,3 +1,6 @@
+* Tue Jun 04 2019 steven.pritchard <steven.pritchard@onyxpoint.com> - 6.2.0-0
+- Add v2 compliance_markup data
+
 * Thu Mar 14 2019 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.1.6-0
 - Fix the Active Directory tests
 
