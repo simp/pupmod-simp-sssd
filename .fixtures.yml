@@ -11,7 +11,9 @@ fixtures:
       # how fragments are ordered (MODULES-6625)
       repo: https://github.com/simp/puppetlabs-concat
       ref: 4.1.1
+    logrotate: https://github.com/simp/pupmod-simp-logrotate
     pki: https://github.com/simp/pupmod-simp-pki
+    rsyslog: https://github.com/simp/pupmod-simp-rsyslog
     simplib: https://github.com/simp/pupmod-simp-simplib
     stdlib: https://github.com/simp/puppetlabs-stdlib
 
@@ -24,5 +26,8 @@ fixtures:
     simp: https://github.com/simp/pupmod-simp-simp
     simp_options: https://github.com/simp/pupmod-simp-simp_options
     ssh: https://github.com/simp/pupmod-simp-ssh
+    systemd:
+      repo: https://github.com/simp/puppet-systemd
+      branch: simp-master
   symlinks:
     sssd: "#{source_dir}"
