@@ -22,8 +22,6 @@ fixtures:
     simp: https://github.com/simp/pupmod-simp-simp
     simp_options: https://github.com/simp/pupmod-simp-simp_options
     ssh: https://github.com/simp/pupmod-simp-ssh
-    systemd:
-      repo: https://github.com/simp/puppet-systemd
-      branch: simp-master
+    systemd: https://github.com/simp/puppet-systemd
   symlinks:
     sssd: "#{source_dir}"
