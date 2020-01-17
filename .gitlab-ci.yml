@@ -231,3 +231,9 @@ pup6-ad:
   script:
     - 'bundle exec rake beaker:suites[ad]'
   retry: 1
+
+pup6-compliance:
+  <<: *pup_6
+  <<: *compliance_base
+  script:
+    - 'BEAKER_fips=yes bundle exec rake beaker:suites[compliance]'

@@ -15,14 +15,24 @@ HOSTS:
 #    platform: el-7-x86_64
 #    box: puppetlabs/centos-7.0-64-nocm
 #    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
-#    hypervisor: vagrant
-#  centos66-svr:
+#    hypervisor: <%= hypervisor %>
+#    yum_repos:
+#      chef-current:
+#        baseurl: 'https://packages.chef.io/repos/yum/current/el/7/$basearch'
+#        gpgkeys:
+#          - https://packages.chef.io/chef.asc
+#  centos6-svr:
 #    roles:
 #      - server
 #    platform: el-6-x86_64
 #    box: puppetlabs/centos-6.6-64-nocm
 #    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-6.6-64-nocm
-#    hypervisor: vagrant
+#    hypervisor: <%= hypervisor %>
+#    yum_repos:
+#      chef-current:
+#        baseurl: 'https://packages.chef.io/repos/yum/current/el/6/$basearch'
+#        gpgkeys:
+#          - https://packages.chef.io/chef.asc
   centos7-cli:
     roles:
       - default
@@ -30,12 +40,22 @@ HOSTS:
     platform: el-7-x86_64
     box: centos/7
     hypervisor: <%= hypervisor %>
+    yum_repos:
+      chef-current:
+        baseurl: 'https://packages.chef.io/repos/yum/current/el/7/$basearch'
+        gpgkeys:
+          - https://packages.chef.io/chef.asc
   centos6-cli:
     roles:
       - client
     platform: el-6-x86_64
     box: centos/6
     hypervisor: <%= hypervisor %>
+    yum_repos:
+      chef-current:
+        baseurl: 'https://packages.chef.io/repos/yum/current/el/6/$basearch'
+        gpgkeys:
+          - https://packages.chef.io/chef.asc
 CONFIG:
   log_level: verbose
   type: aio
