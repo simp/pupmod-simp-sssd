@@ -18,9 +18,15 @@ HOSTS:
     user: vagrant
     communicator: winrm
     is_cygwin: false
-  oel7:
+  oel8:
     roles:
       - default
+      - client
+    platform: el-8-x86_64
+    box: generic/oracle8
+    hypervisor: <%= hypervisor %>
+  oel7:
+    roles:
       - client
     platform: el-7-x86_64
     box: onyxpoint/oel-7-x86_64

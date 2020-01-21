@@ -72,6 +72,7 @@ describe 'sssd' do
   context 'supported operating systems' do
     on_supported_os.each do |os, os_facts|
       context "on #{os}" do
+        let(:facts){ os_facts }
 
         context 'with default parameters used by sssd::config' do
           let(:params) {{ :domains => sssd_domains }}
@@ -92,7 +93,6 @@ describe 'sssd' do
         end
 
         context 'with all optional sssd config parameters specified' do
-          let(:facts){ os_facts }
           let(:params) { {
             :domains               => sssd_domains,
             :debug_level           => 3,
@@ -116,8 +116,6 @@ describe 'sssd' do
           } }
 
           context 'when not joined to an IPA domain' do
-            let(:facts){ os_facts }
-
             it_should_behave_like 'a sssd::config', default_content
             it { is_expected.to_not contain_class('sssd::config::ipa_domain') }
           end

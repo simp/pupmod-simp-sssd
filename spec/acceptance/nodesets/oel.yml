@@ -21,6 +21,13 @@ HOSTS:
 #    platform: el-6-x86_64
 #    box: onyxpoint/oel-6-x86_64
 #    hypervisor: <%= hypervisor %>
+  oel8-cli:
+    roles:
+      - default
+      - client
+    platform: el-8-x86_64
+    box: generic/oracle8
+    hypervisor: <%= hypervisor %>
   oel7-cli:
     roles:
       - default

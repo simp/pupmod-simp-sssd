@@ -18,16 +18,24 @@ describe 'sssd::install' do
           }) }
           it { is_expected.to contain_package('sssd').with_ensure('installed') }
           it { is_expected.to contain_package('sssd-tools').with_ensure('installed') }
+          it { is_expected.to_not contain_package('sssd-dbus').with_ensure('installed') }
           it { is_expected.to contain_package('sssd-client').with_ensure('installed') }
         end
 
-        context 'when install_user_tools = false' do
-          let(:params) {{ :install_user_tools => false }}
+        context 'when install* params set to other then default' do
+          let(:params) {{ :install_user_tools => false,
+                          :install_ifp        => true }}
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to contain_package('sssd').with_ensure('installed') }
           it { is_expected.to_not contain_package('sssd-tools').with_ensure('installed') }
           it { is_expected.to contain_package('sssd-client').with_ensure('installed') }
+          if os_facts[:os][:release][:major].to_i > 6
+            it { is_expected.to contain_package('sssd-dbus').with_ensure('installed') }
+          else
+            it { is_expected.to_not contain_package('sssd-dbus').with_ensure('installed') }
+          end
+
         end
       end
     end

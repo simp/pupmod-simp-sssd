@@ -43,19 +43,23 @@ describe 'sssd class' do
         apply_manifest_on(client, manifest, :catch_changes => true)
       end
 
-      it 'should be able to create an SSSD user' do
-        on(client, %(sss_useradd simptest))
-        # Make sure that we didn't have this in /etc/password for some reason
-        on(client, %(grep -q '^simptest' /etc/passwd), :acceptable_exit_codes => [1])
-        # Getent doesn't return anything on EL6!
-        # Just have to try to make the user again and see if it fails.
-        expect(
+      if client[:roles].include?('sssdv1')
+        it 'should be able to create an SSSD user' do
+          on(client, %(sss_useradd simptest))
+          # Make sure that we didn't have this in /etc/password for some reason
+          on(client, %(grep -q '^simptest' /etc/passwd), :acceptable_exit_codes => [1])
+          # Getent doesn't return anything on EL6!
+          # Just have to try to make the user again and see if it fails.
+          expect(
           on(client,
              %(sss_useradd simptest),
              :accept_all_exit_codes => true,
              :silent => true
             ).output
-        ).to match(/already exists/)
+          ).to match(/already exists/)
+        end
+      else
+        pending("Need to figure out a proper test for EL8, which does not have a local provider")
       end
     end
   end

@@ -18,9 +18,15 @@ HOSTS:
     user: vagrant
     communicator: winrm
     is_cygwin: false
-  centos7:
+  centos8:
     roles:
       - default
+      - client
+    platform: el-8-x86_64
+    box: centos/8
+    hypervisor: <%= hypervisor %>
+  centos7:
+    roles:
       - client
     platform: el-7-x86_64
     box: centos/7

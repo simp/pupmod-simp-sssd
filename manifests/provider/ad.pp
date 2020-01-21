@@ -45,6 +45,8 @@
 # @param ad_gpo_map_permit
 # @param ad_gpo_map_deny
 # @param ad_gpo_default_right
+# @param ad_gpo_implicit_deny (new in sssd V2.0 and later)
+# @param ad_gpo_ignore_unreadable (new in sssd V2.0 and later)
 # @param ad_maximum_machine_account_password_age
 # @param ad_machine_account_password_renewal_opts
 # @param default_shell
@@ -103,6 +105,8 @@ define sssd::provider::ad (
   Optional[Array[String[1],1]]                               $ad_gpo_map_permit                        = undef,
   Optional[Array[String[1],1]]                               $ad_gpo_map_deny                          = undef,
   Optional[Sssd::ADDefaultRight]                             $ad_gpo_default_right                     = undef,
+  Optional[Boolean]                                          $ad_gpo_implicit_deny                     = undef,
+  Optional[Boolean]                                          $ad_gpo_ignore_unreadable                 = undef,
   Optional[Integer[0]]                                       $ad_maximum_machine_account_password_age  = undef,
   Optional[Pattern['^\d+:\d+$']]                             $ad_machine_account_password_renewal_opts = undef,
   Optional[String[1]]                                        $default_shell                            = undef,

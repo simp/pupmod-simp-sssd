@@ -53,8 +53,6 @@
     'ldap_group_modify_timestamp',
     'ldap_group_type',
     'ldap_group_nesting_level',
-    'ldap_groups_use_matching_rule_in_chain',
-    'ldap_initgroups_use_matching_rule_in_chain',
     'ldap_use_tokengroups',
     'ldap_netgroup_object_class',
     'ldap_netgroup_name',
@@ -139,6 +137,12 @@
     'ldap_idmap_autorid_compat'
   ]
 
+  #options only available in sssd v1 (the version used prior to el8)
+  _string_params_v1 =  [
+    'ldap_groups_use_matching_rule_in_chain',
+    'ldap_initgroups_use_matching_rule_in_chain',
+  ]
+
   _array_params = {
     'ldap_uri' => ',',
     'ldap_backup_uri' => ',',
@@ -153,6 +157,16 @@
     'krb5_backup_server' => ','
   }
 
+  if @facts['sssd_version'].nil?
+    if @facts['os']['release']['major'] < '8'
+      _sssd_major_version = 1
+    else
+      _sssd_major_version = 2
+    end
+  else
+    _sssd_major_version = @facts['sssd_version'].split('.').first.to_i
+  end
+
   _output = []
   _string_params.each do |param|
     value = eval(%(@#{param}))
@@ -161,6 +175,16 @@
     # set a parameter to false in this config!
     unless value.nil?
       _output << %(#{param.sub(/^_/,'')} = #{value.to_s})
+    end
+  end
+
+  # if os < el8 add in params used in sssd V1 only
+  if _sssd_major_version < 2
+    _string_params_v1.each do |param|
+      value = eval(%(@#{param}))
+      unless value.nil?
+        _output << %(#{param.sub(/^_/,'')} = #{value.to_s})
+      end
     end
   end
 

@@ -1,1 +1,1 @@
-type Sssd::Services = Array[Enum['nss','pam','sudo','autofs','ssh','pac']]
+type Sssd::Services = Array[Enum['nss','pam','sudo','autofs','ssh','pac','ifp']]
