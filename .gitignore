@@ -2,10 +2,10 @@
 .yardoc
 dist/
 pkg/
-spec/fixtures/
+spec/fixtures/modules
+spec/fixtures/manifests
+spec/fixtures/hieradata/hiera.yaml
 spec/rp_env/
-!/spec/hieradata/default.yaml
-!/spec/fixtures/site.pp
 .rspec_system
 .vagrant/
 .bundle/

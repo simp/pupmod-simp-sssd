@@ -1,0 +1,2 @@
+---
+sssd::install::install_user_tools: false

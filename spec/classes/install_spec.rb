@@ -1,10 +1,11 @@
 require 'spec_helper'
 
-describe 'sssd::install' do
+describe 'sssd' do
   context 'supported operating systems' do
     on_supported_os.each do |os, os_facts|
       context "on #{os}" do
         let(:facts){ os_facts }
+        let(:precondition){ "include 'sssd'"}
 
         context 'with_defaults' do
           it { is_expected.to compile.with_all_deps }
@@ -23,8 +24,8 @@ describe 'sssd::install' do
         end
 
         context 'when install* params set to other then default' do
-          let(:params) {{ :install_user_tools => false,
-                          :install_ifp        => true }}
+          let(:hieradata) {"sssd_install"}
+          let(:params) {{ :services => ['nss','pam','ifp'] }}
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to contain_package('sssd').with_ensure('installed') }
@@ -37,6 +38,7 @@ describe 'sssd::install' do
           end
 
         end
+
       end
     end
   end

@@ -4,7 +4,9 @@
 <% if @_description -%>
 description = <%= @_description %>
 <% end -%>
+<% unless @_domains.empty? -%>
 domains = <%= Array(@_domains).join(', ') %>
+<% end -%>
 services = <%= Array(@_services).join(', ') %>
 config_file_version = <%= @_config_file_version.to_s %>
 reconnection_retries = <%= @_reconnection_retries.to_s %>
@@ -28,6 +30,9 @@ default_domain_suffix = <%= @_default_domain_suffix %>
 <% end -%>
 <% if @_override_space-%>
 override_space = <%= @_override_space%>
+<% end -%>
+<% unless @_enable_files_domain.nil? -%>
+enable_files_domain = <%=  @_enable_files_domain %>
 <% end -%>
 <% unless @_debug_level.nil? -%>
 debug_level = <%= @_debug_level %>

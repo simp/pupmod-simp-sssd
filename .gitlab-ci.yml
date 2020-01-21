@@ -173,15 +173,21 @@ pup5.5.16-fips:
   <<: *pup_5_5_16
   <<: *acceptance_base
   script:
-    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default]'
+    - 'BEAKER_fips=yes bundle exec rake beaker:suites[default,default]'
 
 pup5.5.16-ad:
   <<: *pup_5_5_16
   <<: *acceptance_base
   script:
-    - 'bundle exec rake beaker:suites[ad]'
+    - 'bundle exec rake beaker:suites[ad,default]'
   retry: 1
 
+pup5.5.16-ldap:
+  <<: *pup_5_5_16
+  <<: *acceptance_base
+  script:
+    - 'bundle exec rake beaker:suites[ldap,default]'
+  retry: 1
 pup5.5.16-ad-fips:
   <<: *pup_5_5_16
   <<: *acceptance_base
@@ -211,6 +217,13 @@ pup5.5.16-oel-ad:
   script:
     - 'bundle exec rake beaker:suites[ad,oel]'
   retry: 1
+
+pup5.5.16-oel-ldap:
+  <<: *pup_5_5_16
+  <<: *acceptance_base
+  <<: *only_with_SIMP_FULL_MATRIX
+  script:
+    - 'bundle exec rake beaker:suites[ldap,oel]'
 
 pup6:
   <<: *pup_6

@@ -45,8 +45,10 @@
 # @param ad_gpo_map_permit
 # @param ad_gpo_map_deny
 # @param ad_gpo_default_right
-# @param ad_gpo_implicit_deny (new in sssd V2.0 and later)
-# @param ad_gpo_ignore_unreadable (new in sssd V2.0 and later)
+# @param ad_gpo_implicit_deny
+#        (new in sssd V2.0 and later)
+# @param ad_gpo_ignore_unreadable
+#        (new in sssd V2.0 and later)
 # @param ad_maximum_machine_account_password_age
 # @param ad_machine_account_password_renewal_opts
 # @param default_shell

@@ -11,9 +11,9 @@
 #
 class sssd::install (
   Boolean  $install_user_tools = true,
-  Boolean  $install_ifp        = false,
   String   $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
 ) {
+  assert_private()
   contain 'sssd::install::client'
 
   file { '/etc/sssd':
@@ -33,8 +33,8 @@ class sssd::install (
     }
   }
 
-  if versioncmp($facts['os']['release']['major'],'6') > 0 {
-    if $install_ifp {
+  if member($facts['init_systems'], 'systemd') {
+    if member($sssd::services, 'ifp') {
       package { 'sssd-dbus':
         ensure => $package_ensure
       }

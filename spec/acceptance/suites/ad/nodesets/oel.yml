@@ -18,15 +18,16 @@ HOSTS:
     user: vagrant
     communicator: winrm
     is_cygwin: false
-  oel8:
-    roles:
-      - default
-      - client
-    platform: el-8-x86_64
-    box: generic/oracle8
-    hypervisor: <%= hypervisor %>
+#  It does not work on el8 yet.  See SIMP-7577
+#  oel8:
+#    roles:
+#      - client
+#    platform: el-8-x86_64
+#    box: generic/oracle8
+#    hypervisor: <%= hypervisor %>
   oel7:
     roles:
+      - default
       - client
     platform: el-7-x86_64
     box: onyxpoint/oel-7-x86_64

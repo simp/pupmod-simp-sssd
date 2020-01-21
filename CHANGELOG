@@ -1,11 +1,15 @@
 * Tue Jan 21 2020 Jeanne Greulich <jeanne.greulich@onyxpoint.com> - 6.3.0-0
 - Added EL8 support
-- 'local' provider for EL8 requires special compile of sssd.  Added
-  a warning message in local provider if it is used with EL8.
-- Removed deprecated  variables from ldap provider for EL8.
-- Added new variables for AD provider.
+- Removed requirement for sssd domain entry for el8 and SSSD V2 since
+  using the implicit files provider is valid and even recommended
+  for performance by some.  An sssd domain is still required for
+  el6 and el7.
+- Automatically include the service section if the service is included in
+  sssd::services.
+- Removed deprecated variables from ldap provider for EL8.
+- Added new variables for providers in EL8.
 - Added ifp to list of services in service type
-- Added installation of sssd-dbus package if enabled
+- Added files to types of providers
 - Added support for simplib version 4.0
 
 * Tue Jun 04 2019 steven.pritchard <steven.pritchard@onyxpoint.com> - 6.2.0-0

@@ -3,7 +3,6 @@ require 'spec_helper_acceptance'
 test_name 'SSSD connecting to an AD'
 
 describe 'sssd class' do
-
   clients     = hosts_with_role(hosts,'client')
   ad          = hosts_with_role(hosts,'ad').first
   domain_pass = '@dm1n=P@ssw0r'
@@ -15,34 +14,8 @@ describe 'sssd class' do
     f = JSON.load(on(ad, 'puppet facts').stdout)
     f['values']['networking']['interfaces']['Ethernet 2']['ip']
   }
-  let(:hiera) {{
-    'simp_options::sssd'                        => true, # had to add because of the pam changes
-    'simp_options::pki'                         => true,
-    'simp_options::pki::source'                 => '/etc/pki/simp-testing/pki',
-    'simp_options::dns::servers'                => [ad_ip],
-    'simp_options::ldap::uri'                   => ['ldap://FIXME'],
-    'simp_options::ldap::bind_dn'               => "CN=Administrator,CN=Users,#{ldap_dc}",
-    'simp_options::ldap::base_dn'               => ldap_dc,
-    'simp_options::ldap::bind_pw'               => '<PASSWORD>',
-    # This causes a lot of noise and reboots
-    'sssd::auditd'                              => false,
-    'sssd::domains'                             => [ 'LOCAL', domain ].compact,
-    'resolv::named_autoconf'                    => false,
-    'resolv::caching'                           => false,
-    'resolv::resolv_domain'                     => domain,
-    'pam::disable_authconfig'                   => false,
-    'ssh::server::conf::permitrootlogin'        => true,
-    'ssh::server::conf::authorizedkeysfile'     => '.ssh/authorized_keys',
-    'ssh::server::conf::gssapiauthentication'   => true,
-    'ssh::server::conf::passwordauthentication' => true,
-  }}
-  let(:manifest) { <<-EOF
+  let(:v1_manifest) { <<-EOF
       include '::sssd'
-      include '::sssd::service::nss'
-      include '::sssd::service::pam'
-      include '::sssd::service::autofs'
-      include '::sssd::service::sudo'
-      include '::sssd::service::ssh'
       include '::resolv'
       include '::pam'
       include '::simp::nsswitch'
@@ -61,6 +34,15 @@ describe 'sssd class' do
       sssd::provider::local { 'LOCAL': }
     EOF
   }
+  let(:v2_manifest) { <<-EOF
+      include '::sssd'
+      include '::resolv'
+      include '::pam'
+      include '::simp::nsswitch'
+      include '::ssh'
+      EOF
+  }
+
   let(:ad_manifest) { <<-EOF
       ####################################################################
       # AD CONFIG
@@ -91,6 +73,27 @@ describe 'sssd class' do
     EOF
   }
 
+  hiera = <<-EOM
+---
+simp_options::sssd:   true
+simp_options::pki:    true
+simp_options::pki::source:  '/etc/pki/simp-testing/pki'
+simp_options::ldap::uri:                   ['ldap://FIXME']
+simp_options::ldap::bind_dn:               "CN=Administrator,CN=Users,#{ldap_dc}"
+simp_options::ldap::base_dn:               "#{ldap_dc}"
+simp_options::ldap::bind_pw:               '<PASSWORD>'
+# This causes a lot of noise and reboots
+sssd::auditd:                              false
+resolv::named_autoconf:                    false
+resolv::caching:                           false
+resolv::resolv_domain:                     "#{domain}"
+pam::disable_authconfig:                   false
+ssh::server::conf::permitrootlogin:        true
+ssh::server::conf::authorizedkeysfile:     '.ssh/authorized_keys'
+ssh::server::conf::gssapiauthentication:   true
+ssh::server::conf::passwordauthentication: true
+EOM
+
   context 'fix the hosts file' do
     clients.each do |host|
       it 'should install packages for testing' do
@@ -103,7 +106,7 @@ describe 'sssd class' do
       it 'should have the ad host with its fqdn' do
         require 'yaml'
         # Find the IP of the AD host and make a new host entry with FQDN and IP
-        ad_host = YAML.load(on(host, 'puppet resource host ad. --to_yaml').stdout)
+        ad_host = YAML.load(on(host, "puppet resource host ad. --to_yaml").stdout)
         ip = ad_host['host']['ad.']['ip']
         on(host, "puppet resource host ad.#{domain} ensure=present ip=#{ip} host_aliases=ad")
         # Remove incorrect and incomplete hosts entry
@@ -121,13 +124,35 @@ describe 'sssd class' do
 
   context 'configure basic SSSD' do
     clients.each do |host|
-      it 'should run puppet without error' do
-        set_hieradata_on(host, hiera)
-        apply_manifest_on(host, manifest, catch_failures: true)
-      end
+      case host[:platform]
+      when /el-8-x86_64/
+        # It gets an error if the domain is already in the sssd.conf so
+        # need to configure sssd without the domain.  (It looks like this
+        # is an old error that was fixed in 2015 but el8 has the latest
+        # version of realmd.)
+        it "should run puppet without error configure basic SSSD" do
+          client_hiera8 = hiera + <<-EOM.gsub(/^\s+/,'')
+            simp_options::dns::servers:    ["#{ad_ip}"]
+            sssd::domains: []
+          EOM
 
-      it 'should be idempotent' do
-        apply_manifest_on(host, manifest, catch_changes: true)
+          set_hieradata_on(host, client_hiera8)
+          apply_manifest_on(host, v2_manifest, catch_failures: true)
+          #it should be idempotent
+          apply_manifest_on(host, v2_manifest, catch_changes: true)
+        end
+      else
+        it "should run puppet without error configure basic SSSD" do
+          client_hiera = hiera + <<-EOM.gsub(/^\s+/,'')
+            simp_options::dns::servers:    ["#{ad_ip}"]
+            sssd::domains: ['LOCAL', "#{domain}"]
+          EOM
+
+          set_hieradata_on(host, client_hiera)
+          apply_manifest_on(host, v1_manifest, catch_failures: true)
+          #it should be idempotent
+          apply_manifest_on(host, v1_manifest, catch_changes: true)
+        end
       end
     end
   end
@@ -143,7 +168,7 @@ describe 'sssd class' do
           result = on(host, "adcli info #{domain}")
           expect(result.stdout).to match(/domain-name = #{domain}/)
         end
-      when /el-7-x86_64/
+      else
         it 'make sure it is not in a domain automatically' do
           on(host, 'realm leave', :accept_all_exit_codes => true)
         end
@@ -155,7 +180,7 @@ describe 'sssd class' do
           expect(result.stdout).to match(/domain-name: #{domain}/)
         end
         it 'should have itself listed in DNS' do
-          ip = on(host, "dig #{host}.#{domain} A +short")
+          ip = on(host, "dig #{host}.#{domain} A +noedns +short")
           expect(ip.stdout).to match(/10.255/)
         end
       end
@@ -163,12 +188,27 @@ describe 'sssd class' do
   end
 
   context 'when connected to AD' do
-    let(:_ad_manifest) {
-      [manifest, ad_manifest].join("\n")
-    }
 
     clients.each do |host|
-      it 'should run puppet without error' do
+      case host[:platform]
+      when /el-8-x86_64/
+        let(:manifest) { v2_manifest }
+        it 'should update sssd::domains in hiera' do
+          #you can't have the domain in sssd before joing the realm or it
+          # errors out so add it n here.
+          client_hiera8 = hiera + <<-EOM.gsub(/^\s+/,'')
+            simp_options::dns::servers:    ["#{ad_ip}"]
+            sssd::domains: ["#{domain}"]
+          EOM
+          set_hieradata_on(host, client_hiera8)
+        end
+      else
+        let(:manifest) { v1_manifest }
+      end
+      let(:_ad_manifest) {
+        [manifest, ad_manifest].join("\n")
+      }
+      it "should run puppet without error connected to AD" do
         apply_manifest_on(host, _ad_manifest, catch_failures: true)
       end
 

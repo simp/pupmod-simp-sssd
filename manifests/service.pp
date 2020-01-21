@@ -5,14 +5,16 @@
 #
 class sssd::service {
 
-  file { '/etc/init.d/sssd':
-    ensure  => 'file',
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0755',
-    seltype => 'sssd_initrc_exec_t',
-    source  => 'puppet:///modules/sssd/sssd.sysinit',
-    notify  => Service['sssd']
+  unless member($facts['init_systems'], 'systemd') {
+    file { '/etc/init.d/sssd':
+      ensure  => 'file',
+      owner   => 'root',
+      group   => 'root',
+      mode    => '0755',
+      seltype => 'sssd_initrc_exec_t',
+      source  => 'puppet:///modules/sssd/sssd.sysinit',
+      notify  => Service['sssd']
+    }
   }
 
   service { 'nscd':
@@ -26,6 +28,5 @@ class sssd::service {
     enable     => true,
     hasrestart => true,
     hasstatus  => true,
-    require    => File['/etc/init.d/sssd']
   }
 }
