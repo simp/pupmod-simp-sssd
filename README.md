@@ -6,22 +6,30 @@
 
 #### Table of Contents
 
-1. [Overview](#overview)
-2. [Module Description - A Puppet module for managing sssd](#module-description)
-3. [Setup - The basics of getting started with pupmod-simp-sssd](#setup)
-    * [What pupmod-simp-sssd affects](#what-simp-sssd-affects)
-    * [Setup requirements](#setup-requirements)
-    * [Beginning with pupmod-simp-sssd](#beginning-with-simp-sssd)
-4. [Usage - Configuration options and additional functionality](#usage)
-5. [Reference - An under-the-hood peek at what the module is doing and how](#reference)
-5. [Limitations - OS compatibility, etc.](#limitations)
-6. [Development - Guide for contributing to the module](#development)
+<!-- vim-markdown-toc GFM -->
 
+  * [Overview](#overview)
+  * [This is a SIMP module](#this-is-a-simp-module)
+  * [Module Description](#module-description)
+  * [Setup](#setup)
+    * [What simp sssd affects](#what-simp-sssd-affects)
+  * [Usage](#usage)
+    * [Beginning with SIMP SSSD](#beginning-with-simp-sssd)
+    * [Creating Domains and Providers](#creating-domains-and-providers)
+      * [More examples](#more-examples)
+        * [I want to use local users](#i-want-to-use-local-users)
+      * [I want to use IPA users](#i-want-to-use-ipa-users)
+    * [Using Services](#using-services)
+* [Development](#development)
+
+<!-- vim-markdown-toc -->
 
 ## Overview
 
 This module installs and manages SSSD. It allows you to set configuration
 options in sssd.conf through puppet / hiera.
+
+See [REFERENCE.md](./REFERENCE.md) for full API details
 
 ## This is a SIMP module
 
@@ -80,14 +88,8 @@ the module does not create sssd domains or providers automatically.
 If the host is EL6 or EL7 the module will fail if you do not create
 a sssd domain.
 
-``` puppet
+```puppet
 include ::sssd
-```
-or
-
-``` yaml
-classes:
-  - sssd
 ```
 
 To enable integration with the existing SIMP PKI module, set the
@@ -114,23 +116,23 @@ add the domain name to the array of domains in hiera:
 
 In hiera:
 
-``` yaml
+```yaml
 sssd::domains: ['ldapusers', 'LOCAL']
 ```
 
 Create a manifest:
 
-``` puppet
+```puppet
 sssd::domain { 'ldapusers':
   id_provider => 'ldap',
   auth_provider => 'krb5',
   access_provider => 'krb5',
-  ...
+  ...etc
 }
 
 sssd::domain { 'LOCAL':
   id_provider => 'local',
-  ...
+  ...etc
 }
 ```
 
@@ -139,7 +141,7 @@ instantiate the provider type with the same name as the domain it applies to.
 For example, to set options for the  ldap and krb5 providers for the ``ldapusers``
 domain defined above use the following:
 
-``` puppet
+```puppet
 sssd::provider::ldap { 'ldapusers':
   ldap_access_filter => 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com',
   ldap_chpass_uri    => empty,
@@ -161,7 +163,7 @@ sssd::provider::krb5 { 'ldapusers':
 ```puppet
 sssd::domain { 'localusers':
   id_provider => 'local',
-  ...
+  ...etc
 }
 sssd::provider::local { 'localusers':
   Default_shell  => '/bin/bash',
@@ -214,7 +216,7 @@ Adding a service to the array of services in sssd::services will
 configure it using the defaults from its module, sssd::service::*\{service name\}* .
 Use hiera to override the defaults.
 
-``` yaml
+```yaml
   sssd::services: [ 'nss', 'pam', 'autofs']
 ```
 
@@ -224,7 +226,7 @@ added.  It accepts a hash of options for the service.  It will ignore the other
 parameters in the service and use only these so you must add all options
 that differ from the system defaults.
 
-``` yaml
+```yaml
   sssd::service::nss::custom_options:
     description: 'The nss section of the config file'
     filter_users:  'root'
@@ -232,11 +234,6 @@ that differ from the system defaults.
     reconnection_retries:  3
     mymissingparam: 'value'
 ```
-
-## Limitations
-
-This module is only designed to work in RHEL or CentOS 6 and 7. Any other
-operating systems have not been tested and results cannot be guaranteed.
 
 # Development
 
