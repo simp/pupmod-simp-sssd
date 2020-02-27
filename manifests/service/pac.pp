@@ -10,6 +10,13 @@
 # @param debug_microseconds
 # @param allowed_uids
 #
+# @param custom_options
+#   If defined, this hash will be used to create the service
+#   section instead of the parameters.  You must provide all options
+#   in the section you want to add.  Each entry in the hash will be
+#   added as a simple init pair key = value under the section in
+#   the sssd.conf file.
+#   No error checking will be performed.
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::service::pac (
@@ -17,13 +24,26 @@ class sssd::service::pac (
   Optional[Sssd::DebugLevel]   $debug_level        = undef,
   Boolean                      $debug_timestamps   = true,
   Boolean                      $debug_microseconds = false,
-  Array[String]                $allowed_uids       = []
+  Array[String]                $allowed_uids       = [],
+  Optional[Hash]               $custom_options     = undef
+
 ) {
   include '::sssd'
 
-  concat::fragment { 'sssd_pac.service':
-    target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/service/pac.erb"),
-    order   => '30'
+  if $custom_options {
+    concat::fragment { 'sssd_pac.service':
+      target  => '/etc/sssd/sssd.conf',
+      order   => '30',
+      content => epp("${module_name}/service/custom_options.epp", {
+        'service_name' => 'pac',
+        'options'      => $custom_options
+      })
+    }
+  } else {
+    concat::fragment { 'sssd_pac.service':
+      target  => '/etc/sssd/sssd.conf',
+      content => template("${module_name}/service/pac.erb"),
+      order   => '30'
+    }
   }
 }

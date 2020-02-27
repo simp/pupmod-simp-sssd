@@ -6,20 +6,31 @@
   end
 -%>
 HOSTS:
-  oel8-cli:
+  ldapserver:
+    roles:
+      - ldap
+    platform: el-7-x86_64
+    box: centos/7
+    hypervisor: <%= hypervisor %>
+    yum_repos:
+      simp:
+        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
+        gpgkeys:
+          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
+  oel8:
     roles:
       - default
       - client
     platform: el-8-x86_64
     box: generic/oracle8
     hypervisor: <%= hypervisor %>
-  oel7-cli:
+  oel7:
     roles:
       - client
     platform: el-7-x86_64
     box: onyxpoint/oel-7-x86_64
     hypervisor: <%= hypervisor %>
-  oel6-cli:
+  oel6:
     roles:
       - client
     platform: el-6-x86_64

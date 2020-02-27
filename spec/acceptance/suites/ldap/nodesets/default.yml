@@ -6,35 +6,36 @@
   end
 -%>
 HOSTS:
-  ad:
+  ldapserver:
     roles:
-      - windows
-      - ad
-    platform: windows-server-amd64
-    box: opentable/win-2012r2-standard-amd64-nocm # VBOX ONLY
-    hypervisor: <%= hypervisor %>
-    vagrant_memsize: 2048
-    vagrant_cpus: 2
-    user: vagrant
-    communicator: winrm
-    is_cygwin: false
-  centos7:
-    roles:
-      - client
-      - default
+      - ldap
     platform: el-7-x86_64
     box: centos/7
     hypervisor: <%= hypervisor %>
-#  It does not work on el8 yet see SIMP-7577 for details
-#  centos8:
-#    roles:
-#      - client
-#    platform: el-8-x86_64
-#    box: centos/8
-#    hypervisor: <%= hypervisor %>
+    yum_repos:
+      simp:
+        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
+        gpgkeys:
+          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
+  centos8:
+    roles:
+      - default
+      - client
+      - sssdv2
+    platform: el-8-x86_64
+    box: centos/8
+    hypervisor: <%= hypervisor %>
+  centos7:
+    roles:
+      - client
+      - sssdv1
+    platform: el-7-x86_64
+    box: centos/7
+    hypervisor: <%= hypervisor %>
   centos6:
     roles:
       - client
+      - sssdv1
     platform: el-6-x86_64
     box: centos/6
     hypervisor: <%= hypervisor %>

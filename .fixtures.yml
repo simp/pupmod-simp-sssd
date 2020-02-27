@@ -23,5 +23,7 @@ fixtures:
     simp_options: https://github.com/simp/pupmod-simp-simp_options
     ssh: https://github.com/simp/pupmod-simp-ssh
     systemd: https://github.com/simp/puppet-systemd
+    # Fixtures for ldap accectance test
+    simp_openldap: https://github.com/simp/pupmod-simp-simp_openldap
   symlinks:
     sssd: "#{source_dir}"

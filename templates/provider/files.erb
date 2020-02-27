@@ -1,0 +1,7 @@
+# sssd::provider::files
+<% if @passwd_files and ! @passwd_files.empty? -%>
+passwd_files = <%= @passwd_files.join(', ') %>
+<% end -%>
+<% if @group_files and ! @group_files.empty? -%>
+group_files = <%= @group_files.join(', ') %>
+<% end -%>

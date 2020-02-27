@@ -1,6 +1,6 @@
 {
   "name": "simp-sssd",
-  "version": "6.2.0",
+  "version": "6.3.0",
   "author": "SIMP Team",
   "summary": "Manages SSSD",
   "license": "Apache-2.0",
@@ -17,34 +17,45 @@
       "version_requirement": ">= 4.19.0 < 7.0.0"
     },
     {
-      "name": "simp/auditd",
-      "version_requirement": ">= 7.0.0 < 9.0.0"
-    },
-    {
       "name": "simp/simplib",
-      "version_requirement": ">= 3.9.0 < 4.0.0"
+      "version_requirement": ">= 3.9.0 < 5.0.0"
     }
   ],
+  "simp": {
+    "optional_dependencies": [
+      {
+        "name": "simp/auditd",
+        "version_requirement": ">= 7.0.0 < 9.0.0"
+      },
+      {
+        "name": "simp/pki",
+        "version_requirement": ">= 6.0.0 < 7.0.0"
+      }
+    ]
+  },
   "operatingsystem_support": [
     {
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
         "6",
-        "7"
+        "7",
+        "8"
       ]
     },
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "6",
-        "7"
+        "7",
+        "8"
       ]
     },
     {
       "operatingsystem": "OracleLinux",
       "operatingsystemrelease": [
         "6",
-        "7"
+        "7",
+        "8"
       ]
     }
   ],

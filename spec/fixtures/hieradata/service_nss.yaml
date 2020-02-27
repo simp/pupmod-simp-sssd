@@ -1,0 +1,4 @@
+sssd::service::nss::custom_options:
+  filter_users:  'user1, user2'
+  override_shell:  '/bin/bash'
+  enum_cache_timeout: 5

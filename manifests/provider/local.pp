@@ -3,6 +3,10 @@
 # This define sets up the 'local' id_provider section of a particular domain.
 # $name should be the name of the associated domain in sssd.conf.
 #
+# In EL8, which uses SSSD V2, the local provider is not available by default.
+# It will prevent sssd from running but it will not work unless you have a specially
+# copiled version of sssd v2.
+#
 # See 'The local domain section' in sssd.conf(5) for additional information.
 #
 # @param name

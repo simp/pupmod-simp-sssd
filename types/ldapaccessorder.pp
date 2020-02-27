@@ -1,3 +1,4 @@
+# List of valid values for ldap provider ldap_access_order setting
 type Sssd::LdapAccessOrder = Array[Enum[
   'filter',
   'lockout',

@@ -114,6 +114,12 @@ define sssd::domain (
 ) {
   include '::sssd'
 
+  if $facts['os']['release']['major']  < '7' {
+    if $id_provider == 'files' {
+      warn( "Invalid SSSD configuration.  'files' is not a valid provider for os version ${facts['os']['release']['major']}'")
+    }
+  }
+
   concat::fragment { "sssd_${name}_.domain":
     target  => '/etc/sssd/sssd.conf',
     content => template('sssd/domain.erb'),

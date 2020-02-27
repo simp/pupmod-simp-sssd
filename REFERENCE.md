@@ -13,9 +13,10 @@
 * [`sssd::pki`](#sssdpki): Class: sssd::pki  Uses the following sssd class parameters to copy certs into a directory for the sssd application  $::sssd::pki   * If 'simp
 * [`sssd::service`](#sssdservice): == Class: sssd::service Control the SSSD services
 * [`sssd::service::autofs`](#sssdserviceautofs): This class sets up the [autofs] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of t
+* [`sssd::service::ifp`](#sssdserviceifp): This class sets up the [ifp] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
 * [`sssd::service::nss`](#sssdservicenss): This class sets up the [nss] section of /etc/sssd.conf. You may only have one of these per system.  The class parameters map directly to SSSD
 * [`sssd::service::pac`](#sssdservicepac): This class sets up the [pac] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
-* [`sssd::service::pam`](#sssdservicepam): This class sets up the [pam] section of /etc/sssd.conf. You may only have one of these per system.  The class parameters map directly to SSSD
+* [`sssd::service::pam`](#sssdservicepam): 
 * [`sssd::service::ssh`](#sssdservicessh): This class sets up the [ssh] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
 * [`sssd::service::sudo`](#sssdservicesudo): This class sets up the [sudo] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of the
 
@@ -23,6 +24,7 @@
 
 * [`sssd::domain`](#sssddomain): Define: sssd::domain  This define sets up a domain section of /etc/sssd.conf. This domain will be named after '$name' and should be listed in
 * [`sssd::provider::ad`](#sssdproviderad): Set up the 'ad' (Active Directory) id_provider section of a particular domain.  Any parameter not explicitly documented directly follows the 
+* [`sssd::provider::files`](#sssdproviderfiles): Define: sssd::provider::files  This define sets up the 'files' id_provider section of a particular domain. $name should be the name of the as
 * [`sssd::provider::ipa`](#sssdprovideripa): This define sets up the 'ipa' provider section of a particular domain. $name should be the name of the associated domain in sssd.conf.  See s
 * [`sssd::provider::krb5`](#sssdproviderkrb5): Define: sssd::provider::krb5  This define sets up the 'krb5' provider section of a particular domain. $name should be the name of the associa
 * [`sssd::provider::ldap`](#sssdproviderldap): Define: sssd::provider::ldap  This define sets up the 'ldap' provider section of a particular domain. $name should be the name of the associa
@@ -31,6 +33,22 @@
 **Functions**
 
 * [`sssd::ldap_access_order_defaults`](#sssdldap_access_order_defaults): Generate the proper ldap_access_order defaults based on the version of SSSD in place
+
+**Data types**
+
+* [`Sssd::ADDefaultRight`](#sssdaddefaultright): List of valid types for AD Provider setting ad_gpo_default_right
+* [`Sssd::AccessProvider`](#sssdaccessprovider): List of valid  SSSD domain access providers
+* [`Sssd::AuthProvider`](#sssdauthprovider): List of valid types for sssd domain authentication provider
+* [`Sssd::ChpassProvider`](#sssdchpassprovider): List of valid types for sssd domain change password provider
+* [`Sssd::DebugLevel`](#sssddebuglevel): Integer[0-9] or 2 byte Hexidecimal (ex. 0x0201)
+* [`Sssd::IdProvider`](#sssdidprovider): List of valid type for sssd domain ID provider.
+* [`Sssd::LdapAccessOrder`](#sssdldapaccessorder): List of valid values for ldap provider ldap_access_order setting
+* [`Sssd::LdapAccountExpirePol`](#sssdldapaccountexpirepol): List of valid values for ldap provider ldap_account_expire_policy '' corresponds to the default value (empty) per sssd-ldap(5) man page
+* [`Sssd::LdapDefaultAuthtok`](#sssdldapdefaultauthtok): List of valid values for ldap provider default auth token
+* [`Sssd::LdapDeref`](#sssdldapderef): List of valid values for ldap provider deref setting
+* [`Sssd::LdapSchema`](#sssdldapschema): List of valid setting for ldap provider ldap_schema setting.
+* [`Sssd::LdapTlsReqcert`](#sssdldaptlsreqcert): List of valid setting for ldap provider ldap_tls_reqcert.
+* [`Sssd::Services`](#sssdservices): List of available sssd services
 
 ## Classes
 
@@ -50,9 +68,11 @@ The following parameters are available in the `sssd` class.
 
 ##### `domains`
 
-Data type: `Array[String[1, 255], 1]`
+Data type: `Array[String[1, 255]]`
 
 
+
+Default value: []
 
 ##### `debug_level`
 
@@ -81,6 +101,14 @@ Default value: `false`
 ##### `description`
 
 Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### `enable_files_domain`
+
+Data type: `Optional[Boolean]`
 
 
 
@@ -175,6 +203,19 @@ Have SSSD list and cache all the users that it can find on the remote system
 * Take care that you don't overwhelm your server if you enable this
 
 Default value: `false`
+
+##### `include_svc_config`
+
+Data type: `Boolean`
+
+If set to true, config will loop through the services set in
+sssd:service and include the configuration section for it.
+At this time the service sections contain only the most common
+parameters used. If you need to set a param that is not included you
+can turn this off and create a custom manifest to add the section
+you need.  If you simply want to change a setting that exists, use hiera.
+
+Default value: `true`
 
 ##### `cache_credentials`
 
@@ -388,6 +429,101 @@ Data type: `Optional[Integer]`
 
 Default value: `undef`
 
+##### `custom_options`
+
+Data type: `Optional[Hash]`
+
+If defined, this hash will be used to create the service
+section instead of the parameters.  You must provide all options
+in the section you want to add.  Each entry in the hash will be
+added as a simple init pair key = value under the section in
+the sssd.conf file.
+No error checking will be performed.
+
+Default value: `undef`
+
+### sssd::service::ifp
+
+This class sets up the [ifp] section of /etc/sssd.conf.
+
+The class parameters map directly to SSSD configuration.  Full
+documentation of these configuration options can be found in the
+sssd.conf(5) and sssd-ifp man pages.
+
+#### Parameters
+
+The following parameters are available in the `sssd::service::ifp` class.
+
+##### `description`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### `debug_level`
+
+Data type: `Optional[Sssd::Debuglevel]`
+
+
+
+Default value: `undef`
+
+##### `debug_timestamps`
+
+Data type: `Boolean`
+
+
+
+Default value: `true`
+
+##### `debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### `wildcard_limit`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### `allowed_uids`
+
+Data type: `Optional[Array[String[1]]]`
+
+
+
+Default value: `undef`
+
+##### `user_attributes`
+
+Data type: `Optional[Array[String[1]]]`
+
+
+
+Default value: `undef`
+
+##### `custom_options`
+
+Data type: `Optional[Hash]`
+
+If defined, this hash will be used to create the service
+section instead of the parameters.  You must provide all options
+in the section you want to add.  Each entry in the hash will be
+added as a simple init pair
+ key = value
+under the section in the sssd.conf file.
+No error checking will be performed.
+
+Default value: `undef`
+
 ### sssd::service::nss
 
 This class sets up the [nss] section of /etc/sssd.conf.
@@ -569,6 +705,19 @@ Data type: `Optional[String]`
 
 Default value: `undef`
 
+##### `custom_options`
+
+Data type: `Optional[Hash]`
+
+If defined, this hash will be used to create the service
+section instead of the parameters.  You must provide all options
+in the section you want to add.  Each entry in the hash will be
+added as a simple init pair key = value under the section in
+the sssd.conf file.
+No error checking will be performed.
+
+Default value: `undef`
+
 ### sssd::service::pac
 
 This class sets up the [pac] section of /etc/sssd.conf.
@@ -621,14 +770,22 @@ Data type: `Array[String]`
 
 Default value: []
 
+##### `custom_options`
+
+Data type: `Optional[Hash]`
+
+If defined, this hash will be used to create the service
+section instead of the parameters.  You must provide all options
+in the section you want to add.  Each entry in the hash will be
+added as a simple init pair key = value under the section in
+the sssd.conf file.
+No error checking will be performed.
+
+Default value: `undef`
+
 ### sssd::service::pam
 
-This class sets up the [pam] section of /etc/sssd.conf.
-You may only have one of these per system.
-
-The class parameters map directly to SSSD configuration.  Full
-documentation of these configuration options can be found in the
-sssd.conf(5) man page.
+The sssd::service::pam class.
 
 #### Parameters
 
@@ -754,6 +911,14 @@ Data type: `Optional[String]`
 
 Default value: `undef`
 
+##### `custom_options`
+
+Data type: `Optional[Hash]`
+
+
+
+Default value: `undef`
+
 ### sssd::service::ssh
 
 This class sets up the [ssh] section of /etc/sssd.conf.
@@ -814,6 +979,19 @@ Data type: `Optional[Integer]`
 
 Default value: `undef`
 
+##### `custom_options`
+
+Data type: `Optional[Hash]`
+
+If defined, this hash will be used to create the service
+section instead of the parameters.  You must provide all options
+in the section you want to add.  Each entry in the hash will be
+added as a simple init pair key = value under the section in
+the sssd.conf file.
+No error checking will be performed.
+
+Default value: `undef`
+
 ### sssd::service::sudo
 
 This class sets up the [sudo] section of /etc/sssd.conf.
@@ -865,6 +1043,20 @@ Data type: `Boolean`
 
 
 Default value: `false`
+
+##### `custom_options`
+
+Data type: `Optional[Hash]`
+
+If defined, this hash will be used to create the service
+section instead of the parameters.  You must provide all options
+in the section you want to add.  Each entry in the hash will be
+added as a simple init pair
+key = value
+under the section in the sssd.conf file.
+No error checking will be performed.
+
+Default value: `undef`
 
 ## Defined types
 
@@ -1414,6 +1606,22 @@ Data type: `Optional[Sssd::ADDefaultRight]`
 
 Default value: `undef`
 
+##### `ad_gpo_implicit_deny`
+
+Data type: `Optional[Boolean]`
+
+(new in sssd V2.0 and later)
+
+Default value: `undef`
+
+##### `ad_gpo_ignore_unreadable`
+
+Data type: `Optional[Boolean]`
+
+(new in sssd V2.0 and later)
+
+Default value: `undef`
+
 ##### `ad_maximum_machine_account_password_age`
 
 Data type: `Optional[Integer[0]]`
@@ -1644,6 +1852,42 @@ Default value: `undef`
 ##### `ldap_user_objectsid`
 
 Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+### sssd::provider::files
+
+Define: sssd::provider::files
+
+This define sets up the 'files' id_provider section of a particular domain.
+$name should be the name of the associated domain in sssd.conf.
+
+This is not necessary for the file provider unless you want to use
+files other then /etc/passwd and /etc/group
+
+See man 'sssd-files' for additional information.
+
+#### Parameters
+
+The following parameters are available in the `sssd::provider::files` defined type.
+
+##### `name`
+
+The name of the associated domain section in the configuration file.
+
+##### `passwd_files`
+
+Data type: `Optional[Array[Stdlib::Absolutepath]]`
+
+
+
+Default value: `undef`
+
+##### `group_files`
+
+Data type: `Optional[Array[Stdlib::Absolutepath]]`
 
 
 
@@ -3274,6 +3518,10 @@ Define: sssd::provider::local
 This define sets up the 'local' id_provider section of a particular domain.
 $name should be the name of the associated domain in sssd.conf.
 
+In EL8, which uses SSSD V2, the local provider is not available by default.
+It will prevent sssd from running but it will not work unless you have a specially
+copiled version of sssd v2.
+
 See 'The local domain section' in sssd.conf(5) for additional information.
 
 #### Parameters
@@ -3387,4 +3635,95 @@ Generate the proper ldap_access_order defaults based on the version of SSSD
 in place
 
 Returns: `Array[String]`
+
+## Data types
+
+### Sssd::ADDefaultRight
+
+List of valid types for AD Provider setting ad_gpo_default_right
+
+Alias of `Enum['interactive', 'remote_interactive', 'network', 'batch', 'service', 'permit', 'deny']`
+
+### Sssd::AccessProvider
+
+List of valid  SSSD domain access providers
+
+Alias of `Enum['permit', 'deny', 'ldap', 'ipa', 'ad', 'simple']`
+
+### Sssd::AuthProvider
+
+List of valid types for sssd domain authentication provider
+
+Alias of `Enum['ldap', 'krb5', 'ipa', 'ad', 'proxy', 'local', 'none']`
+
+### Sssd::ChpassProvider
+
+List of valid types for sssd domain change password provider
+
+Alias of `Enum['ldap', 'krb5', 'ipa', 'ad', 'proxy', 'none']`
+
+### Sssd::DebugLevel
+
+Integer[0-9] or 2 byte Hexidecimal (ex. 0x0201)
+
+Alias of `Variant[Integer[0,9], Pattern[/0x\h{4}$/]]`
+
+### Sssd::IdProvider
+
+List of valid type for sssd domain ID provider.
+
+Alias of `Enum['proxy', 'local', 'ldap', 'ipa', 'ad', 'files']`
+
+### Sssd::LdapAccessOrder
+
+List of valid values for ldap provider ldap_access_order setting
+
+Alias of `Array[Enum[
+  'filter',
+  'lockout',
+  'ppolicy', # Only available in sssd >= 1.14.0
+  'expire',
+  'pwd_expire_policy_reject', # Only available in sssd >= 1.14.0
+  'pwd_expire_policy_warn', # Only available in sssd >= 1.14.0
+  'pwd_expire_policy_renew', # Only available in sssd >= 1.14.0
+  'authorized_service',
+  'host'
+]]`
+
+### Sssd::LdapAccountExpirePol
+
+List of valid values for ldap provider ldap_account_expire_policy
+'' corresponds to the default value (empty) per sssd-ldap(5) man page
+
+Alias of `Enum['', 'shadow', 'ad', 'rhds', 'ipa', 'e89ds', 'nds']`
+
+### Sssd::LdapDefaultAuthtok
+
+List of valid values for ldap provider default auth token
+
+Alias of `Enum['password', 'obfuscated_password']`
+
+### Sssd::LdapDeref
+
+List of valid values for ldap provider deref setting
+
+Alias of `Enum['never', 'searching', 'finding', 'always']`
+
+### Sssd::LdapSchema
+
+List of valid setting for ldap provider ldap_schema setting.
+
+Alias of `Enum['rfc2307', 'rfc2307bis', 'IPA', 'AD']`
+
+### Sssd::LdapTlsReqcert
+
+List of valid setting for ldap provider ldap_tls_reqcert.
+
+Alias of `Enum['never', 'allow', 'try', 'demand', 'hard']`
+
+### Sssd::Services
+
+List of available sssd services
+
+Alias of `Array[Enum['nss','pam','sudo','autofs','ssh','pac','ifp']]`
 

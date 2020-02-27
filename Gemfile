@@ -16,8 +16,8 @@ group :test do
   gem 'puppet-strings'
   gem 'puppet-lint-empty_string-check',   :require => false
   gem 'puppet-lint-trailing_comma-check', :require => false
-  gem 'simp-rspec-puppet-facts', ENV.fetch('SIMP_RSPEC_PUPPET_FACTS_VERSION', '~> 2.2')
-  gem 'simp-rake-helpers', ENV.fetch('SIMP_RAKE_HELPERS_VERSION', '~> 5.6')
+  gem 'simp-rspec-puppet-facts', ENV.fetch('SIMP_RSPEC_PUPPET_FACTS_VERSION', ['>= 2.4.0', '< 3.0.0'] )
+  gem 'simp-rake-helpers', ENV.fetch('SIMP_RAKE_HELPERS_VERSION',  ['>= 5.9', '< 6.0'] )
 end
 
 group :development do
@@ -29,5 +29,6 @@ group :system_tests do
   gem 'beaker'
   gem 'beaker-rspec'
   gem 'beaker-windows'
-  gem 'simp-beaker-helpers', ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', '~> 1.13')
+  # Need 1.18.2 for windows updates
+  gem 'simp-beaker-helpers', ENV.fetch('SIMP_BEAKER_HELPERS_VERSION', ['>= 1.18.2', '< 2.0.0'])
 end

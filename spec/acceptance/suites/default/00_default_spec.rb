@@ -8,7 +8,6 @@ describe 'sssd class' do
 
   let(:default_hieradata) {
     {
-      'sssd::domains'             => [ 'LOCAL' ],
       'simp_options::pki'         => true,
       'simp_options::pki::source' => '/etc/pki/simp-testing/pki',
       # This causes a lot of noise and reboots
@@ -18,7 +17,9 @@ describe 'sssd class' do
 
   let(:manifest) {
     <<-EOS
-      class { 'sssd': }
+      class { 'sssd':
+        domains => ['LOCAL']
+      }
 
       # To be used with the default_hieradata above
       sssd::domain { 'LOCAL':
@@ -31,31 +32,62 @@ describe 'sssd class' do
     EOS
   }
 
+  let(:manifest_el8) {
+    <<-EOS
+      # Note: IFP is not needed for SSSD to work
+      # it gives a simple way to test if sssd is working
+      class {'sssd':
+        services      => ['nss','pam',"sudo", 'ssh', 'ifp']
+      }
+    EOS
+  }
+
   clients.each do |client|
     context 'default parameters' do
-      # Using puppet_apply as a helper
-      it 'should work with no errors' do
+      os_release = fact_on(client, 'operatingsystemmajrelease')
+
+      it 'manifest should work with no errors' do
+        if os_release >= '8'
+          _manifest = manifest_el8
+        else
+          _manifest = manifest
+        end
         set_hieradata_on(client, default_hieradata)
-        apply_manifest_on(client, manifest, :catch_failures => true)
+        apply_manifest_on(client, _manifest, :catch_failures => true)
+
+        # idempotent
+
+        apply_manifest_on(client, _manifest, :catch_changes => true)
       end
 
-      it 'should be idempotent' do
-        apply_manifest_on(client, manifest, :catch_changes => true)
-      end
+      if os_release >= '8'
+        it 'should be running and have set up implicit_files domain' do
+          result = on(client, 'sssctl domain-list; sssctl domain-list').stdout
+          expect(result).to match(/.*implicit_files.*/)
+        end
 
-      it 'should be able to create an SSSD user' do
-        on(client, %(sss_useradd simptest))
-        # Make sure that we didn't have this in /etc/password for some reason
-        on(client, %(grep -q '^simptest' /etc/passwd), :acceptable_exit_codes => [1])
-        # Getent doesn't return anything on EL6!
-        # Just have to try to make the user again and see if it fails.
-        expect(
+        it 'should get local user information' do
+          on(client, 'useradd testuser --password "mypassword" -M -u 97979 -U')
+          result = on(client, 'sssctl user-checks testuser').stdout
+          expect(result).to match(/.*- user id: 97979.*/)
+        end
+
+      else
+
+        it 'should be able to create an SSSD user' do
+          on(client, %(sss_useradd simptest))
+          # Make sure that we didn't have this in /etc/password for some reason
+          on(client, %(grep -q '^simptest' /etc/passwd), :acceptable_exit_codes => [1])
+          # Getent doesn't return anything on EL6!
+          # Just have to try to make the user again and see if it fails.
+          expect(
           on(client,
              %(sss_useradd simptest),
              :accept_all_exit_codes => true,
              :silent => true
             ).output
-        ).to match(/already exists/)
+          ).to match(/already exists/)
+        end
       end
     end
   end
