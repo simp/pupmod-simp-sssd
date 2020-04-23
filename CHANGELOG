@@ -1,4 +1,4 @@
-* Thu Apr 23 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.3.0-0
+* Thu Apr 23 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.3.1-0
 - Ensure that EL6/7+ use the 'files' or 'local' provider as is appropriate for
   their platform
 - Migrate the documentation to focus on the 'files' provider since 'local' is
