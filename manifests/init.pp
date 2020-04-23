@@ -7,6 +7,14 @@
 # configuration options can be found in the sssd.conf(5) man page.
 #
 # @param domains
+#   NOTE: The 'LOCAL' domain has been deprecated by the vendor and will cause a
+#   warning to be raised. Use the 'file' provider for similar capabilities.
+#
+# @param manage_service
+#   Whether or not to manage the SSSD service
+#
+#   * Defaults to `true` if `domains` is not empty and `false` otherwise
+#
 # @param debug_level
 # @param debug_timestamps
 # @param debug_microseconds
@@ -75,44 +83,49 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd (
-  Array[String[1, 255]]               $domains               = [],
-  Optional[Sssd::DebugLevel]          $debug_level           = undef,
-  Boolean                             $debug_timestamps      = true,
-  Boolean                             $debug_microseconds    = false,
-  Optional[String[1]]                 $description           = undef,
-  Integer[1]                          $config_file_version   = 2,
-  Sssd::Services                      $services              = ['nss','pam','ssh','sudo'],
-  Integer[0]                          $reconnection_retries  = 3,
-  Optional[String[1]]                 $re_expression         = undef,
-  Optional[String[1]]                 $full_name_format      = undef,
-  Optional[Boolean]                   $try_inotify           = undef,
-  Optional[String[1]]                 $krb5_rcache_dir       = undef,
-  Optional[String[1]]                 $user                  = undef,
-  Optional[String[1]]                 $default_domain_suffix = undef,
-  Optional[String[1]]                 $override_space        = undef,
-  Optional[Boolean]                   $enable_files_domain   = undef,
-  Boolean                             $enumerate_users       = false,
-  Boolean                             $cache_credentials     = true,
-  Boolean                             $include_svc_config    = true,
-  Integer[0]                          $min_id                = 1,
-  Boolean                             $auditd                = simplib::lookup('simp_options::auditd', { 'default_value' => false}),
-  Variant[Boolean,Enum['simp']]       $pki                   = simplib::lookup('simp_options::pki', { 'default_value' => false}),
-  Stdlib::Absolutepath                $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509'}),
-  Stdlib::Absolutepath                $app_pki_dir           = '/etc/pki/simp_apps/sssd/x509',
-  Boolean                             $auto_add_ipa_domain   = true
+  Array[String[1, 255]]         $domains               = [],
+  Boolean                       $manage_service        = !empty($domains),
+  Optional[Sssd::DebugLevel]    $debug_level           = undef,
+  Boolean                       $debug_timestamps      = true,
+  Boolean                       $debug_microseconds    = false,
+  Optional[String[1]]           $description           = undef,
+  Integer[1]                    $config_file_version   = 2,
+  Sssd::Services                $services              = ['nss','pam','ssh','sudo'],
+  Integer[0]                    $reconnection_retries  = 3,
+  Optional[String[1]]           $re_expression         = undef,
+  Optional[String[1]]           $full_name_format      = undef,
+  Optional[Boolean]             $try_inotify           = undef,
+  Optional[String[1]]           $krb5_rcache_dir       = undef,
+  Optional[String[1]]           $user                  = undef,
+  Optional[String[1]]           $default_domain_suffix = undef,
+  Optional[String[1]]           $override_space        = undef,
+  Optional[Boolean]             $enable_files_domain   = undef,
+  Boolean                       $enumerate_users       = false,
+  Boolean                       $cache_credentials     = true,
+  Boolean                       $include_svc_config    = true,
+  Integer[0]                    $min_id                = 1,
+  Boolean                       $auditd                = simplib::lookup('simp_options::auditd', { 'default_value' => false}),
+  Variant[Boolean,Enum['simp']] $pki                   = simplib::lookup('simp_options::pki', { 'default_value' => false}),
+  Stdlib::Absolutepath          $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509'}),
+  Stdlib::Absolutepath          $app_pki_dir           = '/etc/pki/simp_apps/sssd/x509',
+  Boolean                       $auto_add_ipa_domain   = true
 ) {
 
   include 'sssd::install'
   include 'sssd::config'
-  include 'sssd::service'
 
-  Class['sssd::install']
-  -> Class['sssd::config']
-  ~> Class['sssd::service']
+  Class['sssd::install'] -> Class['sssd::config']
+
+  if $manage_service {
+    include 'sssd::service'
+
+    Class['sssd::config'] ~> Class['sssd::service']
+  }
 
   if $auditd {
     simplib::assert_optional_dependency($module_name, 'simp/auditd')
-    include '::auditd'
+
+    include 'auditd'
 
     auditd::rule { 'sssd':
       content => '-w /etc/sssd/ -p wa -k CFG_sssd'
@@ -121,9 +134,13 @@ class sssd (
 
   if $pki {
     simplib::assert_optional_dependency($module_name, 'simp/pki')
-    include '::sssd::pki'
+
+    include 'sssd::pki'
 
     Class['sssd::install'] -> Class['sssd::pki']
-    Class['sssd::pki'] ~> Class['sssd::service']
+
+    if $manage_service {
+      Class['sssd::pki'] ~> Class['sssd::service']
+    }
   }
 }

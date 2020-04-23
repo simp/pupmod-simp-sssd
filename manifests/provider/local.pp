@@ -1,11 +1,8 @@
-# Define: sssd::provider::local
+# @summary Configures the 'LOCAL' id_provider section of a particular domain.
 #
-# This define sets up the 'local' id_provider section of a particular domain.
+# NOTE: This provider has NO EFFECT on SSSD 1.16.0+
+#
 # $name should be the name of the associated domain in sssd.conf.
-#
-# In EL8, which uses SSSD V2, the local provider is not available by default.
-# It will prevent sssd from running but it will not work unless you have a specially
-# copiled version of sssd v2.
 #
 # See 'The local domain section' in sssd.conf(5) for additional information.
 #
@@ -27,23 +24,25 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 define sssd::provider::local (
-  Optional[Sssd::DebugLevel]      $debug_level        = undef,
-  Boolean                         $debug_timestamps   = true,
-  Boolean                         $debug_microseconds = false,
-  Optional[String]                $default_shell      = undef,
-  Optional[Stdlib::Absolutepath]  $base_directory     = undef,
-  Boolean                         $create_homedir     = true,
-  Boolean                         $remove_homedir     = true,
-  Optional[Simplib::Umask]        $homedir_umask      = undef,
-  Optional[Stdlib::Absolutepath]  $skel_dir           = undef,
-  Optional[Stdlib::Absolutepath]  $mail_dir           = undef,
-  Optional[String]                $userdel_cmd        = undef
+  Optional[Sssd::DebugLevel]     $debug_level        = undef,
+  Boolean                        $debug_timestamps   = true,
+  Boolean                        $debug_microseconds = false,
+  Optional[String]               $default_shell      = undef,
+  Optional[Stdlib::Absolutepath] $base_directory     = undef,
+  Boolean                        $create_homedir     = true,
+  Boolean                        $remove_homedir     = true,
+  Optional[Simplib::Umask]       $homedir_umask      = undef,
+  Optional[Stdlib::Absolutepath] $skel_dir           = undef,
+  Optional[Stdlib::Absolutepath] $mail_dir           = undef,
+  Optional[String]               $userdel_cmd        = undef
 ) {
-  include '::sssd'
+  if $facts['os']['release']['major']  < '7' {
+    include $module_name
 
-  concat::fragment { "sssd_${name}_local_provider.domain":
-    target  => '/etc/sssd/sssd.conf',
-    content => template('sssd/provider/local.erb'),
-    order   => $name
+    concat::fragment { "${module_name}_${name}_local_provider.domain":
+      target  => '/etc/sssd/sssd.conf',
+      content => template("${module_name}/provider/local.erb"),
+      order   => $name
+    }
   }
 }

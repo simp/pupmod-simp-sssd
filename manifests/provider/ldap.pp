@@ -348,7 +348,7 @@ define sssd::provider::ldap (
   Optional[String[1]]                   $ldap_idmap_default_domain         = undef,
   Boolean                               $ldap_idmap_autorid_compat         = false
 ) {
-  include '::sssd'
+  include $module_name
 
   if $strip_128_bit_ciphers {
     # This is here due to a bug in the LDAP client library on EL6 that will set
@@ -381,18 +381,18 @@ define sssd::provider::ldap (
   if $app_pki_key {
     $ldap_tls_key = $app_pki_key
   } else {
-    $ldap_tls_key = "${sssd::app_pki_dir}/private/${::fqdn}.pem"
+    $ldap_tls_key = "${sssd::app_pki_dir}/private/${$facts['fqdn']}.pem"
   }
 
   if $app_pki_cert {
     $ldap_tls_cert = $app_pki_cert
   } else {
-    $ldap_tls_cert = "${sssd::app_pki_dir}/public/${::fqdn}.pub"
+    $ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['fqdn']}.pub"
   }
 
-  concat::fragment { "sssd_${name}_ldap_provider.domain":
+  concat::fragment { "${module_name}_${name}_ldap_provider.domain":
     target  => '/etc/sssd/sssd.conf',
-    content => template('sssd/provider/ldap.erb'),
+    content => template("${module_name}/provider/ldap.erb"),
     order   => $name
   }
 }

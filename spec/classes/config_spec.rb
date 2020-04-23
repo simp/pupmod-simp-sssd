@@ -44,8 +44,7 @@ shared_examples_for 'a sssd::config' do |content|
       :group          => 'root',
       :mode           => '0600',
       :ensure_newline => true,
-      :warn           => true,
-      :notify         => 'Class[Sssd::Service]'
+      :warn           => true
     })
   }
 

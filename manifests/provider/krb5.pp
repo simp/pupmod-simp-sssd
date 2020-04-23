@@ -45,9 +45,9 @@ define sssd::provider::krb5 (
   Integer                                $krb5_renew_interval            = 0,
   Optional[Enum['never','try','demand']] $krb5_use_fast                  = undef
 ) {
-  include '::sssd'
+  include $module_name
 
-  concat::fragment { "sssd_${name}_krb5_provider.domain":
+  concat::fragment { "${module_name}_${name}_krb5_provider.domain":
     target  => '/etc/sssd/sssd.conf',
     content => template("${module_name}/provider/krb5.erb"),
     order   => $name
