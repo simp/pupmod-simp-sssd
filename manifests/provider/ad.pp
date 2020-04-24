@@ -1,5 +1,6 @@
-# Set up the 'ad' (Active Directory) id_provider section of a particular
-# domain.
+# @summary Set up the 'ad' (Active Directory) id_provider section of a particular domain.
+#
+# NOTE: You MUST connect the system to the domain prior to using this defined type.
 #
 # Any parameter not explicitly documented directly follows the documentation
 # from sssd-ad(5).
@@ -139,9 +140,9 @@ define sssd::provider::ad (
   Optional[String[1]]                                        $ldap_group_objectsid                     = undef,
   Optional[String[1]]                                        $ldap_user_objectsid                      = undef,
 ) {
-  include '::sssd'
+  include $module_name
 
-  concat::fragment { "sssd_${name}_ad_provider.domain":
+  concat::fragment { "${module_name}_${name}_ad_provider.domain":
     target  => '/etc/sssd/sssd.conf',
     content => template("${module_name}/provider/ad.erb"),
     order   => $name

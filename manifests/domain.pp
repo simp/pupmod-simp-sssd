@@ -112,11 +112,16 @@ define sssd::domain (
   Optional[String]                           $proxy_pam_target             = undef,
   Optional[String]                           $proxy_lib_name               = undef
 ) {
-  include '::sssd'
+  include 'sssd'
 
-  if $facts['os']['release']['major']  < '7' {
+  if $facts['os']['release']['major']  > '6' {
+    if $id_provider == 'local' {
+      warning( "Invalid SSSD configuration. 'local' is not a valid provider for os version ${facts['os']['release']['major']}'")
+    }
+  }
+  else {
     if $id_provider == 'files' {
-      warn( "Invalid SSSD configuration.  'files' is not a valid provider for os version ${facts['os']['release']['major']}'")
+      warning( "Invalid SSSD configuration. 'files' is not a valid provider for os version ${facts['os']['release']['major']}'")
     }
   }
 

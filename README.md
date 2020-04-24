@@ -17,8 +17,10 @@
     * [Beginning with SIMP SSSD](#beginning-with-simp-sssd)
     * [Creating Domains and Providers](#creating-domains-and-providers)
       * [More examples](#more-examples)
-        * [I want to use local users](#i-want-to-use-local-users)
-      * [I want to use IPA users](#i-want-to-use-ipa-users)
+        * [Enabling Local Users](#enabling-local-users)
+        * [Using LDAP (Generic)](#using-ldap-generic)
+        * [Using FreeIPA or Red Hat Directory Server](#using-freeipa-or-red-hat-directory-server)
+        * [Using Active Directory](#using-active-directory)
     * [Using Services](#using-services)
 * [Development](#development)
 
@@ -124,8 +126,8 @@ Create a manifest:
 
 ```puppet
 sssd::domain { 'ldapusers':
-  id_provider => 'ldap',
-  auth_provider => 'krb5',
+  id_provider     => 'ldap',
+  auth_provider   => 'krb5',
   access_provider => 'krb5',
   ...etc
 }
@@ -150,33 +152,55 @@ sssd::provider::ldap { 'ldapusers':
 }
 
 sssd::provider::krb5 { 'ldapusers':
-  krb5_server    => 'my.kerberos.server',
-  krb5_realm     => 'mykrbrealm',
-  krb5_password  => lookup('use_eyaml'),
+  krb5_server   => 'my.kerberos.server',
+  krb5_realm    => 'mykrbrealm',
+  krb5_password => lookup('use_eyaml'),
   ...etc
 }
 ```
 
 #### More examples
-##### I want to use local users
+
+##### Enabling Local Users
+
+Using the `LOCAL` provider is supported for EL6 but has been deprecated by the
+vendor and is not recommended for use so is not documented here.
+
+The following method works on EL7+ and is recommended by the vendor.
+
+Add the following to your Hieradata:
+
+```yaml
+---
+sssd::enable_files_domain: true
+```
+
+More information can be found in `sssd-local(5)`.
+
+##### Using LDAP (Generic)
+
+This should work with any general LDAP server, OpenLDAP, 389DS, etc...
 
 ```puppet
-sssd::domain { 'localusers':
-  id_provider => 'local',
-  ...etc
+sssd::domain { 'my_ldap':
+  description       => 'LDAP Users',
+  id_provider       => 'ldap',
+  auth_provider     => 'ldap',
+  chpass_provider   => 'ldap',
+  access_provider   => 'ldap',
+  sudo_provider     => 'ldap',
+  autofs_provider   => 'ldap',
+  min_id            => 500,
+  cache_credentials => true
 }
-sssd::provider::local { 'localusers':
-  Default_shell  => '/bin/bash',
-  base_directory => '/home',
-  create_homedir => true,
-  remove_homedir => true,
-  homedir_umask  => '0037',
-  skel_dir       => '/etc/skel/user',
-  mail_dir       => '/etc/mailbox',
-  userdel_cmd    => '/bin/userdel',
+
+sssd::provider::ldap { 'my_ldap':
+  ldap_default_authtok_type => 'password',
+  ldap_user_gecos           => 'dn'
 }
 ```
-#### I want to use IPA users
+
+##### Using FreeIPA or Red Hat Directory Server
 
 The `sssd` class, by default, configures SSSD for an IPA domain,
 when the host is joined to an IPA domain.  If you want to manage this
@@ -197,6 +221,43 @@ sssd::domain { 'my.domain':
 sssd::provider::ipa { 'my.domain':
   ipa_domain => 'my.domain'
   ipa_server => [ 'ipaserver.my.domain' ]
+}
+```
+
+##### Using Active Directory
+
+For `sssd` to properly function with AD, you will need to join the system to the
+domain in whatever method suits your environment. There are several modules
+containing relevant tasks but this is technically outside of the realm of `sssd`
+so not included here.
+
+```puppet
+$_my_ad_domain = 'test.domain'
+
+# You may need to adjust these parameters for your exact environment but these
+# should work for general use.
+
+sssd::domain { $_my_ad_domain:
+  access_provider           => 'ad',
+  cache_credentials         => true,
+  id_provider               => 'ad',
+  realmd_tags               => 'manages-system joined-with-samba',
+  case_sensitive            => true,
+  max_id                    => 0,
+  ignore_group_members      => true,
+  use_fully_qualified_names => true
+}
+
+sssd::provider::ad { $_my_ad_domain:
+  ad_domain                      => $_my_ad_domain,
+  ad_servers                     => ["ad.${_my_ad_domain}"],
+  ldap_id_mapping                => true,
+  ldap_schema                    => 'ad',
+  krb5_realm                     => upcase($_my_ad_domain),
+  dyndns_update                  => true,
+  default_shell                  => '/bin/bash',
+  fallback_homedir               => '/home/%u@%d',
+  krb5_store_password_if_offline => true
 }
 ```
 

@@ -1,12 +1,6 @@
 
 # sssd::provider::local
 #
-<%   if ['RedHat','CentOS','OracleLinux'].include?(@facts['operatingsystem']) && (@facts['operatingsystemmajrelease'].to_s <= "7") -%>
-# 'local' provider was removed from sssd v2 but can be used if special
-# options are used to compile it.  If the local provider is not working
-# and you are using sssd v2 or later please refer to the release notes
-# for sssd v2.0.
-<% end -%>
 <% if @debug_level -%>
 debug_level = <%= @debug_level %>
 <% end -%>

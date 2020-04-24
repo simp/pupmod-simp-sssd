@@ -76,7 +76,7 @@ define sssd::provider::ipa (
   Boolean                        $use_service_discovery          = true
 
 ) {
-  include '::sssd'
+  include $module_name
 
   if $use_service_discovery {
     $_ipa_server = ['_srv_'] + $ipa_server
@@ -85,9 +85,9 @@ define sssd::provider::ipa (
     $_ipa_server = $ipa_server
   }
 
-  concat::fragment { "sssd_${name}_ipa_provider.domain":
+  concat::fragment { "${module_name}_${name}_ipa_provider.domain":
     target  => '/etc/sssd/sssd.conf',
-    content => template('sssd/provider/ipa.erb'),
+    content => template("${module_name}/provider/ipa.erb"),
     order   => $name
   }
 }

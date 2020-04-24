@@ -12,19 +12,9 @@ describe 'LDAP' do
   domain       = fact_on(ldap_servers.first, 'domain')
   base_dn      = domain.split('.').map{ |d| "DC=#{d}" }.join(',')
 
-let(:client_manifest) {
-   <<-EOS
+  let(:client_manifest) { <<~EOS
+     #{local_domain}
 
-      sssd::domain { 'LOCAL':
-        description       => 'LOCAL Users Domain',
-        id_provider       => 'local',
-        auth_provider     => 'local',
-        access_provider   => 'permit',
-        min_id            => 500,
-        # These don't make sense on the local domain
-        enumerate         => false,
-        cache_credentials => false
-      }
      sssd::domain { 'LDAP':
         description       => 'LDAP Users Domain',
         id_provider       => 'ldap',
@@ -48,23 +38,44 @@ let(:client_manifest) {
         group  => ['sss', 'files'],
         shadow => ['sss', 'files'],
       }
-
-   EOS
-}
+    EOS
+  }
 
   clients.each do |client|
     context 'on each client set up sssd' do
       # set sssd domains for template
-      case client[:platform]
-      when  /el-6-x86_64/
-        let(:sssd_domains) {['LOCAL', 'LDAP']}
-      when /el-7-x86_64/
-        let(:sssd_domains) {['LOCAL', 'LDAP']}
-      else /el-8-x86_64/
+      if client[:platform] =~ /el-6-x86_64/
+        let(:sssd_extra) { <<~EOM
+            sssd::domains: ['LOCAL', 'LDAP']
+          EOM
+        }
+
+        let(:local_domain) { <<~EOM
+            sssd::domain { 'LOCAL':
+              description       => 'LOCAL Users Domain',
+              id_provider       => 'local',
+              auth_provider     => 'local',
+              access_provider   => 'permit',
+              min_id            => 500,
+              # These don't make sense on the local domain
+              enumerate         => false,
+              cache_credentials => false
+            }
+          EOM
+        }
+      else
+        let(:sssd_extra) { <<~EOM
+            sssd::domains: ['LDAP']
+            sssd::enable_files_domain: true
+          EOM
+        }
+
+        let(:local_domain) { '' }
         let(:sssd_domains) {['LDAP']}
       end
+
       let(:client_hieradata)  {
-        ERB.new(File.read(File.expand_path('templates/server_hieradata_tls.yaml.erb', File.dirname(__FILE__)))).result(binding) + "\nsssd::domains: #{sssd_domains}"
+        ERB.new(File.read(File.expand_path('templates/server_hieradata_tls.yaml.erb', File.dirname(__FILE__)))).result(binding) + "\n#{sssd_extra}"
       }
 
       it 'should run puppet' do
@@ -81,7 +92,6 @@ let(:client_manifest) {
         apply_manifest_on(client, client_manifest, :catch_changes => true)
       end
 
-
       it 'should see ldap users' do
         ['test.user','real.user'].each do |user|
           id = on(client, "id #{user}")
@@ -89,6 +99,5 @@ let(:client_manifest) {
         end
       end
     end
-
   end
 end

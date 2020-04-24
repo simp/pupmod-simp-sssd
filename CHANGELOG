@@ -1,3 +1,10 @@
+* Thu Apr 23 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.3.1-0
+- Ensure that EL6/7+ use the 'files' or 'local' provider as is appropriate for
+  their platform
+- Migrate the documentation to focus on the 'files' provider since 'local' is
+  not recommended to be used any longer
+- Fixed the core acceptance tests
+
 * Tue Jan 21 2020 Jeanne Greulich <jeanne.greulich@onyxpoint.com> - 6.3.0-0
 - Added EL8 support
 - Removed requirement for sssd domain entry for el8 and SSSD V2 since

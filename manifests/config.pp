@@ -15,8 +15,7 @@ class sssd::config {
     group          => 'root',
     mode           => '0600',
     ensure_newline => true,
-    warn           => true,
-    notify         => Class['sssd::service']
+    warn           => true
   }
 
   if ($sssd::auto_add_ipa_domain and $facts['ipa']) {
@@ -46,7 +45,7 @@ class sssd::config {
 
   # You must have a domain in el6 or el7 unless you updated to sssd V2 or sssd will
   # not start. Check here instead of init because IPA domain might have been added.
-  if $facts['os']['release']['major'] <= '7' and size($_domains) == 0 {
+  if ($facts['os']['release']['major'] <= '7') and empty($_domains) and !$_enable_files_domain {
     unless  $facts['sssd_version'] and versioncmp($facts['sssd_version'],'2.0') >= 0  {
       fail("${module_name}: SSSD requires a domain be defined. \$sssd::domains is empty.")
     }
@@ -63,5 +62,4 @@ class sssd::config {
     content => template("${module_name}/sssd.conf.erb"),
     order   => '10'
   }
-
 }
