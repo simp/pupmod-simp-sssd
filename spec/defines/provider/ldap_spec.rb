@@ -20,11 +20,7 @@ describe 'sssd::provider::ldap' do
         it { is_expected.to compile.with_all_deps }
 
         it do
-          if ['RedHat','CentOS','OracleLinux'].include?(facts[:os][:name]) and facts[:os][:release][:major] < '7'
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2:-AES128'
-          else
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
-          end
+          ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
 
           expected = <<-EOM.gsub(/^[ ]+/,'')
 
@@ -73,11 +69,7 @@ describe 'sssd::provider::ldap' do
         }
 
         it do
-          if ['RedHat','CentOS','OracleLinux'].include?(facts[:os][:name]) and facts[:os][:release][:major] < '7'
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2:-AES128'
-          else
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
-          end
+          ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
 
           expected = <<-EOM.gsub(/^[ ]+/,'')
 
@@ -126,11 +118,7 @@ describe 'sssd::provider::ldap' do
         }
 
         it do
-          if ['RedHat','CentOS','OracleLinux'].include?(facts[:os][:name]) and facts[:os][:release][:major] < '7'
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2:-AES128'
-          else
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
-          end
+          ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
 
           expected = <<-EOM.gsub(/^[ ]+/,'')
 
