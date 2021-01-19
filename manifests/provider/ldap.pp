@@ -34,14 +34,7 @@
 #   The name of the associated domain section in the configuration file
 #
 # @param strip_128_bit_ciphers
-#   If set, on EL6 systems, all 128 bit ciphers will be removed from
-#   ``tls_cipher_suite`` prior to being written to the system.
-#
-#   This is due to a bug in the LDAP client libraries that will drop the SSF
-#   level to 128 when connecting over StartTLS which will be rejected by the
-#   standard SIMP LDAP implementation.
-#
-#   This has no effect on EL7+ systems.
+#   **DEPRECATED** - EL6-only - Will be removed in a future release
 #
 # @param debug_level
 # @param debug_timestamps
@@ -349,21 +342,6 @@ define sssd::provider::ldap (
   Boolean                               $ldap_idmap_autorid_compat         = false
 ) {
   include $module_name
-
-  if $strip_128_bit_ciphers {
-    # This is here due to a bug in the LDAP client library on EL6 that will set
-    # the SSF to 128 when connecting over StartTLS if there are *any* 128-bit
-    # ciphers in the list.
-    if $facts['os']['name'] in ['RedHat','CentOS','OracleLinux'] and (versioncmp($facts['os']['release']['major'],'7') < 0) {
-      $_ldap_tls_cipher_suite = $ldap_tls_cipher_suite + ['-AES128']
-    }
-    else {
-      $_ldap_tls_cipher_suite = $ldap_tls_cipher_suite
-    }
-  }
-  else {
-    $_ldap_tls_cipher_suite = $ldap_tls_cipher_suite
-  }
 
   if empty($ldap_account_expire_policy) {
     $_ldap_account_expire_policy = undef

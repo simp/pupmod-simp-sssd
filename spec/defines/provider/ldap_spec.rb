@@ -194,15 +194,6 @@ describe 'sssd::provider::ldap' do
         ) }
       end
 
-      context 'with strip_128_bit_ciphers disabled' do
-        let(:params) {{ :strip_128_bit_ciphers => false }}
-
-        it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_concat__fragment(frag_name).without_content(
-          %r(ldap_tls_cipher_suite.*-AES128)
-        ) }
-      end
-
       context 'with multiple ldap_uri values' do
         let(:params) {{
           :ldap_uri => ['ldap://test1.example.domain', 'ldap://test2.example.domain']
@@ -333,8 +324,7 @@ describe 'sssd::provider::ldap' do
            :ldap_user_shell                      => 'my_ldap_user_shell',
            :ldap_user_ssh_public_key             => 'my_ldap_user_ssh_public_key',
            :ldap_user_uid_number                 => 'my_ldap_user_uid_number',
-           :ldap_user_uuid                       => 'my_ldap_user_uuid',
-           :strip_128_bit_ciphers                => false
+           :ldap_user_uuid                       => 'my_ldap_user_uuid'
          }}
 
          it { is_expected.to compile.with_all_deps }

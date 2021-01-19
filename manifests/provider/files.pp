@@ -21,13 +21,11 @@ define sssd::provider::files (
   Optional[Array[Stdlib::Absolutepath]] $passwd_files = undef,
   Optional[Array[Stdlib::Absolutepath]] $group_files  = undef
 ) {
-  if $facts['os']['release']['major']  > '6' {
-    include $module_name
+  include $module_name
 
-    concat::fragment { "${module_name}_${name}_files.domain":
-      target  => '/etc/sssd/sssd.conf',
-      content => template("${module_name}/provider/files.erb"),
-      order   => $name
-    }
+  concat::fragment { "${module_name}_${name}_files.domain":
+    target  => '/etc/sssd/sssd.conf',
+    content => template("${module_name}/provider/files.erb"),
+    order   => $name
   }
 }

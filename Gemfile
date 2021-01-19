@@ -30,14 +30,13 @@ end
 
 group :development do
   gem 'pry'
-  gem 'pry-byebug'
   gem 'pry-doc'
 end
 
 group :system_tests do
   gem 'beaker'
   gem 'beaker-rspec'
-  gem 'simp-beaker-helpers', ENV['SIMP_BEAKER_HELPERS_VERSION'] || ['>= 1.18.7', '< 2']
+  gem 'simp-beaker-helpers', ENV['SIMP_BEAKER_HELPERS_VERSION'] || ['>= 1.21.2', '< 2']
 end
 
 # Evaluate extra gemfiles if they exist
@@ -47,6 +46,7 @@ extra_gemfiles = [
   "#{__FILE__}.local",
   File.join(Dir.home, '.gemfile'),
 ]
+
 extra_gemfiles.each do |gemfile|
   if File.file?(gemfile) && File.readable?(gemfile)
     eval(File.read(gemfile), binding)

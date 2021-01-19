@@ -1,6 +1,6 @@
 {
   "name": "simp-sssd",
-  "version": "6.3.2",
+  "version": "6.4.0",
   "author": "SIMP Team",
   "summary": "Manages SSSD",
   "license": "Apache-2.0",
@@ -59,7 +59,7 @@
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 5.0.0 < 7.0.0"
+      "version_requirement": ">= 5.0.0 < 8.0.0"
     }
   ]
 }

@@ -1,5 +1,6 @@
-* Wed Jan 13 2021 Chris Tessmer <chris.tessmer@onyxpoint.com> - 6.3.2
+* Wed Jan 13 2021 Chris Tessmer <chris.tessmer@onyxpoint.com> - 6.4.0-0
 - Removed EL6 from supported OSes
+- Added puppet 7 support
 
 * Thu Apr 23 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.3.1-0
 - Ensure that EL6/7+ use the 'files' or 'local' provider as is appropriate for

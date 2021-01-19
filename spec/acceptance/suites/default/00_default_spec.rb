@@ -71,9 +71,7 @@ describe 'sssd class' do
           result = on(client, 'sssctl user-checks testuser').stdout
           expect(result).to match(/.*- user id: 97979.*/)
         end
-
       else
-
         it 'should be able to create an SSSD user' do
           on(client, %(sss_useradd simptest))
           # Make sure that we didn't have this in /etc/password for some reason
