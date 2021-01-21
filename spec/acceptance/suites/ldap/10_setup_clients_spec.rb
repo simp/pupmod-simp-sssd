@@ -44,35 +44,14 @@ describe 'LDAP' do
   clients.each do |client|
     context 'on each client set up sssd' do
       # set sssd domains for template
-      if client[:platform] =~ /el-6-x86_64/
-        let(:sssd_extra) { <<~EOM
-            sssd::domains: ['LOCAL', 'LDAP']
-          EOM
-        }
+      let(:sssd_extra) { <<~EOM
+          sssd::domains: ['LDAP']
+          sssd::enable_files_domain: true
+        EOM
+      }
 
-        let(:local_domain) { <<~EOM
-            sssd::domain { 'LOCAL':
-              description       => 'LOCAL Users Domain',
-              id_provider       => 'local',
-              auth_provider     => 'local',
-              access_provider   => 'permit',
-              min_id            => 500,
-              # These don't make sense on the local domain
-              enumerate         => false,
-              cache_credentials => false
-            }
-          EOM
-        }
-      else
-        let(:sssd_extra) { <<~EOM
-            sssd::domains: ['LDAP']
-            sssd::enable_files_domain: true
-          EOM
-        }
-
-        let(:local_domain) { '' }
-        let(:sssd_domains) {['LDAP']}
-      end
+      let(:local_domain) { '' }
+      let(:sssd_domains) {['LDAP']}
 
       let(:client_hieradata)  {
         ERB.new(File.read(File.expand_path('templates/server_hieradata_tls.yaml.erb', File.dirname(__FILE__)))).result(binding) + "\n#{sssd_extra}"

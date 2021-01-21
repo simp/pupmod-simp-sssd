@@ -12,28 +12,6 @@ describe 'sssd class' do
   require 'json'
   ad_ip = JSON.load(on(ad, 'puppet facts').stdout)['values']['networking']['interfaces']['Ethernet 2']['ip']
 
-  let(:v1_manifest) { <<-EOF
-      include 'sssd'
-      include 'resolv'
-      include 'pam'
-      include 'simp::nsswitch'
-      include 'ssh'
-
-      # LOCAL CONFIG
-      sssd::domain { 'LOCAL':
-        description       => 'LOCAL Users Domain',
-        id_provider       => 'local',
-        auth_provider     => 'local',
-        access_provider   => 'permit',
-        min_id            => 1000,
-        enumerate         => false,
-        cache_credentials => false
-      }
-
-      sssd::provider::local { 'LOCAL': }
-    EOF
-  }
-
   let(:v2_manifest) { <<-EOF
       include 'sssd'
       include 'resolv'
@@ -127,26 +105,17 @@ describe 'sssd class' do
     clients.each do |host|
       client_hiera = hieradata.dup
 
-      if host[:platform] =~ /el-6-/
-        let(:manifest){ v1_manifest }
+      let(:manifest){ v2_manifest }
 
-        client_hiera += <<~EOM
-          simp_options::dns::servers: ["#{ad_ip}"]
-          sssd::domains: ['LOCAL', 'AD']
-        EOM
-      else
-        let(:manifest){ v2_manifest }
-
-        # An error is raised if the domain is already in the sssd.conf so
-        # need to configure sssd without the domain.  (It looks like this
-        # is an old error that was fixed in 2015 but el8 has the latest
-        # version of realmd.)
-        client_hiera += <<~EOM
-          simp_options::dns::servers: ["#{ad_ip}"]
-          sssd::enable_files_domain: true
-          sssd::domains: []
-        EOM
-      end
+      # An error is raised if the domain is already in the sssd.conf so
+      # need to configure sssd without the domain.  (It looks like this
+      # is an old error that was fixed in 2015 but el8 has the latest
+      # version of realmd.)
+      client_hiera += <<~EOM
+        simp_options::dns::servers: ["#{ad_ip}"]
+        sssd::enable_files_domain: true
+        sssd::domains: []
+      EOM
 
       it 'should run puppet without error configure basic SSSD' do
         set_hieradata_on(host, client_hiera)
@@ -175,21 +144,17 @@ describe 'sssd class' do
   context 'when connected to AD' do
 
     clients.each do |host|
-      if host[:platform] =~ /el-6-/
-        let(:manifest) { v1_manifest }
-      else
-        let(:manifest) { v2_manifest }
+      let(:manifest) { v2_manifest }
 
-        it 'should update sssd::domains in hiera' do
-          #you can't have the domain in sssd before joing the realm or it
-          # errors out so add it n here.
-          client_hiera = hieradata + <<-EOM.gsub(/^\s+/,'')
-            simp_options::dns::servers:    ["#{ad_ip}"]
-            sssd::domains: ['AD']
-          EOM
+      it 'should update sssd::domains in hiera' do
+        #you can't have the domain in sssd before joing the realm or it
+        # errors out so add it n here.
+        client_hiera = hieradata + <<-EOM.gsub(/^\s+/,'')
+          simp_options::dns::servers:    ["#{ad_ip}"]
+          sssd::domains: ['AD']
+        EOM
 
-          set_hieradata_on(host, client_hiera)
-        end
+        set_hieradata_on(host, client_hiera)
       end
 
       let(:_ad_manifest) {

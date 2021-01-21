@@ -114,15 +114,8 @@ define sssd::domain (
 ) {
   include 'sssd'
 
-  if $facts['os']['release']['major']  > '6' {
-    if $id_provider == 'local' {
-      warning( "Invalid SSSD configuration. 'local' is not a valid provider for os version ${facts['os']['release']['major']}'")
-    }
-  }
-  else {
-    if $id_provider == 'files' {
-      warning( "Invalid SSSD configuration. 'files' is not a valid provider for os version ${facts['os']['release']['major']}'")
-    }
+  if $id_provider == 'local' {
+    warning( "Invalid SSSD configuration. 'local' is not a valid provider for os version ${facts['os']['release']['major']}'")
   }
 
   concat::fragment { "sssd_${name}_.domain":

@@ -20,11 +20,7 @@ describe 'sssd::provider::ldap' do
         it { is_expected.to compile.with_all_deps }
 
         it do
-          if ['RedHat','CentOS','OracleLinux'].include?(facts[:os][:name]) and facts[:os][:release][:major] < '7'
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2:-AES128'
-          else
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
-          end
+          ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
 
           expected = <<-EOM.gsub(/^[ ]+/,'')
 
@@ -73,11 +69,7 @@ describe 'sssd::provider::ldap' do
         }
 
         it do
-          if ['RedHat','CentOS','OracleLinux'].include?(facts[:os][:name]) and facts[:os][:release][:major] < '7'
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2:-AES128'
-          else
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
-          end
+          ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
 
           expected = <<-EOM.gsub(/^[ ]+/,'')
 
@@ -126,11 +118,7 @@ describe 'sssd::provider::ldap' do
         }
 
         it do
-          if ['RedHat','CentOS','OracleLinux'].include?(facts[:os][:name]) and facts[:os][:release][:major] < '7'
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2:-AES128'
-          else
-            ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
-          end
+          ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
 
           expected = <<-EOM.gsub(/^[ ]+/,'')
 
@@ -203,15 +191,6 @@ describe 'sssd::provider::ldap' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to create_concat__fragment(frag_name).without_content(
           %r(ldap_account_expire_policy =)
-        ) }
-      end
-
-      context 'with strip_128_bit_ciphers disabled' do
-        let(:params) {{ :strip_128_bit_ciphers => false }}
-
-        it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_concat__fragment(frag_name).without_content(
-          %r(ldap_tls_cipher_suite.*-AES128)
         ) }
       end
 
@@ -345,8 +324,7 @@ describe 'sssd::provider::ldap' do
            :ldap_user_shell                      => 'my_ldap_user_shell',
            :ldap_user_ssh_public_key             => 'my_ldap_user_ssh_public_key',
            :ldap_user_uid_number                 => 'my_ldap_user_uid_number',
-           :ldap_user_uuid                       => 'my_ldap_user_uuid',
-           :strip_128_bit_ciphers                => false
+           :ldap_user_uuid                       => 'my_ldap_user_uuid'
          }}
 
          it { is_expected.to compile.with_all_deps }
