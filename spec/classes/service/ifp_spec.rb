@@ -14,12 +14,7 @@ debug_timestamps = true
 debug_microseconds = false
 EOF
           it { is_expected.to compile.with_all_deps }
-
-          if os_facts[:init_systems].include?('systemd')
-            it { is_expected.to create_concat__fragment('sssd_ifp.service').with_content(expected)}
-          else
-            it { is_expected.to_not create_concat__fragment('sssd_ifp.service')}
-          end
+          it { is_expected.to create_concat__fragment('sssd_ifp.service').with_content(expected)}
         end
 
         context "with parameters" do
@@ -39,12 +34,7 @@ wildcard_limit = 5
 EOF
 
           it { is_expected.to compile.with_all_deps }
-
-          if os_facts[:init_systems].include?('systemd')
-            it { is_expected.to create_concat__fragment('sssd_ifp.service').with_content(expected) }
-          else
-            it { is_expected.to_not create_concat__fragment('sssd_ifp.service')}
-          end
+          it { is_expected.to create_concat__fragment('sssd_ifp.service').with_content(expected) }
         end
       end
     end

@@ -43,9 +43,9 @@ class sssd::config {
   $_default_domain_suffix = $sssd::default_domain_suffix
   $_override_space        = $sssd::override_space
 
-  # You must have a domain in el6 or el7 unless you updated to sssd V2 or sssd will
+  # You must have a domain in el7 unless you updated to sssd V2 or sssd will
   # not start. Check here instead of init because IPA domain might have been added.
-  if ($facts['os']['release']['major'] <= '7') and empty($_domains) and !$_enable_files_domain {
+  if ($facts.dig('os','release','major') < '8') and empty($_domains) and !$_enable_files_domain {
     unless  $facts['sssd_version'] and versioncmp($facts['sssd_version'],'2.0') >= 0  {
       fail("${module_name}: SSSD requires a domain be defined. \$sssd::domains is empty.")
     }

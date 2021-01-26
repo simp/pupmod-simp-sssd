@@ -115,7 +115,7 @@ define sssd::domain (
   include 'sssd'
 
   if $id_provider == 'local' {
-    warning( "Invalid SSSD configuration. 'local' is not a valid provider for os version ${facts['os']['release']['major']}'")
+    warning( "Invalid SSSD configuration. 'local' is not a valid provider for os version ${facts.dig('os','release','major')}'")
   }
 
   concat::fragment { "sssd_${name}_.domain":

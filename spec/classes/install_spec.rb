@@ -31,12 +31,7 @@ describe 'sssd' do
           it { is_expected.to contain_package('sssd').with_ensure('installed') }
           it { is_expected.to_not contain_package('sssd-tools').with_ensure('installed') }
           it { is_expected.to contain_package('sssd-client').with_ensure('installed') }
-          if os_facts[:os][:release][:major].to_i > 6
-            it { is_expected.to contain_package('sssd-dbus').with_ensure('installed') }
-          else
-            it { is_expected.to_not contain_package('sssd-dbus').with_ensure('installed') }
-          end
-
+          it { is_expected.to contain_package('sssd-dbus').with_ensure('installed') }
         end
 
       end

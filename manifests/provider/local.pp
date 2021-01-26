@@ -36,13 +36,8 @@ define sssd::provider::local (
   Optional[Stdlib::Absolutepath] $mail_dir           = undef,
   Optional[String]               $userdel_cmd        = undef
 ) {
-  if $facts['os']['release']['major']  < '7' {
-    include $module_name
-
-    concat::fragment { "${module_name}_${name}_local_provider.domain":
-      target  => '/etc/sssd/sssd.conf',
-      content => template("${module_name}/provider/local.erb"),
-      order   => $name
-    }
-  }
+  simplib::deprecation(
+    "${module_name}::provider::local",
+    "${module_name}::provider::local is deprecated and will be removed in a future release"
+  )
 }

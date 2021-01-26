@@ -60,33 +60,14 @@ describe 'sssd' do
   context 'generate a good sssd.conf' do
     hosts.each do |host|
 
-      if fact_on(host, 'operatingsystemmajrelease') < '7'
-        let(:local_config) { <<~EOM
-            # LOCAL CONFIG
-            sssd::domain { 'local':
-              description       => 'LOCAL Users Domain',
-              id_provider       => 'local',
-              auth_provider     => 'local',
-              access_provider   => 'permit',
-              min_id            => 1000,
-              enumerate         => false,
-              cache_credentials => false
-            }
-            sssd::provider::local { 'local': }
-          EOM
+      let(:local_config) { '' }
+
+      local_hiera = hiera.merge(
+        {
+          'sssd::enable_files_domain' => true,
+          'sssd::domains' => [ 'test.case' ]
         }
-
-        local_hiera = hiera
-      else
-        let(:local_config) { '' }
-
-        local_hiera = hiera.merge(
-          {
-            'sssd::enable_files_domain' => true,
-            'sssd::domains'             => [ 'test.case' ]
-          }
-        )
-      end
+      )
 
       it 'should apply enough to generate sssd.conf' do
         set_hieradata_on(host, local_hiera)

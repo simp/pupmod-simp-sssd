@@ -95,7 +95,7 @@ describe 'sssd' do
         context 'with no domains specified' do
           let(:params) {{ :domains => [] }}
 
-          if os_facts[:os][:release][:major] <= '7'
+          if os_facts[:os][:release][:major] < '8'
             it 'should fail with no domain for el7 or before' do
               expect { should raise_error(Puppet::Error, /SSSD requires a domain be defined/)}
             end
