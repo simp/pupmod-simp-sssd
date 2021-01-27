@@ -4,19 +4,6 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::service {
-
-  unless member($facts['init_systems'], 'systemd') {
-    file { '/etc/init.d/sssd':
-      ensure  => 'file',
-      owner   => 'root',
-      group   => 'root',
-      mode    => '0755',
-      seltype => 'sssd_initrc_exec_t',
-      source  => 'puppet:///modules/sssd/sssd.sysinit',
-      notify  => Service['sssd']
-    }
-  }
-
   service { 'nscd':
     ensure => 'stopped',
     enable => false,
