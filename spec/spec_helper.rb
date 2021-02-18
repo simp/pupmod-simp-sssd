@@ -96,7 +96,6 @@ RSpec.configure do |c|
   }
 
   c.mock_framework = :rspec
-  c.mock_with :mocha
 
   c.module_path = File.join(fixture_path, 'modules')
   c.manifest_dir = File.join(fixture_path, 'manifests')

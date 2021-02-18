@@ -2,7 +2,8 @@
 #
 class sssd::config::ipa_domain {
   assert_private()
-  if $facts['ipa'] {
+
+  if $facts.dig('ipa', 'connected') {
     # this host has joined an IPA domain
     $_ipa_domain = $facts['ipa']['domain']
     $_ipa_server = $facts['ipa']['server']
@@ -15,9 +16,9 @@ class sssd::config::ipa_domain {
       access_provider   => 'ipa',
       sudo_provider     => 'ipa',
       autofs_provider   => 'ipa',
-      min_id            => $::sssd::min_id,
-      enumerate         => $::sssd::enumerate_users,
-      cache_credentials => $::sssd::cache_credentials
+      min_id            => $sssd::min_id,
+      enumerate         => $sssd::enumerate_users,
+      cache_credentials => $sssd::cache_credentials
     }
 
     sssd::provider::ipa { $_ipa_domain:
