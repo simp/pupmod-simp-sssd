@@ -9,6 +9,7 @@
 <!-- vim-markdown-toc GFM -->
 
   * [Overview](#overview)
+  * [> Use an older version of the module if you need lower version support](#-use-an-older-version-of-the-module-if-you-need-lower-version-support)
   * [This is a SIMP module](#this-is-a-simp-module)
   * [Module Description](#module-description)
   * [Setup](#setup)
@@ -30,6 +31,14 @@
 
 This module installs and manages SSSD. It allows you to set configuration
 options in sssd.conf through puppet / hiera.
+
+----------------------------------------------------------------------
+> WARNING
+>
+> This module only supports `sssd` > 1.16.0
+>
+> Use an older version of the module if you need lower version support
+----------------------------------------------------------------------
 
 See [REFERENCE.md](./REFERENCE.md) for full API details
 

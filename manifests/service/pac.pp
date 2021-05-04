@@ -28,22 +28,16 @@ class sssd::service::pac (
   Optional[Hash]               $custom_options     = undef
 
 ) {
-  include '::sssd'
-
   if $custom_options {
-    concat::fragment { 'sssd_pac.service':
-      target  => '/etc/sssd/sssd.conf',
-      order   => '30',
-      content => epp("${module_name}/service/custom_options.epp", {
+    $_content = epp("${module_name}/service/custom_options.epp", {
         'service_name' => 'pac',
         'options'      => $custom_options
       })
-    }
   } else {
-    concat::fragment { 'sssd_pac.service':
-      target  => '/etc/sssd/sssd.conf',
-      content => template("${module_name}/service/pac.erb"),
-      order   => '30'
-    }
+    $_content = template("${module_name}/service/pac.erb")
+  }
+
+  sssd::config::entry { 'puppet_service_pac':
+    content => $_content
   }
 }

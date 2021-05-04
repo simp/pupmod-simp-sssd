@@ -6,20 +6,33 @@ describe 'sssd::service' do
       context "on #{os}" do
         let(:facts){ os_facts }
 
-          it { is_expected.to compile.with_all_deps }
-          it { is_expected.to create_class('sssd::service') }
-          it { is_expected.to contain_service('nscd').with({
-              :ensure => 'stopped',
-              :enable => false,
-              :notify => 'Service[sssd]'
-            })
+        let(:pre_condition){
+          <<~PRE_CONDITION
+            function assert_private{ }
+            PRE_CONDITION
+        }
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.to create_class('sssd::service') }
+        it {
+          is_expected.to contain_service('sssd')
+            .with_ensure(true)
+            .with_enable(true)
+        }
+
+        context 'with an unsupported version of sssd' do
+          let(:facts){
+            os_facts.merge({:sssd_version => '1.14.0'})
           }
 
-          it { is_expected.to contain_service('sssd').with({
-              :ensure => 'running',
-              :enable => true
-            })
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_class('sssd::service') }
+          it {
+            is_expected.to contain_service('sssd')
+              .with_ensure(false)
+              .with_enable(false)
           }
+        end
       end
     end
   end

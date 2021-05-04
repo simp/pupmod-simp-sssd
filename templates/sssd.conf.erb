@@ -1,13 +1,17 @@
-
 # sssd::config
 [sssd]
+<%
+  # sudo has to be started by the socket
+  unless Array(@_services).empty?
+-%>
+services = <%= (Array(@_services) - ['sudo']).join(',') %>
+<% end -%>
 <% if @_description -%>
 description = <%= @_description %>
 <% end -%>
 <% unless @_domains.empty? -%>
 domains = <%= Array(@_domains).join(', ') %>
 <% end -%>
-services = <%= Array(@_services).join(', ') %>
 config_file_version = <%= @_config_file_version.to_s %>
 reconnection_retries = <%= @_reconnection_retries.to_s %>
 <% if @_re_expression -%>

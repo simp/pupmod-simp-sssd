@@ -294,13 +294,13 @@ define sssd::provider::ldap (
   Optional[String[1]]                   $krb5_realm                        = undef,
   Boolean                               $krb5_canonicalize                 = false,
   Boolean                               $krb5_use_kdcinfo                  = true,
-  Enum['none','shadow','mit_kerberos']  $ldap_pwd_policy                   = 'shadow',
+  Sssd::LdapAccountExpirePol            $ldap_account_expire_policy        = 'shadow',
+  Enum['none','shadow','mit_kerberos']  $ldap_pwd_policy                   = ($ldap_account_expire_policy == 'shadow') ? { true => 'shadow', default => 'none' },
   Boolean                               $ldap_referrals                    = true,
   Optional[String[1]]                   $ldap_dns_service_name             = undef,
   Optional[String[1]]                   $ldap_chpass_dns_service_name      = undef,
   Optional[String[1]]                   $ldap_access_filter                = undef,
-  Sssd::LdapAccountExpirePol            $ldap_account_expire_policy        = 'shadow',
-  Sssd::LdapAccessOrder                 $ldap_access_order                 = sssd::ldap_access_order_defaults(),
+  Sssd::LdapAccessOrder                 $ldap_access_order                 = ['expire','lockout','ppolicy','pwd_expire_policy_renew'],
   Optional[String[1]]                   $ldap_pwdlockout_dn                = undef,
   Optional[Sssd::LdapDeref]             $ldap_deref                        = undef,
   Optional[String[1]]                   $ldap_sudorule_object_class        = undef,
@@ -368,9 +368,7 @@ define sssd::provider::ldap (
     $ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['fqdn']}.pub"
   }
 
-  concat::fragment { "${module_name}_${name}_ldap_provider.domain":
-    target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/provider/ldap.erb"),
-    order   => $name
+  sssd::config::entry { "puppet_provider_${title}_ldap":
+    content => template("${module_name}/provider/ldap.erb")
   }
 }

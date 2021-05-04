@@ -21,11 +21,7 @@ define sssd::provider::files (
   Optional[Array[Stdlib::Absolutepath]] $passwd_files = undef,
   Optional[Array[Stdlib::Absolutepath]] $group_files  = undef
 ) {
-  include $module_name
-
-  concat::fragment { "${module_name}_${name}_files.domain":
-    target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/provider/files.erb"),
-    order   => $name
+  sssd::config::entry { "puppet_provider_${name}_files":
+    content => template("${module_name}/provider/files.erb")
   }
 }

@@ -61,22 +61,16 @@ class sssd::service::nss (
   Optional[String]             $user_attributes               = undef,
   Optional[Hash]               $custom_options                = undef
 ) {
-  include '::sssd'
-
   if $custom_options {
-    concat::fragment { 'sssd_nss.service':
-      target  => '/etc/sssd/sssd.conf',
-      order   => '30',
-      content =>   epp("${module_name}/service/custom_options.epp", {
+    $_content = epp("${module_name}/service/custom_options.epp", {
         'service_name' => 'nss',
         'options'      => $custom_options
       })
-    }
   } else {
-    concat::fragment { 'sssd_nss.service':
-      target  => '/etc/sssd/sssd.conf',
-      content => template("${module_name}/service/nss.erb"),
-      order   => '30'
-    }
+    $_content = template("${module_name}/service/nss.erb")
+  }
+
+  sssd::config::entry { 'puppet_service_nss':
+    content => $_content
   }
 }

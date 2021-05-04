@@ -74,10 +74,7 @@ define sssd::provider::ipa (
   Stdlib::AbsolutePath           $ldap_tls_cacert                = '/etc/ipa/ca.crt',
   Array[String]                  $ldap_tls_cipher_suite          = ['HIGH','-SSLv2'],
   Boolean                        $use_service_discovery          = true
-
 ) {
-  include $module_name
-
   if $use_service_discovery {
     $_ipa_server = ['_srv_'] + $ipa_server
   }
@@ -85,9 +82,7 @@ define sssd::provider::ipa (
     $_ipa_server = $ipa_server
   }
 
-  concat::fragment { "${module_name}_${name}_ipa_provider.domain":
-    target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/provider/ipa.erb"),
-    order   => $name
+  sssd::config::entry { "puppet_provider_${name}_ipa":
+    content => template("${module_name}/provider/ipa.erb")
   }
 }

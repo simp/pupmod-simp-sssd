@@ -18,17 +18,17 @@ describe 'sssd class' do
   let(:manifest) {
     <<-EOS
       class { 'sssd':
-        domains => ['LOCAL']
+        domains => ['FILES']
       }
 
       # To be used with the default_hieradata above
-      sssd::domain { 'LOCAL':
+      sssd::domain { 'FILES':
         description   => 'Default Local domain',
-        id_provider   => 'local',
-        auth_provider => 'local'
+        id_provider   => 'files',
+        auth_provider => 'files'
       }
 
-      sssd::provider::local { 'LOCAL': }
+      sssd::provider::files { 'FILES': }
     EOS
   }
 
@@ -65,27 +65,12 @@ describe 'sssd class' do
           result = on(client, 'sssctl domain-list; sssctl domain-list').stdout
           expect(result).to match(/.*implicit_files.*/)
         end
+      end
 
-        it 'should get local user information' do
-          on(client, 'useradd testuser --password "mypassword" -M -u 97979 -U')
-          result = on(client, 'sssctl user-checks testuser').stdout
-          expect(result).to match(/.*- user id: 97979.*/)
-        end
-      else
-        it 'should be able to create an SSSD user' do
-          on(client, %(sss_useradd simptest))
-          # Make sure that we didn't have this in /etc/password for some reason
-          on(client, %(grep -q '^simptest' /etc/passwd), :acceptable_exit_codes => [1])
-          # Getent doesn't return anything on EL6!
-          # Just have to try to make the user again and see if it fails.
-          expect(
-          on(client,
-             %(sss_useradd simptest),
-             :accept_all_exit_codes => true,
-             :silent => true
-            ).output
-          ).to match(/already exists/)
-        end
+      it 'should get local user information' do
+        on(client, 'useradd testuser --password "mypassword" -M -u 97979 -U')
+        result = on(client, 'sssctl user-checks testuser').stdout
+        expect(result).to match(/.*- user id: 97979.*/)
       end
     end
   end

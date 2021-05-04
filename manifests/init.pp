@@ -6,14 +6,11 @@
 # Full documentation of the parameters that map directly to SSSD
 # configuration options can be found in the sssd.conf(5) man page.
 #
+# @param authoritative
+#   Whether or not to purge all unmanaged files from /etc/sssd/conf.d.
+#
 # @param domains
-#   NOTE: The 'LOCAL' domain has been deprecated by the vendor and will cause a
-#   warning to be raised. Use the 'file' provider for similar capabilities.
-#
-# @param manage_service
-#   Whether or not to manage the SSSD service
-#
-#   * Defaults to `true` if `domains` is not empty and `false` otherwise
+#   The sssd `domains` to be managed.
 #
 # @param debug_level
 # @param debug_timestamps
@@ -80,11 +77,15 @@
 #   lockout for IPA-managed user accounts.  Otherwise, you must
 #   configure the IPA domain yourself.
 #
+# @param custom_config
+#   A configuration that will be added to
+#   /etc/sssd/conf.d/00_puppet_custom.conf *without validation*
+#
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd (
+  Boolean                       $authoritative         = false,
   Array[String[1, 255]]         $domains               = [],
-  Boolean                       $manage_service        = !empty($domains),
   Optional[Sssd::DebugLevel]    $debug_level           = undef,
   Boolean                       $debug_timestamps      = true,
   Boolean                       $debug_microseconds    = false,
@@ -108,18 +109,31 @@ class sssd (
   Variant[Boolean,Enum['simp']] $pki                   = simplib::lookup('simp_options::pki', { 'default_value' => false}),
   Stdlib::Absolutepath          $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509'}),
   Stdlib::Absolutepath          $app_pki_dir           = '/etc/pki/simp_apps/sssd/x509',
-  Boolean                       $auto_add_ipa_domain   = true
+  Boolean                       $auto_add_ipa_domain   = true,
+  Optional[String[1]]           $custom_config         = undef
 ) {
-
   include 'sssd::install'
   include 'sssd::config'
 
+  unless sssd::supported_version() {
+    fail "The ${module_name} module does not support SSSD < ${facts['sssd_version']}. Please update your system to continue."
+  }
+
   Class['sssd::install'] -> Class['sssd::config']
 
-  if $manage_service {
-    include 'sssd::service'
+  if $custom_config {
+    sssd::config::entry { 'puppet_custom':
+      content => $custom_config,
+      order   => 99999
+    }
+  }
 
-    Class['sssd::config'] ~> Class['sssd::service']
+  if $pki {
+    simplib::assert_optional_dependency($module_name, 'simp/pki')
+
+    include 'sssd::pki'
+
+    Class['sssd::config'] -> Class['sssd::pki']
   }
 
   if $auditd {
@@ -129,18 +143,6 @@ class sssd (
 
     auditd::rule { 'sssd':
       content => '-w /etc/sssd/ -p wa -k CFG_sssd'
-    }
-  }
-
-  if $pki {
-    simplib::assert_optional_dependency($module_name, 'simp/pki')
-
-    include 'sssd::pki'
-
-    Class['sssd::install'] -> Class['sssd::pki']
-
-    if $manage_service {
-      Class['sssd::pki'] ~> Class['sssd::service']
     }
   }
 }

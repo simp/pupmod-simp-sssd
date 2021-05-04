@@ -8,6 +8,7 @@
 # @param debug_level
 # @param debug_timestamps
 # @param debug_microseconds
+# @param sudo_threshold
 # @param sudo_timed
 #
 # @param custom_options
@@ -27,25 +28,29 @@ class sssd::service::sudo (
   Boolean                     $debug_timestamps   = true,
   Boolean                     $debug_microseconds = false,
   Boolean                     $sudo_timed         = false,
+  Integer[1]                  $sudo_threshold     = 50,
   Optional[Hash]              $custom_options     = undef
 
 ) {
-  include '::sssd'
-
   if $custom_options {
-    concat::fragment { 'sssd_sudo.service':
-      target  => '/etc/sssd/sssd.conf',
-      order   => '30',
-      content =>   epp("${module_name}/service/custom_options.epp", {
+    $_content = epp("${module_name}/service/custom_options.epp", {
         'service_name' => 'sudo',
         'options'      => $custom_options
       })
-    }
   } else {
-    concat::fragment { 'sssd_sudo.service':
-      target  => '/etc/sssd/sssd.conf',
-      content => template("${module_name}/service/sudo.erb"),
-      order   => '30'
-    }
+    $_content = template("${module_name}/service/sudo.erb")
+  }
+
+  sssd::config::entry { 'puppet_service_sudo':
+    content => $_content
+  }
+
+  service { 'sssd-sudo.socket':
+    ensure  => 'running',
+    enable  => true,
+    require => [
+      Sssd::Config::Entry['puppet_service_sudo'],
+      Class["${module_name}::service"]
+    ]
   }
 }

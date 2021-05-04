@@ -112,15 +112,8 @@ define sssd::domain (
   Optional[String]                           $proxy_pam_target             = undef,
   Optional[String]                           $proxy_lib_name               = undef
 ) {
-  include 'sssd'
 
-  if $id_provider == 'local' {
-    warning( "Invalid SSSD configuration. 'local' is not a valid provider for os version ${facts.dig('os','release','major')}'")
-  }
-
-  concat::fragment { "sssd_${name}_.domain":
-    target  => '/etc/sssd/sssd.conf',
-    content => template('sssd/domain.erb'),
-    order   => $name
+  sssd::config::entry { "puppet_domain_${name}":
+    content => template('sssd/domain.erb')
   }
 }

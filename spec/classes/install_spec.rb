@@ -11,15 +11,9 @@ describe 'sssd' do
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd::install') }
           it { is_expected.to create_class('sssd::install::client') }
-          it { is_expected.to contain_file('/etc/sssd').with({
-            :ensure  => 'directory',
-            :group   => 'root',
-            :mode    => '0711',
-            :require => 'Package[sssd]',
-          }) }
           it { is_expected.to contain_package('sssd').with_ensure('installed') }
           it { is_expected.to contain_package('sssd-tools').with_ensure('installed') }
-          it { is_expected.to_not contain_package('sssd-dbus').with_ensure('installed') }
+          it { is_expected.to contain_package('sssd-dbus').with_ensure('installed') }
           it { is_expected.to contain_package('sssd-client').with_ensure('installed') }
         end
 
@@ -33,7 +27,6 @@ describe 'sssd' do
           it { is_expected.to contain_package('sssd-client').with_ensure('installed') }
           it { is_expected.to contain_package('sssd-dbus').with_ensure('installed') }
         end
-
       end
     end
   end

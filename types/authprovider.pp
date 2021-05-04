@@ -1,2 +1,2 @@
 # List of valid types for sssd domain authentication provider
-type Sssd::AuthProvider = Enum['ldap', 'krb5','ipa','ad', 'proxy','local', 'none']
+type Sssd::AuthProvider = Enum['ldap', 'krb5','ipa','ad', 'proxy','files', 'none']
