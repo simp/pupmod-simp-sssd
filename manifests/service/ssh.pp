@@ -31,22 +31,16 @@ class sssd::service::ssh (
   Optional[Hash]               $custom_options          = undef
 
 ) {
-  include '::sssd'
-
   if $custom_options {
-    concat::fragment { 'sssd_ssh.service':
-      target  => '/etc/sssd/sssd.conf',
-      order   => '30',
-      content => epp("${module_name}/service/custom_options.epp", {
+    $_content = epp("${module_name}/service/custom_options.epp", {
         'service_name' => 'ssh',
         'options'      => $custom_options
       })
-    }
   } else {
-    concat::fragment { 'sssd_ssh.service':
-      target  => '/etc/sssd/sssd.conf',
-      content => template("${module_name}/service/ssh.erb"),
-      order   => '30'
-    }
+    $_content = template("${module_name}/service/ssh.erb")
+  }
+
+  sssd::config::entry { 'puppet_service_ssh':
+    content => $_content
   }
 }

@@ -3,7 +3,7 @@
    Hash   $options
 | -%>
 #
-# This section is auto generate from a user supplied Hash
+# This section is auto generated from a user supplied Hash
 [<%= $service_name %>]
 <% $options.each | $opt, $value| { -%>
 <%= $opt %> = <%= $value %>

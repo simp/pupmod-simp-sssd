@@ -140,11 +140,7 @@ define sssd::provider::ad (
   Optional[String[1]]                                        $ldap_group_objectsid                     = undef,
   Optional[String[1]]                                        $ldap_user_objectsid                      = undef,
 ) {
-  include $module_name
-
-  concat::fragment { "${module_name}_${name}_ad_provider.domain":
-    target  => '/etc/sssd/sssd.conf',
-    content => template("${module_name}/provider/ad.erb"),
-    order   => $name
+  sssd::config::entry { "puppet_provider_${name}_ad":
+    content => template("${module_name}/provider/ad.erb")
   }
 }

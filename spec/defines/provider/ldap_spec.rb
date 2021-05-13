@@ -6,73 +6,19 @@ require 'spec_helper'
 describe 'sssd::provider::ldap' do
   on_supported_os.each do |os, os_facts|
     context "on #{os}" do
-      let(:facts){
-        os_facts.merge({:sssd_version => '1.13.0'})
-      }
+      let(:facts) { os_facts}
+      let(:title) { 'ldap' }
 
-      let(:title) {'test_ldap_provider'}
-      let(:frag_name) { "sssd_#{title}_ldap_provider.domain" }
-      let(:precondition){
-        'include ::sssd'
-      }
-
-      context 'with default parameters' do
-        it { is_expected.to compile.with_all_deps }
-
-        it do
-          ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
-
-          expected = <<-EOM.gsub(/^[ ]+/,'')
-
-            # sssd::provider::ldap
-            debug_microseconds = false
-            krb5_canonicalize = false
-            krb5_use_kdcinfo = true
-            ldap_access_order = expire,lockout
-            ldap_account_expire_policy = shadow
-            ldap_chpass_update_last_change = true
-            ldap_default_authtok = sup3r$3cur3P@ssw0r?
-            ldap_default_bind_dn = cn=hostAuth,ou=Hosts,dc=example,dc=domain
-            ldap_disable_paging = false
-            ldap_disable_range_retrieval = false
-            ldap_force_upper_case_realm = false
-            ldap_groups_use_matching_rule_in_chain = false
-            ldap_id_mapping = false
-            ldap_id_use_start_tls = true
-            ldap_idmap_autorid_compat = false
-            ldap_initgroups_use_matching_rule_in_chain = false
-            ldap_krb5_init_creds = true
-            ldap_pwd_policy = shadow
-            ldap_referrals = true
-            ldap_sasl_canonicalize = false
-            ldap_schema = rfc2307
-            ldap_search_base = dc=example,dc=domain
-            ldap_sudo_include_netgroups  = true
-            ldap_sudo_include_regexp = true
-            ldap_sudo_use_host_filter = true
-            ldap_tls_cacertdir = /etc/pki/simp_apps/sssd/x509/cacerts
-            ldap_tls_cert = /etc/pki/simp_apps/sssd/x509/public/foo.example.com.pub
-            #{ldap_tls_cipher_suite}
-            ldap_tls_key = /etc/pki/simp_apps/sssd/x509/private/foo.example.com.pem
-            ldap_tls_reqcert = demand
-            ldap_uri = ldap://test.example.domain
-            ldap_use_tokengroups = false
-          EOM
-
-          is_expected.to create_concat__fragment(frag_name).with_content(expected)
-        end
-      end
-
-      context 'with sssd_version 1.14.0' do
+      context 'with sssd_version 1.16.0' do
         let(:facts) {
-          os_facts.merge({:sssd_version => '1.14.0'})
+          os_facts.merge({:sssd_version => '1.16.0'})
         }
 
         it do
           ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
 
-          expected = <<-EOM.gsub(/^[ ]+/,'')
-
+          expected = <<~EXPECTED
+            [domain/#{title}]
             # sssd::provider::ldap
             debug_microseconds = false
             krb5_canonicalize = false
@@ -106,9 +52,9 @@ describe 'sssd::provider::ldap' do
             ldap_tls_reqcert = demand
             ldap_uri = ldap://test.example.domain
             ldap_use_tokengroups = false
-          EOM
+            EXPECTED
 
-          is_expected.to create_concat__fragment(frag_name).with_content(expected)
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap").with_content(expected)
         end
       end
 
@@ -120,8 +66,8 @@ describe 'sssd::provider::ldap' do
         it do
           ldap_tls_cipher_suite = 'ldap_tls_cipher_suite = HIGH:-SSLv2'
 
-          expected = <<-EOM.gsub(/^[ ]+/,'')
-
+          expected = <<~EXPECTED
+            [domain/#{title}]
             # sssd::provider::ldap
             debug_microseconds = false
             krb5_canonicalize = false
@@ -153,45 +99,49 @@ describe 'sssd::provider::ldap' do
             ldap_tls_reqcert = demand
             ldap_uri = ldap://test.example.domain
             ldap_use_tokengroups = false
-          EOM
+            EXPECTED
 
-          is_expected.to create_concat__fragment(frag_name).with_content(expected)
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap").with_content(expected)
         end
       end
       context 'with app_pki_ca_dir set' do
         let(:params) {{ :app_pki_ca_dir => '/path/to/ca' }}
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_concat__fragment(frag_name).with_content(
-          %r(ldap_tls_cacertdir = /path/to/ca)
-        ) }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
+            .with_content(%r(ldap_tls_cacertdir = /path/to/ca))
+        }
       end
 
       context 'with app_pki_key set' do
         let(:params) {{ :app_pki_key => '/path/to/private/fqdn.pem' }}
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_concat__fragment(frag_name).with_content(
-          %r(ldap_tls_key = /path/to/private/fqdn.pem)
-        ) }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
+            .with_content(%r(ldap_tls_key = /path/to/private/fqdn.pem))
+        }
       end
 
       context 'with app_pki_cert set' do
         let(:params) {{ :app_pki_cert => '/path/to/public/fqdn.pub' }}
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_concat__fragment(frag_name).with_content(
-          %r(ldap_tls_cert = /path/to/public/fqdn.pub)
-        ) }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
+            .with_content(%r(ldap_tls_cert = /path/to/public/fqdn.pub))
+        }
       end
 
       context 'with empty ldap_account_expire_policy' do
         let(:params) {{ :ldap_account_expire_policy => '' }}
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_concat__fragment(frag_name).without_content(
-          %r(ldap_account_expire_policy =)
-        ) }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
+            .without_content(%r(ldap_account_expire_policy))
+        }
       end
 
       context 'with multiple ldap_uri values' do
@@ -200,17 +150,19 @@ describe 'sssd::provider::ldap' do
         }}
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_concat__fragment(frag_name).with_content(
-          %r(ldap_uri = ldap://test1.example.domain,ldap://test2.example.domain)
-        ) }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
+            .with_content(%r(ldap_uri = ldap://test1.example.domain,ldap://test2.example.domain))
+        }
       end
 
       # This set of parameters exercises the logic in the code but is NOT at all
       # realistic!
       context 'with other optional parameters set' do
         let(:facts) {
-          os_facts.merge({:sssd_version => '1.13.0'})
+          os_facts.merge({:sssd_version => '1.16.0'})
         }
+
         let(:params) {{
           :debug_level                          => 3,
           :debug_timestamps                     => false,
@@ -329,8 +281,8 @@ describe 'sssd::provider::ldap' do
 
          it { is_expected.to compile.with_all_deps }
          it do
-           expected = <<-EOM.gsub(/^[ ]+/,'')
-
+           expected = <<~EXPECTED
+            [domain/#{title}]
             # sssd::provider::ldap
             debug_level = 3
             debug_microseconds = false
@@ -341,7 +293,7 @@ describe 'sssd::provider::ldap' do
             krb5_server = 1.2.3.5:5678,primary.example.domain
             krb5_use_kdcinfo = true
             ldap_access_filter = my_ldap_access_filter
-            ldap_access_order = expire,lockout
+            ldap_access_order = expire,lockout,ppolicy,pwd_expire_policy_renew
             ldap_account_expire_policy = shadow
             ldap_autofs_entry_key = my_ldap_autofs_entry_key
             ldap_autofs_entry_object_class = my_ldap_autofs_entry_object_class
@@ -477,9 +429,9 @@ describe 'sssd::provider::ldap' do
             ldap_user_ssh_public_key = my_ldap_user_ssh_public_key
             ldap_user_uid_number = my_ldap_user_uid_number
             ldap_user_uuid = my_ldap_user_uuid
-          EOM
+            EXPECTED
 
-          is_expected.to create_concat__fragment(frag_name).with_content(expected)
+            is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap").with_content(expected)
         end
       end
     end

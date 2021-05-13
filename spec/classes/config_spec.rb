@@ -1,26 +1,24 @@
 require 'spec_helper'
 
 default_content  = <<EOM
-
 # sssd::config
 [sssd]
-domains = LOCAL, LDAP
-services = nss, pam, ssh, sudo
+services = nss,pam,ssh
+domains = FILE, LDAP
 config_file_version = 2
 reconnection_retries = 3
 debug_timestamps = true
 debug_microseconds = false
 EOM
 
-default_content_with_ipa_domain = default_content.gsub(/LOCAL, LDAP/,'LOCAL, LDAP, ipa.example.com')
+default_content_with_ipa_domain = default_content.gsub(/FILE, LDAP/,'FILE, LDAP, ipa.example.com')
 
 default_content_plus_optional = <<EOM
-
 # sssd::config
 [sssd]
+services = nss,pam,ssh
 description = sssd section description
-domains = LOCAL, LDAP
-services = nss, pam, ssh, sudo
+domains = FILE, LDAP
 config_file_version = 2
 reconnection_retries = 3
 re_expression = (.+)@(.+)
@@ -38,18 +36,14 @@ EOM
 
 shared_examples_for 'a sssd::config' do |content|
   it { is_expected.to compile.with_all_deps }
-  it { is_expected.to contain_class('sssd::config') }
-  it { is_expected.to contain_concat('/etc/sssd/sssd.conf').with({
-      :owner          => 'root',
-      :group          => 'root',
-      :mode           => '0600',
-      :ensure_newline => true,
-      :warn           => true
-    })
-  }
-
-  it { is_expected.to contain_concat__fragment('sssd_main_config').with({
-      :target  => '/etc/sssd/sssd.conf',
+  it { is_expected.to contain_file('/etc/sssd').with({
+    :ensure  => 'directory',
+    :mode    => 'go-rw'
+  }) }
+  it { is_expected.to contain_file('/etc/sssd/sssd.conf').with({
+      :owner   => 'root',
+      :group   => 'root',
+      :mode    => '0600',
       :content => content
     })
   }
@@ -59,7 +53,7 @@ end
 # private.  To take advantage of hooks built into puppet-rspec, the
 # class described needs to be the class instantiated, i.e., sssd.
 describe 'sssd' do
-  let(:sssd_domains) { ['LOCAL', 'LDAP'] }
+  let(:sssd_domains) { ['FILE', 'LDAP'] }
   let(:ipa_fact_joined) {
     {
       :ipa => {

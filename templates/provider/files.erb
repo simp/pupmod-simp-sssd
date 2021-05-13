@@ -1,3 +1,4 @@
+[domain/<%= @title %>]
 # sssd::provider::files
 <% if @passwd_files and ! @passwd_files.empty? -%>
 passwd_files = <%= @passwd_files.join(', ') %>

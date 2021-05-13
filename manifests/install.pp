@@ -11,33 +11,18 @@
 #
 class sssd::install (
   Boolean  $install_user_tools = true,
-  String   $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
+  String   $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })
 ) {
   assert_private()
-  contain 'sssd::install::client'
+  include 'sssd::install::client'
 
-  file { '/etc/sssd':
-    ensure  => 'directory',
-    group   => 'root',
-    mode    => '0711',
-    require => Package['sssd']
-  }
-
-  package { 'sssd':
+  package { ['sssd', 'sssd-dbus']:
     ensure => $package_ensure
   }
 
   if $install_user_tools {
     package { 'sssd-tools':
       ensure => $package_ensure
-    }
-  }
-
-  if member($facts['init_systems'], 'systemd') {
-    if member($sssd::services, 'ifp') {
-      package { 'sssd-dbus':
-        ensure => $package_ensure
-      }
     }
   }
 }

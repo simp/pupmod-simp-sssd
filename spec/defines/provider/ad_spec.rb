@@ -6,24 +6,20 @@ describe 'sssd::provider::ad' do
       let(:facts){ os_facts }
 
       let(:title) {'test_ad_provider'}
-      let(:frag_name) { "sssd_#{title}_ad_provider.domain" }
-      let(:precondition){
-        'include ::sssd'
-      }
 
       context 'with default parameters' do
         it { is_expected.to compile.with_all_deps }
         it do
-          expected = <<-EOM.gsub(/^[ ]+/,'')
-
+          expected = <<~EXPECTED
+            [domain/#{title}]
             # sssd::provider::ad
             dyndns_update = true
             krb5_store_password_if_offline = false
             ldap_id_mapping = true
             ldap_use_tokengroups = true
-          EOM
+            EXPECTED
 
-          is_expected.to create_concat__fragment(frag_name).with_content(expected)
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ad").with_content(expected)
         end
       end
 
@@ -42,16 +38,16 @@ describe 'sssd::provider::ad' do
 
         it { is_expected.to compile.with_all_deps }
         it do
-          expected = <<-EOM.gsub(/^[ ]+/,'')
-
+          expected = <<~EXPECTED
+            [domain/#{title}]
             # sssd::provider::ad
             dyndns_update = false
             krb5_store_password_if_offline = false
             ldap_id_mapping = true
             ldap_use_tokengroups = true
-          EOM
+            EXPECTED
 
-          is_expected.to create_concat__fragment(frag_name).with_content(expected)
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ad").with_content(expected)
         end
       end
 
@@ -108,8 +104,8 @@ describe 'sssd::provider::ad' do
         }}
 
         it do
-          expected = <<-EOM.gsub(/^[ ]+/,'')
-
+          expected = <<~EXPECTED
+            [domain/#{title}]
             # sssd::provider::ad
             ad_domain = my_ad_domain
             ad_enabled_domains = enabled_domain1, enabled_domain2
@@ -159,9 +155,9 @@ describe 'sssd::provider::ad' do
             ldap_use_tokengroups = true
             ldap_group_objectsid = my_ldap_group_objectsid
             ldap_user_objectsid = my_ldap_user_objectsid
-          EOM
+            EXPECTED
 
-          is_expected.to create_concat__fragment(frag_name).with_content(expected)
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ad").with_content(expected)
         end
       end
     end

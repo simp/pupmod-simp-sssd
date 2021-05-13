@@ -2,9 +2,9 @@ require 'spec_helper'
 
 describe 'sssd::provider::krb5' do
   context 'supported operating systems' do
-    on_supported_os.each do |os, facts|
+    on_supported_os.each do |os, os_facts|
       context "on #{os}" do
-        let(:facts){ facts }
+        let(:facts){ os_facts }
 
         let(:title) {'krb5_test_domain'}
         let(:params) {{
@@ -13,7 +13,7 @@ describe 'sssd::provider::krb5' do
         }}
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_concat__fragment("sssd_#{title}_krb5_provider.domain").without_content(%r(=\s*$)) }
+        it { is_expected.to create_sssd__config__entry("puppet_provider_#{title}_krb5").without_content(%r(=\s*$)) }
       end
     end
   end

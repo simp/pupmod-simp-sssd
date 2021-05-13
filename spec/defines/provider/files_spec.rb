@@ -11,11 +11,12 @@ describe 'sssd::provider::files' do
           it { is_expected.to compile.with_all_deps }
 
           it {
-            expected_content = <<~EOM
+            expected = <<~EOM
+              [domain/#{title}]
               # sssd::provider::files
-            EOM
+              EOM
 
-            is_expected.to create_concat__fragment("sssd_#{title}_files.domain").with_content(expected_content)
+            is_expected.to create_sssd__config__entry("puppet_provider_#{title}_files").with_content(expected)
            }
         end
 
@@ -28,13 +29,14 @@ describe 'sssd::provider::files' do
           it { is_expected.to compile.with_all_deps }
 
           it {
-            expected_content = <<~EOM
+            expected = <<~EOM
+              [domain/#{title}]
               # sssd::provider::files
               passwd_files = /etc/passwd1, /etc/passwd2
               group_files = /etc/group1, /etc/group2
-            EOM
+              EOM
 
-            is_expected.to create_concat__fragment("sssd_#{title}_files.domain").with_content(expected_content)
+            is_expected.to create_sssd__config__entry("puppet_provider_#{title}_files").with_content(expected)
            }
         end
       end

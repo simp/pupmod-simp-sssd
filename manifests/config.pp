@@ -7,16 +7,17 @@
 # automatically added to ``$domains`` to generate the list of domains
 # in the ``[sssd]`` section.
 #
-class sssd::config {
+# @param authoritative
+#   Set to `true` to purge unmanaged configuration files
+#
+# @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
+#
+class sssd::config (
+  Boolean $authoritative = pick(getvar("${module_name}::authoritative"), false)
+){
   assert_private()
 
-  concat { '/etc/sssd/sssd.conf':
-    owner          => 'root',
-    group          => 'root',
-    mode           => '0600',
-    ensure_newline => true,
-    warn           => true
-  }
+  include $module_name
 
   if ($sssd::auto_add_ipa_domain and $facts['ipa']) {
     # this host has joined an IPA domain
@@ -43,23 +44,35 @@ class sssd::config {
   $_default_domain_suffix = $sssd::default_domain_suffix
   $_override_space        = $sssd::override_space
 
-  # You must have a domain in el7 unless you updated to sssd V2 or sssd will
-  # not start. Check here instead of init because IPA domain might have been added.
-  if ($facts.dig('os','release','major') < '8') and empty($_domains) and !$_enable_files_domain {
-    unless  $facts['sssd_version'] and versioncmp($facts['sssd_version'],'2.0') >= 0  {
-      fail("${module_name}: SSSD requires a domain be defined. \$sssd::domains is empty.")
-    }
-  }
-
   if $sssd::include_svc_config {
     $_services.each | $service | {
       include "sssd::service::${service}"
     }
   }
 
-  concat::fragment { 'sssd_main_config':
-    target  => '/etc/sssd/sssd.conf',
+  file { '/etc/sssd':
+    ensure => 'directory',
+    mode   => 'go-rw'
+  }
+
+  file { '/etc/sssd/conf.d':
+    ensure  => 'directory',
+    purge   => $authoritative,
+    recurse => true
+  }
+
+  unless $authoritative {
+    tidy { '/etc/sssd/conf.d':
+      matches => '*_puppet_*.conf',
+      recurse => true
+    }
+  }
+
+  file { '/etc/sssd/sssd.conf':
+    owner   => 'root',
+    group   => 'root',
+    mode    => '0600',
     content => template("${module_name}/sssd.conf.erb"),
-    order   => '10'
+    notify  => Class["${module_name}::service"]
   }
 }

@@ -1,3 +1,32 @@
+* Tue May 11 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 7.0.0
+- Fixed:
+  - `sssd::provider::ldap::ldap_pwd_policy` is based on the value in
+    `ldap_account_expire_policy` to properly account for non-shadow systems
+  - `sssd::provider::ldap::ldap_access_order` is set to the modern set
+  - A typo in the `sssd::LdapAccountExpirePol` data type was fixed
+- Removed:
+  - `sssd::manage_service` - obsolete
+  - `sssd::ldap_access_order_defaults()` - obsolelte
+  - Removed EL6-only artifacts
+  - Removed the `LOCAL` domain
+  - Support for Puppet 5 was dropped
+- Changed:
+  - Fail if a version of `sssd` is being managed < 1.16.0
+  - Now use the `/etc/sssd/conf.d` directory instead of `concat`
+  - The `sssd::service` class is now private
+  - Moved the `/etc/sssd` directory configuration into `sssd::config`
+- Added:
+  - `sssd::config::entry` defined type which allows consistent management of
+    permissions and dependencies on config files
+  - Users can set `sssd::custom_config` to a `String` that will be placed into
+    `/etc/sssd/conf.d/zz_puppet_custom.conf`
+  - Allow users to optionally purge the `/etc/sssd/conf.d` directory (disabled
+    by default)
+  - Trigger the `sssd-sudo.socket` service instead of including the service in
+    the main configuration per the `sssd` documentation and error messages in
+    the logs
+  - Support for puppetlabs/stdlib 7 was added
+
 * Thu Feb 18 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 6.4.0-0
 - Ensure that systems bound to FreeIPA, but not connected do not cause
   compilation issues.
