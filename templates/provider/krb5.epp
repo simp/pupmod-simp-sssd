@@ -1,0 +1,53 @@
+<%- |
+  String                                 $domain,
+  Simplib::Host                          $krb5_server,
+  String                                 $krb5_realm,
+  Optional[Sssd::DebugLevel]             $debug_level                    = undef,
+  Boolean                                $debug_timestamps               = true,
+  Boolean                                $debug_microseconds             = false,
+  Optional[String]                       $krb5_kpasswd                   = undef,
+  Optional[Stdlib::Absolutepath]         $krb5_ccachedir                 = undef,
+  Optional[Stdlib::Absolutepath]         $krb5_ccname_template           = undef,
+  Integer                                $krb5_auth_timeout              = 15,
+  Boolean                                $krb5_validate                  = false,
+  Optional[Stdlib::Absolutepath]         $krb5_keytab                    = undef,
+  Boolean                                $krb5_store_password_if_offline = false,
+  Optional[String]                       $krb5_renewable_lifetime        = undef,
+  Optional[String]                       $krb5_lifetime                  = undef,
+  Integer                                $krb5_renew_interval            = 0,
+  Optional[Enum['never','try','demand']] $krb5_use_fast                  = undef
+| -%>
+[domain/<%= $domain %>]
+# sssd::provider::krb5
+<% if $debug_level { -%>
+debug_level = <%= $debug_level %>
+<% } -%>
+debug_timestamps = <%= $debug_timestamps %>
+debug_microseconds = <%= $debug_microseconds %>
+krb5_server = <%= $krb5_server %>
+krb5_realm = <%= $krb5_realm %>
+<% if $krb5_kpasswd { -%>
+krb5_kpasswd = <%= $krb5_kpasswd %>
+<% } -%>
+<% if $krb5_ccachedir { -%>
+krb5_ccachedir = <%= $krb5_ccachedir %>
+<% } -%>
+<% if $krb5_ccname_template { -%>
+krb5_ccname_template = <%= $krb5_ccname_template %>
+<% } -%>
+krb5_auth_timeout = <%= $krb5_auth_timeout %>
+krb5_validate = <%= $krb5_validate %>
+<% if $krb5_keytab { -%>
+krb5_keytab = <%= $krb5_keytab %>
+<% } -%>
+krb5_store_password_if_offline = <%= $krb5_store_password_if_offline %>
+<% if $krb5_renewable_lifetime { -%>
+krb5_renewable_lifetime = <%= $krb5_renewable_lifetime %>
+<% } -%>
+<% if $krb5_lifetime { -%>
+krb5_lifetime = <%= $krb5_lifetime %>
+<% } -%>
+krb5_renew_interval = <%= $krb5_renew_interval %>
+<% if $krb5_use_fast { -%>
+krb5_use_fast = <%= $krb5_use_fast %>
+<% } -%>
