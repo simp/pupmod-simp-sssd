@@ -1,9 +1,10 @@
-* Tue May 11 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 7.0.0
+* Wed May 19 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 7.0.0
 - Fixed:
   - `sssd::provider::ldap::ldap_pwd_policy` is based on the value in
     `ldap_account_expire_policy` to properly account for non-shadow systems
   - `sssd::provider::ldap::ldap_access_order` is set to the modern set
   - A typo in the `sssd::LdapAccountExpirePol` data type was fixed
+  - Ported the krb5 ERB template to EPP and fixed a typo
 - Removed:
   - `sssd::manage_service` - obsolete
   - `sssd::ldap_access_order_defaults()` - obsolelte
