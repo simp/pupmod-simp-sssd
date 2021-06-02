@@ -1,3 +1,7 @@
+* Wed Jun 02 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 7.0.1
+- Fixed:
+  - sssd-sudo.socket service
+
 * Wed May 19 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 7.0.0
 - Fixed:
   - `sssd::provider::ldap::ldap_pwd_policy` is based on the value in
