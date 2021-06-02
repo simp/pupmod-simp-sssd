@@ -1,0 +1,50 @@
+<%
+  if ENV['BEAKER_HYPERVISOR']
+    hypervisor = ENV['BEAKER_HYPERVISOR']
+  else
+    hypervisor = 'vagrant'
+  end
+-%>
+HOSTS:
+  ldapserver:
+    roles:
+      - ldap
+    platform: el-7-x86_64
+    box: centos/7
+    hypervisor: <%= hypervisor %>
+    yum_repos:
+      simp:
+        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
+        gpgkeys:
+          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
+  oel8:
+    roles:
+      - default
+      - client
+    platform: el-8-x86_64
+    box: generic/oracle8
+    hypervisor: <%= hypervisor %>
+  oel7:
+    roles:
+      - client
+    platform: el-7-x86_64
+    box: onyxpoint/oel-7-x86_64
+    hypervisor: <%= hypervisor %>
+CONFIG:
+  log_level: verbose
+  type: aio
+  vagrant_memsize: 256
+<% if ENV['BEAKER_PUPPET_ENVIRONMENT'] -%>
+  puppet_environment: <%= ENV['BEAKER_PUPPET_ENVIRONMENT'] %>
+<% end -%>
+  ssh:
+    keepalive: true
+    keepalive_interval: 10
+    host_key:
+      - <%= Net::SSH::Transport::Algorithms::ALGORITHMS[:host_key].join("\n#{' '*6}- ") %>
+    kex:
+      - <%= Net::SSH::Transport::Algorithms::ALGORITHMS[:kex].join("\n#{' '*6}- ") %>
+    encryption:
+      - <%= Net::SSH::Transport::Algorithms::ALGORITHMS[:encryption].join("\n#{' '*6}- ") %>
+    hmac:
+      - <%= Net::SSH::Transport::Algorithms::ALGORITHMS[:hmac].join("\n#{' '*6}- ") %>

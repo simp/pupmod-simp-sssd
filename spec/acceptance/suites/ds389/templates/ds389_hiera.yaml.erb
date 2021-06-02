@@ -1,0 +1,18 @@
+---
+simp_options::pki: true
+simp_options::pki::source: '/etc/pki/simp-testing/pki'
+simp_options::firewall: true
+simp_options::haveged: true
+simp_options::logrotate: true
+simp_options::pam: true
+simp_options::stunnel: true
+simp_options::syslog: true
+simp_options::tcpwrappers: true
+simp_options::ldap::uri: ["ldap://<%= fqdn %>" ]
+simp_options::ldap::bind_dn: "cn=hostAuth,ou=Hosts,<%= base_dn %>"
+simp_options::ldap::base_dn: "<%= base_dn %>"
+simp_options::ldap::bind_pw: 'asouighoahgh3whg8arewhghaesdhgeahgoha'
+simp_options::ldap::bind_hash: '{SSHA}24M0TnXrhTsYzaaR+T4kDCKhu7dnVNBCG0qPMQ=='
+sssd::domains: ['LDAP']
+sssd::services: ['nss', 'pam', 'ssh']
+sssd::auditd: false

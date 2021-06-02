@@ -25,5 +25,13 @@ fixtures:
     systemd: https://github.com/simp/puppet-systemd
     # Fixtures for ldap accectance test
     simp_openldap: https://github.com/simp/pupmod-simp-simp_openldap
+    # Fixtures for ds389 test
+    #simp_ds389: https://github.com/simp/pupmod-simp-simp_ds389
+    simp_ds389:
+      repo: https://github.com/jeannegreulich/pupmod-simp-simp_ds389
+      branch: SIMP-9699-b
+    ds389: https://github.com/simp/pupmod-simp-ds389
+    simp_firewalld: https://github.com/simp/pupmod-simp-simp_firewalld
+    firewalld: https://github.com/simp/pupmod-voxpupuli-firewalld
   symlinks:
     sssd: "#{source_dir}"
