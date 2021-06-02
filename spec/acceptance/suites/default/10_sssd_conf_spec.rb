@@ -19,17 +19,11 @@ describe 'sssd' do
     'simp_options::ldap::bind_pw' => '<PASSWORD>',
     # This causes a lot of noise and reboots
     'sssd::auditd'                => false,
-    'sssd::domains'               => [ 'local','test.case' ],
-    'sssd::services'              => ['nss','pam'],
+    'sssd::domains'               => [ 'local','test.case' ]
   }
 
   let(:manifest) { <<-EOF
       include 'sssd'
-      include 'sssd::service::nss'
-      include 'sssd::service::pam'
-      include 'sssd::service::autofs'
-      include 'sssd::service::sudo'
-      include 'sssd::service::ssh'
 
       #{local_config}
 
@@ -82,6 +76,17 @@ describe 'sssd' do
         response = YAML.load(on(host, %{puppet resource service sssd --to_yaml}).stdout.strip)
         expect(response['service']['sssd']['ensure']).to eq('running')
         expect(response['service']['sssd']['enable']).to eq('true')
+      end
+
+      it 'should be running sssd-sudo.socket' do
+        response = YAML.load(on(host, %{puppet resource service sssd-sudo.socket --to_yaml}).stdout.strip)
+        expect(response['service']['sssd-sudo.socket']['ensure']).to eq('running')
+        expect(response['service']['sssd-sudo.socket']['enable']).to eq('true')
+      end
+
+      it 'should not change the system after reboot' do
+        host.reboot
+        apply_manifest_on(host, manifest, :catch_changes => true)
       end
     end
   end
