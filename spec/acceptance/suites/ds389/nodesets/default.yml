@@ -13,25 +13,20 @@ HOSTS:
     platform: el-8-x86_64
     box: centos/8
     hypervisor: <%= hypervisor %>
-    yum_repos:
-      simp:
-        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
-        gpgkeys:
-          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
-#  centos8:
-#    roles:
-#      - client
-#      - sssdv2
-#    platform: el-8-x86_64
-#    box: centos/8
-#    hypervisor: <%= hypervisor %>
-#  centos7:
-#    roles:
-#      - client
-#      - sssdv1
-#    platform: el-7-x86_64
-#    box: centos/7
-#    hypervisor: <%= hypervisor %>
+  centos8:
+    roles:
+      - client
+      - sssdv2
+    platform: el-8-x86_64
+    box: centos/8
+    hypervisor: <%= hypervisor %>
+  centos7:
+    roles:
+      - client
+      - sssdv1
+    platform: el-7-x86_64
+    box: centos/7
+    hypervisor: <%= hypervisor %>
 CONFIG:
   log_level: verbose
   type: aio

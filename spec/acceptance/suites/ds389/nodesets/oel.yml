@@ -9,14 +9,9 @@ HOSTS:
   ldapserver:
     roles:
       - ldap
-    platform: el-7-x86_64
-    box: centos/7
+    platform: el-8-x86_64
+    box:  generic/oracle8
     hypervisor: <%= hypervisor %>
-    yum_repos:
-      simp:
-        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
-        gpgkeys:
-          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
   oel8:
     roles:
       - default

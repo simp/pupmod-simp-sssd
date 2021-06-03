@@ -9,8 +9,7 @@ describe 'sssd' do
   ldapservers.each do |host|
     let(:root_pw) {'s00perS3kr!tP@ssw0rd'}
     let(:base_dn) { 'dc=test,dc=org' }
-#    let(:hiera_template){ File.read('spec/acceptance/common_files/ds389_hiera.yaml.erb')}
-                                    
+    let(:ds_root_name) { 'accounts'}
 
     let(:manifest) do
       <<~MANIFEST
@@ -42,14 +41,14 @@ describe 'sssd' do
     let(:fqdn) do
       fact_on(host,'fqdn').strip
     end
-    let(:ds_root_name) { 'accounts'}
+    #  server_fqdn is used in hiera.yaml ERB.  In this case server_fqdn and fqdn are the same.
+    let(:server_fqdn) { "#{fqdn}" }
     let(:domain) do
       fact_on(host,'domain').strip
     end
 
     context 'install the server' do
       it 'works with no errors' do
-#        default_hieradata = YAML.load(ERB.new(hiera_template).result(binding) + "\n#{server_hieradata}")
         set_hieradata_on(host, server_hieradata)
         apply_manifest_on(host, manifest, catch_failures: true)
       end
@@ -70,7 +69,7 @@ describe 'sssd' do
           dsidm "#{ds_root_name}" -b "#{base_dn}" user create --cn testuser --uid testuser --displayName "Test User" --uidNumber 1001 --gidNumber 1001 --homeDirectory /home/testuser
           dsidm "#{ds_root_name}" -b "#{base_dn}" user modify testuser add:userPassword:{SSHA}NDZnXytV04X8JdhiN8zpcCE/r7Wrc9CiCukwtw==
           dsidm "#{ds_root_name}" -b "#{base_dn}" posixgroup create --cn realuser --gidNumber 1002
-          dsidm "#{ds_root_name}" -b "#{base_dn}" user create --cn testuser --uid testuser --displayName "Real User" --uidNumber 1001 --gidNumber 1002 --homeDirectory /home/realuser
+          dsidm "#{ds_root_name}" -b "#{base_dn}" user create --cn realuser --uid realuser --displayName "Real User" --uidNumber 1002 --gidNumber 1002 --homeDirectory /home/realuser
           dsidm "#{ds_root_name}" -b "#{base_dn}" user modify realuser add:userPassword:{SSHA}NDZnXytV04X8JdhiN8zpcCE/r7Wrc9CiCukwtw==
           LDAP_ADD_USER
       end
