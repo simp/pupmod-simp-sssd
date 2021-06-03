@@ -46,11 +46,8 @@ class sssd::service::sudo (
   }
 
   service { 'sssd-sudo.socket':
-    ensure  => 'running',
     enable  => true,
-    require => [
-      Sssd::Config::Entry['puppet_service_sudo'],
-      Class["${module_name}::service"]
-    ]
+    require => Sssd::Config::Entry['puppet_service_sudo'],
+    notify  => Class["${module_name}::service"]
   }
 }
