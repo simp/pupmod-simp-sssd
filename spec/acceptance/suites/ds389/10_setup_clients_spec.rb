@@ -72,7 +72,7 @@ describe '389ds' do
 
         it 'should be idempotent' do
           # ldap provider has checks for sssd version when creating the
-          # sssd.conf entry.  Therefor it might chnage the second run when
+          # sssd.conf entry.  Therefore it might chnage the second run when
           # it knows the version.  Check for idempotency on the third run
           apply_manifest_on(client, client_manifest, :catch_failures => true)
           apply_manifest_on(client, client_manifest, :catch_changes => true)
