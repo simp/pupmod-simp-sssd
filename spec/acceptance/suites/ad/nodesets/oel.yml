@@ -18,7 +18,6 @@ HOSTS:
     user: vagrant
     communicator: winrm
     is_cygwin: false
-  #  It does not work on el8 yet.  See SIMP-7577
   oel8:
     roles:
       - client

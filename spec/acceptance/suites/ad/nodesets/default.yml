@@ -25,13 +25,12 @@ HOSTS:
     platform: el-7-x86_64
     box: centos/7
     hypervisor: <%= hypervisor %>
-#  It does not work on el8 yet see SIMP-7577 for details
-#  centos8:
-#    roles:
-#      - client
-#    platform: el-8-x86_64
-#    box: centos/8
-#    hypervisor: <%= hypervisor %>
+  centos8:
+    roles:
+      - client
+    platform: el-8-x86_64
+    box: centos/8
+    hypervisor: <%= hypervisor %>
 CONFIG:
   log_level: verbose
   type: aio
