@@ -32,14 +32,14 @@ describe '389ds' do
       use_fully_qualified_names => false
     }
     sssd::provider::ldap { 'LDAP':
-      ldap_pwd_policy => none,
-      ldap_user_gecos => 'displayName',
-      ldap_user_ssh_public_key => 'nsSshPublicKey',
+      ldap_pwd_policy            => none,
+      ldap_user_gecos            => 'displayName',
+      ldap_user_ssh_public_key   => 'nsSshPublicKey',
       ldap_account_expire_policy => 'ipa',
-      ldap_id_mapping => false,
-      app_pki_key     => "/etc/pki/simp_apps/sssd/x509/private/#{fqdn}.pem",
-      app_pki_cert    => "/etc/pki/simp_apps/sssd/x509/public/#{fqdn}.pub",
-      ldap_default_authtok_type => 'password'
+      ldap_id_mapping            => false,
+      app_pki_key                => "/etc/pki/simp_apps/sssd/x509/private/#{fqdn}.pem",
+      app_pki_cert               => "/etc/pki/simp_apps/sssd/x509/public/#{fqdn}.pub",
+      ldap_default_authtok_type  => 'password'
     }
 
     class { 'nsswitch':
@@ -73,7 +73,7 @@ describe '389ds' do
 
         it 'should be idempotent' do
           # ldap provider has checks for sssd version when creating the
-          # sssd.conf entry.  There for it might chnage the second run when
+          # sssd.conf entry.  Therefor it might chnage the second run when
           # it knows the version.  Check for idempotency on the third run
           apply_manifest_on(client, client_manifest, :catch_failures => true)
           apply_manifest_on(client, client_manifest, :catch_changes => true)
