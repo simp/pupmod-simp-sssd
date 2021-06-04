@@ -10,12 +10,12 @@ describe '389ds' do
   base_dn      = 'dc=test,dc=org'
 
   let(:client_manifest) { <<~EOS
-    include '::sssd'
-    include '::sssd::service::nss'
-    include '::sssd::service::pam'
-    include '::sssd::service::autofs'
-    include '::sssd::service::sudo'
-    include '::sssd::service::ssh'
+    include 'sssd'
+    include 'sssd::service::nss'
+    include 'sssd::service::pam'
+    include 'sssd::service::autofs'
+    include 'sssd::service::sudo'
+    include 'sssd::service::ssh'
 
     # LDAP CONFIG
     sssd::domain { 'LDAP':
@@ -66,7 +66,6 @@ describe '389ds' do
         }
 
         it 'should run puppet' do
-  #       on(client, 'mkdir -p /usr/local/sbin/simp')
           set_hieradata_on(client, client_hieradata)
           apply_manifest_on(client, client_manifest, :catch_failures => true)
         end
