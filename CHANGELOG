@@ -1,3 +1,6 @@
+* Thu Jun 03 2021 Jeanne Greulich <jeanne.greulich@onyxpoint.com> - 7.0.2
+- Added tests for ds389 ldap server
+
 * Wed Jun 02 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 7.0.1
 - Fixed:
   - sssd-sudo.socket service

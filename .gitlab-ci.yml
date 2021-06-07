@@ -389,6 +389,13 @@ pup6.pe-ldap:
     - 'bundle exec rake beaker:suites[ldap,default]'
   retry: 1
 
+pup6.pe-ds389:
+  <<: *pup_6_pe
+  <<: *acceptance_base
+  script:
+    - 'bundle exec rake beaker:suites[ds389,default]'
+  retry: 1
+
 pup6.pe-ad-fips:
   <<: *pup_6_pe
   <<: *acceptance_base
@@ -425,6 +432,13 @@ pup6.pe-oel-ldap:
   <<: *with_SIMP_ACCEPTANCE_MATRIX_LEVEL_3
   script:
     - 'bundle exec rake beaker:suites[ldap,oel]'
+
+pup6.pe-oel-ds389:
+  <<: *pup_6_pe
+  <<: *acceptance_base
+  <<: *with_SIMP_ACCEPTANCE_MATRIX_LEVEL_3
+  script:
+    - 'bundle exec rake beaker:suites[ds389,oel]'
 
 pup6.x:
   <<: *pup_6_x

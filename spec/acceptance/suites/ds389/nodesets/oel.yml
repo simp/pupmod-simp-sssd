@@ -6,30 +6,24 @@
   end
 -%>
 HOSTS:
-  ad:
+  ldapserver:
     roles:
-      - windows
-      - ad
-    platform: windows-server-amd64
-    box: devopsgroup-io/windows_server-2012r2-standard-amd64-nocm # VBOX ONLY
+      - ldap
+    platform: el-8-x86_64
+    box:  generic/oracle8
     hypervisor: <%= hypervisor %>
-    vagrant_memsize: 2048
-    vagrant_cpus: 2
-    user: vagrant
-    communicator: winrm
-    is_cygwin: false
-  centos7:
+  oel8:
     roles:
-      - client
       - default
-    platform: el-7-x86_64
-    box: centos/7
-    hypervisor: <%= hypervisor %>
-  centos8:
-    roles:
       - client
     platform: el-8-x86_64
-    box: centos/8
+    box: generic/oracle8
+    hypervisor: <%= hypervisor %>
+  oel7:
+    roles:
+      - client
+    platform: el-7-x86_64
+    box: generic/oracle7
     hypervisor: <%= hypervisor %>
 CONFIG:
   log_level: verbose
