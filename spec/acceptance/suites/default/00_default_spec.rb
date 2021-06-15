@@ -17,12 +17,20 @@ describe 'sssd class' do
 
   let(:manifest) {
     <<-EOS
+      include sssd
+      EOS
+  }
+
+  let(:manifest_el7) {
+    <<-EOS
+    # sssctl does not work with just the implicat_file domain on el7 so we set
+    # up a basic file provider here.
       class { 'sssd':
         domains => ['FILES']
       }
 
       # To be used with the default_hieradata above
-      sssd::domain { 'FILES':
+     sssd::domain { 'FILES':
         description   => 'Default Local domain',
         id_provider   => 'files',
         auth_provider => 'files'
@@ -42,15 +50,37 @@ describe 'sssd class' do
     EOS
   }
 
+
   clients.each do |client|
     context 'default parameters' do
+      os_release = fact_on(client, 'operatingsystemmajrelease')
+
+      it 'manifest should work with no errors' do
+        set_hieradata_on(client, default_hieradata)
+        apply_manifest_on(client, manifest, :catch_failures => true)
+
+        # idempotent
+
+        apply_manifest_on(client, manifest, :catch_changes => true)
+      end
+
+      it 'should start sssd' do
+        on(client, 'systemctl status sssd', :acceptable_exit_codes => [0])
+      end
+
+    end
+
+    context 'with default files domain set up' do
+
+      # To make sssctl work ifd needs to be turned on in EL8 and
+      # a files domain needs to be created in EL7.
       os_release = fact_on(client, 'operatingsystemmajrelease')
 
       it 'manifest should work with no errors' do
         if os_release >= '8'
           _manifest = manifest_el8
         else
-          _manifest = manifest
+          _manifest = manifest_el7
         end
         set_hieradata_on(client, default_hieradata)
         apply_manifest_on(client, _manifest, :catch_failures => true)
@@ -58,6 +88,12 @@ describe 'sssd class' do
         # idempotent
 
         apply_manifest_on(client, _manifest, :catch_changes => true)
+      end
+
+      it 'should get local user information' do
+        on(client, 'useradd testuser --password "mypassword" -M -u 97979 -U')
+        result = on(client, 'sssctl user-checks testuser').stdout
+        expect(result).to match(/.*- user id: 97979.*/)
       end
 
       if os_release >= '8'
@@ -68,8 +104,7 @@ describe 'sssd class' do
       end
 
       it 'should get local user information' do
-        on(client, 'useradd testuser --password "mypassword" -M -u 97979 -U')
-        result = on(client, 'sssctl user-checks testuser').stdout
+        result = on(client, 'sssctl user-checks testuser 2>&1', :accept_all_exit_codes => true).stdout
         expect(result).to match(/.*- user id: 97979.*/)
       end
     end

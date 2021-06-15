@@ -4,14 +4,25 @@ default_content  = <<EOM
 # sssd::config
 [sssd]
 services = nss,pam,ssh
-domains = FILE, LDAP
 config_file_version = 2
 reconnection_retries = 3
+enable_files_domain = true
 debug_timestamps = true
 debug_microseconds = false
 EOM
 
-default_content_with_ipa_domain = default_content.gsub(/FILE, LDAP/,'FILE, LDAP, ipa.example.com')
+default_content_with_domains  = <<EOM
+# sssd::config
+[sssd]
+services = nss,pam,ssh
+domains = FILE, LDAP
+config_file_version = 2
+reconnection_retries = 3
+enable_files_domain = true
+debug_timestamps = true
+debug_microseconds = false
+EOM
+default_content_with_ipa_domain = default_content_with_domains.gsub(/FILE, LDAP/,'FILE, LDAP, ipa.example.com')
 
 default_content_plus_optional = <<EOM
 # sssd::config
@@ -68,13 +79,21 @@ describe 'sssd' do
       context "on #{os}" do
         let(:facts){ os_facts }
 
-        context 'with default parameters used by sssd::config' do
+        context 'with default params' do
+          let(:facts){ os_facts }
+          let(:params) {{ :domains => [] }}
+          # make sure no IPA domains are defined
+          it { is_expected.to_not contain_class('sssd::config::ipa_domain') }
+          it_should_behave_like 'a sssd::config', default_content
+        end
+
+        context 'with domains defined used by sssd::config' do
           let(:params) {{ :domains => sssd_domains }}
 
           context 'when not joined to an IPA domain' do
             let(:facts) { os_facts }
 
-            it_should_behave_like 'a sssd::config', default_content
+            it_should_behave_like 'a sssd::config', default_content_with_domains
             it { is_expected.to_not contain_class('sssd::config::ipa_domain') }
           end
 
@@ -83,18 +102,6 @@ describe 'sssd' do
 
             it_should_behave_like 'a sssd::config', default_content_with_ipa_domain
             it { is_expected.to contain_class('sssd::config::ipa_domain') }
-          end
-        end
-
-        context 'with no domains specified' do
-          let(:params) {{ :domains => [] }}
-
-          if os_facts[:os][:release][:major] < '8'
-            it 'should fail with no domain for el7 or before' do
-              expect { should raise_error(Puppet::Error, /SSSD requires a domain be defined/)}
-            end
-          else
-            it { is_expected.to compile.with_all_deps }
           end
         end
 
@@ -123,14 +130,14 @@ describe 'sssd' do
           } }
 
           context 'when not joined to an IPA domain' do
-            it_should_behave_like 'a sssd::config', default_content
+            it_should_behave_like 'a sssd::config', default_content_with_domains
             it { is_expected.to_not contain_class('sssd::config::ipa_domain') }
           end
 
           context 'when joined to an IPA domain' do
             let(:facts) { os_facts.merge( ipa_fact_joined ) }
 
-            it_should_behave_like 'a sssd::config', default_content
+            it_should_behave_like 'a sssd::config', default_content_with_domains
             it { is_expected.to_not contain_class('sssd::config::ipa_domain') }
           end
 
@@ -140,7 +147,7 @@ describe 'sssd' do
           let(:params) {{ :domains => sssd_domains + sssd_domains }}
 
           # this verifies domain list is deduped in content
-          it_should_behave_like 'a sssd::config', default_content
+          it_should_behave_like 'a sssd::config', default_content_with_domains
           it { is_expected.to_not contain_class('sssd::config::ipa_domain') }
         end
 

@@ -100,7 +100,7 @@ class sssd (
   Optional[String[1]]           $user                  = undef,
   Optional[String[1]]           $default_domain_suffix = undef,
   Optional[String[1]]           $override_space        = undef,
-  Optional[Boolean]             $enable_files_domain   = undef,
+  Boolean                       $enable_files_domain   = true,
   Boolean                       $enumerate_users       = false,
   Boolean                       $cache_credentials     = true,
   Boolean                       $include_svc_config    = true,
