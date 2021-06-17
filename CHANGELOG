@@ -1,3 +1,7 @@
+* Thu Jun 17 2021 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.1.0
+- Removed support for Puppet 5
+- Ensured support for Puppet 7 in requirements and stdlib
+
 * Thu Jun 03 2021 Jeanne Greulich <jeanne.greulich@onyxpoint.com> - 7.0.2
 - Added tests for ds389 ldap server
 - SSSD will not start and the module fail if no domains are
