@@ -14,9 +14,11 @@ HOSTS:
     hypervisor: <%= hypervisor %>
     yum_repos:
       simp:
-        baseurl: https://packagecloud.io/simp-project/6_X_Dependencies/el/7/$basearch
+        baseurl: https://download.simp-project.com/simp/yum/rolling/6/el/$releasever/$basearch/simp
         gpgkeys:
-          - https://raw.githubusercontent.com/NationalSecurityAgency/SIMP/master/GPGKEYS/RPM-GPG-KEY-SIMP
+          - https://download.simp-project.com/simp/GPGKEYS/RPM-GPG-KEY-SIMP
+          - https://download.simp-project.com/simp/GPGKEYS/RPM-GPG-KEY-SIMP-6
+          - https://download.simp-project.com/simp/GPGKEYS/RPM-GPG-KEY-SIMP-UNSTABLE
   oel8:
     roles:
       - default
