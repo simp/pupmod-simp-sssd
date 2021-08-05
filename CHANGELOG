@@ -1,3 +1,8 @@
+* Thu Aug 05 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 7.1.1
+- Add an override for sssd-sudo.service to start it as root:root. This aligns
+  with how sssd itself would start the service and the daemon cannot access
+  /var/lib/sss/db/config.ldb otherwise.
+
 * Thu Jun 17 2021 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.1.0
 - Removed support for Puppet 5
 - Ensured support for Puppet 7 in requirements and stdlib
