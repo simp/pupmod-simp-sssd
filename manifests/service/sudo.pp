@@ -49,8 +49,10 @@ class sssd::service::sudo (
     # This is required due to the permissions on /var/lib/sss/db/config.ldb
     # This may be a regression in sssd
     [Service]
-    User = root
-    Group = root
+    ExecStartPre=-/bin/touch /var/log/sssd/sssd_sudo.log
+    ExecStartPre=-/bin/chown sssd:sssd /var/log/sssd/sssd_sudo.log
+    User=root
+    Group=root
     | END
 
   systemd::dropin_file { '00_sssd_sudo_user_group.conf':

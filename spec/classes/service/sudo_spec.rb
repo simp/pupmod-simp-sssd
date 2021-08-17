@@ -11,8 +11,10 @@ describe 'sssd::service::sudo' do
         it {
           is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf')
             .with_unit('sssd-sudo.service')
-            .with_content(/User = root/)
-            .with_content(/Group = root/)
+            .with_content(%r(ExecStartPre=-/bin/touch /var/log/sssd/sssd_sudo.log))
+            .with_content(%r(ExecStartPre=-/bin/chown sssd:sssd /var/log/sssd/sssd_sudo.log))
+            .with_content(/User=root/)
+            .with_content(/Group=root/)
             .with_daemon_reload('eager')
             .with_selinux_ignore_defaults(true)
         }
