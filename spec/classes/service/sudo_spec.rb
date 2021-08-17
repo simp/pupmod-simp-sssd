@@ -14,6 +14,7 @@ describe 'sssd::service::sudo' do
             .with_content(/User = root/)
             .with_content(/Group = root/)
             .with_daemon_reload('eager')
+            .with_selinux_ignore_defaults(true)
         }
         it {
           is_expected.to create_service('sssd-sudo.socket')

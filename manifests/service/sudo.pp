@@ -54,9 +54,10 @@ class sssd::service::sudo (
     | END
 
   systemd::dropin_file { '00_sssd_sudo_user_group.conf':
-    unit          => 'sssd-sudo.service',
-    content       => $_override_content,
-    daemon_reload => 'eager'
+    unit                    => 'sssd-sudo.service',
+    content                 => $_override_content,
+    daemon_reload           => 'eager',
+    selinux_ignore_defaults => true
   }
 
   service { 'sssd-sudo.socket':
