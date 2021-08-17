@@ -93,8 +93,8 @@ describe '389ds' do
         end
 
         it 'should have a sssd_sudo.log file after querying for sudo rules' do
-          response = YAML.safe_load(on(client, %(puppet resource file /var/log/sssd_sudo.log --to_yaml)).stdout)
-          expect(response['file']['/var/log/sssd_sudo.log']['ensure']).to eq('file')
+          response = YAML.safe_load(on(client, %(puppet resource file /var/log/sssd/sssd_sudo.log --to_yaml)).stdout)
+          expect(response['file']['/var/log/sssd/sssd_sudo.log']['ensure']).to eq('file')
         end
       end
     end
