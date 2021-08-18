@@ -6,21 +6,23 @@
   end
 -%>
 HOSTS:
-  ldapserver:
+  ldapserver.beaker:
     roles:
       - ldap
       - default
     platform: el-8-x86_64
     box: generic/centos8
     hypervisor: <%= hypervisor %>
-  centos8:
+
+  centos8.beaker:
     roles:
       - client
       - sssdv2
     platform: el-8-x86_64
     box: generic/centos8
     hypervisor: <%= hypervisor %>
-  centos7:
+
+  centos7.beaker:
     roles:
       - client
       - sssdv1

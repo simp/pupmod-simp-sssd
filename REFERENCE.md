@@ -145,11 +145,11 @@ Default value: ``undef``
 
 ##### <a name="enable_files_domain"></a>`enable_files_domain`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
-Default value: ``undef``
+Default value: ``true``
 
 ##### <a name="config_file_version"></a>`config_file_version`
 

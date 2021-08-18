@@ -45,9 +45,29 @@ class sssd::service::sudo (
     content => $_content
   }
 
+  $_override_content = @(END)
+    # This is required due to the permissions on /var/lib/sss/db/config.ldb
+    # This may be a regression in sssd
+    [Service]
+    ExecStartPre=-/bin/touch /var/log/sssd/sssd_sudo.log
+    ExecStartPre=-/bin/chown sssd:sssd /var/log/sssd/sssd_sudo.log
+    User=root
+    Group=root
+    | END
+
+  systemd::dropin_file { '00_sssd_sudo_user_group.conf':
+    unit                    => 'sssd-sudo.service',
+    content                 => $_override_content,
+    daemon_reload           => 'eager',
+    selinux_ignore_defaults => true
+  }
+
   service { 'sssd-sudo.socket':
     enable  => true,
-    require => Sssd::Config::Entry['puppet_service_sudo'],
+    require => [
+      Sssd::Config::Entry['puppet_service_sudo'],
+      Systemd::Dropin_file['00_sssd_sudo_user_group.conf']
+    ],
     notify  => Class["${module_name}::service"]
   }
 }
