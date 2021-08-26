@@ -58,8 +58,14 @@ class sssd::service::sudo (
   systemd::dropin_file { '00_sssd_sudo_user_group.conf':
     unit                    => 'sssd-sudo.service',
     content                 => $_override_content,
-    daemon_reload           => 'eager',
-    selinux_ignore_defaults => true
+    selinux_ignore_defaults => true,
+    notify                  => Exec['00_sssd_sudo_user_group.conf-systemctl-daemon-reload'],
+  }
+
+  exec { '00_sssd_sudo_user_group.conf-systemctl-daemon-reload':
+    command     => 'systemctl daemon-reload',
+    refreshonly => true,
+    path        => $facts['path'],
   }
 
   service { 'sssd-sudo.socket':
