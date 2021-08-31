@@ -10,11 +10,15 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::install (
-  Boolean  $install_user_tools = true,
-  String   $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })
+  Boolean $install_client     = true,
+  Boolean $install_user_tools = true,
+  String  $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })
 ) {
   assert_private()
-  include 'sssd::install::client'
+
+  if $install_client {
+    include 'sssd::install::client'
+  }
 
   package { ['sssd', 'sssd-dbus']:
     ensure => $package_ensure

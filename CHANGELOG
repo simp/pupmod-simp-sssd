@@ -1,3 +1,8 @@
+* Fri Aug 27 2021 Henry Pauli <henry+spam@mixict.nl> - 7.2.0
+- Add an option in sssd::install to not install sssd client.
+  This aids in better compatibility with non RedHat based systems
+  where the ssssd-client package may not exists.
+
 * Thu Aug 05 2021 Trevor Vaughan <tvaughan@onyxpoint.com> - 7.1.1
 - Add an override for sssd-sudo.service to start it as root:root. This aligns
   with how sssd itself would start the service and the daemon cannot access
