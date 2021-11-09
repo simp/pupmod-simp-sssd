@@ -1,3 +1,7 @@
+* Tue Nov 09 2021 Steven Pritchard <steve@sicura.us> - 7.3.0
+- Allow `$sssd::domains` to accept a `Hash` of `sssd::domain`
+  resources (to allow for managing domains via hiera)
+
 * Fri Aug 27 2021 Henry Pauli <henry+spam@mixict.nl> - 7.2.0
 - Add an option in sssd::install to not install sssd client.
   This aids in better compatibility with non RedHat based systems

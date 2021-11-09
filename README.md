@@ -122,29 +122,18 @@ simp_options::auditd: true
 
 ### Creating Domains and Providers
 
-To create an SSSD domain you must instantiate a sssd::domain defined type and
-add the domain name to the array of domains in hiera:
-
-In hiera:
+To create an SSSD domain you must add the domain configuration to hiera:
 
 ```yaml
-sssd::domains: ['ldapusers', 'LOCAL']
-```
-
-Create a manifest:
-
-```puppet
-sssd::domain { 'ldapusers':
-  id_provider     => 'ldap',
-  auth_provider   => 'krb5',
-  access_provider => 'krb5',
-  ...etc
-}
-
-sssd::domain { 'LOCAL':
-  id_provider => 'local',
-  ...etc
-}
+sssd::domains:
+  ldapusers:
+    id_provider: 'ldap'
+    auth_provider: 'krb5'
+    access_provider: 'krb5'
+    # ...etc
+  LOCAL:
+    id_provider: 'local'
+    # ...etc
 ```
 
 To include configuration options for the providers of the SSSD domain, you must
