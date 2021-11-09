@@ -85,7 +85,10 @@
 #
 class sssd (
   Boolean                       $authoritative         = false,
-  Array[String[1, 255]]         $domains               = [],
+  Variant[
+    Array[String[1, 255]],
+    Hash[String[1, 255], Any]
+  ]                             $domains               = [],
   Optional[Sssd::DebugLevel]    $debug_level           = undef,
   Boolean                       $debug_timestamps      = true,
   Boolean                       $debug_microseconds    = false,
@@ -112,6 +115,16 @@ class sssd (
   Boolean                       $auto_add_ipa_domain   = true,
   Optional[String[1]]           $custom_config         = undef
 ) {
+  if $domains =~ Hash {
+    $domains.each |$key, $value| {
+      sssd::domain { $key:
+        * => $value,
+      }
+    }
+    $_domains = $domains.keys
+  } else {
+    $_domains = $domains
+  }
   include 'sssd::install'
   include 'sssd::config'
 

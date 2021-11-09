@@ -21,11 +21,11 @@ class sssd::config (
 
   if ($sssd::auto_add_ipa_domain and $facts['ipa']) {
     # this host has joined an IPA domain
-    $_domains = unique(concat($sssd::domains, $facts['ipa']['domain']))
+    $_domains = unique(concat($sssd::_domains, $facts['ipa']['domain']))
     include 'sssd::config::ipa_domain'
   }
   else {
-    $_domains = unique($sssd::domains)
+    $_domains = unique($sssd::_domains)
   }
 
   $_debug_level           = $sssd::debug_level
