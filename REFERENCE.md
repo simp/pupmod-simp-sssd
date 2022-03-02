@@ -105,7 +105,10 @@ Default value: ``false``
 
 ##### <a name="domains"></a>`domains`
 
-Data type: `Array[String[1, 255]]`
+Data type: `Variant[
+    Array[String[1, 255]],
+    Hash[String[1, 255], Any]
+  ]`
 
 The sssd `domains` to be managed.
 
@@ -375,6 +378,7 @@ The following parameters are available in the `sssd::install` class:
 
 * [`install_user_tools`](#install_user_tools)
 * [`package_ensure`](#package_ensure)
+* [`install_client`](#install_client)
 
 ##### <a name="install_user_tools"></a>`install_user_tools`
 
@@ -392,6 +396,14 @@ Data type: `String`
 Ensure setting for all packages installed by this module
 
 Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })`
+
+##### <a name="install_client"></a>`install_client`
+
+Data type: `Boolean`
+
+
+
+Default value: ``true``
 
 ### <a name="sssdinstallclient"></a>`sssd::install::client`
 
