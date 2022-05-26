@@ -28,7 +28,7 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 define sssd::provider::krb5 (
-  Simplib::Host                          $krb5_server,
+  Optional[Simplib::Host]                $krb5_server = undef,
   String                                 $krb5_realm,
   Optional[Sssd::DebugLevel]             $debug_level                    = undef,
   Boolean                                $debug_timestamps               = true,
