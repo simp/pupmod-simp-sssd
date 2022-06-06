@@ -20,7 +20,9 @@ fixtures:
     simp: https://github.com/simp/pupmod-simp-simp.git
     simp_options: https://github.com/simp/pupmod-simp-simp_options.git
     ssh: https://github.com/simp/pupmod-simp-ssh.git
-    systemd: https://github.com/simp/puppet-systemd.git
+    systemd:
+      repo: https://github.com/simp/puppet-systemd.git
+      branch: simp-master
     simp_openldap: https://github.com/simp/pupmod-simp-simp_openldap.git
     simp_ds389: https://github.com/simp/pupmod-simp-simp_ds389.git
     ds389: https://github.com/simp/pupmod-simp-ds389.git

@@ -58,7 +58,6 @@ class sssd::service::sudo (
   systemd::dropin_file { '00_sssd_sudo_user_group.conf':
     unit                    => 'sssd-sudo.service',
     content                 => $_override_content,
-    daemon_reload           => 'eager',
     selinux_ignore_defaults => true
   }
 
