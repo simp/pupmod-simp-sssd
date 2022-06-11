@@ -91,8 +91,8 @@ describe 'sssd class' do
       it 'should get local user information' do
         on(client, 'useradd testuser --password "mypassword" -M -u 97979 -U')
 
-        # Work around bugs in sssd
-        on(client, 'getent passwd testuser')
+        # Allow sssd to wake up and do whatever it does :-|
+        sleep(10)
 
         result = on(client, 'sssctl user-checks testuser').stdout
         expect(result).to match(/.*- user id: 97979.*/)
