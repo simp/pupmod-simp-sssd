@@ -53,8 +53,6 @@ describe 'sssd class' do
 
   clients.each do |client|
     context 'default parameters' do
-      os_release = fact_on(client, 'operatingsystemmajrelease')
-
       it 'manifest should work with no errors' do
         set_hieradata_on(client, default_hieradata)
         apply_manifest_on(client, manifest, :catch_failures => true)
@@ -92,6 +90,10 @@ describe 'sssd class' do
 
       it 'should get local user information' do
         on(client, 'useradd testuser --password "mypassword" -M -u 97979 -U')
+
+        # Work around bugs in sssd
+        on(client, 'getent passwd testuser')
+
         result = on(client, 'sssctl user-checks testuser').stdout
         expect(result).to match(/.*- user id: 97979.*/)
       end
