@@ -13,7 +13,6 @@ HOSTS:
     platform: windows-server-amd64
     box: devopsgroup-io/windows_server-2012r2-standard-amd64-nocm # VBOX ONLY
     hypervisor: <%= hypervisor %>
-    vagrant_memsize: 2048
     vagrant_cpus: 2
     user: vagrant
     communicator: winrm
@@ -34,7 +33,6 @@ HOSTS:
 CONFIG:
   log_level: verbose
   type: aio
-  vagrant_memsize: 256
 <% if ENV['BEAKER_PUPPET_ENVIRONMENT'] -%>
   puppet_environment: <%= ENV['BEAKER_PUPPET_ENVIRONMENT'] %>
 <% end -%>
