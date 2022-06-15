@@ -11,7 +11,7 @@ HOSTS:
       - ldap
       - default
     platform: el-8-x86_64
-    box: generic/centos8
+    box: centos/stream8
     hypervisor: <%= hypervisor %>
 
   centos8.beaker:
@@ -19,7 +19,7 @@ HOSTS:
       - client
       - sssdv2
     platform: el-8-x86_64
-    box: generic/centos8
+    box: centos/stream8
     hypervisor: <%= hypervisor %>
 
   centos7.beaker:
