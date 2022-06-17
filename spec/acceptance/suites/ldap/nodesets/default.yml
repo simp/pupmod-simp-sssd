@@ -23,7 +23,7 @@ HOSTS:
       - client
       - sssdv2
     platform: el-8-x86_64
-    box: generic/centos8
+    box: centos/stream8
     hypervisor: <%= hypervisor %>
   centos7:
     roles:
@@ -35,7 +35,6 @@ HOSTS:
 CONFIG:
   log_level: verbose
   type: aio
-  vagrant_memsize: 256
 <% if ENV['BEAKER_PUPPET_ENVIRONMENT'] -%>
   puppet_environment: <%= ENV['BEAKER_PUPPET_ENVIRONMENT'] %>
 <% end -%>

@@ -1,6 +1,6 @@
 {
   "name": "simp-sssd",
-  "version": "7.3.0",
+  "version": "7.4.0",
   "author": "SIMP Team",
   "summary": "Manages SSSD",
   "license": "Apache-2.0",
@@ -13,8 +13,8 @@
   ],
   "dependencies": [
     {
-      "name": "camptocamp/systemd",
-      "version_requirement": ">= 2.2.0 < 3.0.0"
+      "name": "puppet/systemd",
+      "version_requirement": ">= 3.0.0 < 4.0.0"
     },
     {
       "name": "puppetlabs/stdlib",
