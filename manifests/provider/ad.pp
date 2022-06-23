@@ -139,6 +139,8 @@ define sssd::provider::ad (
   Boolean                                                    $ldap_use_tokengroups                     = true,
   Optional[String[1]]                                        $ldap_group_objectsid                     = undef,
   Optional[String[1]]                                        $ldap_user_objectsid                      = undef,
+  Optional[String[1]]                                        $ldap_user_extra_attrs                    = 'altSecurityIdentities',
+  Optional[String[1]]                                        $ldap_user_ssh_public_key                 = 'altSecurityIdentities',
 ) {
   sssd::config::entry { "puppet_provider_${name}_ad":
     content => template("${module_name}/provider/ad.erb")
