@@ -1,3 +1,6 @@
+* Wed Jun 22 2022 Yehuda Katz <ykatz@cs.umd.edu> - 7.4.1
+- Allow `krb5_server` to be optional as implemented in the template
+
 * Fri Jun 03 2022 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.4.0
 - Update from camptocamp/systemd to puppet/systemd
 
