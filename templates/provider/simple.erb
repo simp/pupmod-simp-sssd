@@ -1,0 +1,14 @@
+[domain/<%= @title %>]
+# sssd::provider::simple
+<% if @simple_allow_users -%>
+simple_allow_users = <%= @simple_allow_users.join(', ') %>
+<% end -%>
+<% if @simple_deny_users -%>
+simple_deny_users = <%= @simple_deny_users.join(', ') %>
+<% end -%>
+<% if @simple_allow_groups -%>
+simple_allow_groups = <%= @simple_allow_groups.join(', ') %>
+<% end -%>
+<% if @simple_deny_groups -%>
+simple_deny_groups = <%= @simple_deny_groups.join(', ') %>
+<% end -%>
