@@ -273,6 +273,7 @@ define sssd::provider::ldap (
   Optional[Integer[0]]                  $ldap_deref_threshold              = undef,
   Sssd::LdapTlsReqcert                  $ldap_tls_reqcert                  = 'demand',
   Optional[String[1]]                   $ldap_tls_cacert                   = undef,
+  Boolean                               $app_pki_ignore_predefined_tls_paths = true,
   Optional[Stdlib::Absolutepath]        $app_pki_ca_dir                    = undef,
   Optional[Stdlib::Absolutepath]        $app_pki_key                       = undef,
   Optional[Stdlib::Absolutepath]        $app_pki_cert                      = undef,
@@ -350,24 +351,30 @@ define sssd::provider::ldap (
     $_ldap_account_expire_policy = $ldap_account_expire_policy
   }
 
-  if $app_pki_ca_dir {
-    $ldap_tls_cacertdir = $app_pki_ca_dir
-  } else {
-    $ldap_tls_cacertdir = "${sssd::app_pki_dir}/cacerts"
+  if $app_pki_ignore_predefined_tls_paths {
+    $ldap_tls_cacertdir = undef
+    $ldap_tls_key = undef
+    $ldap_tls_cert = undef
   }
+  else {
+    if $app_pki_ca_dir {
+      $ldap_tls_cacertdir = $app_pki_ca_dir
+    } else {
+      $ldap_tls_cacertdir = "${sssd::app_pki_dir}/cacerts"
+    }
 
-  if $app_pki_key {
-    $ldap_tls_key = $app_pki_key
-  } else {
-    $ldap_tls_key = "${sssd::app_pki_dir}/private/${$facts['fqdn']}.pem"
+    if $app_pki_key {
+      $ldap_tls_key = $app_pki_key
+    } else {
+      $ldap_tls_key = "${sssd::app_pki_dir}/private/${$facts['fqdn']}.pem"
+    }
+
+    if $app_pki_cert {
+      $ldap_tls_cert = $app_pki_cert
+    } else {
+      $ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['fqdn']}.pub"
+    }
   }
-
-  if $app_pki_cert {
-    $ldap_tls_cert = $app_pki_cert
-  } else {
-    $ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['fqdn']}.pub"
-  }
-
   sssd::config::entry { "puppet_provider_${title}_ldap":
     content => template("${module_name}/provider/ldap.erb")
   }
