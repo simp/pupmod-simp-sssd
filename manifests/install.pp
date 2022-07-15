@@ -1,5 +1,8 @@
 # Install the required packages for SSSD
 #
+# @param install_client
+#   If ``true``, install the ``sssd`` client
+#
 # @param install_user_tools
 #   If ``true``, install the 'sssd-tools' package for administrative
 #   changes to the SSSD databases
