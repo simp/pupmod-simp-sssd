@@ -1,4 +1,4 @@
-* Fri Jul 15 2022 Mark Fitch <mark.fitch1@hotmail.com>
+* Fri Jul 15 2022 Mark Fitch <mark.fitch1@hotmail.com> - 7.4.1
   - Fixed:
     - Added missing parameters `ldap_user_extra_attrs` and
       `ldap_user_ssh_public_key` to allow SSH keys to be fetched from AD
