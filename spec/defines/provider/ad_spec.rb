@@ -100,7 +100,9 @@ describe 'sssd::provider::ad' do
           :ldap_idmap_autorid_compat                => false,
           :ldap_idmap_helper_table_size             => 8,
           :ldap_group_objectsid                     => 'my_ldap_group_objectsid',
-          :ldap_user_objectsid                      => 'my_ldap_user_objectsid'
+          :ldap_user_objectsid                      => 'my_ldap_user_objectsid',
+          :ldap_user_extra_attrs                    => 'altSecurityIdentities',
+          :ldap_user_ssh_public_key                 => 'altSecurityIdentities'
         }}
 
         it do
@@ -155,6 +157,8 @@ describe 'sssd::provider::ad' do
             ldap_use_tokengroups = true
             ldap_group_objectsid = my_ldap_group_objectsid
             ldap_user_objectsid = my_ldap_user_objectsid
+            ldap_user_extra_attrs = altSecurityIdentities
+            ldap_user_ssh_public_key = altSecurityIdentities
             EXPECTED
 
           is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ad").with_content(expected)
