@@ -373,8 +373,17 @@ Install the required packages for SSSD
 
 The following parameters are available in the `sssd::install` class:
 
+* [`install_client`](#install_client)
 * [`install_user_tools`](#install_user_tools)
 * [`package_ensure`](#package_ensure)
+
+##### <a name="install_client"></a>`install_client`
+
+Data type: `Boolean`
+
+If ``true``, install the ``sssd`` client
+
+Default value: ``true``
 
 ##### <a name="install_user_tools"></a>`install_user_tools`
 
@@ -1747,6 +1756,8 @@ The following parameters are available in the `sssd::provider::ad` defined type:
 * [`ldap_use_tokengroups`](#ldap_use_tokengroups)
 * [`ldap_group_objectsid`](#ldap_group_objectsid)
 * [`ldap_user_objectsid`](#ldap_user_objectsid)
+* [`ldap_user_extra_attrs`](#ldap_user_extra_attrs)
+* [`ldap_user_ssh_public_key`](#ldap_user_ssh_public_key)
 
 ##### <a name="ad_domain"></a>`ad_domain`
 
@@ -2158,6 +2169,26 @@ Data type: `Optional[String[1]]`
 
 Default value: ``undef``
 
+##### <a name="ldap_user_extra_attrs"></a>`ldap_user_extra_attrs`
+
+Data type: `Optional[String[1]]`
+
+Can be used to enable public key storage for ssh
+When used this way, set this param and param ldap_user_ssh_public_key
+to 'altSecurityIdentities'
+
+Default value: ``undef``
+
+##### <a name="ldap_user_ssh_public_key"></a>`ldap_user_ssh_public_key`
+
+Data type: `Optional[String[1]]`
+
+Can be used to enable public key storage for ssh
+When used this way, set this param and param ldap_user_extra_attrs
+to 'altSecurityIdentities'
+
+Default value: ``undef``
+
 ### <a name="sssdproviderfiles"></a>`sssd::provider::files`
 
 NOTE: This defined type has no effect on SSSD < 1.16.0
@@ -2516,9 +2547,11 @@ The name of the associated domain section in the configuration file.
 
 ##### <a name="krb5_server"></a>`krb5_server`
 
-Data type: `Simplib::Host`
+Data type: `Optional[Simplib::Host]`
 
 
+
+Default value: ``undef``
 
 ##### <a name="krb5_realm"></a>`krb5_realm`
 
@@ -2905,7 +2938,7 @@ Default value: ``true``
 
 ##### <a name="ldap_search_base"></a>`ldap_search_base`
 
-Data type: `String[1]`
+Data type: `Optional[String[1]]`
 
 
 
@@ -2921,7 +2954,7 @@ Default value: `'rfc2307'`
 
 ##### <a name="ldap_default_bind_dn"></a>`ldap_default_bind_dn`
 
-Data type: `String[1]`
+Data type: `Optional[String[1]]`
 
 
 
