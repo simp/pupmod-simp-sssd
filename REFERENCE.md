@@ -2898,7 +2898,7 @@ Default value: ``false``
 
 ##### <a name="ldap_uri"></a>`ldap_uri`
 
-Data type: `Array[Simplib::URI,1]`
+Data type: `Optional[Array[Simplib::URI,1]]`
 
 
 
