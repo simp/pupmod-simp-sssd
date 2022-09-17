@@ -1,3 +1,7 @@
+* Thu Aug 25 2022 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.4.2
+  - Fixed:
+    - Made the `ldap_uri` parameter optional
+
 * Fri Jul 15 2022 Mark Fitch <mark.fitch1@hotmail.com> - 7.4.1
   - Fixed:
     - Added missing parameters `ldap_user_extra_attrs` and

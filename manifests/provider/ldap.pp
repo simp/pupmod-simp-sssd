@@ -195,7 +195,7 @@ define sssd::provider::ldap (
   Optional[Sssd::DebugLevel]            $debug_level                       = undef,
   Optional[Boolean]                     $debug_timestamps                  = undef,
   Boolean                               $debug_microseconds                = false,
-  Array[Simplib::URI,1]                 $ldap_uri                          = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
+  Optional[Array[Simplib::URI,1]]       $ldap_uri                          = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
   Optional[Array[Simplib::URI,1]]       $ldap_backup_uri                   = undef,
   Optional[Array[Simplib::URI,1]]       $ldap_chpass_uri                   = undef,
   Optional[Array[Simplib::URI,1]]       $ldap_chpass_backup_uri            = undef,
