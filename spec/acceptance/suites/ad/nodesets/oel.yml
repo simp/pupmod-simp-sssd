@@ -1,41 +1,34 @@
-<%
-  if ENV['BEAKER_HYPERVISOR']
-    hypervisor = ENV['BEAKER_HYPERVISOR']
-  else
-    hypervisor = 'vagrant'
-  end
--%>
+---
 HOSTS:
   ad:
     roles:
-      - windows
-      - ad
+    - windows
+    - ad
     platform: windows-server-amd64
-    box: devopsgroup-io/windows_server-2012r2-standard-amd64-nocm # VBOX ONLY
-    hypervisor: <%= hypervisor %>
+    box: devopsgroup-io/windows_server-2012r2-standard-amd64-nocm
+    hypervisor: "<%= ENV.fetch('BEAKER_HYPERVISOR', 'vagrant') %>"
     vagrant_cpus: 2
     user: vagrant
     communicator: winrm
     is_cygwin: false
+    family: windows-cloud/windows-2012-r2
+    gce_machine_type: n1-standard-2
   oel8:
     roles:
-      - client
+    - client
     platform: el-8-x86_64
     box: generic/oracle8
-    hypervisor: <%= hypervisor %>
+    hypervisor: vagrant
   oel7:
     roles:
-      - default
-      - client
+    - default
+    - client
     platform: el-7-x86_64
     box: generic/oracle7
-    hypervisor: <%= hypervisor %>
+    hypervisor: vagrant
 CONFIG:
   log_level: verbose
   type: aio
-<% if ENV['BEAKER_PUPPET_ENVIRONMENT'] -%>
-  puppet_environment: <%= ENV['BEAKER_PUPPET_ENVIRONMENT'] %>
-<% end -%>
   ssh:
     keepalive: true
     keepalive_interval: 10
@@ -47,3 +40,4 @@ CONFIG:
       - <%= Net::SSH::Transport::Algorithms::ALGORITHMS[:encryption].join("\n#{' '*6}- ") %>
     hmac:
       - <%= Net::SSH::Transport::Algorithms::ALGORITHMS[:hmac].join("\n#{' '*6}- ") %>
+  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'puppet7') %>"
