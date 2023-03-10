@@ -1,49 +1,27 @@
-<%
-  if ENV['BEAKER_HYPERVISOR']
-    hypervisor = ENV['BEAKER_HYPERVISOR']
-  else
-    hypervisor = 'vagrant'
-  end
--%>
+---
 HOSTS:
-# For the future....
-#  centos7-svr:
-#    roles:
-#      - default
-#      - server
-#      - client
-#    platform: el-7-x86_64
-#    box: puppetlabs/centos-7.0-64-nocm
-#    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-7.0-64-nocm
-#    hypervisor: vagrant
-#  centos66-svr:
-#    roles:
-#      - server
-#    platform: el-6-x86_64
-#    box: puppetlabs/centos-6.6-64-nocm
-#    box_url: https://vagrantcloud.com/puppetlabs/boxes/centos-6.6-64-nocm
-#    hypervisor: vagrant
   centos8-cli:
     roles:
-      - default
-      - client
-      - sssdv2
+    - default
+    - client
+    - sssdv2
     platform: el-8-x86_64
     box: centos/stream8
-    hypervisor: <%= hypervisor %>
+    hypervisor: "<%= ENV.fetch('BEAKER_HYPERVISOR', 'vagrant') %>"
+    family: centos-cloud/centos-stream-8
+    gce_machine_type: n1-standard-2
   centos7-cli:
     roles:
-      - client
-      - sssdv1
+    - client
+    - sssdv1
     platform: el-7-x86_64
     box: centos/7
-    hypervisor: <%= hypervisor %>
+    hypervisor: "<%= ENV.fetch('BEAKER_HYPERVISOR', 'vagrant') %>"
+    family: centos-cloud/centos-7
+    gce_machine_type: n1-standard-2
 CONFIG:
   log_level: verbose
   type: aio
-<% if ENV['BEAKER_PUPPET_ENVIRONMENT'] -%>
-  puppet_environment: <%= ENV['BEAKER_PUPPET_ENVIRONMENT'] %>
-<% end -%>
   ssh:
     keepalive: true
     keepalive_interval: 10
@@ -55,3 +33,4 @@ CONFIG:
       - <%= Net::SSH::Transport::Algorithms::ALGORITHMS[:encryption].join("\n#{' '*6}- ") %>
     hmac:
       - <%= Net::SSH::Transport::Algorithms::ALGORITHMS[:hmac].join("\n#{' '*6}- ") %>
+  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'puppet7') %>"
