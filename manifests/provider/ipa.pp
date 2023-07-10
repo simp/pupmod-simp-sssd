@@ -49,7 +49,7 @@ define sssd::provider::ipa (
   Array[Simplib::Host]           $ipa_server,
   Optional[Array[Simplib::Host]] $ipa_backup_server              = undef,
   Boolean                        $ipa_enable_dns_sites           = false,
-  Simplib::Hostname              $ipa_hostname                   = $facts['fqdn'],
+  Simplib::Hostname              $ipa_hostname                   = $facts['networking']['fqdn'],
   Boolean                        $ipa_server_mode                = false,
   Enum['none','GSS-TSIG']        $dyndns_auth                    = 'GSS-TSIG',
   Optional[Boolean]              $dyndns_force_tcp               = undef,
