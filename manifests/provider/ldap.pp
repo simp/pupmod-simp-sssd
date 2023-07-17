@@ -359,13 +359,13 @@ define sssd::provider::ldap (
   if $app_pki_key {
     $ldap_tls_key = $app_pki_key
   } else {
-    $ldap_tls_key = "${sssd::app_pki_dir}/private/${$facts['fqdn']}.pem"
+    $ldap_tls_key = "${sssd::app_pki_dir}/private/${$facts['networking']['fqdn']}.pem"
   }
 
   if $app_pki_cert {
     $ldap_tls_cert = $app_pki_cert
   } else {
-    $ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['fqdn']}.pub"
+    $ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['networking']['fqdn']}.pub"
   }
 
   sssd::config::entry { "puppet_provider_${title}_ldap":
