@@ -1,3 +1,17 @@
+* Mon Oct 23 2023 Steven Pritchard <steve@sicura.us> - 7.8.0
+- [puppetsync] Add EL9 support
+
+* Wed Oct 11 2023 Steven Pritchard <steve@sicura.us> - 7.7.0
+- [puppetsync] Updates for Puppet 8
+  - These updates may include the following:
+    - Update Gemfile
+    - Add support for Puppet 8
+    - Drop support for Puppet 6
+    - Update module dependencies
+
+* Thu Aug 31 2023 Steven Pritchard <steve@sicura.us> - 7.6.0
+- Add AlmaLinux 8 support
+
 * Mon Jun 12 2023 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.5.0
 - Add RockyLinux 8 support
 
