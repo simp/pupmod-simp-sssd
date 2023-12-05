@@ -1344,6 +1344,7 @@ The following parameters are available in the `sssd::domain` defined type:
 * [`realmd_tags`](#-sssd--domain--realmd_tags)
 * [`proxy_pam_target`](#-sssd--domain--proxy_pam_target)
 * [`proxy_lib_name`](#-sssd--domain--proxy_lib_name)
+* [`ldap_user_search_filter`](#-sssd--domain--ldap_user_search_filter)
 
 ##### <a name="-sssd--domain--name"></a>`name`
 
@@ -1685,6 +1686,14 @@ Data type: `Optional[String]`
 Default value: `undef`
 
 ##### <a name="-sssd--domain--proxy_lib_name"></a>`proxy_lib_name`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_user_search_filter"></a>`ldap_user_search_filter`
 
 Data type: `Optional[String]`
 
