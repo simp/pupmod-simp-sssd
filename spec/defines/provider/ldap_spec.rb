@@ -156,6 +156,18 @@ describe 'sssd::provider::ldap' do
         }
       end
 
+      context 'with client_tls set to false' do
+        let(:params) {{ :client_tls => false }}
+
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
+            .without_content(%r(ldap_tls_cacertdir))
+            .without_content(%r(ldap_tls_key))
+            .without_content(%r(ldap_tls_cert))
+        }
+      end
+
       # This set of parameters exercises the logic in the code but is NOT at all
       # realistic!
       context 'with other optional parameters set' do
