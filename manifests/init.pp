@@ -27,6 +27,16 @@
 # @param user
 # @param default_domain_suffix
 # @param override_space
+# @param ldap_providers
+#   This allows users to set up ldap sssd::provider::ldap resources via hieradata
+# @example sssd::provider::ldap in hieradata:
+#   sssd::ldap_providers:
+#     ldap_users:
+#       ldap_access_filter: 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com'
+#       ldap_chpass_uri: empty
+#       ldap_access_order: 'expire'
+#       etc...
+#
 # @param enumerate_users
 #   Have SSSD list and cache all the users that it can find on the remote system
 #
@@ -100,6 +110,7 @@ class sssd (
   Optional[String[1]]           $user                  = undef,
   Optional[String[1]]           $default_domain_suffix = undef,
   Optional[String[1]]           $override_space        = undef,
+  Hash                          $ldap_providers        = {},
   Boolean                       $enable_files_domain   = true,
   Boolean                       $enumerate_users       = false,
   Boolean                       $cache_credentials     = true,
@@ -143,6 +154,12 @@ class sssd (
 
     auditd::rule { 'sssd':
       content => '-w /etc/sssd/ -p wa -k CFG_sssd'
+    }
+  }
+
+  $ldap_providers.each |$key, $value| {
+    sssd::provider::ldap { $key:
+      * => $value,
     }
   }
 }

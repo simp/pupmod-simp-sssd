@@ -88,6 +88,22 @@ describe 'sssd' do
               .with_order(99999)
           }
         end
+
+        context 'with ldap provider' do
+          let(:params) {{
+            :ldap_providers => {
+              :test_provider => {
+                :ldap_access_filter => 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com',
+              }
+            }
+          }}
+
+          it {
+            is_expected.to create_sssd__provider__ldap('test_provider').with( {
+              :ldap_access_filter => 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com',
+            } )
+          }
+        end
       end
     end
   end
