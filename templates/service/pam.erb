@@ -28,3 +28,6 @@ pam_trusted_users = <%= @pam_trusted_users %>
 <% if @pam_public_domains -%>
 pam_public_domains = <%= @pam_public_domains %>
 <% end -%>
+<% if @pam_cert_auth -%>
+pam_cert_auth = True
+<% end -%>

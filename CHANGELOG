@@ -1,3 +1,8 @@
+* Wed Apr 10 2024 Mike Riddle <mike@sicura.us> - 7.10.0
+- Added the pam_cert_auth parameter to the pam service
+- Added the ldap_user_cert parameter to the ldap provider
+- Users can now specify ldap providers via hieradata using sssd::ldap_providers
+
 * Wed Nov 29 2023 Virus2500 <_________@gmail.com> - 7.9.0
 - add domain option ldap_user_search_filter
 

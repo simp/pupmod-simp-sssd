@@ -9,6 +9,7 @@
 # @param debug_level
 # @param debug_timestamps
 # @param debug_microseconds
+# @param pam_cert_auth
 # @param reconnection_retries
 # @param command
 # @param offline_credentials_expiration
@@ -37,6 +38,7 @@ class sssd::service::pam (
   Optional[Sssd::DebugLevel]   $debug_level                    = undef,
   Boolean                      $debug_timestamps               = true,
   Boolean                      $debug_microseconds             = false,
+  Boolean                      $pam_cert_auth                  = false,
   Integer                      $reconnection_retries           = 3,
   Optional[String]             $command                        = undef,
   Integer                      $offline_credentials_expiration = 0,
