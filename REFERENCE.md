@@ -63,6 +63,19 @@ using an nscd module at the same time, which is the correct behavior.
 Full documentation of the parameters that map directly to SSSD
 configuration options can be found in the sssd.conf(5) man page.
 
+#### Examples
+
+##### sssd::provider::ldap in hieradata:
+
+```puppet
+sssd::ldap_providers:
+  ldap_users:
+    ldap_access_filter: 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com'
+    ldap_chpass_uri: empty
+    ldap_access_order: 'expire'
+    etc...
+```
+
 #### Parameters
 
 The following parameters are available in the `sssd` class:
@@ -84,6 +97,7 @@ The following parameters are available in the `sssd` class:
 * [`user`](#-sssd--user)
 * [`default_domain_suffix`](#-sssd--default_domain_suffix)
 * [`override_space`](#-sssd--override_space)
+* [`ldap_providers`](#-sssd--ldap_providers)
 * [`enumerate_users`](#-sssd--enumerate_users)
 * [`include_svc_config`](#-sssd--include_svc_config)
 * [`cache_credentials`](#-sssd--cache_credentials)
@@ -230,6 +244,14 @@ Data type: `Optional[String[1]]`
 
 
 Default value: `undef`
+
+##### <a name="-sssd--ldap_providers"></a>`ldap_providers`
+
+Data type: `Hash`
+
+This allows users to set up ldap sssd::provider::ldap resources via hieradata
+
+Default value: `{}`
 
 ##### <a name="-sssd--enumerate_users"></a>`enumerate_users`
 
@@ -937,6 +959,7 @@ The following parameters are available in the `sssd::service::pam` class:
 * [`debug_level`](#-sssd--service--pam--debug_level)
 * [`debug_timestamps`](#-sssd--service--pam--debug_timestamps)
 * [`debug_microseconds`](#-sssd--service--pam--debug_microseconds)
+* [`pam_cert_auth`](#-sssd--service--pam--pam_cert_auth)
 * [`reconnection_retries`](#-sssd--service--pam--reconnection_retries)
 * [`command`](#-sssd--service--pam--command)
 * [`offline_credentials_expiration`](#-sssd--service--pam--offline_credentials_expiration)
@@ -975,6 +998,14 @@ Data type: `Boolean`
 Default value: `true`
 
 ##### <a name="-sssd--service--pam--debug_microseconds"></a>`debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--service--pam--pam_cert_auth"></a>`pam_cert_auth`
 
 Data type: `Boolean`
 
@@ -2735,6 +2766,7 @@ The following parameters are available in the `sssd::provider::ldap` defined typ
 * [`ldap_default_bind_dn`](#-sssd--provider--ldap--ldap_default_bind_dn)
 * [`ldap_default_authtok_type`](#-sssd--provider--ldap--ldap_default_authtok_type)
 * [`ldap_default_authtok`](#-sssd--provider--ldap--ldap_default_authtok)
+* [`ldap_user_cert`](#-sssd--provider--ldap--ldap_user_cert)
 * [`ldap_user_object_class`](#-sssd--provider--ldap--ldap_user_object_class)
 * [`ldap_user_name`](#-sssd--provider--ldap--ldap_user_name)
 * [`ldap_user_uid_number`](#-sssd--provider--ldap--ldap_user_uid_number)
@@ -2984,6 +3016,14 @@ Data type: `Optional[String[1]]`
 
 
 Default value: `simplib::lookup('simp_options::ldap::bind_pw', { 'default_value' => undef })`
+
+##### <a name="-sssd--provider--ldap--ldap_user_cert"></a>`ldap_user_cert`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
 
 ##### <a name="-sssd--provider--ldap--ldap_user_object_class"></a>`ldap_user_object_class`
 
