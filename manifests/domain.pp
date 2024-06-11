@@ -99,7 +99,7 @@ define sssd::domain (
   Optional[Enum['ldap', 'ipa','ad','none']]  $sudo_provider                = undef,
   Optional[Enum['ipa', 'none']]              $selinux_provider             = undef,
   Optional[Enum['ipa', 'ad','none']]         $subdomains_provider          = undef,
-  Optional[Enum['ldap', 'ipa','none']]       $autofs_provider              = undef,
+  Optional[Enum['ad', 'ldap', 'ipa','none']] $autofs_provider              = undef,
   Optional[Enum['ipa', 'none']]              $hostid_provider              = undef,
   Optional[String]                           $re_expression                = undef,
   Optional[String]                           $full_name_format             = undef,
