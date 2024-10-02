@@ -36,6 +36,9 @@
 # @param strip_128_bit_ciphers
 #   **DEPRECATED** - EL6-only - Will be removed in a future release
 #
+# @param client_tls
+#   Set to false to disable setting up client-side TLS
+#
 # @param debug_level
 # @param debug_timestamps
 # @param debug_microseconds
@@ -341,7 +344,8 @@ define sssd::provider::ldap (
   Optional[Integer[0]]                  $ldap_idmap_range_size             = undef,
   Optional[String[1]]                   $ldap_idmap_default_domain_sid     = undef,
   Optional[String[1]]                   $ldap_idmap_default_domain         = undef,
-  Boolean                               $ldap_idmap_autorid_compat         = false
+  Boolean                               $ldap_idmap_autorid_compat         = false,
+  Boolean                               $client_tls                        = true,
 ) {
   include $module_name
 
@@ -354,19 +358,19 @@ define sssd::provider::ldap (
 
   if $app_pki_ca_dir {
     $ldap_tls_cacertdir = $app_pki_ca_dir
-  } else {
+  } elsif $client_tls {
     $ldap_tls_cacertdir = "${sssd::app_pki_dir}/cacerts"
   }
 
   if $app_pki_key {
     $ldap_tls_key = $app_pki_key
-  } else {
+  } elsif $client_tls {
     $ldap_tls_key = "${sssd::app_pki_dir}/private/${$facts['networking']['fqdn']}.pem"
   }
 
   if $app_pki_cert {
     $ldap_tls_cert = $app_pki_cert
-  } else {
+  } elsif $client_tls {
     $ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['networking']['fqdn']}.pub"
   }
 
