@@ -52,6 +52,7 @@
 # @param ldap_default_bind_dn
 # @param ldap_default_authtok_type
 # @param ldap_default_authtok
+# @param ldap_user_cert
 # @param ldap_user_object_class
 # @param ldap_user_name
 # @param ldap_user_uid_number
@@ -208,6 +209,7 @@ define sssd::provider::ldap (
   Optional[String[1]]                   $ldap_default_bind_dn              = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => undef }),
   Optional[Sssd::LdapDefaultAuthtok]    $ldap_default_authtok_type         = undef,
   Optional[String[1]]                   $ldap_default_authtok              = simplib::lookup('simp_options::ldap::bind_pw', { 'default_value' => undef }),
+  Optional[String[1]]                   $ldap_user_cert                    = undef,
   Optional[String[1]]                   $ldap_user_object_class            = undef,
   Optional[String[1]]                   $ldap_user_name                    = undef,
   Optional[String[1]]                   $ldap_user_uid_number              = undef,
