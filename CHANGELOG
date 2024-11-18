@@ -1,3 +1,9 @@
+* Mon Nov 18 2024 dpavlotzky <david@pavlotzky.nl> - 7.12.0
+- Add "ad" option to autofs_provider list (#147)
+
+* Mon Nov 18 2024 G. Ryan Sablosky <sabo@users.noreply.github.com> - 7.12.0
+- Make LDAP client-side TLS authentication optional (#137)
+
 * Fri Sep 13 2024 Steven Pritchard <steve@sicura.us> - 7.11.0
 - [puppetsync] Update module dependencies to support simp-iptables 7.x
 

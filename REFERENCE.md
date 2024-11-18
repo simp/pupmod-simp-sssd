@@ -1622,7 +1622,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--domain--autofs_provider"></a>`autofs_provider`
 
-Data type: `Optional[Enum['ldap', 'ipa','none']]`
+Data type: `Optional[Enum['ad', 'ldap', 'ipa','none']]`
 
 
 
@@ -2753,6 +2753,7 @@ The following parameters are available in the `sssd::provider::ldap` defined typ
 
 * [`name`](#-sssd--provider--ldap--name)
 * [`strip_128_bit_ciphers`](#-sssd--provider--ldap--strip_128_bit_ciphers)
+* [`client_tls`](#-sssd--provider--ldap--client_tls)
 * [`debug_level`](#-sssd--provider--ldap--debug_level)
 * [`debug_timestamps`](#-sssd--provider--ldap--debug_timestamps)
 * [`debug_microseconds`](#-sssd--provider--ldap--debug_microseconds)
@@ -2910,6 +2911,14 @@ The name of the associated domain section in the configuration file
 Data type: `Boolean`
 
 **DEPRECATED** - EL6-only - Will be removed in a future release
+
+Default value: `true`
+
+##### <a name="-sssd--provider--ldap--client_tls"></a>`client_tls`
+
+Data type: `Boolean`
+
+Set to false to disable setting up client-side TLS
 
 Default value: `true`
 
