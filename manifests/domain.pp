@@ -123,8 +123,55 @@ define sssd::domain (
   Optional[String]                           $ldap_user_search_filter      = undef,
   Optional[Hash]                             $custom_options               = undef
 ) {
-
   sssd::config::entry { "puppet_domain_${name}":
-    content => template('sssd/domain.erb')
+    content => epp(
+      'sssd/domain.epp',
+      {
+        'id_provider'                  => $id_provider,
+        'debug_level'                  => $debug_level,
+        'debug_timestamps'             => $debug_timestamps,
+        'debug_microseconds'           => $debug_microseconds,
+        'description'                  => $description,
+        'min_id'                       => $min_id,
+        'max_id'                       => $max_id,
+        'enumerate'                    => $enumerate,
+        'subdomain_enumerate'          => $subdomain_enumerate,
+        'force_timeout'                => $force_timeout,
+        'entry_cache_timeout'          => $entry_cache_timeout,
+        'entry_cache_user_timeout'     => $entry_cache_user_timeout,
+        'entry_cache_group_timeout'    => $entry_cache_group_timeout,
+        'entry_cache_netgroup_timeout' => $entry_cache_netgroup_timeout,
+        'entry_cache_service_timeout'  => $entry_cache_service_timeout,
+        'entry_cache_sudo_timeout'     => $entry_cache_sudo_timeout,
+        'entry_cache_autofs_timeout'   => $entry_cache_autofs_timeout,
+        'entry_cache_ssh_host_timeout' => $entry_cache_ssh_host_timeout,
+        'refresh_expired_interval'     => $refresh_expired_interval,
+        'cache_credentials'            => $cache_credentials,
+        'account_cache_expiration'     => $account_cache_expiration,
+        'pwd_expiration_warning'       => $pwd_expiration_warning,
+        'use_fully_qualified_names'    => $use_fully_qualified_names,
+        'ignore_group_members'         => $ignore_group_members,
+        'access_provider'              => $access_provider,
+        'auth_provider'                => $auth_provider,
+        'chpass_provider'              => $chpass_provider,
+        'sudo_provider'                => $sudo_provider,
+        'selinux_provider'             => $selinux_provider,
+        'subdomains_provider'          => $subdomains_provider,
+        'autofs_provider'              => $autofs_provider,
+        'hostid_provider'              => $hostid_provider,
+        're_expression'                => $re_expression,
+        'full_name_format'             => $full_name_format,
+        'lookup_family_order'          => $lookup_family_order,
+        'dns_resolver_timeout'         => $dns_resolver_timeout,
+        'dns_discovery_domain'         => $dns_discovery_domain,
+        'override_gid'                 => $override_gid,
+        'case_sensitive'               => $case_sensitive,
+        'proxy_fast_alias'             => $proxy_fast_alias,
+        'realmd_tags'                  => $realmd_tags,
+        'proxy_pam_target'             => $proxy_pam_target,
+        'proxy_lib_name'               => $proxy_lib_name,
+        'ldap_user_search_filter'      => $ldap_user_search_filter,
+      },
+    )
   }
 }
