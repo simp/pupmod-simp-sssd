@@ -6,6 +6,6 @@ Facter.add('sssd_version') do
   confine { sssd }
 
   setcode do
-    %x{sssd --version}.strip
+    `sssd --version`.strip
   end
 end

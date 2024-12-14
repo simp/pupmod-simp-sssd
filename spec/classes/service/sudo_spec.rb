@@ -4,17 +4,17 @@ describe 'sssd::service::sudo' do
   context 'supported operating systems' do
     on_supported_os.each do |os, os_facts|
       context "on #{os}" do
-        let(:facts){ os_facts }
+        let(:facts) { os_facts }
 
         it { is_expected.to compile.with_all_deps }
-        it { is_expected.to create_sssd__config__entry('puppet_service_sudo').without_content(%r(=\s*$)) }
+        it { is_expected.to create_sssd__config__entry('puppet_service_sudo').without_content(%r{=\s*$}) }
         it {
           is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf')
             .with_unit('sssd-sudo.service')
-            .with_content(%r(ExecStartPre=-/bin/touch /var/log/sssd/sssd_sudo.log))
-            .with_content(%r(ExecStartPre=-/bin/chown sssd:sssd /var/log/sssd/sssd_sudo.log))
-            .with_content(/User=root/)
-            .with_content(/Group=root/)
+            .with_content(%r{ExecStartPre=-/bin/touch /var/log/sssd/sssd_sudo.log})
+            .with_content(%r{ExecStartPre=-/bin/chown sssd:sssd /var/log/sssd/sssd_sudo.log})
+            .with_content(%r{User=root})
+            .with_content(%r{Group=root})
             .with_selinux_ignore_defaults(true)
         }
         it {
