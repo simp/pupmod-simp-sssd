@@ -19,10 +19,11 @@ describe 'sssd' do
     'simp_options::ldap::bind_pw' => '<PASSWORD>',
     # This causes a lot of noise and reboots
     'sssd::auditd'                => false,
-    'sssd::domains'               => [ 'local','test.case' ]
+    'sssd::domains'               => [ 'local', 'test.case' ]
   }
 
-  let(:manifest) { <<-EOF
+  let(:manifest) do
+    <<-EOF
       include 'sssd'
 
       #{local_config}
@@ -49,44 +50,43 @@ describe 'sssd' do
         ldap_default_authtok_type => 'password',
       }
     EOF
-  }
+  end
 
   context 'generate a good sssd.conf' do
     hosts.each do |host|
-
       let(:local_config) { '' }
 
       local_hiera = hiera.merge(
         {
           'sssd::enable_files_domain' => true,
           'sssd::domains' => [ 'test.case' ]
-        }
+        },
       )
 
-      it 'should apply enough to generate sssd.conf' do
+      it 'applies enough to generate sssd.conf' do
         set_hieradata_on(host, local_hiera)
         apply_manifest_on(host, manifest)
       end
 
-      it 'should be idempotent' do
-        apply_manifest_on(host, manifest, :catch_changes => true)
+      it 'is idempotent' do
+        apply_manifest_on(host, manifest, catch_changes: true)
       end
 
-      it 'should be running sssd' do
-        response = YAML.load(on(host, %{puppet resource service sssd --to_yaml}).stdout.strip)
+      it 'is running sssd' do
+        response = YAML.safe_load(on(host, %(puppet resource service sssd --to_yaml)).stdout.strip)
         expect(response['service']['sssd']['ensure']).to eq('running')
         expect(response['service']['sssd']['enable']).to eq('true')
       end
 
-      it 'should be running sssd-sudo.socket' do
-        response = YAML.load(on(host, %{puppet resource service sssd-sudo.socket --to_yaml}).stdout.strip)
+      it 'is running sssd-sudo.socket' do
+        response = YAML.safe_load(on(host, %(puppet resource service sssd-sudo.socket --to_yaml)).stdout.strip)
         expect(response['service']['sssd-sudo.socket']['ensure']).to eq('running')
         expect(response['service']['sssd-sudo.socket']['enable']).to eq('true')
       end
 
-      it 'should not change the system after reboot' do
+      it 'does not change the system after reboot' do
         host.reboot
-        apply_manifest_on(host, manifest, :catch_changes => true)
+        apply_manifest_on(host, manifest, catch_changes: true)
       end
     end
   end

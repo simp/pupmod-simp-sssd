@@ -3,13 +3,12 @@
 require 'spec_helper_acceptance'
 
 describe 'sssd' do
-
-  ldapservers =  hosts_with_role(hosts, 'ldap')
+  ldapservers = hosts_with_role(hosts, 'ldap')
 
   ldapservers.each do |host|
-    let(:root_pw) {'s00perS3kr!tP@ssw0rd'}
+    let(:root_pw) { 's00perS3kr!tP@ssw0rd' }
     let(:base_dn) { 'dc=test,dc=org' }
-    let(:ds_root_name) { 'accounts'}
+    let(:ds_root_name) { 'accounts' }
 
     let(:manifest) do
       <<~MANIFEST
@@ -31,20 +30,21 @@ describe 'sssd' do
         }
       RMANIFEST
     end
-    let(:sssd_extra){ <<~EOM
+    let(:sssd_extra) do
+      <<~EOM
       simp_ds389::instances::accounts::root_pw: #{root_pw}
     EOM
-    }
-    let(:server_hieradata) {
-      ERB.new(File.read(File.expand_path('templates/ds389_hiera.yaml.erb',File.dirname(__FILE__)))).result(binding) + "\n#{sssd_extra}"
-    }
+    end
+    let(:server_hieradata) do
+      ERB.new(File.read(File.expand_path('templates/ds389_hiera.yaml.erb', File.dirname(__FILE__)))).result(binding) + "\n#{sssd_extra}"
+    end
     let(:fqdn) do
-      fact_on(host,'fqdn').strip
+      fact_on(host, 'fqdn').strip
     end
     #  server_fqdn is used in hiera.yaml ERB.  In this case server_fqdn and fqdn are the same.
-    let(:server_fqdn) { "#{fqdn}" }
+    let(:server_fqdn) { fqdn.to_s }
     let(:domain) do
-      fact_on(host,'domain').strip
+      fact_on(host, 'domain').strip
     end
 
     context 'install the server' do
@@ -80,8 +80,5 @@ describe 'sssd' do
         on(host, '/tmp/ldap_add_user')
       end
     end
-
   end
 end
-
-
