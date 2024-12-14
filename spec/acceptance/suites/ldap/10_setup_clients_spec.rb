@@ -2,17 +2,15 @@ require 'spec_helper_acceptance'
 
 test_name 'Setup SSSD clients to talk to LDAP'
 
-
-
 describe 'LDAP' do
-
-  ldap_servers = hosts_with_role(hosts,'ldap')
-  clients      = hosts_with_role(hosts,'client')
-  server_fqdn  = fact_on(ldap_servers.first,'fqdn')
+  ldap_servers = hosts_with_role(hosts, 'ldap')
+  clients      = hosts_with_role(hosts, 'client')
+  server_fqdn  = fact_on(ldap_servers.first, 'fqdn')
   domain       = fact_on(ldap_servers.first, 'domain')
-  base_dn      = domain.split('.').map{ |d| "DC=#{d}" }.join(',')
+  base_dn      = domain.split('.').map { |d| "DC=#{d}" }.join(',')
 
-  let(:client_manifest) { <<~EOS
+  let(:client_manifest) do
+    <<~EOS
      #{local_domain}
 
      sssd::domain { 'LDAP':
@@ -39,42 +37,43 @@ describe 'LDAP' do
         shadow => ['sss', 'files'],
       }
     EOS
-  }
+  end
 
   clients.each do |client|
     context 'on each client set up sssd' do
       # set sssd domains for template
-      let(:sssd_extra) { <<~EOM
+      let(:sssd_extra) do
+        <<~EOM
           sssd::domains: ['LDAP']
           sssd::enable_files_domain: true
         EOM
-      }
-
-      let(:local_domain) { '' }
-      let(:sssd_domains) {['LDAP']}
-
-      let(:client_hieradata)  {
-        ERB.new(File.read(File.expand_path('templates/server_hieradata_tls.yaml.erb', File.dirname(__FILE__)))).result(binding) + "\n#{sssd_extra}"
-      }
-
-      it 'should run puppet' do
-        on(client, 'mkdir -p /usr/local/sbin/simp')
-        set_hieradata_on(client, client_hieradata)
-        apply_manifest_on(client, client_manifest, :catch_failures => true)
       end
 
-      it 'should be idempotent' do
+      let(:local_domain) { '' }
+      let(:sssd_domains) { ['LDAP'] }
+
+      let(:client_hieradata) do
+        ERB.new(File.read(File.expand_path('templates/server_hieradata_tls.yaml.erb', File.dirname(__FILE__)))).result(binding) + "\n#{sssd_extra}"
+      end
+
+      it 'runs puppet' do
+        on(client, 'mkdir -p /usr/local/sbin/simp')
+        set_hieradata_on(client, client_hieradata)
+        apply_manifest_on(client, client_manifest, catch_failures: true)
+      end
+
+      it 'is idempotent' do
         # ldap provider has checks for sssd version when creating the
         # sssd.conf entry.  There for it might chnage the second run when
         # it knows the version.  Check for idempotency on the third run
-        apply_manifest_on(client, client_manifest, :catch_failures => true)
-        apply_manifest_on(client, client_manifest, :catch_changes => true)
+        apply_manifest_on(client, client_manifest, catch_failures: true)
+        apply_manifest_on(client, client_manifest, catch_changes: true)
       end
 
-      it 'should see ldap users' do
-        ['test.user','real.user'].each do |user|
+      it 'sees ldap users' do
+        ['test.user', 'real.user'].each do |user|
           id = on(client, "id #{user}")
-          expect(id.stdout).to match(/#{user}/)
+          expect(id.stdout).to match(%r{#{user}})
         end
       end
     end
