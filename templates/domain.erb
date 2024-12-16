@@ -107,72 +107,72 @@ proxy_pam_target = <%= @proxy_pam_target %>
 <% if @proxy_lib_name %>
 proxy_lib_name = <%= @proxy_lib_name %>
 <% end -%>
-<% if @ldap_referrals %>
+<% if @ldap_referrals -%>
 ldap_referrals = <%= @ldap_referrals.to_s %>
 <% end -%>
-<% if @timeout %>
+<% if @timeout -%>
 timeout = <%= @timeout.to_s %>
 <% end -%>
-<% if @ldap_network_timeout %>
+<% if @ldap_network_timeout -%>
 ldap_network_timeout = <%= @ldap_network_timeout.to_s %>
 <% end -%>
-<% if @ldap_opt_timeout %>
+<% if @ldap_opt_timeout -%>
 ldap_opt_timeout = <%= @ldap_opt_timeout.to_s %>
 <% end -%>
-<% if @ldap_uri %>
+<% if @ldap_uri -%>
 ldap_uri = <%= @ldap_uri %>
 <% end -%>
-<% if @ldap_page_size %>
+<% if @ldap_page_size -%>
 ldap_page_size = <%= @ldap_page_size.to_s %>
 <% end -%>
-<% if @ldap_id_use_start_tls %>
+<% if @ldap_id_use_start_tls -%>
 ldap_id_use_start_tls = <%= @ldap_id_use_start_tls.to_s %>
 <% end -%>
-<% if @ldap_default_bind_dn %>
+<% if @ldap_default_bind_dn -%>
 ldap_default_bind_dn = <%= @ldap_default_bind_dn %>
 <% end -%>
-<% if @ldap_default_authtok_type %>
+<% if @ldap_default_authtok_type -%>
 ldap_default_authtok_type = <%= @ldap_default_authtok_type %>
 <% end -%>
-<% if @ldap_default_authtok %>
+<% if @ldap_default_authtok -%>
 ldap_default_authtok = <%= @ldap_default_authtok %>
 <% end -%>
-<% if @ldap_tls_reqcert %>
+<% if @ldap_tls_reqcert -%>
 ldap_tls_reqcert = <%= @ldap_tls_reqcert %>
 <% end -%>
-<% if @ldap_schema %>
+<% if @ldap_schema -%>
 ldap_schema = <%= @ldap_schema %>
 <% end -%>
-<% if @ldap_user_search_base %>
+<% if @ldap_user_search_base -%>
 ldap_user_search_base = <%= @ldap_user_search_base %>
 <% end -%>
-<% if @ldap_user_object_class %>
+<% if @ldap_user_object_class -%>
 ldap_user_object_class = <%= @ldap_user_object_class %>
 <% end -%>
-<% if @ldap_user_home_directory %>
+<% if @ldap_user_home_directory -%>
 ldap_user_home_directory = <%= @ldap_user_home_directory %>
 <% end -%>
-<% if @ldap_user_principal %>
+<% if @ldap_user_principal -%>
 ldap_user_principal = <%= @ldap_user_principal %>
 <% end -%>
-<% if @ldap_group_search_base %>
+<% if @ldap_group_search_base -%>
 ldap_group_search_base = <%= @ldap_group_search_base %>
 <% end -%>
-<% if @ldap_group_object_class %>
+<% if @ldap_group_object_class -%>
 ldap_group_object_class = <%= @ldap_group_object_class %>
 <% end -%>
-<% if @ldap_access_order %>
+<% if @ldap_access_order -%>
 ldap_access_order = <%= @ldap_access_order %>
 <% end -%>
-<% if @ldap_account_expire_policy %>
+<% if @ldap_account_expire_policy -%>
 ldap_account_expire_policy = <%= @ldap_account_expire_policy %>
 <% end -%>
-<% if @ldap_force_upper_case_realm %>
+<% if @ldap_force_upper_case_realm -%>
 ldap_force_upper_case_realm = <%= @ldap_force_upper_case_realm.to_s %>
 <% end -%>
-<% if @krb5_realm %>
+<% if @krb5_realm -%>
 krb5_realm = <%= @krb5_realm %>
 <% end -%>
-<% if @krb5_canonicalize %>
+<% if @krb5_canonicalize -%>
 krb5_canonicalize = <%= @krb5_canonicalize.to_s %>
 <% end -%>
