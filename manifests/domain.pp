@@ -88,6 +88,7 @@
 # @param ldap_force_upper_case_realm
 # @param krb5_realm
 # @param krb5_canonicalize
+# @param override_homedir
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
@@ -159,6 +160,7 @@ define sssd::domain (
   Optional[Boolean]                          $ldap_force_upper_case_realm  = undef,
   Optional[String]                           $krb5_realm                   = undef,
   Optional[Boolean]                          $krb5_canonicalize            = undef,
+  Optional[String]                           $override_homedir             = undef,
 ) {
 
   sssd::config::entry { "puppet_domain_${name}":

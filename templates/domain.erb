@@ -176,3 +176,6 @@ krb5_realm = <%= @krb5_realm %>
 <% if @krb5_canonicalize -%>
 krb5_canonicalize = <%= @krb5_canonicalize.to_s %>
 <% end -%>
+<% if @override_homedir -%>
+override_homedir = <%= @override_homedir %>
+<% end -%>
