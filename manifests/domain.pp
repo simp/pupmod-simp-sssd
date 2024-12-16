@@ -65,6 +65,29 @@
 # @param proxy_pam_target
 # @param proxy_lib_name
 # @param ldap_user_search_filter
+# @param ldap_referrals
+# @param timeout
+# @param ldap_network_timeout
+# @param ldap_opt_timeout
+# @param ldap_uri
+# @param ldap_page_size
+# @param ldap_id_use_start_tls
+# @param ldap_default_bind_dn
+# @param ldap_default_authtok_type
+# @param ldap_default_authtok
+# @param ldap_tls_reqcert
+# @param ldap_schema
+# @param ldap_user_search_base
+# @param ldap_user_object_class
+# @param ldap_user_home_directory
+# @param ldap_user_principal
+# @param ldap_group_search_base
+# @param ldap_group_object_class
+# @param ldap_access_order
+# @param ldap_account_expire_policy
+# @param ldap_force_upper_case_realm
+# @param krb5_realm
+# @param krb5_canonicalize
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
@@ -112,7 +135,30 @@ define sssd::domain (
   Optional[String]                           $realmd_tags                  = undef,
   Optional[String]                           $proxy_pam_target             = undef,
   Optional[String]                           $proxy_lib_name               = undef,
-  Optional[String]                           $ldap_user_search_filter      = undef
+  Optional[String]                           $ldap_user_search_filter      = undef,
+  Optional[Boolean]                          $ldap_referrals               = undef,
+  Optional[Integer[0]]                       $timeout                      = undef,
+  Optional[Integer[0]]                       $ldap_network_timeout         = undef,
+  Optional[Integer[0]]                       $ldap_opt_timeout             = undef,
+  Optional[String]                           $ldap_uri                     = undef,
+  Optional[Integer[0]]                       $ldap_page_size               = undef,
+  Optional[Boolean]                          $ldap_id_use_start_tls        = undef,
+  Optional[String]                           $ldap_default_bind_dn         = undef,
+  Optional[String]                           $ldap_default_authtok_type    = undef,
+  Optional[String]                           $ldap_default_authtok         = undef,
+  Optional[String]                           $ldap_tls_reqcert             = undef,
+  Optional[String]                           $ldap_schema                  = undef,
+  Optional[String]                           $ldap_user_search_base        = undef,
+  Optional[String]                           $ldap_user_object_class       = undef,
+  Optional[String]                           $ldap_user_home_directory     = undef,
+  Optional[String]                           $ldap_user_principal          = undef,
+  Optional[String]                           $ldap_group_search_base       = undef,
+  Optional[String]                           $ldap_group_object_class      = undef,
+  Optional[String]                           $ldap_access_order            = undef,
+  Optional[String]                           $ldap_account_expire_policy   = undef,
+  Optional[Boolean]                          $ldap_force_upper_case_realm  = undef,
+  Optional[String]                           $krb5_realm                   = undef,
+  Optional[Boolean]                          $krb5_canonicalize            = undef,
 ) {
 
   sssd::config::entry { "puppet_domain_${name}":
