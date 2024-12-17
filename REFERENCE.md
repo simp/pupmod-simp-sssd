@@ -1752,6 +1752,206 @@ Data type: `Optional[String]`
 
 Default value: `undef`
 
+##### <a name="-sssd--domain--ldap_referrals"></a>`ldap_referrals
+
+Data type: `Optional[Boolean]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--timeout"></a>`timeout`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_network_timeout"></a>`ldap_network_timeout`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_opt_timeout"></a>`ldap_opt_timeout`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_uri"></a>`ldap_uri`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_page_size"></a>`ldap_page_size`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_id_use_start_tls"></a>`ldap_id_use_start_tls`
+
+Data type: `Optional[Boolean]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_default_bind_dnr"></a>`ldap_default_bind_dn`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_default_authtok_type"></a>`ldap_default_authtok_type`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_default_authtok"></a>`ldap_default_authtok`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_tls_reqcert"></a>`ldap_tls_reqcert`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_schema"></a>`ldap_schema`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_user_search_base"></a>`ldap_user_search_base`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_user_object_class"></a>`ldap_user_object_class`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_user_home_directory"></a>`ldap_user_home_directory`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_user_principal"></a>`ldap_user_principal`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_group_search_base"></a>`ldap_group_search_base`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_group_object_class"></a>`ldap_group_object_class`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_access_order"></a>`ldap_access_order`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_account_expire_policy"></a>`ldap_account_expire_policy`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_account_expire_policy"></a>`ldap_account_expire_policy`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_force_upper_case_realm"></a>`ldap_force_upper_case_realm`
+
+Data type: `Optional[Boolean]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--krb5_realm"></a>`krb5_realm`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--krb5_canonicalize"></a>`krb5_canonicalize`
+
+Data type: `Optional[Boolean]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--override_homedir"></a>`override_homedir`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
 ### <a name="sssd--provider--ad"></a>`sssd::provider::ad`
 
 NOTE: You MUST connect the system to the domain prior to using this defined type.
