@@ -20,6 +20,7 @@ describe 'sssd class' do
       EOS
   end
 
+  # rubocop:disable RSpec/IndexedLet
   let(:manifest_el7) do
     <<-EOS
     # sssctl does not work with just the implicat_file domain on el7 so we set
@@ -48,6 +49,7 @@ describe 'sssd class' do
       }
     EOS
   end
+  # rubocop:enable RSpec/IndexedLet
 
   clients.each do |client|
     context 'default parameters' do
@@ -71,19 +73,20 @@ describe 'sssd class' do
       os_release = fact_on(client, 'operatingsystemmajrelease')
 
       it 'manifest should work with no errors' do
-        _manifest = if os_release >= '8'
-                      manifest_el8
-                    else
-                      manifest_el7
-                    end
+        os_specific_manifest = if os_release >= '8'
+                                 manifest_el8
+                               else
+                                 manifest_el7
+                               end
         set_hieradata_on(client, default_hieradata)
-        apply_manifest_on(client, _manifest, catch_failures: true)
+        apply_manifest_on(client, os_specific_manifest, catch_failures: true)
 
         # idempotent
 
-        apply_manifest_on(client, _manifest, catch_changes: true)
+        apply_manifest_on(client, os_specific_manifest, catch_changes: true)
       end
 
+      # rubocop:disable RSpec/RepeatedDescription
       it 'gets local user information' do
         on(client, 'useradd testuser --password "mypassword" -M -u 97979 -U')
 
@@ -105,6 +108,7 @@ describe 'sssd class' do
         result = on(client, 'sssctl user-checks testuser 2>&1', accept_all_exit_codes: true).stdout
         expect(result).to match(%r{.*- user id: 97979.*})
       end
+      # rubocop:enable RSpec/RepeatedDescription
     end
   end
 end
