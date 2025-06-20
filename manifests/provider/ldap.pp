@@ -36,6 +36,9 @@
 # @param strip_128_bit_ciphers
 #   **DEPRECATED** - EL6-only - Will be removed in a future release
 #
+# @param client_tls
+#   Set to false to disable setting up client-side TLS
+#
 # @param debug_level
 # @param debug_timestamps
 # @param debug_microseconds
@@ -49,6 +52,7 @@
 # @param ldap_default_bind_dn
 # @param ldap_default_authtok_type
 # @param ldap_default_authtok
+# @param ldap_user_cert
 # @param ldap_user_object_class
 # @param ldap_user_name
 # @param ldap_user_uid_number
@@ -195,7 +199,7 @@ define sssd::provider::ldap (
   Optional[Sssd::DebugLevel]            $debug_level                       = undef,
   Optional[Boolean]                     $debug_timestamps                  = undef,
   Boolean                               $debug_microseconds                = false,
-  Array[Simplib::URI,1]                 $ldap_uri                          = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
+  Optional[Array[Simplib::URI,1]]       $ldap_uri                          = simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef }),
   Optional[Array[Simplib::URI,1]]       $ldap_backup_uri                   = undef,
   Optional[Array[Simplib::URI,1]]       $ldap_chpass_uri                   = undef,
   Optional[Array[Simplib::URI,1]]       $ldap_chpass_backup_uri            = undef,
@@ -205,6 +209,7 @@ define sssd::provider::ldap (
   Optional[String[1]]                   $ldap_default_bind_dn              = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => undef }),
   Optional[Sssd::LdapDefaultAuthtok]    $ldap_default_authtok_type         = undef,
   Optional[String[1]]                   $ldap_default_authtok              = simplib::lookup('simp_options::ldap::bind_pw', { 'default_value' => undef }),
+  Optional[String[1]]                   $ldap_user_cert                    = undef,
   Optional[String[1]]                   $ldap_user_object_class            = undef,
   Optional[String[1]]                   $ldap_user_name                    = undef,
   Optional[String[1]]                   $ldap_user_uid_number              = undef,
@@ -339,7 +344,8 @@ define sssd::provider::ldap (
   Optional[Integer[0]]                  $ldap_idmap_range_size             = undef,
   Optional[String[1]]                   $ldap_idmap_default_domain_sid     = undef,
   Optional[String[1]]                   $ldap_idmap_default_domain         = undef,
-  Boolean                               $ldap_idmap_autorid_compat         = false
+  Boolean                               $ldap_idmap_autorid_compat         = false,
+  Boolean                               $client_tls                        = true,
 ) {
   include $module_name
 
@@ -352,20 +358,20 @@ define sssd::provider::ldap (
 
   if $app_pki_ca_dir {
     $ldap_tls_cacertdir = $app_pki_ca_dir
-  } else {
+  } elsif $client_tls {
     $ldap_tls_cacertdir = "${sssd::app_pki_dir}/cacerts"
   }
 
   if $app_pki_key {
     $ldap_tls_key = $app_pki_key
-  } else {
-    $ldap_tls_key = "${sssd::app_pki_dir}/private/${$facts['fqdn']}.pem"
+  } elsif $client_tls {
+    $ldap_tls_key = "${sssd::app_pki_dir}/private/${$facts['networking']['fqdn']}.pem"
   }
 
   if $app_pki_cert {
     $ldap_tls_cert = $app_pki_cert
-  } else {
-    $ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['fqdn']}.pub"
+  } elsif $client_tls {
+    $ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['networking']['fqdn']}.pub"
   }
 
   sssd::config::entry { "puppet_provider_${title}_ldap":

@@ -98,6 +98,9 @@ proxy_fast_alias = <%= @proxy_fast_alias.to_s %>
 <% if @realmd_tags -%>
 realmd_tags = <%= @realmd_tags %>
 <% end -%>
+<% if @ldap_user_search_filter -%>
+ldap_user_search_filter = <%= @ldap_user_search_filter %>
+<% end -%>
 <% if @proxy_pam_target %>
 proxy_pam_target = <%= @proxy_pam_target %>
 <% end -%>

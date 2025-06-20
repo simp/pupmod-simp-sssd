@@ -64,6 +64,7 @@
 # @param realmd_tags
 # @param proxy_pam_target
 # @param proxy_lib_name
+# @param ldap_user_search_filter
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
@@ -98,7 +99,7 @@ define sssd::domain (
   Optional[Enum['ldap', 'ipa','ad','none']]  $sudo_provider                = undef,
   Optional[Enum['ipa', 'none']]              $selinux_provider             = undef,
   Optional[Enum['ipa', 'ad','none']]         $subdomains_provider          = undef,
-  Optional[Enum['ldap', 'ipa','none']]       $autofs_provider              = undef,
+  Optional[Enum['ad', 'ldap', 'ipa','none']] $autofs_provider              = undef,
   Optional[Enum['ipa', 'none']]              $hostid_provider              = undef,
   Optional[String]                           $re_expression                = undef,
   Optional[String]                           $full_name_format             = undef,
@@ -110,7 +111,8 @@ define sssd::domain (
   Boolean                                    $proxy_fast_alias             = false,
   Optional[String]                           $realmd_tags                  = undef,
   Optional[String]                           $proxy_pam_target             = undef,
-  Optional[String]                           $proxy_lib_name               = undef
+  Optional[String]                           $proxy_lib_name               = undef,
+  Optional[String]                           $ldap_user_search_filter      = undef
 ) {
 
   sssd::config::entry { "puppet_domain_${name}":

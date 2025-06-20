@@ -104,6 +104,17 @@ describe 'sssd::provider::ldap' do
           is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap").with_content(expected)
         end
       end
+
+      context 'with ldap_user_cert set' do
+        let(:params) {{ :ldap_user_cert => 'userCertificate;binary' }}
+        
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
+            .with_content(%r(ldap_user_cert = userCertificate;binary))
+        }
+      end
+
       context 'with app_pki_ca_dir set' do
         let(:params) {{ :app_pki_ca_dir => '/path/to/ca' }}
 
@@ -153,6 +164,18 @@ describe 'sssd::provider::ldap' do
         it {
           is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
             .with_content(%r(ldap_uri = ldap://test1.example.domain,ldap://test2.example.domain))
+        }
+      end
+
+      context 'with client_tls set to false' do
+        let(:params) {{ :client_tls => false }}
+
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
+            .without_content(%r(ldap_tls_cacertdir))
+            .without_content(%r(ldap_tls_key))
+            .without_content(%r(ldap_tls_cert))
         }
       end
 

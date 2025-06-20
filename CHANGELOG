@@ -1,3 +1,41 @@
+* Mon Nov 18 2024 dpavlotzky <david@pavlotzky.nl> - 7.12.0
+- Add "ad" option to autofs_provider list (#147)
+
+* Mon Nov 18 2024 G. Ryan Sablosky <sabo@users.noreply.github.com> - 7.12.0
+- Make LDAP client-side TLS authentication optional (#137)
+
+* Fri Sep 13 2024 Steven Pritchard <steve@sicura.us> - 7.11.0
+- [puppetsync] Update module dependencies to support simp-iptables 7.x
+
+* Wed Apr 10 2024 Mike Riddle <mike@sicura.us> - 7.10.0
+- Added the pam_cert_auth parameter to the pam service
+- Added the ldap_user_cert parameter to the ldap provider
+- Users can now specify ldap providers via hieradata using sssd::ldap_providers
+
+* Wed Nov 29 2023 Virus2500 <_________@gmail.com> - 7.9.0
+- add domain option ldap_user_search_filter
+
+* Mon Oct 23 2023 Steven Pritchard <steve@sicura.us> - 7.8.0
+- [puppetsync] Add EL9 support
+
+* Wed Oct 11 2023 Steven Pritchard <steve@sicura.us> - 7.7.0
+- [puppetsync] Updates for Puppet 8
+  - These updates may include the following:
+    - Update Gemfile
+    - Add support for Puppet 8
+    - Drop support for Puppet 6
+    - Update module dependencies
+
+* Thu Aug 31 2023 Steven Pritchard <steve@sicura.us> - 7.6.0
+- Add AlmaLinux 8 support
+
+* Mon Jun 12 2023 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.5.0
+- Add RockyLinux 8 support
+
+* Thu Aug 25 2022 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.4.2
+  - Fixed:
+    - Made the `ldap_uri` parameter optional
+
 * Fri Jul 15 2022 Mark Fitch <mark.fitch1@hotmail.com> - 7.4.1
   - Fixed:
     - Added missing parameters `ldap_user_extra_attrs` and

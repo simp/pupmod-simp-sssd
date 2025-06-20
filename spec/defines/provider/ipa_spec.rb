@@ -21,7 +21,7 @@ describe 'sssd::provider::ipa' do
               ipa_domain = #{facts[:domain]}
               ipa_server = _srv_,ipaserver.#{facts[:domain]}
               ipa_enable_dns_sites = false
-              ipa_hostname = #{facts[:fqdn]}
+              ipa_hostname = #{facts[:networking][:fqdn]}
               ipa_server_mode = false
               dyndns_auth = GSS-TSIG
               dyndns_update = true

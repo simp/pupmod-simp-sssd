@@ -1,6 +1,6 @@
 {
   "name": "simp-sssd",
-  "version": "7.4.1",
+  "version": "7.12.0",
   "author": "SIMP Team",
   "summary": "Manages SSSD",
   "license": "Apache-2.0",
@@ -14,26 +14,26 @@
   "dependencies": [
     {
       "name": "puppet/systemd",
-      "version_requirement": ">= 3.0.0 < 4.0.0"
+      "version_requirement": ">= 4.0.2 < 8.0.0"
     },
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 6.6.0 < 8.0.0"
+      "version_requirement": ">= 8.0.0 < 10.0.0"
     },
     {
       "name": "simp/simplib",
-      "version_requirement": ">= 3.9.0 < 5.0.0"
+      "version_requirement": ">= 4.9.0 < 5.0.0"
     }
   ],
   "simp": {
     "optional_dependencies": [
       {
         "name": "simp/auditd",
-        "version_requirement": ">= 7.0.0 < 9.0.0"
+        "version_requirement": ">= 8.5.0 < 9.0.0"
       },
       {
         "name": "simp/pki",
-        "version_requirement": ">= 6.0.0 < 7.0.0"
+        "version_requirement": ">= 6.2.0 < 7.0.0"
       }
     ]
   },
@@ -42,28 +42,45 @@
       "operatingsystem": "CentOS",
       "operatingsystemrelease": [
         "7",
-        "8"
+        "8",
+        "9"
       ]
     },
     {
       "operatingsystem": "RedHat",
       "operatingsystemrelease": [
         "7",
-        "8"
+        "8",
+        "9"
       ]
     },
     {
       "operatingsystem": "OracleLinux",
       "operatingsystemrelease": [
         "7",
-        "8"
+        "8",
+        "9"
+      ]
+    },
+    {
+      "operatingsystem": "Rocky",
+      "operatingsystemrelease": [
+        "8",
+        "9"
+      ]
+    },
+    {
+      "operatingsystem": "AlmaLinux",
+      "operatingsystemrelease": [
+        "8",
+        "9"
       ]
     }
   ],
   "requirements": [
     {
       "name": "puppet",
-      "version_requirement": ">= 6.22.1 < 8.0.0"
+      "version_requirement": ">= 7.0.0 < 9.0.0"
     }
   ]
 }

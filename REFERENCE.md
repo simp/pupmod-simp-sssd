@@ -7,49 +7,49 @@
 ### Classes
 
 * [`sssd`](#sssd): This class allows you to install and configure SSSD.  It will forcefully disable nscd which consequently prevents you from using an nscd modu
-* [`sssd::config`](#sssdconfig): Configuration class called from sssd.  Sets up the ``[sssd]`` section of '/etc/sssd/sssd.conf', and, optionally, a domain section for the IPA
-* [`sssd::config::ipa_domain`](#sssdconfigipa_domain): Configures SSSD for the IPA domain to which the host has joined
-* [`sssd::install`](#sssdinstall): Install the required packages for SSSD
-* [`sssd::install::client`](#sssdinstallclient): Install the sssd-client package
-* [`sssd::pki`](#sssdpki): Class: sssd::pki  Uses the following sssd class parameters to copy certs into a directory for the sssd application  $sssd::pki   * If 'simp',
-* [`sssd::service`](#sssdservice): Control the `sssd` service
-* [`sssd::service::autofs`](#sssdserviceautofs): This class sets up the [autofs] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of t
-* [`sssd::service::ifp`](#sssdserviceifp): This class sets up the [ifp] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
-* [`sssd::service::nss`](#sssdservicenss): This class sets up the [nss] section of /etc/sssd.conf. You may only have one of these per system.  The class parameters map directly to SSSD
-* [`sssd::service::pac`](#sssdservicepac): This class sets up the [pac] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
-* [`sssd::service::pam`](#sssdservicepam)
-* [`sssd::service::ssh`](#sssdservicessh): This class sets up the [ssh] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
-* [`sssd::service::sudo`](#sssdservicesudo): This class sets up the [sudo] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of the
+* [`sssd::config`](#sssd--config): Configuration class called from sssd.  Sets up the ``[sssd]`` section of '/etc/sssd/sssd.conf', and, optionally, a domain section for the IPA
+* [`sssd::config::ipa_domain`](#sssd--config--ipa_domain): Configures SSSD for the IPA domain to which the host has joined
+* [`sssd::install`](#sssd--install): Install the required packages for SSSD
+* [`sssd::install::client`](#sssd--install--client): Install the sssd-client package
+* [`sssd::pki`](#sssd--pki): Class: sssd::pki  Uses the following sssd class parameters to copy certs into a directory for the sssd application  $sssd::pki   * If 'simp',
+* [`sssd::service`](#sssd--service): Control the `sssd` service
+* [`sssd::service::autofs`](#sssd--service--autofs): This class sets up the [autofs] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of t
+* [`sssd::service::ifp`](#sssd--service--ifp): This class sets up the [ifp] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
+* [`sssd::service::nss`](#sssd--service--nss): This class sets up the [nss] section of /etc/sssd.conf. You may only have one of these per system.  The class parameters map directly to SSSD
+* [`sssd::service::pac`](#sssd--service--pac): This class sets up the [pac] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
+* [`sssd::service::pam`](#sssd--service--pam)
+* [`sssd::service::ssh`](#sssd--service--ssh): This class sets up the [ssh] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
+* [`sssd::service::sudo`](#sssd--service--sudo): This class sets up the [sudo] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of the
 
 ### Defined types
 
-* [`sssd::config::entry`](#sssdconfigentry): Add an entry to the /etc/sssd/conf.d directory
-* [`sssd::domain`](#sssddomain): Define: sssd::domain  This define sets up a domain section of /etc/sssd.conf. This domain will be named after '$name' and should be listed in
-* [`sssd::provider::ad`](#sssdproviderad): Set up the 'ad' (Active Directory) id_provider section of a particular domain.
-* [`sssd::provider::files`](#sssdproviderfiles): Configures the 'files' id_provider section of a particular domain.
-* [`sssd::provider::ipa`](#sssdprovideripa): This define sets up the 'ipa' provider section of a particular domain. $name should be the name of the associated domain in sssd.conf.  See s
-* [`sssd::provider::krb5`](#sssdproviderkrb5): Define: sssd::provider::krb5  This define sets up the 'krb5' provider section of a particular domain. $name should be the name of the associa
-* [`sssd::provider::ldap`](#sssdproviderldap): Define: sssd::provider::ldap  This define sets up the 'ldap' provider section of a particular domain. $name should be the name of the associa
+* [`sssd::config::entry`](#sssd--config--entry): Add an entry to the /etc/sssd/conf.d directory
+* [`sssd::domain`](#sssd--domain): Define: sssd::domain  This define sets up a domain section of /etc/sssd.conf. This domain will be named after '$name' and should be listed in
+* [`sssd::provider::ad`](#sssd--provider--ad): Set up the 'ad' (Active Directory) id_provider section of a particular domain.
+* [`sssd::provider::files`](#sssd--provider--files): Configures the 'files' id_provider section of a particular domain.
+* [`sssd::provider::ipa`](#sssd--provider--ipa): This define sets up the 'ipa' provider section of a particular domain. $name should be the name of the associated domain in sssd.conf.  See s
+* [`sssd::provider::krb5`](#sssd--provider--krb5): Define: sssd::provider::krb5  This define sets up the 'krb5' provider section of a particular domain. $name should be the name of the associa
+* [`sssd::provider::ldap`](#sssd--provider--ldap): Define: sssd::provider::ldap  This define sets up the 'ldap' provider section of a particular domain. $name should be the name of the associa
 
 ### Functions
 
-* [`sssd::supported_version`](#sssdsupported_version): Returns ``true`` if the version of SSSD installed on the system is supported and ``false`` otherwise.  Assumes that the system is relatively 
+* [`sssd::supported_version`](#sssd--supported_version): Returns ``true`` if the version of SSSD installed on the system is supported and ``false`` otherwise.  Assumes that the system is relatively 
 
 ### Data types
 
-* [`Sssd::ADDefaultRight`](#sssdaddefaultright): List of valid types for AD Provider setting ad_gpo_default_right
-* [`Sssd::AccessProvider`](#sssdaccessprovider): List of valid  SSSD domain access providers
-* [`Sssd::AuthProvider`](#sssdauthprovider): List of valid types for sssd domain authentication provider
-* [`Sssd::ChpassProvider`](#sssdchpassprovider): List of valid types for sssd domain change password provider
-* [`Sssd::DebugLevel`](#sssddebuglevel): Integer[0-9] or 2 byte Hexidecimal (ex. 0x0201)
-* [`Sssd::IdProvider`](#sssdidprovider): List of valid type for sssd domain ID provider.
-* [`Sssd::LdapAccessOrder`](#sssdldapaccessorder): List of valid values for ldap provider ldap_access_order setting
-* [`Sssd::LdapAccountExpirePol`](#sssdldapaccountexpirepol): List of valid values for ldap provider ldap_account_expire_policy '' corresponds to the default value (empty) per sssd-ldap(5) man page
-* [`Sssd::LdapDefaultAuthtok`](#sssdldapdefaultauthtok): List of valid values for ldap provider default auth token
-* [`Sssd::LdapDeref`](#sssdldapderef): List of valid values for ldap provider deref setting
-* [`Sssd::LdapSchema`](#sssdldapschema): List of valid setting for ldap provider ldap_schema setting.
-* [`Sssd::LdapTlsReqcert`](#sssdldaptlsreqcert): List of valid setting for ldap provider ldap_tls_reqcert.
-* [`Sssd::Services`](#sssdservices): List of available sssd services
+* [`Sssd::ADDefaultRight`](#Sssd--ADDefaultRight): List of valid types for AD Provider setting ad_gpo_default_right
+* [`Sssd::AccessProvider`](#Sssd--AccessProvider): List of valid  SSSD domain access providers
+* [`Sssd::AuthProvider`](#Sssd--AuthProvider): List of valid types for sssd domain authentication provider
+* [`Sssd::ChpassProvider`](#Sssd--ChpassProvider): List of valid types for sssd domain change password provider
+* [`Sssd::DebugLevel`](#Sssd--DebugLevel): Integer[0-9] or 2 byte Hexidecimal (ex. 0x0201)
+* [`Sssd::IdProvider`](#Sssd--IdProvider): List of valid type for sssd domain ID provider.
+* [`Sssd::LdapAccessOrder`](#Sssd--LdapAccessOrder): List of valid values for ldap provider ldap_access_order setting
+* [`Sssd::LdapAccountExpirePol`](#Sssd--LdapAccountExpirePol): List of valid values for ldap provider ldap_account_expire_policy '' corresponds to the default value (empty) per sssd-ldap(5) man page
+* [`Sssd::LdapDefaultAuthtok`](#Sssd--LdapDefaultAuthtok): List of valid values for ldap provider default auth token
+* [`Sssd::LdapDeref`](#Sssd--LdapDeref): List of valid values for ldap provider deref setting
+* [`Sssd::LdapSchema`](#Sssd--LdapSchema): List of valid setting for ldap provider ldap_schema setting.
+* [`Sssd::LdapTlsReqcert`](#Sssd--LdapTlsReqcert): List of valid setting for ldap provider ldap_tls_reqcert.
+* [`Sssd::Services`](#Sssd--Services): List of available sssd services
 
 ## Classes
 
@@ -63,47 +63,61 @@ using an nscd module at the same time, which is the correct behavior.
 Full documentation of the parameters that map directly to SSSD
 configuration options can be found in the sssd.conf(5) man page.
 
+#### Examples
+
+##### sssd::provider::ldap in hieradata:
+
+```puppet
+sssd::ldap_providers:
+  ldap_users:
+    ldap_access_filter: 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com'
+    ldap_chpass_uri: empty
+    ldap_access_order: 'expire'
+    etc...
+```
+
 #### Parameters
 
 The following parameters are available in the `sssd` class:
 
-* [`authoritative`](#authoritative)
-* [`domains`](#domains)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`description`](#description)
-* [`enable_files_domain`](#enable_files_domain)
-* [`config_file_version`](#config_file_version)
-* [`services`](#services)
-* [`reconnection_retries`](#reconnection_retries)
-* [`re_expression`](#re_expression)
-* [`full_name_format`](#full_name_format)
-* [`try_inotify`](#try_inotify)
-* [`krb5_rcache_dir`](#krb5_rcache_dir)
-* [`user`](#user)
-* [`default_domain_suffix`](#default_domain_suffix)
-* [`override_space`](#override_space)
-* [`enumerate_users`](#enumerate_users)
-* [`include_svc_config`](#include_svc_config)
-* [`cache_credentials`](#cache_credentials)
-* [`min_id`](#min_id)
-* [`auditd`](#auditd)
-* [`pki`](#pki)
-* [`app_pki_cert_source`](#app_pki_cert_source)
-* [`app_pki_dir`](#app_pki_dir)
-* [`auto_add_ipa_domain`](#auto_add_ipa_domain)
-* [`custom_config`](#custom_config)
+* [`authoritative`](#-sssd--authoritative)
+* [`domains`](#-sssd--domains)
+* [`debug_level`](#-sssd--debug_level)
+* [`debug_timestamps`](#-sssd--debug_timestamps)
+* [`debug_microseconds`](#-sssd--debug_microseconds)
+* [`description`](#-sssd--description)
+* [`enable_files_domain`](#-sssd--enable_files_domain)
+* [`config_file_version`](#-sssd--config_file_version)
+* [`services`](#-sssd--services)
+* [`reconnection_retries`](#-sssd--reconnection_retries)
+* [`re_expression`](#-sssd--re_expression)
+* [`full_name_format`](#-sssd--full_name_format)
+* [`try_inotify`](#-sssd--try_inotify)
+* [`krb5_rcache_dir`](#-sssd--krb5_rcache_dir)
+* [`user`](#-sssd--user)
+* [`default_domain_suffix`](#-sssd--default_domain_suffix)
+* [`override_space`](#-sssd--override_space)
+* [`ldap_providers`](#-sssd--ldap_providers)
+* [`enumerate_users`](#-sssd--enumerate_users)
+* [`include_svc_config`](#-sssd--include_svc_config)
+* [`cache_credentials`](#-sssd--cache_credentials)
+* [`min_id`](#-sssd--min_id)
+* [`auditd`](#-sssd--auditd)
+* [`pki`](#-sssd--pki)
+* [`app_pki_cert_source`](#-sssd--app_pki_cert_source)
+* [`app_pki_dir`](#-sssd--app_pki_dir)
+* [`auto_add_ipa_domain`](#-sssd--auto_add_ipa_domain)
+* [`custom_config`](#-sssd--custom_config)
 
-##### <a name="authoritative"></a>`authoritative`
+##### <a name="-sssd--authoritative"></a>`authoritative`
 
 Data type: `Boolean`
 
 Whether or not to purge all unmanaged files from /etc/sssd/conf.d.
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="domains"></a>`domains`
+##### <a name="-sssd--domains"></a>`domains`
 
 Data type: `Array[String[1, 255]]`
 
@@ -111,47 +125,47 @@ The sssd `domains` to be managed.
 
 Default value: `[]`
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::DebugLevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
 
-##### <a name="description"></a>`description`
+##### <a name="-sssd--debug_microseconds"></a>`debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--description"></a>`description`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="enable_files_domain"></a>`enable_files_domain`
+##### <a name="-sssd--enable_files_domain"></a>`enable_files_domain`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="config_file_version"></a>`config_file_version`
+##### <a name="-sssd--config_file_version"></a>`config_file_version`
 
 Data type: `Integer[1]`
 
@@ -159,7 +173,7 @@ Data type: `Integer[1]`
 
 Default value: `2`
 
-##### <a name="services"></a>`services`
+##### <a name="-sssd--services"></a>`services`
 
 Data type: `Sssd::Services`
 
@@ -167,7 +181,7 @@ Data type: `Sssd::Services`
 
 Default value: `['nss','pam','ssh','sudo']`
 
-##### <a name="reconnection_retries"></a>`reconnection_retries`
+##### <a name="-sssd--reconnection_retries"></a>`reconnection_retries`
 
 Data type: `Integer[0]`
 
@@ -175,63 +189,71 @@ Data type: `Integer[0]`
 
 Default value: `3`
 
-##### <a name="re_expression"></a>`re_expression`
+##### <a name="-sssd--re_expression"></a>`re_expression`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="full_name_format"></a>`full_name_format`
+##### <a name="-sssd--full_name_format"></a>`full_name_format`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="try_inotify"></a>`try_inotify`
+##### <a name="-sssd--try_inotify"></a>`try_inotify`
 
 Data type: `Optional[Boolean]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_rcache_dir"></a>`krb5_rcache_dir`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="user"></a>`user`
+##### <a name="-sssd--krb5_rcache_dir"></a>`krb5_rcache_dir`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="default_domain_suffix"></a>`default_domain_suffix`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="override_space"></a>`override_space`
+##### <a name="-sssd--user"></a>`user`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="enumerate_users"></a>`enumerate_users`
+##### <a name="-sssd--default_domain_suffix"></a>`default_domain_suffix`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--override_space"></a>`override_space`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--ldap_providers"></a>`ldap_providers`
+
+Data type: `Hash`
+
+This allows users to set up ldap sssd::provider::ldap resources via hieradata
+
+Default value: `{}`
+
+##### <a name="-sssd--enumerate_users"></a>`enumerate_users`
 
 Data type: `Boolean`
 
@@ -239,9 +261,9 @@ Have SSSD list and cache all the users that it can find on the remote system
 
 * Take care that you don't overwhelm your server if you enable this
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="include_svc_config"></a>`include_svc_config`
+##### <a name="-sssd--include_svc_config"></a>`include_svc_config`
 
 Data type: `Boolean`
 
@@ -252,17 +274,17 @@ parameters used. If you need to set a param that is not included you
 can turn this off and create a custom manifest to add the section
 you need.  If you simply want to change a setting that exists, use hiera.
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="cache_credentials"></a>`cache_credentials`
+##### <a name="-sssd--cache_credentials"></a>`cache_credentials`
 
 Data type: `Boolean`
 
 Have SSSD cache the credentials of users that login to the system
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="min_id"></a>`min_id`
+##### <a name="-sssd--min_id"></a>`min_id`
 
 Data type: `Integer[0]`
 
@@ -270,7 +292,7 @@ The lowest user ID that SSSD should recognize from the server.
 
 Default value: `1`
 
-##### <a name="auditd"></a>`auditd`
+##### <a name="-sssd--auditd"></a>`auditd`
 
 Data type: `Boolean`
 
@@ -278,7 +300,7 @@ Data type: `Boolean`
 
 Default value: `simplib::lookup('simp_options::auditd', { 'default_value' => false})`
 
-##### <a name="pki"></a>`pki`
+##### <a name="-sssd--pki"></a>`pki`
 
 Data type: `Variant[Boolean,Enum['simp']]`
 
@@ -296,7 +318,7 @@ Data type: `Variant[Boolean,Enum['simp']]`
 
 Default value: `simplib::lookup('simp_options::pki', { 'default_value' => false})`
 
-##### <a name="app_pki_cert_source"></a>`app_pki_cert_source`
+##### <a name="-sssd--app_pki_cert_source"></a>`app_pki_cert_source`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -307,7 +329,7 @@ Data type: `Stdlib::Absolutepath`
 
 Default value: `simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509'})`
 
-##### <a name="app_pki_dir"></a>`app_pki_dir`
+##### <a name="-sssd--app_pki_dir"></a>`app_pki_dir`
 
 Data type: `Stdlib::Absolutepath`
 
@@ -317,7 +339,7 @@ It defaults to /etc/pki/simp_apps/sssd/x509.
 
 Default value: `'/etc/pki/simp_apps/sssd/x509'`
 
-##### <a name="auto_add_ipa_domain"></a>`auto_add_ipa_domain`
+##### <a name="-sssd--auto_add_ipa_domain"></a>`auto_add_ipa_domain`
 
 Data type: `Boolean`
 
@@ -326,18 +348,18 @@ to an IPA domain. When enabled, this feature helps to prevent user
 lockout for IPA-managed user accounts.  Otherwise, you must
 configure the IPA domain yourself.
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="custom_config"></a>`custom_config`
+##### <a name="-sssd--custom_config"></a>`custom_config`
 
 Data type: `Optional[String[1]]`
 
 A configuration that will be added to
 /etc/sssd/conf.d/00_puppet_custom.conf *without validation*
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdconfig"></a>`sssd::config`
+### <a name="sssd--config"></a>`sssd::config`
 
 Configuration class called from sssd.
 
@@ -351,9 +373,9 @@ in the ``[sssd]`` section.
 
 The following parameters are available in the `sssd::config` class:
 
-* [`authoritative`](#authoritative)
+* [`authoritative`](#-sssd--config--authoritative)
 
-##### <a name="authoritative"></a>`authoritative`
+##### <a name="-sssd--config--authoritative"></a>`authoritative`
 
 Data type: `Boolean`
 
@@ -361,11 +383,11 @@ Set to `true` to purge unmanaged configuration files
 
 Default value: `pick(getvar("${module_name}::authoritative"), false)`
 
-### <a name="sssdconfigipa_domain"></a>`sssd::config::ipa_domain`
+### <a name="sssd--config--ipa_domain"></a>`sssd::config::ipa_domain`
 
 Configures SSSD for the IPA domain to which the host has joined
 
-### <a name="sssdinstall"></a>`sssd::install`
+### <a name="sssd--install"></a>`sssd::install`
 
 Install the required packages for SSSD
 
@@ -373,28 +395,28 @@ Install the required packages for SSSD
 
 The following parameters are available in the `sssd::install` class:
 
-* [`install_client`](#install_client)
-* [`install_user_tools`](#install_user_tools)
-* [`package_ensure`](#package_ensure)
+* [`install_client`](#-sssd--install--install_client)
+* [`install_user_tools`](#-sssd--install--install_user_tools)
+* [`package_ensure`](#-sssd--install--package_ensure)
 
-##### <a name="install_client"></a>`install_client`
+##### <a name="-sssd--install--install_client"></a>`install_client`
 
 Data type: `Boolean`
 
 If ``true``, install the ``sssd`` client
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="install_user_tools"></a>`install_user_tools`
+##### <a name="-sssd--install--install_user_tools"></a>`install_user_tools`
 
 Data type: `Boolean`
 
 If ``true``, install the 'sssd-tools' package for administrative
 changes to the SSSD databases
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="package_ensure"></a>`package_ensure`
+##### <a name="-sssd--install--package_ensure"></a>`package_ensure`
 
 Data type: `String`
 
@@ -402,7 +424,7 @@ Ensure setting for all packages installed by this module
 
 Default value: `simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })`
 
-### <a name="sssdinstallclient"></a>`sssd::install::client`
+### <a name="sssd--install--client"></a>`sssd::install::client`
 
 Install the sssd-client package
 
@@ -410,9 +432,9 @@ Install the sssd-client package
 
 The following parameters are available in the `sssd::install::client` class:
 
-* [`ensure`](#ensure)
+* [`ensure`](#-sssd--install--client--ensure)
 
-##### <a name="ensure"></a>`ensure`
+##### <a name="-sssd--install--client--ensure"></a>`ensure`
 
 Data type: `Any`
 
@@ -420,7 +442,7 @@ Ensure setting for 'sssd-client' package
 
 Default value: `$::sssd::install::package_ensure`
 
-### <a name="sssdpki"></a>`sssd::pki`
+### <a name="sssd--pki"></a>`sssd::pki`
 
 Class: sssd::pki
 
@@ -446,7 +468,7 @@ $ssd::app_pki_cert_source
 
   * If $sssd::pki = false, this variable has no effect.
 
-### <a name="sssdservice"></a>`sssd::service`
+### <a name="sssd--service"></a>`sssd::service`
 
 Control the `sssd` service
 
@@ -454,10 +476,10 @@ Control the `sssd` service
 
 The following parameters are available in the `sssd::service` class:
 
-* [`ensure`](#ensure)
-* [`enable`](#enable)
+* [`ensure`](#-sssd--service--ensure)
+* [`enable`](#-sssd--service--enable)
 
-##### <a name="ensure"></a>`ensure`
+##### <a name="-sssd--service--ensure"></a>`ensure`
 
 Data type: `Variant[String[1],Boolean]`
 
@@ -465,7 +487,7 @@ The `ensure` parameter of the service resource
 
 Default value: `sssd::supported_version()`
 
-##### <a name="enable"></a>`enable`
+##### <a name="-sssd--service--enable"></a>`enable`
 
 Data type: `Boolean`
 
@@ -473,7 +495,7 @@ The `enable` parameter of the service resource
 
 Default value: `sssd::supported_version()`
 
-### <a name="sssdserviceautofs"></a>`sssd::service::autofs`
+### <a name="sssd--service--autofs"></a>`sssd::service::autofs`
 
 This class sets up the [autofs] section of /etc/sssd.conf.
 
@@ -485,54 +507,54 @@ sssd.conf(5) man page.
 
 The following parameters are available in the `sssd::service::autofs` class:
 
-* [`description`](#description)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`autofs_negative_timeout`](#autofs_negative_timeout)
-* [`custom_options`](#custom_options)
+* [`description`](#-sssd--service--autofs--description)
+* [`debug_level`](#-sssd--service--autofs--debug_level)
+* [`debug_timestamps`](#-sssd--service--autofs--debug_timestamps)
+* [`debug_microseconds`](#-sssd--service--autofs--debug_microseconds)
+* [`autofs_negative_timeout`](#-sssd--service--autofs--autofs_negative_timeout)
+* [`custom_options`](#-sssd--service--autofs--custom_options)
 
-##### <a name="description"></a>`description`
+##### <a name="-sssd--service--autofs--description"></a>`description`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--service--autofs--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::DebugLevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--service--autofs--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
 
-##### <a name="autofs_negative_timeout"></a>`autofs_negative_timeout`
+##### <a name="-sssd--service--autofs--debug_microseconds"></a>`debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--service--autofs--autofs_negative_timeout"></a>`autofs_negative_timeout`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="custom_options"></a>`custom_options`
+##### <a name="-sssd--service--autofs--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
 
@@ -543,9 +565,9 @@ added as a simple init pair key = value under the section in
 the sssd.conf file.
 No error checking will be performed.
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdserviceifp"></a>`sssd::service::ifp`
+### <a name="sssd--service--ifp"></a>`sssd::service::ifp`
 
 This class sets up the [ifp] section of /etc/sssd.conf.
 
@@ -557,72 +579,72 @@ sssd.conf(5) and sssd-ifp man pages.
 
 The following parameters are available in the `sssd::service::ifp` class:
 
-* [`description`](#description)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`wildcard_limit`](#wildcard_limit)
-* [`allowed_uids`](#allowed_uids)
-* [`user_attributes`](#user_attributes)
-* [`custom_options`](#custom_options)
+* [`description`](#-sssd--service--ifp--description)
+* [`debug_level`](#-sssd--service--ifp--debug_level)
+* [`debug_timestamps`](#-sssd--service--ifp--debug_timestamps)
+* [`debug_microseconds`](#-sssd--service--ifp--debug_microseconds)
+* [`wildcard_limit`](#-sssd--service--ifp--wildcard_limit)
+* [`allowed_uids`](#-sssd--service--ifp--allowed_uids)
+* [`user_attributes`](#-sssd--service--ifp--user_attributes)
+* [`custom_options`](#-sssd--service--ifp--custom_options)
 
-##### <a name="description"></a>`description`
+##### <a name="-sssd--service--ifp--description"></a>`description`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--service--ifp--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::Debuglevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--service--ifp--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
 
-##### <a name="wildcard_limit"></a>`wildcard_limit`
+##### <a name="-sssd--service--ifp--debug_microseconds"></a>`debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--service--ifp--wildcard_limit"></a>`wildcard_limit`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="allowed_uids"></a>`allowed_uids`
-
-Data type: `Optional[Array[String[1]]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="user_attributes"></a>`user_attributes`
+##### <a name="-sssd--service--ifp--allowed_uids"></a>`allowed_uids`
 
 Data type: `Optional[Array[String[1]]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="custom_options"></a>`custom_options`
+##### <a name="-sssd--service--ifp--user_attributes"></a>`user_attributes`
+
+Data type: `Optional[Array[String[1]]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--service--ifp--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
 
@@ -634,9 +656,9 @@ added as a simple init pair
 under the section in the sssd.conf file.
 No error checking will be performed.
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdservicenss"></a>`sssd::service::nss`
+### <a name="sssd--service--nss"></a>`sssd::service::nss`
 
 This class sets up the [nss] section of /etc/sssd.conf.
 You may only have one of these per system.
@@ -649,62 +671,62 @@ sssd.conf(5) man page.
 
 The following parameters are available in the `sssd::service::nss` class:
 
-* [`description`](#description)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`reconnection_retries`](#reconnection_retries)
-* [`fd_limit`](#fd_limit)
-* [`command`](#command)
-* [`enum_cache_timeout`](#enum_cache_timeout)
-* [`entry_cache_nowait_percentage`](#entry_cache_nowait_percentage)
-* [`entry_negative_timeout`](#entry_negative_timeout)
-* [`filter_users`](#filter_users)
-* [`filter_groups`](#filter_groups)
-* [`filter_users_in_groups`](#filter_users_in_groups)
-* [`override_homedir`](#override_homedir)
-* [`fallback_homedir`](#fallback_homedir)
-* [`override_shell`](#override_shell)
-* [`vetoed_shells`](#vetoed_shells)
-* [`default_shell`](#default_shell)
-* [`get_domains_timeout`](#get_domains_timeout)
-* [`memcache_timeout`](#memcache_timeout)
-* [`user_attributes`](#user_attributes)
-* [`custom_options`](#custom_options)
+* [`description`](#-sssd--service--nss--description)
+* [`debug_level`](#-sssd--service--nss--debug_level)
+* [`debug_timestamps`](#-sssd--service--nss--debug_timestamps)
+* [`debug_microseconds`](#-sssd--service--nss--debug_microseconds)
+* [`reconnection_retries`](#-sssd--service--nss--reconnection_retries)
+* [`fd_limit`](#-sssd--service--nss--fd_limit)
+* [`command`](#-sssd--service--nss--command)
+* [`enum_cache_timeout`](#-sssd--service--nss--enum_cache_timeout)
+* [`entry_cache_nowait_percentage`](#-sssd--service--nss--entry_cache_nowait_percentage)
+* [`entry_negative_timeout`](#-sssd--service--nss--entry_negative_timeout)
+* [`filter_users`](#-sssd--service--nss--filter_users)
+* [`filter_groups`](#-sssd--service--nss--filter_groups)
+* [`filter_users_in_groups`](#-sssd--service--nss--filter_users_in_groups)
+* [`override_homedir`](#-sssd--service--nss--override_homedir)
+* [`fallback_homedir`](#-sssd--service--nss--fallback_homedir)
+* [`override_shell`](#-sssd--service--nss--override_shell)
+* [`vetoed_shells`](#-sssd--service--nss--vetoed_shells)
+* [`default_shell`](#-sssd--service--nss--default_shell)
+* [`get_domains_timeout`](#-sssd--service--nss--get_domains_timeout)
+* [`memcache_timeout`](#-sssd--service--nss--memcache_timeout)
+* [`user_attributes`](#-sssd--service--nss--user_attributes)
+* [`custom_options`](#-sssd--service--nss--custom_options)
 
-##### <a name="description"></a>`description`
+##### <a name="-sssd--service--nss--description"></a>`description`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--service--nss--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::DebugLevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--service--nss--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
 
-##### <a name="reconnection_retries"></a>`reconnection_retries`
+##### <a name="-sssd--service--nss--debug_microseconds"></a>`debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--service--nss--reconnection_retries"></a>`reconnection_retries`
 
 Data type: `Integer`
 
@@ -712,23 +734,23 @@ Data type: `Integer`
 
 Default value: `3`
 
-##### <a name="fd_limit"></a>`fd_limit`
+##### <a name="-sssd--service--nss--fd_limit"></a>`fd_limit`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="command"></a>`command`
+##### <a name="-sssd--service--nss--command"></a>`command`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="enum_cache_timeout"></a>`enum_cache_timeout`
+##### <a name="-sssd--service--nss--enum_cache_timeout"></a>`enum_cache_timeout`
 
 Data type: `Integer`
 
@@ -736,7 +758,7 @@ Data type: `Integer`
 
 Default value: `120`
 
-##### <a name="entry_cache_nowait_percentage"></a>`entry_cache_nowait_percentage`
+##### <a name="-sssd--service--nss--entry_cache_nowait_percentage"></a>`entry_cache_nowait_percentage`
 
 Data type: `Integer`
 
@@ -744,7 +766,7 @@ Data type: `Integer`
 
 Default value: `0`
 
-##### <a name="entry_negative_timeout"></a>`entry_negative_timeout`
+##### <a name="-sssd--service--nss--entry_negative_timeout"></a>`entry_negative_timeout`
 
 Data type: `Integer`
 
@@ -752,7 +774,7 @@ Data type: `Integer`
 
 Default value: `15`
 
-##### <a name="filter_users"></a>`filter_users`
+##### <a name="-sssd--service--nss--filter_users"></a>`filter_users`
 
 Data type: `String`
 
@@ -760,7 +782,7 @@ Data type: `String`
 
 Default value: `'root'`
 
-##### <a name="filter_groups"></a>`filter_groups`
+##### <a name="-sssd--service--nss--filter_groups"></a>`filter_groups`
 
 Data type: `String`
 
@@ -768,79 +790,79 @@ Data type: `String`
 
 Default value: `'root'`
 
-##### <a name="filter_users_in_groups"></a>`filter_users_in_groups`
+##### <a name="-sssd--service--nss--filter_users_in_groups"></a>`filter_users_in_groups`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="override_homedir"></a>`override_homedir`
-
-Data type: `Optional[String]`
-
-
-
-Default value: ``undef``
-
-##### <a name="fallback_homedir"></a>`fallback_homedir`
+##### <a name="-sssd--service--nss--override_homedir"></a>`override_homedir`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="override_shell"></a>`override_shell`
-
-Data type: `Optional[String]`
-
-
-
-Default value: ``undef``
-
-##### <a name="vetoed_shells"></a>`vetoed_shells`
+##### <a name="-sssd--service--nss--fallback_homedir"></a>`fallback_homedir`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="default_shell"></a>`default_shell`
+##### <a name="-sssd--service--nss--override_shell"></a>`override_shell`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="get_domains_timeout"></a>`get_domains_timeout`
+##### <a name="-sssd--service--nss--vetoed_shells"></a>`vetoed_shells`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--service--nss--default_shell"></a>`default_shell`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--service--nss--get_domains_timeout"></a>`get_domains_timeout`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="memcache_timeout"></a>`memcache_timeout`
+##### <a name="-sssd--service--nss--memcache_timeout"></a>`memcache_timeout`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="user_attributes"></a>`user_attributes`
+##### <a name="-sssd--service--nss--user_attributes"></a>`user_attributes`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="custom_options"></a>`custom_options`
+##### <a name="-sssd--service--nss--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
 
@@ -851,9 +873,9 @@ added as a simple init pair key = value under the section in
 the sssd.conf file.
 No error checking will be performed.
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdservicepac"></a>`sssd::service::pac`
+### <a name="sssd--service--pac"></a>`sssd::service::pac`
 
 This class sets up the [pac] section of /etc/sssd.conf.
 
@@ -865,46 +887,46 @@ sssd.conf(5) man page.
 
 The following parameters are available in the `sssd::service::pac` class:
 
-* [`description`](#description)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`allowed_uids`](#allowed_uids)
-* [`custom_options`](#custom_options)
+* [`description`](#-sssd--service--pac--description)
+* [`debug_level`](#-sssd--service--pac--debug_level)
+* [`debug_timestamps`](#-sssd--service--pac--debug_timestamps)
+* [`debug_microseconds`](#-sssd--service--pac--debug_microseconds)
+* [`allowed_uids`](#-sssd--service--pac--allowed_uids)
+* [`custom_options`](#-sssd--service--pac--custom_options)
 
-##### <a name="description"></a>`description`
+##### <a name="-sssd--service--pac--description"></a>`description`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--service--pac--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::DebugLevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--service--pac--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
 
-##### <a name="allowed_uids"></a>`allowed_uids`
+##### <a name="-sssd--service--pac--debug_microseconds"></a>`debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--service--pac--allowed_uids"></a>`allowed_uids`
 
 Data type: `Array[String]`
 
@@ -912,7 +934,7 @@ Data type: `Array[String]`
 
 Default value: `[]`
 
-##### <a name="custom_options"></a>`custom_options`
+##### <a name="-sssd--service--pac--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
 
@@ -923,9 +945,9 @@ added as a simple init pair key = value under the section in
 the sssd.conf file.
 No error checking will be performed.
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdservicepam"></a>`sssd::service::pam`
+### <a name="sssd--service--pam"></a>`sssd::service::pam`
 
 The sssd::service::pam class.
 
@@ -933,56 +955,65 @@ The sssd::service::pam class.
 
 The following parameters are available in the `sssd::service::pam` class:
 
-* [`description`](#description)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`reconnection_retries`](#reconnection_retries)
-* [`command`](#command)
-* [`offline_credentials_expiration`](#offline_credentials_expiration)
-* [`offline_failed_login_attempts`](#offline_failed_login_attempts)
-* [`offline_failed_login_delay`](#offline_failed_login_delay)
-* [`pam_verbosity`](#pam_verbosity)
-* [`pam_id_timeout`](#pam_id_timeout)
-* [`pam_pwd_expiration_warning`](#pam_pwd_expiration_warning)
-* [`get_domains_timeout`](#get_domains_timeout)
-* [`pam_trusted_users`](#pam_trusted_users)
-* [`pam_public_domains`](#pam_public_domains)
-* [`custom_options`](#custom_options)
+* [`description`](#-sssd--service--pam--description)
+* [`debug_level`](#-sssd--service--pam--debug_level)
+* [`debug_timestamps`](#-sssd--service--pam--debug_timestamps)
+* [`debug_microseconds`](#-sssd--service--pam--debug_microseconds)
+* [`pam_cert_auth`](#-sssd--service--pam--pam_cert_auth)
+* [`reconnection_retries`](#-sssd--service--pam--reconnection_retries)
+* [`command`](#-sssd--service--pam--command)
+* [`offline_credentials_expiration`](#-sssd--service--pam--offline_credentials_expiration)
+* [`offline_failed_login_attempts`](#-sssd--service--pam--offline_failed_login_attempts)
+* [`offline_failed_login_delay`](#-sssd--service--pam--offline_failed_login_delay)
+* [`pam_verbosity`](#-sssd--service--pam--pam_verbosity)
+* [`pam_id_timeout`](#-sssd--service--pam--pam_id_timeout)
+* [`pam_pwd_expiration_warning`](#-sssd--service--pam--pam_pwd_expiration_warning)
+* [`get_domains_timeout`](#-sssd--service--pam--get_domains_timeout)
+* [`pam_trusted_users`](#-sssd--service--pam--pam_trusted_users)
+* [`pam_public_domains`](#-sssd--service--pam--pam_public_domains)
+* [`custom_options`](#-sssd--service--pam--custom_options)
 
-##### <a name="description"></a>`description`
+##### <a name="-sssd--service--pam--description"></a>`description`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--service--pam--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::DebugLevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--service--pam--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
 
-##### <a name="reconnection_retries"></a>`reconnection_retries`
+##### <a name="-sssd--service--pam--debug_microseconds"></a>`debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--service--pam--pam_cert_auth"></a>`pam_cert_auth`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--service--pam--reconnection_retries"></a>`reconnection_retries`
 
 Data type: `Integer`
 
@@ -990,15 +1021,15 @@ Data type: `Integer`
 
 Default value: `3`
 
-##### <a name="command"></a>`command`
+##### <a name="-sssd--service--pam--command"></a>`command`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="offline_credentials_expiration"></a>`offline_credentials_expiration`
+##### <a name="-sssd--service--pam--offline_credentials_expiration"></a>`offline_credentials_expiration`
 
 Data type: `Integer`
 
@@ -1006,7 +1037,7 @@ Data type: `Integer`
 
 Default value: `0`
 
-##### <a name="offline_failed_login_attempts"></a>`offline_failed_login_attempts`
+##### <a name="-sssd--service--pam--offline_failed_login_attempts"></a>`offline_failed_login_attempts`
 
 Data type: `Integer`
 
@@ -1014,7 +1045,7 @@ Data type: `Integer`
 
 Default value: `3`
 
-##### <a name="offline_failed_login_delay"></a>`offline_failed_login_delay`
+##### <a name="-sssd--service--pam--offline_failed_login_delay"></a>`offline_failed_login_delay`
 
 Data type: `Integer`
 
@@ -1022,7 +1053,7 @@ Data type: `Integer`
 
 Default value: `5`
 
-##### <a name="pam_verbosity"></a>`pam_verbosity`
+##### <a name="-sssd--service--pam--pam_verbosity"></a>`pam_verbosity`
 
 Data type: `Integer`
 
@@ -1030,7 +1061,7 @@ Data type: `Integer`
 
 Default value: `1`
 
-##### <a name="pam_id_timeout"></a>`pam_id_timeout`
+##### <a name="-sssd--service--pam--pam_id_timeout"></a>`pam_id_timeout`
 
 Data type: `Integer`
 
@@ -1038,7 +1069,7 @@ Data type: `Integer`
 
 Default value: `5`
 
-##### <a name="pam_pwd_expiration_warning"></a>`pam_pwd_expiration_warning`
+##### <a name="-sssd--service--pam--pam_pwd_expiration_warning"></a>`pam_pwd_expiration_warning`
 
 Data type: `Integer`
 
@@ -1046,39 +1077,39 @@ Data type: `Integer`
 
 Default value: `7`
 
-##### <a name="get_domains_timeout"></a>`get_domains_timeout`
+##### <a name="-sssd--service--pam--get_domains_timeout"></a>`get_domains_timeout`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="pam_trusted_users"></a>`pam_trusted_users`
-
-Data type: `Optional[String]`
-
-
-
-Default value: ``undef``
-
-##### <a name="pam_public_domains"></a>`pam_public_domains`
+##### <a name="-sssd--service--pam--pam_trusted_users"></a>`pam_trusted_users`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="custom_options"></a>`custom_options`
+##### <a name="-sssd--service--pam--pam_public_domains"></a>`pam_public_domains`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--service--pam--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdservicessh"></a>`sssd::service::ssh`
+### <a name="sssd--service--ssh"></a>`sssd::service::ssh`
 
 This class sets up the [ssh] section of /etc/sssd.conf.
 
@@ -1090,63 +1121,63 @@ sssd.conf(5) man page.
 
 The following parameters are available in the `sssd::service::ssh` class:
 
-* [`description`](#description)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`ssh_hash_known_hosts`](#ssh_hash_known_hosts)
-* [`ssh_known_hosts_timeout`](#ssh_known_hosts_timeout)
-* [`custom_options`](#custom_options)
+* [`description`](#-sssd--service--ssh--description)
+* [`debug_level`](#-sssd--service--ssh--debug_level)
+* [`debug_timestamps`](#-sssd--service--ssh--debug_timestamps)
+* [`debug_microseconds`](#-sssd--service--ssh--debug_microseconds)
+* [`ssh_hash_known_hosts`](#-sssd--service--ssh--ssh_hash_known_hosts)
+* [`ssh_known_hosts_timeout`](#-sssd--service--ssh--ssh_known_hosts_timeout)
+* [`custom_options`](#-sssd--service--ssh--custom_options)
 
-##### <a name="description"></a>`description`
+##### <a name="-sssd--service--ssh--description"></a>`description`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--service--ssh--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::DebugLevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--service--ssh--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
 
-##### <a name="ssh_hash_known_hosts"></a>`ssh_hash_known_hosts`
+##### <a name="-sssd--service--ssh--debug_microseconds"></a>`debug_microseconds`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `false`
 
-##### <a name="ssh_known_hosts_timeout"></a>`ssh_known_hosts_timeout`
+##### <a name="-sssd--service--ssh--ssh_hash_known_hosts"></a>`ssh_hash_known_hosts`
+
+Data type: `Boolean`
+
+
+
+Default value: `true`
+
+##### <a name="-sssd--service--ssh--ssh_known_hosts_timeout"></a>`ssh_known_hosts_timeout`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="custom_options"></a>`custom_options`
+##### <a name="-sssd--service--ssh--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
 
@@ -1157,9 +1188,9 @@ added as a simple init pair key = value under the section in
 the sssd.conf file.
 No error checking will be performed.
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdservicesudo"></a>`sssd::service::sudo`
+### <a name="sssd--service--sudo"></a>`sssd::service::sudo`
 
 This class sets up the [sudo] section of /etc/sssd.conf.
 
@@ -1171,47 +1202,47 @@ sssd.conf(5) man page.
 
 The following parameters are available in the `sssd::service::sudo` class:
 
-* [`description`](#description)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`sudo_threshold`](#sudo_threshold)
-* [`sudo_timed`](#sudo_timed)
-* [`custom_options`](#custom_options)
+* [`description`](#-sssd--service--sudo--description)
+* [`debug_level`](#-sssd--service--sudo--debug_level)
+* [`debug_timestamps`](#-sssd--service--sudo--debug_timestamps)
+* [`debug_microseconds`](#-sssd--service--sudo--debug_microseconds)
+* [`sudo_threshold`](#-sssd--service--sudo--sudo_threshold)
+* [`sudo_timed`](#-sssd--service--sudo--sudo_timed)
+* [`custom_options`](#-sssd--service--sudo--custom_options)
 
-##### <a name="description"></a>`description`
+##### <a name="-sssd--service--sudo--description"></a>`description`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--service--sudo--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::Debuglevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--service--sudo--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
 
-##### <a name="sudo_threshold"></a>`sudo_threshold`
+##### <a name="-sssd--service--sudo--debug_microseconds"></a>`debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--service--sudo--sudo_threshold"></a>`sudo_threshold`
 
 Data type: `Integer[1]`
 
@@ -1219,15 +1250,15 @@ Data type: `Integer[1]`
 
 Default value: `50`
 
-##### <a name="sudo_timed"></a>`sudo_timed`
+##### <a name="-sssd--service--sudo--sudo_timed"></a>`sudo_timed`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="custom_options"></a>`custom_options`
+##### <a name="-sssd--service--sudo--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
 
@@ -1239,11 +1270,11 @@ key = value
 under the section in the sssd.conf file.
 No error checking will be performed.
 
-Default value: ``undef``
+Default value: `undef`
 
 ## Defined types
 
-### <a name="sssdconfigentry"></a>`sssd::config::entry`
+### <a name="sssd--config--entry"></a>`sssd::config::entry`
 
 Add an entry to the /etc/sssd/conf.d directory
 
@@ -1251,23 +1282,23 @@ Add an entry to the /etc/sssd/conf.d directory
 
 The following parameters are available in the `sssd::config::entry` defined type:
 
-* [`name`](#name)
-* [`content`](#content)
-* [`order`](#order)
+* [`name`](#-sssd--config--entry--name)
+* [`content`](#-sssd--config--entry--content)
+* [`order`](#-sssd--config--entry--order)
 
-##### <a name="name"></a>`name`
+##### <a name="-sssd--config--entry--name"></a>`name`
 
 A unique name that will be used for generating the target filename
 
 Should not be fully qualified
 
-##### <a name="content"></a>`content`
+##### <a name="-sssd--config--entry--content"></a>`content`
 
 Data type: `String`
 
 The content of the target file
 
-##### <a name="order"></a>`order`
+##### <a name="-sssd--config--entry--order"></a>`order`
 
 Data type: `Integer[0]`
 
@@ -1275,7 +1306,7 @@ Data type: `Integer[0]`
 
 Default value: `50`
 
-### <a name="sssddomain"></a>`sssd::domain`
+### <a name="sssd--domain"></a>`sssd::domain`
 
 Define: sssd::domain
 
@@ -1300,95 +1331,96 @@ configuration options can be found in the sssd.conf(5) man page.
 
 The following parameters are available in the `sssd::domain` defined type:
 
-* [`name`](#name)
-* [`id_provider`](#id_provider)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`description`](#description)
-* [`min_id`](#min_id)
-* [`max_id`](#max_id)
-* [`enumerate`](#enumerate)
-* [`subdomain_enumerate`](#subdomain_enumerate)
-* [`force_timeout`](#force_timeout)
-* [`entry_cache_timeout`](#entry_cache_timeout)
-* [`entry_cache_user_timeout`](#entry_cache_user_timeout)
-* [`entry_cache_group_timeout`](#entry_cache_group_timeout)
-* [`entry_cache_netgroup_timeout`](#entry_cache_netgroup_timeout)
-* [`entry_cache_service_timeout`](#entry_cache_service_timeout)
-* [`entry_cache_sudo_timeout`](#entry_cache_sudo_timeout)
-* [`entry_cache_autofs_timeout`](#entry_cache_autofs_timeout)
-* [`entry_cache_ssh_host_timeout`](#entry_cache_ssh_host_timeout)
-* [`refresh_expired_interval`](#refresh_expired_interval)
-* [`cache_credentials`](#cache_credentials)
-* [`account_cache_expiration`](#account_cache_expiration)
-* [`pwd_expiration_warning`](#pwd_expiration_warning)
-* [`use_fully_qualified_names`](#use_fully_qualified_names)
-* [`ignore_group_members`](#ignore_group_members)
-* [`access_provider`](#access_provider)
-* [`auth_provider`](#auth_provider)
-* [`chpass_provider`](#chpass_provider)
-* [`sudo_provider`](#sudo_provider)
-* [`selinux_provider`](#selinux_provider)
-* [`subdomains_provider`](#subdomains_provider)
-* [`autofs_provider`](#autofs_provider)
-* [`hostid_provider`](#hostid_provider)
-* [`re_expression`](#re_expression)
-* [`full_name_format`](#full_name_format)
-* [`lookup_family_order`](#lookup_family_order)
-* [`dns_resolver_timeout`](#dns_resolver_timeout)
-* [`dns_discovery_domain`](#dns_discovery_domain)
-* [`override_gid`](#override_gid)
-* [`case_sensitive`](#case_sensitive)
-* [`proxy_fast_alias`](#proxy_fast_alias)
-* [`realmd_tags`](#realmd_tags)
-* [`proxy_pam_target`](#proxy_pam_target)
-* [`proxy_lib_name`](#proxy_lib_name)
+* [`name`](#-sssd--domain--name)
+* [`id_provider`](#-sssd--domain--id_provider)
+* [`debug_level`](#-sssd--domain--debug_level)
+* [`debug_timestamps`](#-sssd--domain--debug_timestamps)
+* [`debug_microseconds`](#-sssd--domain--debug_microseconds)
+* [`description`](#-sssd--domain--description)
+* [`min_id`](#-sssd--domain--min_id)
+* [`max_id`](#-sssd--domain--max_id)
+* [`enumerate`](#-sssd--domain--enumerate)
+* [`subdomain_enumerate`](#-sssd--domain--subdomain_enumerate)
+* [`force_timeout`](#-sssd--domain--force_timeout)
+* [`entry_cache_timeout`](#-sssd--domain--entry_cache_timeout)
+* [`entry_cache_user_timeout`](#-sssd--domain--entry_cache_user_timeout)
+* [`entry_cache_group_timeout`](#-sssd--domain--entry_cache_group_timeout)
+* [`entry_cache_netgroup_timeout`](#-sssd--domain--entry_cache_netgroup_timeout)
+* [`entry_cache_service_timeout`](#-sssd--domain--entry_cache_service_timeout)
+* [`entry_cache_sudo_timeout`](#-sssd--domain--entry_cache_sudo_timeout)
+* [`entry_cache_autofs_timeout`](#-sssd--domain--entry_cache_autofs_timeout)
+* [`entry_cache_ssh_host_timeout`](#-sssd--domain--entry_cache_ssh_host_timeout)
+* [`refresh_expired_interval`](#-sssd--domain--refresh_expired_interval)
+* [`cache_credentials`](#-sssd--domain--cache_credentials)
+* [`account_cache_expiration`](#-sssd--domain--account_cache_expiration)
+* [`pwd_expiration_warning`](#-sssd--domain--pwd_expiration_warning)
+* [`use_fully_qualified_names`](#-sssd--domain--use_fully_qualified_names)
+* [`ignore_group_members`](#-sssd--domain--ignore_group_members)
+* [`access_provider`](#-sssd--domain--access_provider)
+* [`auth_provider`](#-sssd--domain--auth_provider)
+* [`chpass_provider`](#-sssd--domain--chpass_provider)
+* [`sudo_provider`](#-sssd--domain--sudo_provider)
+* [`selinux_provider`](#-sssd--domain--selinux_provider)
+* [`subdomains_provider`](#-sssd--domain--subdomains_provider)
+* [`autofs_provider`](#-sssd--domain--autofs_provider)
+* [`hostid_provider`](#-sssd--domain--hostid_provider)
+* [`re_expression`](#-sssd--domain--re_expression)
+* [`full_name_format`](#-sssd--domain--full_name_format)
+* [`lookup_family_order`](#-sssd--domain--lookup_family_order)
+* [`dns_resolver_timeout`](#-sssd--domain--dns_resolver_timeout)
+* [`dns_discovery_domain`](#-sssd--domain--dns_discovery_domain)
+* [`override_gid`](#-sssd--domain--override_gid)
+* [`case_sensitive`](#-sssd--domain--case_sensitive)
+* [`proxy_fast_alias`](#-sssd--domain--proxy_fast_alias)
+* [`realmd_tags`](#-sssd--domain--realmd_tags)
+* [`proxy_pam_target`](#-sssd--domain--proxy_pam_target)
+* [`proxy_lib_name`](#-sssd--domain--proxy_lib_name)
+* [`ldap_user_search_filter`](#-sssd--domain--ldap_user_search_filter)
 
-##### <a name="name"></a>`name`
+##### <a name="-sssd--domain--name"></a>`name`
 
 The name of the domain.
 This will be placed at [domain/$name] in the configuration file.
 
-##### <a name="id_provider"></a>`id_provider`
+##### <a name="-sssd--domain--id_provider"></a>`id_provider`
 
 Data type: `Sssd::IdProvider`
 
 
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--domain--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::DebugLevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--domain--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
 
-##### <a name="description"></a>`description`
+##### <a name="-sssd--domain--debug_microseconds"></a>`debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--domain--description"></a>`description`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="min_id"></a>`min_id`
+##### <a name="-sssd--domain--min_id"></a>`min_id`
 
 Data type: `Integer[0]`
 
@@ -1396,7 +1428,7 @@ Data type: `Integer[0]`
 
 Default value: `1`
 
-##### <a name="max_id"></a>`max_id`
+##### <a name="-sssd--domain--max_id"></a>`max_id`
 
 Data type: `Integer[0]`
 
@@ -1404,111 +1436,111 @@ Data type: `Integer[0]`
 
 Default value: `0`
 
-##### <a name="enumerate"></a>`enumerate`
+##### <a name="-sssd--domain--enumerate"></a>`enumerate`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="subdomain_enumerate"></a>`subdomain_enumerate`
-
-Data type: `Boolean`
-
-
-
-Default value: ``false``
-
-##### <a name="force_timeout"></a>`force_timeout`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: ``undef``
-
-##### <a name="entry_cache_timeout"></a>`entry_cache_timeout`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: ``undef``
-
-##### <a name="entry_cache_user_timeout"></a>`entry_cache_user_timeout`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: ``undef``
-
-##### <a name="entry_cache_group_timeout"></a>`entry_cache_group_timeout`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: ``undef``
-
-##### <a name="entry_cache_netgroup_timeout"></a>`entry_cache_netgroup_timeout`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: ``undef``
-
-##### <a name="entry_cache_service_timeout"></a>`entry_cache_service_timeout`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: ``undef``
-
-##### <a name="entry_cache_sudo_timeout"></a>`entry_cache_sudo_timeout`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: ``undef``
-
-##### <a name="entry_cache_autofs_timeout"></a>`entry_cache_autofs_timeout`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: ``undef``
-
-##### <a name="entry_cache_ssh_host_timeout"></a>`entry_cache_ssh_host_timeout`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: ``undef``
-
-##### <a name="refresh_expired_interval"></a>`refresh_expired_interval`
-
-Data type: `Optional[Integer]`
-
-
-
-Default value: ``undef``
-
-##### <a name="cache_credentials"></a>`cache_credentials`
+##### <a name="-sssd--domain--subdomain_enumerate"></a>`subdomain_enumerate`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="account_cache_expiration"></a>`account_cache_expiration`
+##### <a name="-sssd--domain--force_timeout"></a>`force_timeout`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--entry_cache_timeout"></a>`entry_cache_timeout`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--entry_cache_user_timeout"></a>`entry_cache_user_timeout`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--entry_cache_group_timeout"></a>`entry_cache_group_timeout`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--entry_cache_netgroup_timeout"></a>`entry_cache_netgroup_timeout`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--entry_cache_service_timeout"></a>`entry_cache_service_timeout`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--entry_cache_sudo_timeout"></a>`entry_cache_sudo_timeout`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--entry_cache_autofs_timeout"></a>`entry_cache_autofs_timeout`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--entry_cache_ssh_host_timeout"></a>`entry_cache_ssh_host_timeout`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--refresh_expired_interval"></a>`refresh_expired_interval`
+
+Data type: `Optional[Integer]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--cache_credentials"></a>`cache_credentials`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--domain--account_cache_expiration"></a>`account_cache_expiration`
 
 Data type: `Integer[0]`
 
@@ -1516,119 +1548,119 @@ Data type: `Integer[0]`
 
 Default value: `0`
 
-##### <a name="pwd_expiration_warning"></a>`pwd_expiration_warning`
+##### <a name="-sssd--domain--pwd_expiration_warning"></a>`pwd_expiration_warning`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="use_fully_qualified_names"></a>`use_fully_qualified_names`
-
-Data type: `Boolean`
-
-
-
-Default value: ``false``
-
-##### <a name="ignore_group_members"></a>`ignore_group_members`
+##### <a name="-sssd--domain--use_fully_qualified_names"></a>`use_fully_qualified_names`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `false`
 
-##### <a name="access_provider"></a>`access_provider`
+##### <a name="-sssd--domain--ignore_group_members"></a>`ignore_group_members`
+
+Data type: `Boolean`
+
+
+
+Default value: `true`
+
+##### <a name="-sssd--domain--access_provider"></a>`access_provider`
 
 Data type: `Optional[Sssd::AccessProvider]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="auth_provider"></a>`auth_provider`
+##### <a name="-sssd--domain--auth_provider"></a>`auth_provider`
 
 Data type: `Optional[Sssd::AuthProvider]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="chpass_provider"></a>`chpass_provider`
+##### <a name="-sssd--domain--chpass_provider"></a>`chpass_provider`
 
 Data type: `Optional[Sssd::ChpassProvider]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="sudo_provider"></a>`sudo_provider`
+##### <a name="-sssd--domain--sudo_provider"></a>`sudo_provider`
 
 Data type: `Optional[Enum['ldap', 'ipa','ad','none']]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="selinux_provider"></a>`selinux_provider`
+##### <a name="-sssd--domain--selinux_provider"></a>`selinux_provider`
 
 Data type: `Optional[Enum['ipa', 'none']]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="subdomains_provider"></a>`subdomains_provider`
+##### <a name="-sssd--domain--subdomains_provider"></a>`subdomains_provider`
 
 Data type: `Optional[Enum['ipa', 'ad','none']]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="autofs_provider"></a>`autofs_provider`
+##### <a name="-sssd--domain--autofs_provider"></a>`autofs_provider`
 
-Data type: `Optional[Enum['ldap', 'ipa','none']]`
+Data type: `Optional[Enum['ad', 'ldap', 'ipa','none']]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="hostid_provider"></a>`hostid_provider`
+##### <a name="-sssd--domain--hostid_provider"></a>`hostid_provider`
 
 Data type: `Optional[Enum['ipa', 'none']]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="re_expression"></a>`re_expression`
-
-Data type: `Optional[String]`
-
-
-
-Default value: ``undef``
-
-##### <a name="full_name_format"></a>`full_name_format`
+##### <a name="-sssd--domain--re_expression"></a>`re_expression`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="lookup_family_order"></a>`lookup_family_order`
+##### <a name="-sssd--domain--full_name_format"></a>`full_name_format`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dns_resolver_timeout"></a>`dns_resolver_timeout`
+##### <a name="-sssd--domain--lookup_family_order"></a>`lookup_family_order`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--dns_resolver_timeout"></a>`dns_resolver_timeout`
 
 Data type: `Integer[0]`
 
@@ -1636,63 +1668,71 @@ Data type: `Integer[0]`
 
 Default value: `5`
 
-##### <a name="dns_discovery_domain"></a>`dns_discovery_domain`
+##### <a name="-sssd--domain--dns_discovery_domain"></a>`dns_discovery_domain`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="override_gid"></a>`override_gid`
+##### <a name="-sssd--domain--override_gid"></a>`override_gid`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="case_sensitive"></a>`case_sensitive`
+##### <a name="-sssd--domain--case_sensitive"></a>`case_sensitive`
 
 Data type: `Variant[Boolean,Enum['preserving']]`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="proxy_fast_alias"></a>`proxy_fast_alias`
+##### <a name="-sssd--domain--proxy_fast_alias"></a>`proxy_fast_alias`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="realmd_tags"></a>`realmd_tags`
-
-Data type: `Optional[String]`
-
-
-
-Default value: ``undef``
-
-##### <a name="proxy_pam_target"></a>`proxy_pam_target`
+##### <a name="-sssd--domain--realmd_tags"></a>`realmd_tags`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="proxy_lib_name"></a>`proxy_lib_name`
+##### <a name="-sssd--domain--proxy_pam_target"></a>`proxy_pam_target`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdproviderad"></a>`sssd::provider::ad`
+##### <a name="-sssd--domain--proxy_lib_name"></a>`proxy_lib_name`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--ldap_user_search_filter"></a>`ldap_user_search_filter`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+### <a name="sssd--provider--ad"></a>`sssd::provider::ad`
 
 NOTE: You MUST connect the system to the domain prior to using this defined type.
 
@@ -1706,68 +1746,68 @@ from sssd-ad(5).
 
 The following parameters are available in the `sssd::provider::ad` defined type:
 
-* [`ad_domain`](#ad_domain)
-* [`ad_enabled_domains`](#ad_enabled_domains)
-* [`ad_servers`](#ad_servers)
-* [`ad_backup_servers`](#ad_backup_servers)
-* [`ad_hostname`](#ad_hostname)
-* [`ad_enable_dns_sites`](#ad_enable_dns_sites)
-* [`ad_access_filters`](#ad_access_filters)
-* [`ad_site`](#ad_site)
-* [`ad_enable_gc`](#ad_enable_gc)
-* [`ad_gpo_access_control`](#ad_gpo_access_control)
-* [`ad_gpo_cache_timeout`](#ad_gpo_cache_timeout)
-* [`ad_gpo_map_interactive`](#ad_gpo_map_interactive)
-* [`ad_gpo_map_remote_interactive`](#ad_gpo_map_remote_interactive)
-* [`ad_gpo_map_network`](#ad_gpo_map_network)
-* [`ad_gpo_map_batch`](#ad_gpo_map_batch)
-* [`ad_gpo_map_service`](#ad_gpo_map_service)
-* [`ad_gpo_map_permit`](#ad_gpo_map_permit)
-* [`ad_gpo_map_deny`](#ad_gpo_map_deny)
-* [`ad_gpo_default_right`](#ad_gpo_default_right)
-* [`ad_gpo_implicit_deny`](#ad_gpo_implicit_deny)
-* [`ad_gpo_ignore_unreadable`](#ad_gpo_ignore_unreadable)
-* [`ad_maximum_machine_account_password_age`](#ad_maximum_machine_account_password_age)
-* [`ad_machine_account_password_renewal_opts`](#ad_machine_account_password_renewal_opts)
-* [`default_shell`](#default_shell)
-* [`dyndns_update`](#dyndns_update)
-* [`dyndns_ttl`](#dyndns_ttl)
-* [`dyndns_ifaces`](#dyndns_ifaces)
-* [`dyndns_refresh_interval`](#dyndns_refresh_interval)
-* [`dyndns_update_ptr`](#dyndns_update_ptr)
-* [`dyndns_force_tcp`](#dyndns_force_tcp)
-* [`dyndns_server`](#dyndns_server)
-* [`override_homedir`](#override_homedir)
-* [`fallback_homedir`](#fallback_homedir)
-* [`homedir_substring`](#homedir_substring)
-* [`krb5_realm`](#krb5_realm)
-* [`krb5_use_enterprise_principal`](#krb5_use_enterprise_principal)
-* [`krb5_store_password_if_offline`](#krb5_store_password_if_offline)
-* [`krb5_confd_path`](#krb5_confd_path)
-* [`ldap_id_mapping`](#ldap_id_mapping)
-* [`ldap_schema`](#ldap_schema)
-* [`ldap_idmap_range_min`](#ldap_idmap_range_min)
-* [`ldap_idmap_range_max`](#ldap_idmap_range_max)
-* [`ldap_idmap_range_size`](#ldap_idmap_range_size)
-* [`ldap_idmap_default_domain_sid`](#ldap_idmap_default_domain_sid)
-* [`ldap_idmap_default_domain`](#ldap_idmap_default_domain)
-* [`ldap_idmap_autorid_compat`](#ldap_idmap_autorid_compat)
-* [`ldap_idmap_helper_table_size`](#ldap_idmap_helper_table_size)
-* [`ldap_use_tokengroups`](#ldap_use_tokengroups)
-* [`ldap_group_objectsid`](#ldap_group_objectsid)
-* [`ldap_user_objectsid`](#ldap_user_objectsid)
-* [`ldap_user_extra_attrs`](#ldap_user_extra_attrs)
-* [`ldap_user_ssh_public_key`](#ldap_user_ssh_public_key)
+* [`ad_domain`](#-sssd--provider--ad--ad_domain)
+* [`ad_enabled_domains`](#-sssd--provider--ad--ad_enabled_domains)
+* [`ad_servers`](#-sssd--provider--ad--ad_servers)
+* [`ad_backup_servers`](#-sssd--provider--ad--ad_backup_servers)
+* [`ad_hostname`](#-sssd--provider--ad--ad_hostname)
+* [`ad_enable_dns_sites`](#-sssd--provider--ad--ad_enable_dns_sites)
+* [`ad_access_filters`](#-sssd--provider--ad--ad_access_filters)
+* [`ad_site`](#-sssd--provider--ad--ad_site)
+* [`ad_enable_gc`](#-sssd--provider--ad--ad_enable_gc)
+* [`ad_gpo_access_control`](#-sssd--provider--ad--ad_gpo_access_control)
+* [`ad_gpo_cache_timeout`](#-sssd--provider--ad--ad_gpo_cache_timeout)
+* [`ad_gpo_map_interactive`](#-sssd--provider--ad--ad_gpo_map_interactive)
+* [`ad_gpo_map_remote_interactive`](#-sssd--provider--ad--ad_gpo_map_remote_interactive)
+* [`ad_gpo_map_network`](#-sssd--provider--ad--ad_gpo_map_network)
+* [`ad_gpo_map_batch`](#-sssd--provider--ad--ad_gpo_map_batch)
+* [`ad_gpo_map_service`](#-sssd--provider--ad--ad_gpo_map_service)
+* [`ad_gpo_map_permit`](#-sssd--provider--ad--ad_gpo_map_permit)
+* [`ad_gpo_map_deny`](#-sssd--provider--ad--ad_gpo_map_deny)
+* [`ad_gpo_default_right`](#-sssd--provider--ad--ad_gpo_default_right)
+* [`ad_gpo_implicit_deny`](#-sssd--provider--ad--ad_gpo_implicit_deny)
+* [`ad_gpo_ignore_unreadable`](#-sssd--provider--ad--ad_gpo_ignore_unreadable)
+* [`ad_maximum_machine_account_password_age`](#-sssd--provider--ad--ad_maximum_machine_account_password_age)
+* [`ad_machine_account_password_renewal_opts`](#-sssd--provider--ad--ad_machine_account_password_renewal_opts)
+* [`default_shell`](#-sssd--provider--ad--default_shell)
+* [`dyndns_update`](#-sssd--provider--ad--dyndns_update)
+* [`dyndns_ttl`](#-sssd--provider--ad--dyndns_ttl)
+* [`dyndns_ifaces`](#-sssd--provider--ad--dyndns_ifaces)
+* [`dyndns_refresh_interval`](#-sssd--provider--ad--dyndns_refresh_interval)
+* [`dyndns_update_ptr`](#-sssd--provider--ad--dyndns_update_ptr)
+* [`dyndns_force_tcp`](#-sssd--provider--ad--dyndns_force_tcp)
+* [`dyndns_server`](#-sssd--provider--ad--dyndns_server)
+* [`override_homedir`](#-sssd--provider--ad--override_homedir)
+* [`fallback_homedir`](#-sssd--provider--ad--fallback_homedir)
+* [`homedir_substring`](#-sssd--provider--ad--homedir_substring)
+* [`krb5_realm`](#-sssd--provider--ad--krb5_realm)
+* [`krb5_use_enterprise_principal`](#-sssd--provider--ad--krb5_use_enterprise_principal)
+* [`krb5_store_password_if_offline`](#-sssd--provider--ad--krb5_store_password_if_offline)
+* [`krb5_confd_path`](#-sssd--provider--ad--krb5_confd_path)
+* [`ldap_id_mapping`](#-sssd--provider--ad--ldap_id_mapping)
+* [`ldap_schema`](#-sssd--provider--ad--ldap_schema)
+* [`ldap_idmap_range_min`](#-sssd--provider--ad--ldap_idmap_range_min)
+* [`ldap_idmap_range_max`](#-sssd--provider--ad--ldap_idmap_range_max)
+* [`ldap_idmap_range_size`](#-sssd--provider--ad--ldap_idmap_range_size)
+* [`ldap_idmap_default_domain_sid`](#-sssd--provider--ad--ldap_idmap_default_domain_sid)
+* [`ldap_idmap_default_domain`](#-sssd--provider--ad--ldap_idmap_default_domain)
+* [`ldap_idmap_autorid_compat`](#-sssd--provider--ad--ldap_idmap_autorid_compat)
+* [`ldap_idmap_helper_table_size`](#-sssd--provider--ad--ldap_idmap_helper_table_size)
+* [`ldap_use_tokengroups`](#-sssd--provider--ad--ldap_use_tokengroups)
+* [`ldap_group_objectsid`](#-sssd--provider--ad--ldap_group_objectsid)
+* [`ldap_user_objectsid`](#-sssd--provider--ad--ldap_user_objectsid)
+* [`ldap_user_extra_attrs`](#-sssd--provider--ad--ldap_user_extra_attrs)
+* [`ldap_user_ssh_public_key`](#-sssd--provider--ad--ldap_user_ssh_public_key)
 
-##### <a name="ad_domain"></a>`ad_domain`
+##### <a name="-sssd--provider--ad--ad_domain"></a>`ad_domain`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_enabled_domains"></a>`ad_enabled_domains`
+##### <a name="-sssd--provider--ad--ad_enabled_domains"></a>`ad_enabled_domains`
 
 Data type: `Optional[Array[String[1],1]]`
 
@@ -1776,9 +1816,9 @@ An explicit list of AD enabled domains
 * An error will be raised if ``ad_domain`` is specified and not in this
   list
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_servers"></a>`ad_servers`
+##### <a name="-sssd--provider--ad--ad_servers"></a>`ad_servers`
 
 Data type: `Optional[Array[Variant[Simplib::Hostname, Enum['_srv_']]]]`
 
@@ -1786,9 +1826,9 @@ A list of AD servers in failover order
 
 * Ignored if ``autodiscovery`` is enabled
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_backup_servers"></a>`ad_backup_servers`
+##### <a name="-sssd--provider--ad--ad_backup_servers"></a>`ad_backup_servers`
 
 Data type: `Optional[Array[Simplib::Hostname,1]]`
 
@@ -1796,185 +1836,185 @@ A list of AD backup servers in failover order
 
 * Ignored if ``autodiscovery`` is enabled
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_hostname"></a>`ad_hostname`
+##### <a name="-sssd--provider--ad--ad_hostname"></a>`ad_hostname`
 
 Data type: `Optional[Simplib::Hostname]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_enable_dns_sites"></a>`ad_enable_dns_sites`
+##### <a name="-sssd--provider--ad--ad_enable_dns_sites"></a>`ad_enable_dns_sites`
 
 Data type: `Optional[Boolean]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_access_filters"></a>`ad_access_filters`
+##### <a name="-sssd--provider--ad--ad_access_filters"></a>`ad_access_filters`
 
 Data type: `Optional[Array[String[1],1]]`
 
 A list of access filters for the system
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_site"></a>`ad_site`
+##### <a name="-sssd--provider--ad--ad_site"></a>`ad_site`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_enable_gc"></a>`ad_enable_gc`
+##### <a name="-sssd--provider--ad--ad_enable_gc"></a>`ad_enable_gc`
 
 Data type: `Optional[Boolean]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_gpo_access_control"></a>`ad_gpo_access_control`
+##### <a name="-sssd--provider--ad--ad_gpo_access_control"></a>`ad_gpo_access_control`
 
 Data type: `Optional[Enum['disabled','enforcing','permissive']]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_gpo_cache_timeout"></a>`ad_gpo_cache_timeout`
+##### <a name="-sssd--provider--ad--ad_gpo_cache_timeout"></a>`ad_gpo_cache_timeout`
 
 Data type: `Optional[Integer[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_gpo_map_interactive"></a>`ad_gpo_map_interactive`
-
-Data type: `Optional[Array[String[1],1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ad_gpo_map_remote_interactive"></a>`ad_gpo_map_remote_interactive`
+##### <a name="-sssd--provider--ad--ad_gpo_map_interactive"></a>`ad_gpo_map_interactive`
 
 Data type: `Optional[Array[String[1],1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_gpo_map_network"></a>`ad_gpo_map_network`
-
-Data type: `Optional[Array[String[1],1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ad_gpo_map_batch"></a>`ad_gpo_map_batch`
+##### <a name="-sssd--provider--ad--ad_gpo_map_remote_interactive"></a>`ad_gpo_map_remote_interactive`
 
 Data type: `Optional[Array[String[1],1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_gpo_map_service"></a>`ad_gpo_map_service`
-
-Data type: `Optional[Array[String[1],1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ad_gpo_map_permit"></a>`ad_gpo_map_permit`
+##### <a name="-sssd--provider--ad--ad_gpo_map_network"></a>`ad_gpo_map_network`
 
 Data type: `Optional[Array[String[1],1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_gpo_map_deny"></a>`ad_gpo_map_deny`
+##### <a name="-sssd--provider--ad--ad_gpo_map_batch"></a>`ad_gpo_map_batch`
 
 Data type: `Optional[Array[String[1],1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_gpo_default_right"></a>`ad_gpo_default_right`
+##### <a name="-sssd--provider--ad--ad_gpo_map_service"></a>`ad_gpo_map_service`
+
+Data type: `Optional[Array[String[1],1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ad--ad_gpo_map_permit"></a>`ad_gpo_map_permit`
+
+Data type: `Optional[Array[String[1],1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ad--ad_gpo_map_deny"></a>`ad_gpo_map_deny`
+
+Data type: `Optional[Array[String[1],1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ad--ad_gpo_default_right"></a>`ad_gpo_default_right`
 
 Data type: `Optional[Sssd::ADDefaultRight]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_gpo_implicit_deny"></a>`ad_gpo_implicit_deny`
-
-Data type: `Optional[Boolean]`
-
-(new in sssd V2.0 and later)
-
-Default value: ``undef``
-
-##### <a name="ad_gpo_ignore_unreadable"></a>`ad_gpo_ignore_unreadable`
+##### <a name="-sssd--provider--ad--ad_gpo_implicit_deny"></a>`ad_gpo_implicit_deny`
 
 Data type: `Optional[Boolean]`
 
 (new in sssd V2.0 and later)
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_maximum_machine_account_password_age"></a>`ad_maximum_machine_account_password_age`
+##### <a name="-sssd--provider--ad--ad_gpo_ignore_unreadable"></a>`ad_gpo_ignore_unreadable`
+
+Data type: `Optional[Boolean]`
+
+(new in sssd V2.0 and later)
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ad--ad_maximum_machine_account_password_age"></a>`ad_maximum_machine_account_password_age`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ad_machine_account_password_renewal_opts"></a>`ad_machine_account_password_renewal_opts`
+##### <a name="-sssd--provider--ad--ad_machine_account_password_renewal_opts"></a>`ad_machine_account_password_renewal_opts`
 
 Data type: `Optional[Pattern['^\d+:\d+$']]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="default_shell"></a>`default_shell`
+##### <a name="-sssd--provider--ad--default_shell"></a>`default_shell`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dyndns_update"></a>`dyndns_update`
+##### <a name="-sssd--provider--ad--dyndns_update"></a>`dyndns_update`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="dyndns_ttl"></a>`dyndns_ttl`
+##### <a name="-sssd--provider--ad--dyndns_ttl"></a>`dyndns_ttl`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dyndns_ifaces"></a>`dyndns_ifaces`
+##### <a name="-sssd--provider--ad--dyndns_ifaces"></a>`dyndns_ifaces`
 
 Data type: `Optional[Array[String[1],1]]`
 
@@ -1983,65 +2023,65 @@ updates.  Used for the dyndns_iface setting.
 
 * Has no effect if ``dyndns_update`` is not set to ``true``
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dyndns_refresh_interval"></a>`dyndns_refresh_interval`
+##### <a name="-sssd--provider--ad--dyndns_refresh_interval"></a>`dyndns_refresh_interval`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dyndns_update_ptr"></a>`dyndns_update_ptr`
-
-Data type: `Optional[Boolean]`
-
-
-
-Default value: ``undef``
-
-##### <a name="dyndns_force_tcp"></a>`dyndns_force_tcp`
+##### <a name="-sssd--provider--ad--dyndns_update_ptr"></a>`dyndns_update_ptr`
 
 Data type: `Optional[Boolean]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dyndns_server"></a>`dyndns_server`
+##### <a name="-sssd--provider--ad--dyndns_force_tcp"></a>`dyndns_force_tcp`
+
+Data type: `Optional[Boolean]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ad--dyndns_server"></a>`dyndns_server`
 
 Data type: `Optional[Simplib::Hostname]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="override_homedir"></a>`override_homedir`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="fallback_homedir"></a>`fallback_homedir`
+##### <a name="-sssd--provider--ad--override_homedir"></a>`override_homedir`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="homedir_substring"></a>`homedir_substring`
+##### <a name="-sssd--provider--ad--fallback_homedir"></a>`fallback_homedir`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ad--homedir_substring"></a>`homedir_substring`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_realm"></a>`krb5_realm`
+##### <a name="-sssd--provider--ad--krb5_realm"></a>`krb5_realm`
 
 Data type: `Optional[String[1]]`
 
@@ -2049,127 +2089,127 @@ Data type: `Optional[String[1]]`
 
 Default value: `$ad_domain`
 
-##### <a name="krb5_use_enterprise_principal"></a>`krb5_use_enterprise_principal`
+##### <a name="-sssd--provider--ad--krb5_use_enterprise_principal"></a>`krb5_use_enterprise_principal`
 
 Data type: `Optional[Boolean]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_store_password_if_offline"></a>`krb5_store_password_if_offline`
+##### <a name="-sssd--provider--ad--krb5_store_password_if_offline"></a>`krb5_store_password_if_offline`
 
-Data type: `Optional[Boolean]`
+Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="krb5_confd_path"></a>`krb5_confd_path`
+##### <a name="-sssd--provider--ad--krb5_confd_path"></a>`krb5_confd_path`
 
 Data type: `Optional[Variant[Enum['none'],Stdlib::Absolutepath]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_id_mapping"></a>`ldap_id_mapping`
+##### <a name="-sssd--provider--ad--ldap_id_mapping"></a>`ldap_id_mapping`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="ldap_schema"></a>`ldap_schema`
+##### <a name="-sssd--provider--ad--ldap_schema"></a>`ldap_schema`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_idmap_range_min"></a>`ldap_idmap_range_min`
+##### <a name="-sssd--provider--ad--ldap_idmap_range_min"></a>`ldap_idmap_range_min`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_idmap_range_max"></a>`ldap_idmap_range_max`
-
-Data type: `Optional[Integer[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_idmap_range_size"></a>`ldap_idmap_range_size`
+##### <a name="-sssd--provider--ad--ldap_idmap_range_max"></a>`ldap_idmap_range_max`
 
 Data type: `Optional[Integer[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_idmap_default_domain_sid"></a>`ldap_idmap_default_domain_sid`
+##### <a name="-sssd--provider--ad--ldap_idmap_range_size"></a>`ldap_idmap_range_size`
+
+Data type: `Optional[Integer[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ad--ldap_idmap_default_domain_sid"></a>`ldap_idmap_default_domain_sid`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_idmap_default_domain"></a>`ldap_idmap_default_domain`
+##### <a name="-sssd--provider--ad--ldap_idmap_default_domain"></a>`ldap_idmap_default_domain`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_idmap_autorid_compat"></a>`ldap_idmap_autorid_compat`
+##### <a name="-sssd--provider--ad--ldap_idmap_autorid_compat"></a>`ldap_idmap_autorid_compat`
 
 Data type: `Optional[Boolean]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_idmap_helper_table_size"></a>`ldap_idmap_helper_table_size`
+##### <a name="-sssd--provider--ad--ldap_idmap_helper_table_size"></a>`ldap_idmap_helper_table_size`
 
 Data type: `Optional[Integer[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_use_tokengroups"></a>`ldap_use_tokengroups`
+##### <a name="-sssd--provider--ad--ldap_use_tokengroups"></a>`ldap_use_tokengroups`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="ldap_group_objectsid"></a>`ldap_group_objectsid`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_objectsid"></a>`ldap_user_objectsid`
+##### <a name="-sssd--provider--ad--ldap_group_objectsid"></a>`ldap_group_objectsid`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_extra_attrs"></a>`ldap_user_extra_attrs`
+##### <a name="-sssd--provider--ad--ldap_user_objectsid"></a>`ldap_user_objectsid`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ad--ldap_user_extra_attrs"></a>`ldap_user_extra_attrs`
 
 Data type: `Optional[String[1]]`
 
@@ -2177,9 +2217,9 @@ Can be used to enable public key storage for ssh
 When used this way, set this param and param ldap_user_ssh_public_key
 to 'altSecurityIdentities'
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_ssh_public_key"></a>`ldap_user_ssh_public_key`
+##### <a name="-sssd--provider--ad--ldap_user_ssh_public_key"></a>`ldap_user_ssh_public_key`
 
 Data type: `Optional[String[1]]`
 
@@ -2187,9 +2227,9 @@ Can be used to enable public key storage for ssh
 When used this way, set this param and param ldap_user_extra_attrs
 to 'altSecurityIdentities'
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdproviderfiles"></a>`sssd::provider::files`
+### <a name="sssd--provider--files"></a>`sssd::provider::files`
 
 NOTE: This defined type has no effect on SSSD < 1.16.0
 
@@ -2204,31 +2244,31 @@ See man 'sssd-files' for additional information.
 
 The following parameters are available in the `sssd::provider::files` defined type:
 
-* [`name`](#name)
-* [`passwd_files`](#passwd_files)
-* [`group_files`](#group_files)
+* [`name`](#-sssd--provider--files--name)
+* [`passwd_files`](#-sssd--provider--files--passwd_files)
+* [`group_files`](#-sssd--provider--files--group_files)
 
-##### <a name="name"></a>`name`
+##### <a name="-sssd--provider--files--name"></a>`name`
 
 The name of the associated domain section in the configuration file.
 
-##### <a name="passwd_files"></a>`passwd_files`
+##### <a name="-sssd--provider--files--passwd_files"></a>`passwd_files`
 
 Data type: `Optional[Array[Stdlib::Absolutepath]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="group_files"></a>`group_files`
+##### <a name="-sssd--provider--files--group_files"></a>`group_files`
 
 Data type: `Optional[Array[Stdlib::Absolutepath]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdprovideripa"></a>`sssd::provider::ipa`
+### <a name="sssd--provider--ipa"></a>`sssd::provider::ipa`
 
 This define sets up the 'ipa' provider section of a particular domain.
 $name should be the name of the associated domain in sssd.conf.
@@ -2246,86 +2286,86 @@ Take care to ensure that your clients only connect with TLSv1 if possible.
 
 The following parameters are available in the `sssd::provider::ipa` defined type:
 
-* [`name`](#name)
-* [`ipa_domain`](#ipa_domain)
-* [`ipa_server`](#ipa_server)
-* [`ipa_backup_server`](#ipa_backup_server)
-* [`ipa_enable_dns_sites`](#ipa_enable_dns_sites)
-* [`ipa_hostname`](#ipa_hostname)
-* [`ipa_server_mode`](#ipa_server_mode)
-* [`dyndns_auth`](#dyndns_auth)
-* [`dyndns_force_tcp`](#dyndns_force_tcp)
-* [`dyndns_iface`](#dyndns_iface)
-* [`dyndns_refresh_interval`](#dyndns_refresh_interval)
-* [`dyndns_server`](#dyndns_server)
-* [`dyndns_ttl`](#dyndns_ttl)
-* [`dyndns_update`](#dyndns_update)
-* [`dyndns_update_ptr`](#dyndns_update_ptr)
-* [`ipa_automount_location`](#ipa_automount_location)
-* [`ipa_hbac_refresh`](#ipa_hbac_refresh)
-* [`ipa_hbac_search_base`](#ipa_hbac_search_base)
-* [`ipa_hbac_selinux`](#ipa_hbac_selinux)
-* [`ipa_host_search_base`](#ipa_host_search_base)
-* [`ipa_master_domains_search_base`](#ipa_master_domains_search_base)
-* [`ipa_selinux_search_base`](#ipa_selinux_search_base)
-* [`ipa_subdomains_search_base`](#ipa_subdomains_search_base)
-* [`ipa_views_search_base`](#ipa_views_search_base)
-* [`krb5_confd_path`](#krb5_confd_path)
-* [`krb5_realm`](#krb5_realm)
-* [`krb5_store_password_if_offline`](#krb5_store_password_if_offline)
-* [`ldap_tls_cacert`](#ldap_tls_cacert)
-* [`ldap_tls_cipher_suite`](#ldap_tls_cipher_suite)
-* [`use_service_discovery`](#use_service_discovery)
+* [`name`](#-sssd--provider--ipa--name)
+* [`ipa_domain`](#-sssd--provider--ipa--ipa_domain)
+* [`ipa_server`](#-sssd--provider--ipa--ipa_server)
+* [`ipa_backup_server`](#-sssd--provider--ipa--ipa_backup_server)
+* [`ipa_enable_dns_sites`](#-sssd--provider--ipa--ipa_enable_dns_sites)
+* [`ipa_hostname`](#-sssd--provider--ipa--ipa_hostname)
+* [`ipa_server_mode`](#-sssd--provider--ipa--ipa_server_mode)
+* [`dyndns_auth`](#-sssd--provider--ipa--dyndns_auth)
+* [`dyndns_force_tcp`](#-sssd--provider--ipa--dyndns_force_tcp)
+* [`dyndns_iface`](#-sssd--provider--ipa--dyndns_iface)
+* [`dyndns_refresh_interval`](#-sssd--provider--ipa--dyndns_refresh_interval)
+* [`dyndns_server`](#-sssd--provider--ipa--dyndns_server)
+* [`dyndns_ttl`](#-sssd--provider--ipa--dyndns_ttl)
+* [`dyndns_update`](#-sssd--provider--ipa--dyndns_update)
+* [`dyndns_update_ptr`](#-sssd--provider--ipa--dyndns_update_ptr)
+* [`ipa_automount_location`](#-sssd--provider--ipa--ipa_automount_location)
+* [`ipa_hbac_refresh`](#-sssd--provider--ipa--ipa_hbac_refresh)
+* [`ipa_hbac_search_base`](#-sssd--provider--ipa--ipa_hbac_search_base)
+* [`ipa_hbac_selinux`](#-sssd--provider--ipa--ipa_hbac_selinux)
+* [`ipa_host_search_base`](#-sssd--provider--ipa--ipa_host_search_base)
+* [`ipa_master_domains_search_base`](#-sssd--provider--ipa--ipa_master_domains_search_base)
+* [`ipa_selinux_search_base`](#-sssd--provider--ipa--ipa_selinux_search_base)
+* [`ipa_subdomains_search_base`](#-sssd--provider--ipa--ipa_subdomains_search_base)
+* [`ipa_views_search_base`](#-sssd--provider--ipa--ipa_views_search_base)
+* [`krb5_confd_path`](#-sssd--provider--ipa--krb5_confd_path)
+* [`krb5_realm`](#-sssd--provider--ipa--krb5_realm)
+* [`krb5_store_password_if_offline`](#-sssd--provider--ipa--krb5_store_password_if_offline)
+* [`ldap_tls_cacert`](#-sssd--provider--ipa--ldap_tls_cacert)
+* [`ldap_tls_cipher_suite`](#-sssd--provider--ipa--ldap_tls_cipher_suite)
+* [`use_service_discovery`](#-sssd--provider--ipa--use_service_discovery)
 
-##### <a name="name"></a>`name`
+##### <a name="-sssd--provider--ipa--name"></a>`name`
 
 
 
-##### <a name="ipa_domain"></a>`ipa_domain`
+##### <a name="-sssd--provider--ipa--ipa_domain"></a>`ipa_domain`
 
 Data type: `String[1]`
 
 
 
-##### <a name="ipa_server"></a>`ipa_server`
+##### <a name="-sssd--provider--ipa--ipa_server"></a>`ipa_server`
 
 Data type: `Array[Simplib::Host]`
 
 
 
-##### <a name="ipa_backup_server"></a>`ipa_backup_server`
+##### <a name="-sssd--provider--ipa--ipa_backup_server"></a>`ipa_backup_server`
 
 Data type: `Optional[Array[Simplib::Host]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ipa_enable_dns_sites"></a>`ipa_enable_dns_sites`
+##### <a name="-sssd--provider--ipa--ipa_enable_dns_sites"></a>`ipa_enable_dns_sites`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="ipa_hostname"></a>`ipa_hostname`
+##### <a name="-sssd--provider--ipa--ipa_hostname"></a>`ipa_hostname`
 
 Data type: `Simplib::Hostname`
 
 
 
-Default value: `$facts['fqdn']`
+Default value: `$facts['networking']['fqdn']`
 
-##### <a name="ipa_server_mode"></a>`ipa_server_mode`
+##### <a name="-sssd--provider--ipa--ipa_server_mode"></a>`ipa_server_mode`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="dyndns_auth"></a>`dyndns_auth`
+##### <a name="-sssd--provider--ipa--dyndns_auth"></a>`dyndns_auth`
 
 Data type: `Enum['none','GSS-TSIG']`
 
@@ -2333,159 +2373,159 @@ Data type: `Enum['none','GSS-TSIG']`
 
 Default value: `'GSS-TSIG'`
 
-##### <a name="dyndns_force_tcp"></a>`dyndns_force_tcp`
+##### <a name="-sssd--provider--ipa--dyndns_force_tcp"></a>`dyndns_force_tcp`
 
 Data type: `Optional[Boolean]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dyndns_iface"></a>`dyndns_iface`
+##### <a name="-sssd--provider--ipa--dyndns_iface"></a>`dyndns_iface`
 
 Data type: `Optional[Array[String[1]]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dyndns_refresh_interval"></a>`dyndns_refresh_interval`
+##### <a name="-sssd--provider--ipa--dyndns_refresh_interval"></a>`dyndns_refresh_interval`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dyndns_server"></a>`dyndns_server`
+##### <a name="-sssd--provider--ipa--dyndns_server"></a>`dyndns_server`
 
 Data type: `Optional[Simplib::Host]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dyndns_ttl"></a>`dyndns_ttl`
+##### <a name="-sssd--provider--ipa--dyndns_ttl"></a>`dyndns_ttl`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="dyndns_update"></a>`dyndns_update`
+##### <a name="-sssd--provider--ipa--dyndns_update"></a>`dyndns_update`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="dyndns_update_ptr"></a>`dyndns_update_ptr`
+##### <a name="-sssd--provider--ipa--dyndns_update_ptr"></a>`dyndns_update_ptr`
 
 Data type: `Optional[Boolean]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ipa_automount_location"></a>`ipa_automount_location`
+##### <a name="-sssd--provider--ipa--ipa_automount_location"></a>`ipa_automount_location`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ipa_hbac_refresh"></a>`ipa_hbac_refresh`
+##### <a name="-sssd--provider--ipa--ipa_hbac_refresh"></a>`ipa_hbac_refresh`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ipa_hbac_search_base"></a>`ipa_hbac_search_base`
+##### <a name="-sssd--provider--ipa--ipa_hbac_search_base"></a>`ipa_hbac_search_base`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ipa_hbac_selinux"></a>`ipa_hbac_selinux`
+##### <a name="-sssd--provider--ipa--ipa_hbac_selinux"></a>`ipa_hbac_selinux`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ipa_host_search_base"></a>`ipa_host_search_base`
-
-Data type: `Optional[String]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ipa_master_domains_search_base"></a>`ipa_master_domains_search_base`
+##### <a name="-sssd--provider--ipa--ipa_host_search_base"></a>`ipa_host_search_base`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ipa_selinux_search_base"></a>`ipa_selinux_search_base`
-
-Data type: `Optional[String]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ipa_subdomains_search_base"></a>`ipa_subdomains_search_base`
+##### <a name="-sssd--provider--ipa--ipa_master_domains_search_base"></a>`ipa_master_domains_search_base`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ipa_views_search_base"></a>`ipa_views_search_base`
+##### <a name="-sssd--provider--ipa--ipa_selinux_search_base"></a>`ipa_selinux_search_base`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_confd_path"></a>`krb5_confd_path`
+##### <a name="-sssd--provider--ipa--ipa_subdomains_search_base"></a>`ipa_subdomains_search_base`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ipa--ipa_views_search_base"></a>`ipa_views_search_base`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ipa--krb5_confd_path"></a>`krb5_confd_path`
 
 Data type: `Optional[Stdlib::AbsolutePath]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_realm"></a>`krb5_realm`
+##### <a name="-sssd--provider--ipa--krb5_realm"></a>`krb5_realm`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_store_password_if_offline"></a>`krb5_store_password_if_offline`
+##### <a name="-sssd--provider--ipa--krb5_store_password_if_offline"></a>`krb5_store_password_if_offline`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="ldap_tls_cacert"></a>`ldap_tls_cacert`
+##### <a name="-sssd--provider--ipa--ldap_tls_cacert"></a>`ldap_tls_cacert`
 
 Data type: `Stdlib::AbsolutePath`
 
@@ -2493,7 +2533,7 @@ Data type: `Stdlib::AbsolutePath`
 
 Default value: `'/etc/ipa/ca.crt'`
 
-##### <a name="ldap_tls_cipher_suite"></a>`ldap_tls_cipher_suite`
+##### <a name="-sssd--provider--ipa--ldap_tls_cipher_suite"></a>`ldap_tls_cipher_suite`
 
 Data type: `Array[String]`
 
@@ -2501,16 +2541,16 @@ Data type: `Array[String]`
 
 Default value: `['HIGH','-SSLv2']`
 
-##### <a name="use_service_discovery"></a>`use_service_discovery`
+##### <a name="-sssd--provider--ipa--use_service_discovery"></a>`use_service_discovery`
 
 Data type: `Boolean`
 
 Whether to add '_srv_' to the list of IPA servers,
 thereby enabling service discovery of these servers
 
-Default value: ``true``
+Default value: `true`
 
-### <a name="sssdproviderkrb5"></a>`sssd::provider::krb5`
+### <a name="sssd--provider--krb5"></a>`sssd::provider::krb5`
 
 Define: sssd::provider::krb5
 
@@ -2523,91 +2563,91 @@ See sssd-krb5.conf(5) for additional information.
 
 The following parameters are available in the `sssd::provider::krb5` defined type:
 
-* [`name`](#name)
-* [`krb5_server`](#krb5_server)
-* [`krb5_realm`](#krb5_realm)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`krb5_kpasswd`](#krb5_kpasswd)
-* [`krb5_ccachedir`](#krb5_ccachedir)
-* [`krb5_ccname_template`](#krb5_ccname_template)
-* [`krb5_auth_timeout`](#krb5_auth_timeout)
-* [`krb5_validate`](#krb5_validate)
-* [`krb5_keytab`](#krb5_keytab)
-* [`krb5_store_password_if_offline`](#krb5_store_password_if_offline)
-* [`krb5_renewable_lifetime`](#krb5_renewable_lifetime)
-* [`krb5_lifetime`](#krb5_lifetime)
-* [`krb5_renew_interval`](#krb5_renew_interval)
-* [`krb5_use_fast`](#krb5_use_fast)
+* [`name`](#-sssd--provider--krb5--name)
+* [`krb5_server`](#-sssd--provider--krb5--krb5_server)
+* [`krb5_realm`](#-sssd--provider--krb5--krb5_realm)
+* [`debug_level`](#-sssd--provider--krb5--debug_level)
+* [`debug_timestamps`](#-sssd--provider--krb5--debug_timestamps)
+* [`debug_microseconds`](#-sssd--provider--krb5--debug_microseconds)
+* [`krb5_kpasswd`](#-sssd--provider--krb5--krb5_kpasswd)
+* [`krb5_ccachedir`](#-sssd--provider--krb5--krb5_ccachedir)
+* [`krb5_ccname_template`](#-sssd--provider--krb5--krb5_ccname_template)
+* [`krb5_auth_timeout`](#-sssd--provider--krb5--krb5_auth_timeout)
+* [`krb5_validate`](#-sssd--provider--krb5--krb5_validate)
+* [`krb5_keytab`](#-sssd--provider--krb5--krb5_keytab)
+* [`krb5_store_password_if_offline`](#-sssd--provider--krb5--krb5_store_password_if_offline)
+* [`krb5_renewable_lifetime`](#-sssd--provider--krb5--krb5_renewable_lifetime)
+* [`krb5_lifetime`](#-sssd--provider--krb5--krb5_lifetime)
+* [`krb5_renew_interval`](#-sssd--provider--krb5--krb5_renew_interval)
+* [`krb5_use_fast`](#-sssd--provider--krb5--krb5_use_fast)
 
-##### <a name="name"></a>`name`
+##### <a name="-sssd--provider--krb5--name"></a>`name`
 
 The name of the associated domain section in the configuration file.
 
-##### <a name="krb5_server"></a>`krb5_server`
+##### <a name="-sssd--provider--krb5--krb5_server"></a>`krb5_server`
 
 Data type: `Optional[Simplib::Host]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_realm"></a>`krb5_realm`
+##### <a name="-sssd--provider--krb5--krb5_realm"></a>`krb5_realm`
 
 Data type: `String`
 
 
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--provider--krb5--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::DebugLevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--provider--krb5--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
 
-##### <a name="krb5_kpasswd"></a>`krb5_kpasswd`
+##### <a name="-sssd--provider--krb5--debug_microseconds"></a>`debug_microseconds`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--provider--krb5--krb5_kpasswd"></a>`krb5_kpasswd`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_ccachedir"></a>`krb5_ccachedir`
-
-Data type: `Optional[Stdlib::Absolutepath]`
-
-
-
-Default value: ``undef``
-
-##### <a name="krb5_ccname_template"></a>`krb5_ccname_template`
+##### <a name="-sssd--provider--krb5--krb5_ccachedir"></a>`krb5_ccachedir`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_auth_timeout"></a>`krb5_auth_timeout`
+##### <a name="-sssd--provider--krb5--krb5_ccname_template"></a>`krb5_ccname_template`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--krb5--krb5_auth_timeout"></a>`krb5_auth_timeout`
 
 Data type: `Integer`
 
@@ -2615,47 +2655,47 @@ Data type: `Integer`
 
 Default value: `15`
 
-##### <a name="krb5_validate"></a>`krb5_validate`
+##### <a name="-sssd--provider--krb5--krb5_validate"></a>`krb5_validate`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="krb5_keytab"></a>`krb5_keytab`
+##### <a name="-sssd--provider--krb5--krb5_keytab"></a>`krb5_keytab`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_store_password_if_offline"></a>`krb5_store_password_if_offline`
+##### <a name="-sssd--provider--krb5--krb5_store_password_if_offline"></a>`krb5_store_password_if_offline`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="krb5_renewable_lifetime"></a>`krb5_renewable_lifetime`
-
-Data type: `Optional[String]`
-
-
-
-Default value: ``undef``
-
-##### <a name="krb5_lifetime"></a>`krb5_lifetime`
+##### <a name="-sssd--provider--krb5--krb5_renewable_lifetime"></a>`krb5_renewable_lifetime`
 
 Data type: `Optional[String]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_renew_interval"></a>`krb5_renew_interval`
+##### <a name="-sssd--provider--krb5--krb5_lifetime"></a>`krb5_lifetime`
+
+Data type: `Optional[String]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--krb5--krb5_renew_interval"></a>`krb5_renew_interval`
 
 Data type: `Integer`
 
@@ -2663,15 +2703,15 @@ Data type: `Integer`
 
 Default value: `0`
 
-##### <a name="krb5_use_fast"></a>`krb5_use_fast`
+##### <a name="-sssd--provider--krb5--krb5_use_fast"></a>`krb5_use_fast`
 
 Data type: `Optional[Enum['never','try','demand']]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-### <a name="sssdproviderldap"></a>`sssd::provider::ldap`
+### <a name="sssd--provider--ldap"></a>`sssd::provider::ldap`
 
 Define: sssd::provider::ldap
 
@@ -2711,232 +2751,242 @@ Advanced Configuration - Read the man page
 
 The following parameters are available in the `sssd::provider::ldap` defined type:
 
-* [`name`](#name)
-* [`strip_128_bit_ciphers`](#strip_128_bit_ciphers)
-* [`debug_level`](#debug_level)
-* [`debug_timestamps`](#debug_timestamps)
-* [`debug_microseconds`](#debug_microseconds)
-* [`ldap_uri`](#ldap_uri)
-* [`ldap_backup_uri`](#ldap_backup_uri)
-* [`ldap_chpass_uri`](#ldap_chpass_uri)
-* [`ldap_chpass_backup_uri`](#ldap_chpass_backup_uri)
-* [`ldap_chpass_update_last_change`](#ldap_chpass_update_last_change)
-* [`ldap_search_base`](#ldap_search_base)
-* [`ldap_schema`](#ldap_schema)
-* [`ldap_default_bind_dn`](#ldap_default_bind_dn)
-* [`ldap_default_authtok_type`](#ldap_default_authtok_type)
-* [`ldap_default_authtok`](#ldap_default_authtok)
-* [`ldap_user_object_class`](#ldap_user_object_class)
-* [`ldap_user_name`](#ldap_user_name)
-* [`ldap_user_uid_number`](#ldap_user_uid_number)
-* [`ldap_user_gid_number`](#ldap_user_gid_number)
-* [`ldap_user_gecos`](#ldap_user_gecos)
-* [`ldap_user_home_directory`](#ldap_user_home_directory)
-* [`ldap_user_shell`](#ldap_user_shell)
-* [`ldap_user_uuid`](#ldap_user_uuid)
-* [`ldap_user_objectsid`](#ldap_user_objectsid)
-* [`ldap_user_modify_timestamp`](#ldap_user_modify_timestamp)
-* [`ldap_user_shadow_last_change`](#ldap_user_shadow_last_change)
-* [`ldap_user_shadow_min`](#ldap_user_shadow_min)
-* [`ldap_user_shadow_max`](#ldap_user_shadow_max)
-* [`ldap_user_shadow_warning`](#ldap_user_shadow_warning)
-* [`ldap_user_shadow_inactive`](#ldap_user_shadow_inactive)
-* [`ldap_user_shadow_expire`](#ldap_user_shadow_expire)
-* [`ldap_user_krb_last_pwd_change`](#ldap_user_krb_last_pwd_change)
-* [`ldap_user_krb_password_expiration`](#ldap_user_krb_password_expiration)
-* [`ldap_user_ad_account_expires`](#ldap_user_ad_account_expires)
-* [`ldap_user_ad_user_account_control`](#ldap_user_ad_user_account_control)
-* [`ldap_ns_account_lock`](#ldap_ns_account_lock)
-* [`ldap_user_nds_login_disabled`](#ldap_user_nds_login_disabled)
-* [`ldap_user_nds_login_expiration_time`](#ldap_user_nds_login_expiration_time)
-* [`ldap_user_nds_login_allowed_time_map`](#ldap_user_nds_login_allowed_time_map)
-* [`ldap_user_principal`](#ldap_user_principal)
-* [`ldap_user_extra_attrs`](#ldap_user_extra_attrs)
-* [`ldap_user_ssh_public_key`](#ldap_user_ssh_public_key)
-* [`ldap_force_upper_case_realm`](#ldap_force_upper_case_realm)
-* [`ldap_enumeration_refresh_timeout`](#ldap_enumeration_refresh_timeout)
-* [`ldap_purge_cache_timeout`](#ldap_purge_cache_timeout)
-* [`ldap_user_fullname`](#ldap_user_fullname)
-* [`ldap_user_member_of`](#ldap_user_member_of)
-* [`ldap_user_authorized_service`](#ldap_user_authorized_service)
-* [`ldap_user_authorized_host`](#ldap_user_authorized_host)
-* [`ldap_group_object_class`](#ldap_group_object_class)
-* [`ldap_group_name`](#ldap_group_name)
-* [`ldap_group_gid_number`](#ldap_group_gid_number)
-* [`ldap_group_member`](#ldap_group_member)
-* [`ldap_group_uuid`](#ldap_group_uuid)
-* [`ldap_group_objectsid`](#ldap_group_objectsid)
-* [`ldap_group_modify_timestamp`](#ldap_group_modify_timestamp)
-* [`ldap_group_type`](#ldap_group_type)
-* [`ldap_group_nesting_level`](#ldap_group_nesting_level)
-* [`ldap_groups_use_matching_rule_in_chain`](#ldap_groups_use_matching_rule_in_chain)
-* [`ldap_initgroups_use_matching_rule_in_chain`](#ldap_initgroups_use_matching_rule_in_chain)
-* [`ldap_use_tokengroups`](#ldap_use_tokengroups)
-* [`ldap_netgroup_object_class`](#ldap_netgroup_object_class)
-* [`ldap_netgroup_name`](#ldap_netgroup_name)
-* [`ldap_netgroup_member`](#ldap_netgroup_member)
-* [`ldap_netgroup_triple`](#ldap_netgroup_triple)
-* [`ldap_netgroup_uuid`](#ldap_netgroup_uuid)
-* [`ldap_netgroup_modify_timestamp`](#ldap_netgroup_modify_timestamp)
-* [`ldap_service_name`](#ldap_service_name)
-* [`ldap_service_port`](#ldap_service_port)
-* [`ldap_service_proto`](#ldap_service_proto)
-* [`ldap_service_search_base`](#ldap_service_search_base)
-* [`ldap_search_timeout`](#ldap_search_timeout)
-* [`ldap_enumeration_search_timeout`](#ldap_enumeration_search_timeout)
-* [`ldap_network_timeout`](#ldap_network_timeout)
-* [`ldap_opt_timeout`](#ldap_opt_timeout)
-* [`ldap_connection_expire_timeout`](#ldap_connection_expire_timeout)
-* [`ldap_page_size`](#ldap_page_size)
-* [`ldap_disable_paging`](#ldap_disable_paging)
-* [`ldap_disable_range_retrieval`](#ldap_disable_range_retrieval)
-* [`ldap_sasl_minssf`](#ldap_sasl_minssf)
-* [`ldap_deref_threshold`](#ldap_deref_threshold)
-* [`ldap_tls_reqcert`](#ldap_tls_reqcert)
-* [`ldap_tls_cacert`](#ldap_tls_cacert)
-* [`app_pki_ca_dir`](#app_pki_ca_dir)
-* [`app_pki_key`](#app_pki_key)
-* [`app_pki_cert`](#app_pki_cert)
-* [`strip_128_bit_ciphers`](#strip_128_bit_ciphers)
-* [`ldap_tls_cipher_suite`](#ldap_tls_cipher_suite)
-* [`ldap_id_use_start_tls`](#ldap_id_use_start_tls)
-* [`ldap_id_mapping`](#ldap_id_mapping)
-* [`ldap_min_id`](#ldap_min_id)
-* [`ldap_max_id`](#ldap_max_id)
-* [`ldap_sasl_mech`](#ldap_sasl_mech)
-* [`ldap_sasl_authid`](#ldap_sasl_authid)
-* [`ldap_sasl_realm`](#ldap_sasl_realm)
-* [`ldap_sasl_canonicalize`](#ldap_sasl_canonicalize)
-* [`ldap_krb5_keytab`](#ldap_krb5_keytab)
-* [`ldap_krb5_init_creds`](#ldap_krb5_init_creds)
-* [`ldap_krb5_ticket_lifetime`](#ldap_krb5_ticket_lifetime)
-* [`krb5_server`](#krb5_server)
-* [`krb5_backup_server`](#krb5_backup_server)
-* [`krb5_realm`](#krb5_realm)
-* [`krb5_canonicalize`](#krb5_canonicalize)
-* [`krb5_use_kdcinfo`](#krb5_use_kdcinfo)
-* [`ldap_pwd_policy`](#ldap_pwd_policy)
-* [`ldap_referrals`](#ldap_referrals)
-* [`ldap_dns_service_name`](#ldap_dns_service_name)
-* [`ldap_chpass_dns_service_name`](#ldap_chpass_dns_service_name)
-* [`ldap_access_filter`](#ldap_access_filter)
-* [`ldap_account_expire_policy`](#ldap_account_expire_policy)
-* [`ldap_access_order`](#ldap_access_order)
-* [`ldap_pwdlockout_dn`](#ldap_pwdlockout_dn)
-* [`ldap_deref`](#ldap_deref)
-* [`ldap_sudorule_object_class`](#ldap_sudorule_object_class)
-* [`ldap_sudorule_name`](#ldap_sudorule_name)
-* [`ldap_sudorule_command`](#ldap_sudorule_command)
-* [`ldap_sudorule_host`](#ldap_sudorule_host)
-* [`ldap_sudorule_user`](#ldap_sudorule_user)
-* [`ldap_sudorule_option`](#ldap_sudorule_option)
-* [`ldap_sudorule_runasuser`](#ldap_sudorule_runasuser)
-* [`ldap_sudorule_runasgroup`](#ldap_sudorule_runasgroup)
-* [`ldap_sudorule_notbefore`](#ldap_sudorule_notbefore)
-* [`ldap_sudorule_notafter`](#ldap_sudorule_notafter)
-* [`ldap_sudorule_order`](#ldap_sudorule_order)
-* [`ldap_sudo_full_refresh_interval`](#ldap_sudo_full_refresh_interval)
-* [`ldap_sudo_smart_refresh_interval`](#ldap_sudo_smart_refresh_interval)
-* [`ldap_sudo_use_host_filter`](#ldap_sudo_use_host_filter)
-* [`ldap_sudo_hostnames`](#ldap_sudo_hostnames)
-* [`ldap_sudo_ip`](#ldap_sudo_ip)
-* [`ldap_sudo_include_netgroups`](#ldap_sudo_include_netgroups)
-* [`ldap_sudo_include_regexp`](#ldap_sudo_include_regexp)
-* [`ldap_autofs_map_master_name`](#ldap_autofs_map_master_name)
-* [`ldap_autofs_map_object_class`](#ldap_autofs_map_object_class)
-* [`ldap_autofs_map_name`](#ldap_autofs_map_name)
-* [`ldap_autofs_entry_object_class`](#ldap_autofs_entry_object_class)
-* [`ldap_autofs_entry_key`](#ldap_autofs_entry_key)
-* [`ldap_autofs_entry_value`](#ldap_autofs_entry_value)
-* [`ldap_netgroup_search_base`](#ldap_netgroup_search_base)
-* [`ldap_user_search_base`](#ldap_user_search_base)
-* [`ldap_group_search_base`](#ldap_group_search_base)
-* [`ldap_sudo_search_base`](#ldap_sudo_search_base)
-* [`ldap_autofs_search_base`](#ldap_autofs_search_base)
-* [`ldap_idmap_range_min`](#ldap_idmap_range_min)
-* [`ldap_idmap_range_max`](#ldap_idmap_range_max)
-* [`ldap_idmap_range_size`](#ldap_idmap_range_size)
-* [`ldap_idmap_default_domain_sid`](#ldap_idmap_default_domain_sid)
-* [`ldap_idmap_default_domain`](#ldap_idmap_default_domain)
-* [`ldap_idmap_autorid_compat`](#ldap_idmap_autorid_compat)
+* [`name`](#-sssd--provider--ldap--name)
+* [`strip_128_bit_ciphers`](#-sssd--provider--ldap--strip_128_bit_ciphers)
+* [`client_tls`](#-sssd--provider--ldap--client_tls)
+* [`debug_level`](#-sssd--provider--ldap--debug_level)
+* [`debug_timestamps`](#-sssd--provider--ldap--debug_timestamps)
+* [`debug_microseconds`](#-sssd--provider--ldap--debug_microseconds)
+* [`ldap_uri`](#-sssd--provider--ldap--ldap_uri)
+* [`ldap_backup_uri`](#-sssd--provider--ldap--ldap_backup_uri)
+* [`ldap_chpass_uri`](#-sssd--provider--ldap--ldap_chpass_uri)
+* [`ldap_chpass_backup_uri`](#-sssd--provider--ldap--ldap_chpass_backup_uri)
+* [`ldap_chpass_update_last_change`](#-sssd--provider--ldap--ldap_chpass_update_last_change)
+* [`ldap_search_base`](#-sssd--provider--ldap--ldap_search_base)
+* [`ldap_schema`](#-sssd--provider--ldap--ldap_schema)
+* [`ldap_default_bind_dn`](#-sssd--provider--ldap--ldap_default_bind_dn)
+* [`ldap_default_authtok_type`](#-sssd--provider--ldap--ldap_default_authtok_type)
+* [`ldap_default_authtok`](#-sssd--provider--ldap--ldap_default_authtok)
+* [`ldap_user_cert`](#-sssd--provider--ldap--ldap_user_cert)
+* [`ldap_user_object_class`](#-sssd--provider--ldap--ldap_user_object_class)
+* [`ldap_user_name`](#-sssd--provider--ldap--ldap_user_name)
+* [`ldap_user_uid_number`](#-sssd--provider--ldap--ldap_user_uid_number)
+* [`ldap_user_gid_number`](#-sssd--provider--ldap--ldap_user_gid_number)
+* [`ldap_user_gecos`](#-sssd--provider--ldap--ldap_user_gecos)
+* [`ldap_user_home_directory`](#-sssd--provider--ldap--ldap_user_home_directory)
+* [`ldap_user_shell`](#-sssd--provider--ldap--ldap_user_shell)
+* [`ldap_user_uuid`](#-sssd--provider--ldap--ldap_user_uuid)
+* [`ldap_user_objectsid`](#-sssd--provider--ldap--ldap_user_objectsid)
+* [`ldap_user_modify_timestamp`](#-sssd--provider--ldap--ldap_user_modify_timestamp)
+* [`ldap_user_shadow_last_change`](#-sssd--provider--ldap--ldap_user_shadow_last_change)
+* [`ldap_user_shadow_min`](#-sssd--provider--ldap--ldap_user_shadow_min)
+* [`ldap_user_shadow_max`](#-sssd--provider--ldap--ldap_user_shadow_max)
+* [`ldap_user_shadow_warning`](#-sssd--provider--ldap--ldap_user_shadow_warning)
+* [`ldap_user_shadow_inactive`](#-sssd--provider--ldap--ldap_user_shadow_inactive)
+* [`ldap_user_shadow_expire`](#-sssd--provider--ldap--ldap_user_shadow_expire)
+* [`ldap_user_krb_last_pwd_change`](#-sssd--provider--ldap--ldap_user_krb_last_pwd_change)
+* [`ldap_user_krb_password_expiration`](#-sssd--provider--ldap--ldap_user_krb_password_expiration)
+* [`ldap_user_ad_account_expires`](#-sssd--provider--ldap--ldap_user_ad_account_expires)
+* [`ldap_user_ad_user_account_control`](#-sssd--provider--ldap--ldap_user_ad_user_account_control)
+* [`ldap_ns_account_lock`](#-sssd--provider--ldap--ldap_ns_account_lock)
+* [`ldap_user_nds_login_disabled`](#-sssd--provider--ldap--ldap_user_nds_login_disabled)
+* [`ldap_user_nds_login_expiration_time`](#-sssd--provider--ldap--ldap_user_nds_login_expiration_time)
+* [`ldap_user_nds_login_allowed_time_map`](#-sssd--provider--ldap--ldap_user_nds_login_allowed_time_map)
+* [`ldap_user_principal`](#-sssd--provider--ldap--ldap_user_principal)
+* [`ldap_user_extra_attrs`](#-sssd--provider--ldap--ldap_user_extra_attrs)
+* [`ldap_user_ssh_public_key`](#-sssd--provider--ldap--ldap_user_ssh_public_key)
+* [`ldap_force_upper_case_realm`](#-sssd--provider--ldap--ldap_force_upper_case_realm)
+* [`ldap_enumeration_refresh_timeout`](#-sssd--provider--ldap--ldap_enumeration_refresh_timeout)
+* [`ldap_purge_cache_timeout`](#-sssd--provider--ldap--ldap_purge_cache_timeout)
+* [`ldap_user_fullname`](#-sssd--provider--ldap--ldap_user_fullname)
+* [`ldap_user_member_of`](#-sssd--provider--ldap--ldap_user_member_of)
+* [`ldap_user_authorized_service`](#-sssd--provider--ldap--ldap_user_authorized_service)
+* [`ldap_user_authorized_host`](#-sssd--provider--ldap--ldap_user_authorized_host)
+* [`ldap_group_object_class`](#-sssd--provider--ldap--ldap_group_object_class)
+* [`ldap_group_name`](#-sssd--provider--ldap--ldap_group_name)
+* [`ldap_group_gid_number`](#-sssd--provider--ldap--ldap_group_gid_number)
+* [`ldap_group_member`](#-sssd--provider--ldap--ldap_group_member)
+* [`ldap_group_uuid`](#-sssd--provider--ldap--ldap_group_uuid)
+* [`ldap_group_objectsid`](#-sssd--provider--ldap--ldap_group_objectsid)
+* [`ldap_group_modify_timestamp`](#-sssd--provider--ldap--ldap_group_modify_timestamp)
+* [`ldap_group_type`](#-sssd--provider--ldap--ldap_group_type)
+* [`ldap_group_nesting_level`](#-sssd--provider--ldap--ldap_group_nesting_level)
+* [`ldap_groups_use_matching_rule_in_chain`](#-sssd--provider--ldap--ldap_groups_use_matching_rule_in_chain)
+* [`ldap_initgroups_use_matching_rule_in_chain`](#-sssd--provider--ldap--ldap_initgroups_use_matching_rule_in_chain)
+* [`ldap_use_tokengroups`](#-sssd--provider--ldap--ldap_use_tokengroups)
+* [`ldap_netgroup_object_class`](#-sssd--provider--ldap--ldap_netgroup_object_class)
+* [`ldap_netgroup_name`](#-sssd--provider--ldap--ldap_netgroup_name)
+* [`ldap_netgroup_member`](#-sssd--provider--ldap--ldap_netgroup_member)
+* [`ldap_netgroup_triple`](#-sssd--provider--ldap--ldap_netgroup_triple)
+* [`ldap_netgroup_uuid`](#-sssd--provider--ldap--ldap_netgroup_uuid)
+* [`ldap_netgroup_modify_timestamp`](#-sssd--provider--ldap--ldap_netgroup_modify_timestamp)
+* [`ldap_service_name`](#-sssd--provider--ldap--ldap_service_name)
+* [`ldap_service_port`](#-sssd--provider--ldap--ldap_service_port)
+* [`ldap_service_proto`](#-sssd--provider--ldap--ldap_service_proto)
+* [`ldap_service_search_base`](#-sssd--provider--ldap--ldap_service_search_base)
+* [`ldap_search_timeout`](#-sssd--provider--ldap--ldap_search_timeout)
+* [`ldap_enumeration_search_timeout`](#-sssd--provider--ldap--ldap_enumeration_search_timeout)
+* [`ldap_network_timeout`](#-sssd--provider--ldap--ldap_network_timeout)
+* [`ldap_opt_timeout`](#-sssd--provider--ldap--ldap_opt_timeout)
+* [`ldap_connection_expire_timeout`](#-sssd--provider--ldap--ldap_connection_expire_timeout)
+* [`ldap_page_size`](#-sssd--provider--ldap--ldap_page_size)
+* [`ldap_disable_paging`](#-sssd--provider--ldap--ldap_disable_paging)
+* [`ldap_disable_range_retrieval`](#-sssd--provider--ldap--ldap_disable_range_retrieval)
+* [`ldap_sasl_minssf`](#-sssd--provider--ldap--ldap_sasl_minssf)
+* [`ldap_deref_threshold`](#-sssd--provider--ldap--ldap_deref_threshold)
+* [`ldap_tls_reqcert`](#-sssd--provider--ldap--ldap_tls_reqcert)
+* [`ldap_tls_cacert`](#-sssd--provider--ldap--ldap_tls_cacert)
+* [`app_pki_ca_dir`](#-sssd--provider--ldap--app_pki_ca_dir)
+* [`app_pki_key`](#-sssd--provider--ldap--app_pki_key)
+* [`app_pki_cert`](#-sssd--provider--ldap--app_pki_cert)
+* [`strip_128_bit_ciphers`](#-sssd--provider--ldap--strip_128_bit_ciphers)
+* [`ldap_tls_cipher_suite`](#-sssd--provider--ldap--ldap_tls_cipher_suite)
+* [`ldap_id_use_start_tls`](#-sssd--provider--ldap--ldap_id_use_start_tls)
+* [`ldap_id_mapping`](#-sssd--provider--ldap--ldap_id_mapping)
+* [`ldap_min_id`](#-sssd--provider--ldap--ldap_min_id)
+* [`ldap_max_id`](#-sssd--provider--ldap--ldap_max_id)
+* [`ldap_sasl_mech`](#-sssd--provider--ldap--ldap_sasl_mech)
+* [`ldap_sasl_authid`](#-sssd--provider--ldap--ldap_sasl_authid)
+* [`ldap_sasl_realm`](#-sssd--provider--ldap--ldap_sasl_realm)
+* [`ldap_sasl_canonicalize`](#-sssd--provider--ldap--ldap_sasl_canonicalize)
+* [`ldap_krb5_keytab`](#-sssd--provider--ldap--ldap_krb5_keytab)
+* [`ldap_krb5_init_creds`](#-sssd--provider--ldap--ldap_krb5_init_creds)
+* [`ldap_krb5_ticket_lifetime`](#-sssd--provider--ldap--ldap_krb5_ticket_lifetime)
+* [`krb5_server`](#-sssd--provider--ldap--krb5_server)
+* [`krb5_backup_server`](#-sssd--provider--ldap--krb5_backup_server)
+* [`krb5_realm`](#-sssd--provider--ldap--krb5_realm)
+* [`krb5_canonicalize`](#-sssd--provider--ldap--krb5_canonicalize)
+* [`krb5_use_kdcinfo`](#-sssd--provider--ldap--krb5_use_kdcinfo)
+* [`ldap_pwd_policy`](#-sssd--provider--ldap--ldap_pwd_policy)
+* [`ldap_referrals`](#-sssd--provider--ldap--ldap_referrals)
+* [`ldap_dns_service_name`](#-sssd--provider--ldap--ldap_dns_service_name)
+* [`ldap_chpass_dns_service_name`](#-sssd--provider--ldap--ldap_chpass_dns_service_name)
+* [`ldap_access_filter`](#-sssd--provider--ldap--ldap_access_filter)
+* [`ldap_account_expire_policy`](#-sssd--provider--ldap--ldap_account_expire_policy)
+* [`ldap_access_order`](#-sssd--provider--ldap--ldap_access_order)
+* [`ldap_pwdlockout_dn`](#-sssd--provider--ldap--ldap_pwdlockout_dn)
+* [`ldap_deref`](#-sssd--provider--ldap--ldap_deref)
+* [`ldap_sudorule_object_class`](#-sssd--provider--ldap--ldap_sudorule_object_class)
+* [`ldap_sudorule_name`](#-sssd--provider--ldap--ldap_sudorule_name)
+* [`ldap_sudorule_command`](#-sssd--provider--ldap--ldap_sudorule_command)
+* [`ldap_sudorule_host`](#-sssd--provider--ldap--ldap_sudorule_host)
+* [`ldap_sudorule_user`](#-sssd--provider--ldap--ldap_sudorule_user)
+* [`ldap_sudorule_option`](#-sssd--provider--ldap--ldap_sudorule_option)
+* [`ldap_sudorule_runasuser`](#-sssd--provider--ldap--ldap_sudorule_runasuser)
+* [`ldap_sudorule_runasgroup`](#-sssd--provider--ldap--ldap_sudorule_runasgroup)
+* [`ldap_sudorule_notbefore`](#-sssd--provider--ldap--ldap_sudorule_notbefore)
+* [`ldap_sudorule_notafter`](#-sssd--provider--ldap--ldap_sudorule_notafter)
+* [`ldap_sudorule_order`](#-sssd--provider--ldap--ldap_sudorule_order)
+* [`ldap_sudo_full_refresh_interval`](#-sssd--provider--ldap--ldap_sudo_full_refresh_interval)
+* [`ldap_sudo_smart_refresh_interval`](#-sssd--provider--ldap--ldap_sudo_smart_refresh_interval)
+* [`ldap_sudo_use_host_filter`](#-sssd--provider--ldap--ldap_sudo_use_host_filter)
+* [`ldap_sudo_hostnames`](#-sssd--provider--ldap--ldap_sudo_hostnames)
+* [`ldap_sudo_ip`](#-sssd--provider--ldap--ldap_sudo_ip)
+* [`ldap_sudo_include_netgroups`](#-sssd--provider--ldap--ldap_sudo_include_netgroups)
+* [`ldap_sudo_include_regexp`](#-sssd--provider--ldap--ldap_sudo_include_regexp)
+* [`ldap_autofs_map_master_name`](#-sssd--provider--ldap--ldap_autofs_map_master_name)
+* [`ldap_autofs_map_object_class`](#-sssd--provider--ldap--ldap_autofs_map_object_class)
+* [`ldap_autofs_map_name`](#-sssd--provider--ldap--ldap_autofs_map_name)
+* [`ldap_autofs_entry_object_class`](#-sssd--provider--ldap--ldap_autofs_entry_object_class)
+* [`ldap_autofs_entry_key`](#-sssd--provider--ldap--ldap_autofs_entry_key)
+* [`ldap_autofs_entry_value`](#-sssd--provider--ldap--ldap_autofs_entry_value)
+* [`ldap_netgroup_search_base`](#-sssd--provider--ldap--ldap_netgroup_search_base)
+* [`ldap_user_search_base`](#-sssd--provider--ldap--ldap_user_search_base)
+* [`ldap_group_search_base`](#-sssd--provider--ldap--ldap_group_search_base)
+* [`ldap_sudo_search_base`](#-sssd--provider--ldap--ldap_sudo_search_base)
+* [`ldap_autofs_search_base`](#-sssd--provider--ldap--ldap_autofs_search_base)
+* [`ldap_idmap_range_min`](#-sssd--provider--ldap--ldap_idmap_range_min)
+* [`ldap_idmap_range_max`](#-sssd--provider--ldap--ldap_idmap_range_max)
+* [`ldap_idmap_range_size`](#-sssd--provider--ldap--ldap_idmap_range_size)
+* [`ldap_idmap_default_domain_sid`](#-sssd--provider--ldap--ldap_idmap_default_domain_sid)
+* [`ldap_idmap_default_domain`](#-sssd--provider--ldap--ldap_idmap_default_domain)
+* [`ldap_idmap_autorid_compat`](#-sssd--provider--ldap--ldap_idmap_autorid_compat)
 
-##### <a name="name"></a>`name`
+##### <a name="-sssd--provider--ldap--name"></a>`name`
 
 The name of the associated domain section in the configuration file
 
-##### <a name="strip_128_bit_ciphers"></a>`strip_128_bit_ciphers`
+##### <a name="-sssd--provider--ldap--strip_128_bit_ciphers"></a>`strip_128_bit_ciphers`
 
 Data type: `Boolean`
 
 **DEPRECATED** - EL6-only - Will be removed in a future release
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="debug_level"></a>`debug_level`
+##### <a name="-sssd--provider--ldap--client_tls"></a>`client_tls`
+
+Data type: `Boolean`
+
+Set to false to disable setting up client-side TLS
+
+Default value: `true`
+
+##### <a name="-sssd--provider--ldap--debug_level"></a>`debug_level`
 
 Data type: `Optional[Sssd::DebugLevel]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_timestamps"></a>`debug_timestamps`
+##### <a name="-sssd--provider--ldap--debug_timestamps"></a>`debug_timestamps`
 
 Data type: `Optional[Boolean]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="debug_microseconds"></a>`debug_microseconds`
+##### <a name="-sssd--provider--ldap--debug_microseconds"></a>`debug_microseconds`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="ldap_uri"></a>`ldap_uri`
+##### <a name="-sssd--provider--ldap--ldap_uri"></a>`ldap_uri`
 
-Data type: `Array[Simplib::URI,1]`
+Data type: `Optional[Array[Simplib::URI,1]]`
 
 
 
 Default value: `simplib::lookup('simp_options::ldap::uri', { 'default_value' => undef })`
 
-##### <a name="ldap_backup_uri"></a>`ldap_backup_uri`
+##### <a name="-sssd--provider--ldap--ldap_backup_uri"></a>`ldap_backup_uri`
 
 Data type: `Optional[Array[Simplib::URI,1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_chpass_uri"></a>`ldap_chpass_uri`
-
-Data type: `Optional[Array[Simplib::URI,1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_chpass_backup_uri"></a>`ldap_chpass_backup_uri`
+##### <a name="-sssd--provider--ldap--ldap_chpass_uri"></a>`ldap_chpass_uri`
 
 Data type: `Optional[Array[Simplib::URI,1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_chpass_update_last_change"></a>`ldap_chpass_update_last_change`
+##### <a name="-sssd--provider--ldap--ldap_chpass_backup_uri"></a>`ldap_chpass_backup_uri`
+
+Data type: `Optional[Array[Simplib::URI,1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_chpass_update_last_change"></a>`ldap_chpass_update_last_change`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="ldap_search_base"></a>`ldap_search_base`
+##### <a name="-sssd--provider--ldap--ldap_search_base"></a>`ldap_search_base`
 
 Data type: `Optional[String[1]]`
 
@@ -2944,7 +2994,7 @@ Data type: `Optional[String[1]]`
 
 Default value: `simplib::lookup('simp_options::ldap::base_dn', { 'default_value' => undef })`
 
-##### <a name="ldap_schema"></a>`ldap_schema`
+##### <a name="-sssd--provider--ldap--ldap_schema"></a>`ldap_schema`
 
 Data type: `Sssd::LdapSchema`
 
@@ -2952,7 +3002,7 @@ Data type: `Sssd::LdapSchema`
 
 Default value: `'rfc2307'`
 
-##### <a name="ldap_default_bind_dn"></a>`ldap_default_bind_dn`
+##### <a name="-sssd--provider--ldap--ldap_default_bind_dn"></a>`ldap_default_bind_dn`
 
 Data type: `Optional[String[1]]`
 
@@ -2960,15 +3010,15 @@ Data type: `Optional[String[1]]`
 
 Default value: `simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => undef })`
 
-##### <a name="ldap_default_authtok_type"></a>`ldap_default_authtok_type`
+##### <a name="-sssd--provider--ldap--ldap_default_authtok_type"></a>`ldap_default_authtok_type`
 
 Data type: `Optional[Sssd::LdapDefaultAuthtok]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_default_authtok"></a>`ldap_default_authtok`
+##### <a name="-sssd--provider--ldap--ldap_default_authtok"></a>`ldap_default_authtok`
 
 Data type: `Optional[String[1]]`
 
@@ -2976,535 +3026,543 @@ Data type: `Optional[String[1]]`
 
 Default value: `simplib::lookup('simp_options::ldap::bind_pw', { 'default_value' => undef })`
 
-##### <a name="ldap_user_object_class"></a>`ldap_user_object_class`
+##### <a name="-sssd--provider--ldap--ldap_user_cert"></a>`ldap_user_cert`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_name"></a>`ldap_user_name`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_uid_number"></a>`ldap_user_uid_number`
+##### <a name="-sssd--provider--ldap--ldap_user_object_class"></a>`ldap_user_object_class`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_gid_number"></a>`ldap_user_gid_number`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_gecos"></a>`ldap_user_gecos`
+##### <a name="-sssd--provider--ldap--ldap_user_name"></a>`ldap_user_name`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_home_directory"></a>`ldap_user_home_directory`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_shell"></a>`ldap_user_shell`
+##### <a name="-sssd--provider--ldap--ldap_user_uid_number"></a>`ldap_user_uid_number`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_uuid"></a>`ldap_user_uuid`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_objectsid"></a>`ldap_user_objectsid`
+##### <a name="-sssd--provider--ldap--ldap_user_gid_number"></a>`ldap_user_gid_number`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_modify_timestamp"></a>`ldap_user_modify_timestamp`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_shadow_last_change"></a>`ldap_user_shadow_last_change`
+##### <a name="-sssd--provider--ldap--ldap_user_gecos"></a>`ldap_user_gecos`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_shadow_min"></a>`ldap_user_shadow_min`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_shadow_max"></a>`ldap_user_shadow_max`
+##### <a name="-sssd--provider--ldap--ldap_user_home_directory"></a>`ldap_user_home_directory`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_shadow_warning"></a>`ldap_user_shadow_warning`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_shadow_inactive"></a>`ldap_user_shadow_inactive`
+##### <a name="-sssd--provider--ldap--ldap_user_shell"></a>`ldap_user_shell`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_shadow_expire"></a>`ldap_user_shadow_expire`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_krb_last_pwd_change"></a>`ldap_user_krb_last_pwd_change`
+##### <a name="-sssd--provider--ldap--ldap_user_uuid"></a>`ldap_user_uuid`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_krb_password_expiration"></a>`ldap_user_krb_password_expiration`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_ad_account_expires"></a>`ldap_user_ad_account_expires`
+##### <a name="-sssd--provider--ldap--ldap_user_objectsid"></a>`ldap_user_objectsid`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_ad_user_account_control"></a>`ldap_user_ad_user_account_control`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_ns_account_lock"></a>`ldap_ns_account_lock`
+##### <a name="-sssd--provider--ldap--ldap_user_modify_timestamp"></a>`ldap_user_modify_timestamp`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_nds_login_disabled"></a>`ldap_user_nds_login_disabled`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_nds_login_expiration_time"></a>`ldap_user_nds_login_expiration_time`
+##### <a name="-sssd--provider--ldap--ldap_user_shadow_last_change"></a>`ldap_user_shadow_last_change`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_nds_login_allowed_time_map"></a>`ldap_user_nds_login_allowed_time_map`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_principal"></a>`ldap_user_principal`
+##### <a name="-sssd--provider--ldap--ldap_user_shadow_min"></a>`ldap_user_shadow_min`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_extra_attrs"></a>`ldap_user_extra_attrs`
+##### <a name="-sssd--provider--ldap--ldap_user_shadow_max"></a>`ldap_user_shadow_max`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_shadow_warning"></a>`ldap_user_shadow_warning`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_shadow_inactive"></a>`ldap_user_shadow_inactive`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_shadow_expire"></a>`ldap_user_shadow_expire`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_krb_last_pwd_change"></a>`ldap_user_krb_last_pwd_change`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_krb_password_expiration"></a>`ldap_user_krb_password_expiration`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_ad_account_expires"></a>`ldap_user_ad_account_expires`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_ad_user_account_control"></a>`ldap_user_ad_user_account_control`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_ns_account_lock"></a>`ldap_ns_account_lock`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_nds_login_disabled"></a>`ldap_user_nds_login_disabled`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_nds_login_expiration_time"></a>`ldap_user_nds_login_expiration_time`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_nds_login_allowed_time_map"></a>`ldap_user_nds_login_allowed_time_map`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_principal"></a>`ldap_user_principal`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_extra_attrs"></a>`ldap_user_extra_attrs`
 
 Data type: `Optional[Array[String[1],1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_ssh_public_key"></a>`ldap_user_ssh_public_key`
+##### <a name="-sssd--provider--ldap--ldap_user_ssh_public_key"></a>`ldap_user_ssh_public_key`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_force_upper_case_realm"></a>`ldap_force_upper_case_realm`
+##### <a name="-sssd--provider--ldap--ldap_force_upper_case_realm"></a>`ldap_force_upper_case_realm`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="ldap_enumeration_refresh_timeout"></a>`ldap_enumeration_refresh_timeout`
-
-Data type: `Optional[Integer[0]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_purge_cache_timeout"></a>`ldap_purge_cache_timeout`
+##### <a name="-sssd--provider--ldap--ldap_enumeration_refresh_timeout"></a>`ldap_enumeration_refresh_timeout`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_fullname"></a>`ldap_user_fullname`
+##### <a name="-sssd--provider--ldap--ldap_purge_cache_timeout"></a>`ldap_purge_cache_timeout`
 
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_member_of"></a>`ldap_user_member_of`
-
-Data type: `Optional[String[1]]`
+Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_authorized_service"></a>`ldap_user_authorized_service`
+##### <a name="-sssd--provider--ldap--ldap_user_fullname"></a>`ldap_user_fullname`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_user_authorized_host"></a>`ldap_user_authorized_host`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_group_object_class"></a>`ldap_group_object_class`
+##### <a name="-sssd--provider--ldap--ldap_user_member_of"></a>`ldap_user_member_of`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_group_name"></a>`ldap_group_name`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_group_gid_number"></a>`ldap_group_gid_number`
+##### <a name="-sssd--provider--ldap--ldap_user_authorized_service"></a>`ldap_user_authorized_service`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_group_member"></a>`ldap_group_member`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_group_uuid"></a>`ldap_group_uuid`
+##### <a name="-sssd--provider--ldap--ldap_user_authorized_host"></a>`ldap_user_authorized_host`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_group_objectsid"></a>`ldap_group_objectsid`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_group_modify_timestamp"></a>`ldap_group_modify_timestamp`
+##### <a name="-sssd--provider--ldap--ldap_group_object_class"></a>`ldap_group_object_class`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_group_type"></a>`ldap_group_type`
+##### <a name="-sssd--provider--ldap--ldap_group_name"></a>`ldap_group_name`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_group_gid_number"></a>`ldap_group_gid_number`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_group_member"></a>`ldap_group_member`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_group_uuid"></a>`ldap_group_uuid`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_group_objectsid"></a>`ldap_group_objectsid`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_group_modify_timestamp"></a>`ldap_group_modify_timestamp`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_group_type"></a>`ldap_group_type`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_group_nesting_level"></a>`ldap_group_nesting_level`
+##### <a name="-sssd--provider--ldap--ldap_group_nesting_level"></a>`ldap_group_nesting_level`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_groups_use_matching_rule_in_chain"></a>`ldap_groups_use_matching_rule_in_chain`
-
-Data type: `Boolean`
-
-
-
-Default value: ``false``
-
-##### <a name="ldap_initgroups_use_matching_rule_in_chain"></a>`ldap_initgroups_use_matching_rule_in_chain`
+##### <a name="-sssd--provider--ldap--ldap_groups_use_matching_rule_in_chain"></a>`ldap_groups_use_matching_rule_in_chain`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="ldap_use_tokengroups"></a>`ldap_use_tokengroups`
+##### <a name="-sssd--provider--ldap--ldap_initgroups_use_matching_rule_in_chain"></a>`ldap_initgroups_use_matching_rule_in_chain`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="ldap_netgroup_object_class"></a>`ldap_netgroup_object_class`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_netgroup_name"></a>`ldap_netgroup_name`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_netgroup_member"></a>`ldap_netgroup_member`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_netgroup_triple"></a>`ldap_netgroup_triple`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_netgroup_uuid"></a>`ldap_netgroup_uuid`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_netgroup_modify_timestamp"></a>`ldap_netgroup_modify_timestamp`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_service_name"></a>`ldap_service_name`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_service_port"></a>`ldap_service_port`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_service_proto"></a>`ldap_service_proto`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_service_search_base"></a>`ldap_service_search_base`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_search_timeout"></a>`ldap_search_timeout`
-
-Data type: `Optional[Integer[0]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_enumeration_search_timeout"></a>`ldap_enumeration_search_timeout`
-
-Data type: `Optional[Integer[0]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_network_timeout"></a>`ldap_network_timeout`
-
-Data type: `Optional[Integer[0]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_opt_timeout"></a>`ldap_opt_timeout`
-
-Data type: `Optional[Integer[0]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_connection_expire_timeout"></a>`ldap_connection_expire_timeout`
-
-Data type: `Optional[Integer[0]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_page_size"></a>`ldap_page_size`
-
-Data type: `Optional[Integer[0]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_disable_paging"></a>`ldap_disable_paging`
+##### <a name="-sssd--provider--ldap--ldap_use_tokengroups"></a>`ldap_use_tokengroups`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="ldap_disable_range_retrieval"></a>`ldap_disable_range_retrieval`
+##### <a name="-sssd--provider--ldap--ldap_netgroup_object_class"></a>`ldap_netgroup_object_class`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_netgroup_name"></a>`ldap_netgroup_name`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_netgroup_member"></a>`ldap_netgroup_member`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_netgroup_triple"></a>`ldap_netgroup_triple`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_netgroup_uuid"></a>`ldap_netgroup_uuid`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_netgroup_modify_timestamp"></a>`ldap_netgroup_modify_timestamp`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_service_name"></a>`ldap_service_name`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_service_port"></a>`ldap_service_port`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_service_proto"></a>`ldap_service_proto`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_service_search_base"></a>`ldap_service_search_base`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_search_timeout"></a>`ldap_search_timeout`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_enumeration_search_timeout"></a>`ldap_enumeration_search_timeout`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_network_timeout"></a>`ldap_network_timeout`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_opt_timeout"></a>`ldap_opt_timeout`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_connection_expire_timeout"></a>`ldap_connection_expire_timeout`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_page_size"></a>`ldap_page_size`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_disable_paging"></a>`ldap_disable_paging`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="ldap_sasl_minssf"></a>`ldap_sasl_minssf`
+##### <a name="-sssd--provider--ldap--ldap_disable_range_retrieval"></a>`ldap_disable_range_retrieval`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
+
+##### <a name="-sssd--provider--ldap--ldap_sasl_minssf"></a>`ldap_sasl_minssf`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_deref_threshold"></a>`ldap_deref_threshold`
+##### <a name="-sssd--provider--ldap--ldap_deref_threshold"></a>`ldap_deref_threshold`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_tls_reqcert"></a>`ldap_tls_reqcert`
+##### <a name="-sssd--provider--ldap--ldap_tls_reqcert"></a>`ldap_tls_reqcert`
 
 Data type: `Sssd::LdapTlsReqcert`
 
@@ -3512,45 +3570,45 @@ Data type: `Sssd::LdapTlsReqcert`
 
 Default value: `'demand'`
 
-##### <a name="ldap_tls_cacert"></a>`ldap_tls_cacert`
+##### <a name="-sssd--provider--ldap--ldap_tls_cacert"></a>`ldap_tls_cacert`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="app_pki_ca_dir"></a>`app_pki_ca_dir`
-
-Data type: `Optional[Stdlib::Absolutepath]`
-
-
-
-Default value: ``undef``
-
-##### <a name="app_pki_key"></a>`app_pki_key`
+##### <a name="-sssd--provider--ldap--app_pki_ca_dir"></a>`app_pki_ca_dir`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="app_pki_cert"></a>`app_pki_cert`
+##### <a name="-sssd--provider--ldap--app_pki_key"></a>`app_pki_key`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="strip_128_bit_ciphers"></a>`strip_128_bit_ciphers`
+##### <a name="-sssd--provider--ldap--app_pki_cert"></a>`app_pki_cert`
+
+Data type: `Optional[Stdlib::Absolutepath]`
 
 
 
-Default value: ``true``
+Default value: `undef`
 
-##### <a name="ldap_tls_cipher_suite"></a>`ldap_tls_cipher_suite`
+##### <a name="-sssd--provider--ldap--strip_128_bit_ciphers"></a>`strip_128_bit_ciphers`
+
+
+
+Default value: `true`
+
+##### <a name="-sssd--provider--ldap--ldap_tls_cipher_suite"></a>`ldap_tls_cipher_suite`
 
 Data type: `Array[String[1]]`
 
@@ -3558,175 +3616,175 @@ Data type: `Array[String[1]]`
 
 Default value: `['HIGH','-SSLv2']`
 
-##### <a name="ldap_id_use_start_tls"></a>`ldap_id_use_start_tls`
+##### <a name="-sssd--provider--ldap--ldap_id_use_start_tls"></a>`ldap_id_use_start_tls`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="ldap_id_mapping"></a>`ldap_id_mapping`
+##### <a name="-sssd--provider--ldap--ldap_id_mapping"></a>`ldap_id_mapping`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="ldap_min_id"></a>`ldap_min_id`
+##### <a name="-sssd--provider--ldap--ldap_min_id"></a>`ldap_min_id`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_max_id"></a>`ldap_max_id`
+##### <a name="-sssd--provider--ldap--ldap_max_id"></a>`ldap_max_id`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sasl_mech"></a>`ldap_sasl_mech`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_sasl_authid"></a>`ldap_sasl_authid`
+##### <a name="-sssd--provider--ldap--ldap_sasl_mech"></a>`ldap_sasl_mech`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sasl_realm"></a>`ldap_sasl_realm`
+##### <a name="-sssd--provider--ldap--ldap_sasl_authid"></a>`ldap_sasl_authid`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sasl_canonicalize"></a>`ldap_sasl_canonicalize`
+##### <a name="-sssd--provider--ldap--ldap_sasl_realm"></a>`ldap_sasl_realm`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_sasl_canonicalize"></a>`ldap_sasl_canonicalize`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `false`
 
-##### <a name="ldap_krb5_keytab"></a>`ldap_krb5_keytab`
+##### <a name="-sssd--provider--ldap--ldap_krb5_keytab"></a>`ldap_krb5_keytab`
 
 Data type: `Optional[Stdlib::Absolutepath]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_krb5_init_creds"></a>`ldap_krb5_init_creds`
+##### <a name="-sssd--provider--ldap--ldap_krb5_init_creds"></a>`ldap_krb5_init_creds`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="ldap_krb5_ticket_lifetime"></a>`ldap_krb5_ticket_lifetime`
+##### <a name="-sssd--provider--ldap--ldap_krb5_ticket_lifetime"></a>`ldap_krb5_ticket_lifetime`
 
 Data type: `Optional[Integer]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_server"></a>`krb5_server`
-
-Data type: `Optional[Array[String[1],1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="krb5_backup_server"></a>`krb5_backup_server`
+##### <a name="-sssd--provider--ldap--krb5_server"></a>`krb5_server`
 
 Data type: `Optional[Array[String[1],1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_realm"></a>`krb5_realm`
+##### <a name="-sssd--provider--ldap--krb5_backup_server"></a>`krb5_backup_server`
+
+Data type: `Optional[Array[String[1],1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--krb5_realm"></a>`krb5_realm`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="krb5_canonicalize"></a>`krb5_canonicalize`
-
-Data type: `Boolean`
-
-
-
-Default value: ``false``
-
-##### <a name="krb5_use_kdcinfo"></a>`krb5_use_kdcinfo`
+##### <a name="-sssd--provider--ldap--krb5_canonicalize"></a>`krb5_canonicalize`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `false`
 
-##### <a name="ldap_pwd_policy"></a>`ldap_pwd_policy`
+##### <a name="-sssd--provider--ldap--krb5_use_kdcinfo"></a>`krb5_use_kdcinfo`
+
+Data type: `Boolean`
+
+
+
+Default value: `true`
+
+##### <a name="-sssd--provider--ldap--ldap_pwd_policy"></a>`ldap_pwd_policy`
 
 Data type: `Enum['none','shadow','mit_kerberos']`
 
 
 
-Default value: `(`
+Default value: `($ldap_account_expire_policy == 'shadow') ? { true => 'shadow', default => 'none'`
 
-##### <a name="ldap_referrals"></a>`ldap_referrals`
+##### <a name="-sssd--provider--ldap--ldap_referrals"></a>`ldap_referrals`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="ldap_dns_service_name"></a>`ldap_dns_service_name`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_chpass_dns_service_name"></a>`ldap_chpass_dns_service_name`
+##### <a name="-sssd--provider--ldap--ldap_dns_service_name"></a>`ldap_dns_service_name`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_access_filter"></a>`ldap_access_filter`
+##### <a name="-sssd--provider--ldap--ldap_chpass_dns_service_name"></a>`ldap_chpass_dns_service_name`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_account_expire_policy"></a>`ldap_account_expire_policy`
+##### <a name="-sssd--provider--ldap--ldap_access_filter"></a>`ldap_access_filter`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_account_expire_policy"></a>`ldap_account_expire_policy`
 
 Data type: `Sssd::LdapAccountExpirePol`
 
@@ -3735,7 +3793,7 @@ in order to use the system default.
 
 Default value: `'shadow'`
 
-##### <a name="ldap_access_order"></a>`ldap_access_order`
+##### <a name="-sssd--provider--ldap--ldap_access_order"></a>`ldap_access_order`
 
 Data type: `Sssd::LdapAccessOrder`
 
@@ -3743,305 +3801,305 @@ Data type: `Sssd::LdapAccessOrder`
 
 Default value: `['expire','lockout','ppolicy','pwd_expire_policy_renew']`
 
-##### <a name="ldap_pwdlockout_dn"></a>`ldap_pwdlockout_dn`
+##### <a name="-sssd--provider--ldap--ldap_pwdlockout_dn"></a>`ldap_pwdlockout_dn`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_deref"></a>`ldap_deref`
+##### <a name="-sssd--provider--ldap--ldap_deref"></a>`ldap_deref`
 
 Data type: `Optional[Sssd::LdapDeref]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudorule_object_class"></a>`ldap_sudorule_object_class`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_sudorule_name"></a>`ldap_sudorule_name`
+##### <a name="-sssd--provider--ldap--ldap_sudorule_object_class"></a>`ldap_sudorule_object_class`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudorule_command"></a>`ldap_sudorule_command`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_sudorule_host"></a>`ldap_sudorule_host`
+##### <a name="-sssd--provider--ldap--ldap_sudorule_name"></a>`ldap_sudorule_name`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudorule_user"></a>`ldap_sudorule_user`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_sudorule_option"></a>`ldap_sudorule_option`
+##### <a name="-sssd--provider--ldap--ldap_sudorule_command"></a>`ldap_sudorule_command`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudorule_runasuser"></a>`ldap_sudorule_runasuser`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_sudorule_runasgroup"></a>`ldap_sudorule_runasgroup`
+##### <a name="-sssd--provider--ldap--ldap_sudorule_host"></a>`ldap_sudorule_host`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudorule_notbefore"></a>`ldap_sudorule_notbefore`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_sudorule_notafter"></a>`ldap_sudorule_notafter`
+##### <a name="-sssd--provider--ldap--ldap_sudorule_user"></a>`ldap_sudorule_user`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudorule_order"></a>`ldap_sudorule_order`
+##### <a name="-sssd--provider--ldap--ldap_sudorule_option"></a>`ldap_sudorule_option`
 
 Data type: `Optional[String[1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudo_full_refresh_interval"></a>`ldap_sudo_full_refresh_interval`
+##### <a name="-sssd--provider--ldap--ldap_sudorule_runasuser"></a>`ldap_sudorule_runasuser`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_sudorule_runasgroup"></a>`ldap_sudorule_runasgroup`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_sudorule_notbefore"></a>`ldap_sudorule_notbefore`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_sudorule_notafter"></a>`ldap_sudorule_notafter`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_sudorule_order"></a>`ldap_sudorule_order`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_sudo_full_refresh_interval"></a>`ldap_sudo_full_refresh_interval`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudo_smart_refresh_interval"></a>`ldap_sudo_smart_refresh_interval`
+##### <a name="-sssd--provider--ldap--ldap_sudo_smart_refresh_interval"></a>`ldap_sudo_smart_refresh_interval`
 
 Data type: `Optional[Integer[0]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudo_use_host_filter"></a>`ldap_sudo_use_host_filter`
+##### <a name="-sssd--provider--ldap--ldap_sudo_use_host_filter"></a>`ldap_sudo_use_host_filter`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="ldap_sudo_hostnames"></a>`ldap_sudo_hostnames`
+##### <a name="-sssd--provider--ldap--ldap_sudo_hostnames"></a>`ldap_sudo_hostnames`
 
 Data type: `Optional[Array[String[1],1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudo_ip"></a>`ldap_sudo_ip`
+##### <a name="-sssd--provider--ldap--ldap_sudo_ip"></a>`ldap_sudo_ip`
 
 Data type: `Optional[Array[String[1],1]]`
 
 
 
-Default value: ``undef``
+Default value: `undef`
 
-##### <a name="ldap_sudo_include_netgroups"></a>`ldap_sudo_include_netgroups`
-
-Data type: `Boolean`
-
-
-
-Default value: ``true``
-
-##### <a name="ldap_sudo_include_regexp"></a>`ldap_sudo_include_regexp`
+##### <a name="-sssd--provider--ldap--ldap_sudo_include_netgroups"></a>`ldap_sudo_include_netgroups`
 
 Data type: `Boolean`
 
 
 
-Default value: ``true``
+Default value: `true`
 
-##### <a name="ldap_autofs_map_master_name"></a>`ldap_autofs_map_master_name`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_autofs_map_object_class"></a>`ldap_autofs_map_object_class`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_autofs_map_name"></a>`ldap_autofs_map_name`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_autofs_entry_object_class"></a>`ldap_autofs_entry_object_class`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_autofs_entry_key"></a>`ldap_autofs_entry_key`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_autofs_entry_value"></a>`ldap_autofs_entry_value`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_netgroup_search_base"></a>`ldap_netgroup_search_base`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_user_search_base"></a>`ldap_user_search_base`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_group_search_base"></a>`ldap_group_search_base`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_sudo_search_base"></a>`ldap_sudo_search_base`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_autofs_search_base"></a>`ldap_autofs_search_base`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_idmap_range_min"></a>`ldap_idmap_range_min`
-
-Data type: `Optional[Integer[0]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_idmap_range_max"></a>`ldap_idmap_range_max`
-
-Data type: `Optional[Integer[0]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_idmap_range_size"></a>`ldap_idmap_range_size`
-
-Data type: `Optional[Integer[0]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_idmap_default_domain_sid"></a>`ldap_idmap_default_domain_sid`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_idmap_default_domain"></a>`ldap_idmap_default_domain`
-
-Data type: `Optional[String[1]]`
-
-
-
-Default value: ``undef``
-
-##### <a name="ldap_idmap_autorid_compat"></a>`ldap_idmap_autorid_compat`
+##### <a name="-sssd--provider--ldap--ldap_sudo_include_regexp"></a>`ldap_sudo_include_regexp`
 
 Data type: `Boolean`
 
 
 
-Default value: ``false``
+Default value: `true`
+
+##### <a name="-sssd--provider--ldap--ldap_autofs_map_master_name"></a>`ldap_autofs_map_master_name`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_autofs_map_object_class"></a>`ldap_autofs_map_object_class`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_autofs_map_name"></a>`ldap_autofs_map_name`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_autofs_entry_object_class"></a>`ldap_autofs_entry_object_class`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_autofs_entry_key"></a>`ldap_autofs_entry_key`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_autofs_entry_value"></a>`ldap_autofs_entry_value`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_netgroup_search_base"></a>`ldap_netgroup_search_base`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_user_search_base"></a>`ldap_user_search_base`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_group_search_base"></a>`ldap_group_search_base`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_sudo_search_base"></a>`ldap_sudo_search_base`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_autofs_search_base"></a>`ldap_autofs_search_base`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_idmap_range_min"></a>`ldap_idmap_range_min`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_idmap_range_max"></a>`ldap_idmap_range_max`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_idmap_range_size"></a>`ldap_idmap_range_size`
+
+Data type: `Optional[Integer[0]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_idmap_default_domain_sid"></a>`ldap_idmap_default_domain_sid`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_idmap_default_domain"></a>`ldap_idmap_default_domain`
+
+Data type: `Optional[String[1]]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ldap--ldap_idmap_autorid_compat"></a>`ldap_idmap_autorid_compat`
+
+Data type: `Boolean`
+
+
+
+Default value: `false`
 
 ## Functions
 
-### <a name="sssdsupported_version"></a>`sssd::supported_version`
+### <a name="sssd--supported_version"></a>`sssd::supported_version`
 
 Type: Puppet Language
 
@@ -4061,67 +4119,43 @@ Returns: `Boolean`
 
 ## Data types
 
-### <a name="sssdaddefaultright"></a>`Sssd::ADDefaultRight`
+### <a name="Sssd--ADDefaultRight"></a>`Sssd::ADDefaultRight`
 
 List of valid types for AD Provider setting ad_gpo_default_right
 
-Alias of
+Alias of `Enum['interactive', 'remote_interactive', 'network', 'batch', 'service', 'permit', 'deny']`
 
-```puppet
-Enum['interactive', 'remote_interactive', 'network', 'batch', 'service', 'permit', 'deny']
-```
-
-### <a name="sssdaccessprovider"></a>`Sssd::AccessProvider`
+### <a name="Sssd--AccessProvider"></a>`Sssd::AccessProvider`
 
 List of valid  SSSD domain access providers
 
-Alias of
+Alias of `Enum['permit', 'deny', 'ldap', 'ipa', 'ad', 'simple']`
 
-```puppet
-Enum['permit', 'deny', 'ldap', 'ipa', 'ad', 'simple']
-```
-
-### <a name="sssdauthprovider"></a>`Sssd::AuthProvider`
+### <a name="Sssd--AuthProvider"></a>`Sssd::AuthProvider`
 
 List of valid types for sssd domain authentication provider
 
-Alias of
+Alias of `Enum['ldap', 'krb5', 'ipa', 'ad', 'proxy', 'files', 'none']`
 
-```puppet
-Enum['ldap', 'krb5', 'ipa', 'ad', 'proxy', 'files', 'none']
-```
-
-### <a name="sssdchpassprovider"></a>`Sssd::ChpassProvider`
+### <a name="Sssd--ChpassProvider"></a>`Sssd::ChpassProvider`
 
 List of valid types for sssd domain change password provider
 
-Alias of
+Alias of `Enum['ldap', 'krb5', 'ipa', 'ad', 'proxy', 'none']`
 
-```puppet
-Enum['ldap', 'krb5', 'ipa', 'ad', 'proxy', 'none']
-```
-
-### <a name="sssddebuglevel"></a>`Sssd::DebugLevel`
+### <a name="Sssd--DebugLevel"></a>`Sssd::DebugLevel`
 
 Integer[0-9] or 2 byte Hexidecimal (ex. 0x0201)
 
-Alias of
+Alias of `Variant[Integer[0,9], Pattern[/0x\h{4}$/]]`
 
-```puppet
-Variant[Integer[0,9], Pattern[/0x\h{4}$/]]
-```
-
-### <a name="sssdidprovider"></a>`Sssd::IdProvider`
+### <a name="Sssd--IdProvider"></a>`Sssd::IdProvider`
 
 List of valid type for sssd domain ID provider.
 
-Alias of
+Alias of `Enum['proxy', 'ldap', 'ipa', 'ad', 'files']`
 
-```puppet
-Enum['proxy', 'ldap', 'ipa', 'ad', 'files']
-```
-
-### <a name="sssdldapaccessorder"></a>`Sssd::LdapAccessOrder`
+### <a name="Sssd--LdapAccessOrder"></a>`Sssd::LdapAccessOrder`
 
 List of valid values for ldap provider ldap_access_order setting
 
@@ -4141,64 +4175,40 @@ Array[Enum[
 ]]
 ```
 
-### <a name="sssdldapaccountexpirepol"></a>`Sssd::LdapAccountExpirePol`
+### <a name="Sssd--LdapAccountExpirePol"></a>`Sssd::LdapAccountExpirePol`
 
 List of valid values for ldap provider ldap_account_expire_policy
 '' corresponds to the default value (empty) per sssd-ldap(5) man page
 
-Alias of
+Alias of `Enum['', 'shadow', 'ad', 'rhds', 'ipa', '389ds', 'nds']`
 
-```puppet
-Enum['', 'shadow', 'ad', 'rhds', 'ipa', '389ds', 'nds']
-```
-
-### <a name="sssdldapdefaultauthtok"></a>`Sssd::LdapDefaultAuthtok`
+### <a name="Sssd--LdapDefaultAuthtok"></a>`Sssd::LdapDefaultAuthtok`
 
 List of valid values for ldap provider default auth token
 
-Alias of
+Alias of `Enum['password', 'obfuscated_password']`
 
-```puppet
-Enum['password', 'obfuscated_password']
-```
-
-### <a name="sssdldapderef"></a>`Sssd::LdapDeref`
+### <a name="Sssd--LdapDeref"></a>`Sssd::LdapDeref`
 
 List of valid values for ldap provider deref setting
 
-Alias of
+Alias of `Enum['never', 'searching', 'finding', 'always']`
 
-```puppet
-Enum['never', 'searching', 'finding', 'always']
-```
-
-### <a name="sssdldapschema"></a>`Sssd::LdapSchema`
+### <a name="Sssd--LdapSchema"></a>`Sssd::LdapSchema`
 
 List of valid setting for ldap provider ldap_schema setting.
 
-Alias of
+Alias of `Enum['rfc2307', 'rfc2307bis', 'IPA', 'AD']`
 
-```puppet
-Enum['rfc2307', 'rfc2307bis', 'IPA', 'AD']
-```
-
-### <a name="sssdldaptlsreqcert"></a>`Sssd::LdapTlsReqcert`
+### <a name="Sssd--LdapTlsReqcert"></a>`Sssd::LdapTlsReqcert`
 
 List of valid setting for ldap provider ldap_tls_reqcert.
 
-Alias of
+Alias of `Enum['never', 'allow', 'try', 'demand', 'hard']`
 
-```puppet
-Enum['never', 'allow', 'try', 'demand', 'hard']
-```
-
-### <a name="sssdservices"></a>`Sssd::Services`
+### <a name="Sssd--Services"></a>`Sssd::Services`
 
 List of available sssd services
 
-Alias of
-
-```puppet
-Array[Enum['nss','pam','sudo','autofs','ssh','pac','ifp']]
-```
+Alias of `Array[Enum['nss','pam','sudo','autofs','ssh','pac','ifp']]`
 
