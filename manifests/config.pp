@@ -13,8 +13,8 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::config (
-  Boolean $authoritative = pick(getvar("${module_name}::authoritative"), false)
-){
+  Boolean $authoritative = pick(getvar("${module_name}::authoritative"), false),
+) {
   assert_private()
 
   include $module_name
@@ -52,19 +52,19 @@ class sssd::config (
 
   file { '/etc/sssd':
     ensure => 'directory',
-    mode   => 'go-rw'
+    mode   => 'go-rw',
   }
 
   file { '/etc/sssd/conf.d':
     ensure  => 'directory',
     purge   => $authoritative,
-    recurse => true
+    recurse => true,
   }
 
   unless $authoritative {
     tidy { '/etc/sssd/conf.d':
       matches => '*_puppet_*.conf',
-      recurse => true
+      recurse => true,
     }
   }
 
@@ -72,7 +72,27 @@ class sssd::config (
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    content => template("${module_name}/sssd.conf.erb"),
-    notify  => Class["${module_name}::service"]
+    content => epp(
+      "${module_name}/sssd.conf.epp",
+      {
+        '_domains'               => $_domains,
+        '_debug_level'           => $_debug_level,
+        '_debug_timestamps'      => $_debug_timestamps,
+        '_debug_microseconds'    => $_debug_microseconds,
+        '_description'           => $_description,
+        '_enable_files_domain'   => $_enable_files_domain,
+        '_config_file_version'   => $_config_file_version,
+        '_services'              => $_services,
+        '_reconnection_retries'  => $_reconnection_retries,
+        '_re_expression'         => $_re_expression,
+        '_full_name_format'      => $_full_name_format,
+        '_try_inotify'           => $_try_inotify,
+        '_krb5_rcache_dir'       => $_krb5_rcache_dir,
+        '_user'                  => $_user,
+        '_default_domain_suffix' => $_default_domain_suffix,
+        '_override_space'        => $_override_space,
+      },
+    ),
+    notify  => Class["${module_name}::service"],
   }
 }

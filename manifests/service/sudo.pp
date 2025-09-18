@@ -29,20 +29,32 @@ class sssd::service::sudo (
   Boolean                     $debug_microseconds = false,
   Boolean                     $sudo_timed         = false,
   Integer[1]                  $sudo_threshold     = 50,
-  Optional[Hash]              $custom_options     = undef
-
+  Optional[Hash]              $custom_options     = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'sudo',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/sudo.erb")
+    $_content = epp(
+      "${module_name}/service/sudo.epp",
+      {
+        'description'        => $description,
+        'debug_level'        => $debug_level,
+        'debug_timestamps'   => $debug_timestamps,
+        'debug_microseconds' => $debug_microseconds,
+        'sudo_timed'         => $sudo_timed,
+        'sudo_threshold'     => $sudo_threshold,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_sudo':
-    content => $_content
+    content => $_content,
   }
 
   $_override_content = @(END)
@@ -58,15 +70,15 @@ class sssd::service::sudo (
   systemd::dropin_file { '00_sssd_sudo_user_group.conf':
     unit                    => 'sssd-sudo.service',
     content                 => $_override_content,
-    selinux_ignore_defaults => true
+    selinux_ignore_defaults => true,
   }
 
   service { 'sssd-sudo.socket':
     enable  => true,
     require => [
       Sssd::Config::Entry['puppet_service_sudo'],
-      Systemd::Dropin_file['00_sssd_sudo_user_group.conf']
+      Systemd::Dropin_file['00_sssd_sudo_user_group.conf'],
     ],
-    notify  => Class["${module_name}::service"]
+    notify  => Class["${module_name}::service"],
   }
 }

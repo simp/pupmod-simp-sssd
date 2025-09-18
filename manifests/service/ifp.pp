@@ -34,15 +34,29 @@ class sssd::service::ifp (
   Optional[Hash]              $custom_options     = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'ifp',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/ifp.erb")
+    $_content = epp(
+      "${module_name}/service/ifp.epp",
+      {
+        'description'        => $description,
+        'debug_level'        => $debug_level,
+        'debug_timestamps'   => $debug_timestamps,
+        'debug_microseconds' => $debug_microseconds,
+        'wildcard_limit'     => $wildcard_limit,
+        'allowed_uids'       => $allowed_uids,
+        'user_attributes'    => $user_attributes,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_ifp':
-    content => $_content
+    content => $_content,
   }
 }

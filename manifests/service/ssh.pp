@@ -28,19 +28,31 @@ class sssd::service::ssh (
   Boolean                      $debug_microseconds      = false,
   Boolean                      $ssh_hash_known_hosts    = true,
   Optional[Integer]            $ssh_known_hosts_timeout = undef,
-  Optional[Hash]               $custom_options          = undef
-
+  Optional[Hash]               $custom_options          = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'ssh',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/ssh.erb")
+    $_content = epp(
+      "${module_name}/service/ssh.epp",
+      {
+        'description'             => $description,
+        'debug_level'             => $debug_level,
+        'debug_timestamps'        => $debug_timestamps,
+        'debug_microseconds'      => $debug_microseconds,
+        'ssh_hash_known_hosts'    => $ssh_hash_known_hosts,
+        'ssh_known_hosts_timeout' => $ssh_known_hosts_timeout,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_ssh':
-    content => $_content
+    content => $_content,
   }
 }

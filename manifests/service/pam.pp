@@ -50,19 +50,41 @@ class sssd::service::pam (
   Optional[Integer]            $get_domains_timeout            = undef,
   Optional[String]             $pam_trusted_users              = undef,
   Optional[String]             $pam_public_domains             = undef,
-  Optional[Hash]               $custom_options                 = undef
-
+  Optional[Hash]               $custom_options                 = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'pam',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/pam.erb")
+    $_content = epp(
+      "${module_name}/service/pam.epp",
+      {
+        'description'                    => $description,
+        'debug_level'                    => $debug_level,
+        'debug_timestamps'               => $debug_timestamps,
+        'debug_microseconds'             => $debug_microseconds,
+        'pam_cert_auth'                  => $pam_cert_auth,
+        'reconnection_retries'           => $reconnection_retries,
+        'command'                        => $command,
+        'offline_credentials_expiration' => $offline_credentials_expiration,
+        'offline_failed_login_attempts'  => $offline_failed_login_attempts,
+        'offline_failed_login_delay'     => $offline_failed_login_delay,
+        'pam_verbosity'                  => $pam_verbosity,
+        'pam_id_timeout'                 => $pam_id_timeout,
+        'pam_pwd_expiration_warning'     => $pam_pwd_expiration_warning,
+        'get_domains_timeout'            => $get_domains_timeout,
+        'pam_trusted_users'              => $pam_trusted_users,
+        'pam_public_domains'             => $pam_public_domains,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_pam':
-    content => $_content
+    content => $_content,
   }
 }
