@@ -59,18 +59,46 @@ class sssd::service::nss (
   Optional[Integer]            $get_domains_timeout           = undef,
   Optional[Integer]            $memcache_timeout              = undef,
   Optional[String]             $user_attributes               = undef,
-  Optional[Hash]               $custom_options                = undef
+  Optional[Hash]               $custom_options                = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'nss',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/nss.erb")
+    $_content = epp(
+      "${module_name}/service/nss.epp",
+      {
+        'description'                   => $description,
+        'debug_level'                   => $debug_level,
+        'debug_timestamps'              => $debug_timestamps,
+        'debug_microseconds'            => $debug_microseconds,
+        'reconnection_retries'          => $reconnection_retries,
+        'fd_limit'                      => $fd_limit,
+        'command'                       => $command,
+        'enum_cache_timeout'            => $enum_cache_timeout,
+        'entry_cache_nowait_percentage' => $entry_cache_nowait_percentage,
+        'entry_negative_timeout'        => $entry_negative_timeout,
+        'filter_users'                  => $filter_users,
+        'filter_groups'                 => $filter_groups,
+        'filter_users_in_groups'        => $filter_users_in_groups,
+        'override_homedir'              => $override_homedir,
+        'fallback_homedir'              => $fallback_homedir,
+        'override_shell'                => $override_shell,
+        'vetoed_shells'                 => $vetoed_shells,
+        'default_shell'                 => $default_shell,
+        'get_domains_timeout'           => $get_domains_timeout,
+        'memcache_timeout'              => $memcache_timeout,
+        'user_attributes'               => $user_attributes,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_nss':
-    content => $_content
+    content => $_content,
   }
 }

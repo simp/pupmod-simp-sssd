@@ -1,0 +1,12 @@
+<% |
+  Optional[Array[Stdlib::Absolutepath]] $passwd_files,
+  Optional[Array[Stdlib::Absolutepath]] $group_files,
+| -%>
+[domain/<%= $title %>]
+# sssd::provider::files
+<% if $passwd_files and ! $passwd_files.empty { -%>
+passwd_files = <%= $passwd_files.join(', ') %>
+<% } -%>
+<% if $group_files and ! $group_files.empty { -%>
+group_files = <%= $group_files.join(', ') %>
+<% } -%>

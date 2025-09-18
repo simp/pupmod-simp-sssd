@@ -1,0 +1,97 @@
+<% |
+  String[1]                      $ipa_domain,
+  Array[Simplib::Host]           $ipa_server,
+  Optional[Array[Simplib::Host]] $ipa_backup_server,
+  Boolean                        $ipa_enable_dns_sites,
+  Simplib::Hostname              $ipa_hostname,
+  Boolean                        $ipa_server_mode,
+  Enum['none','GSS-TSIG']        $dyndns_auth,
+  Optional[Boolean]              $dyndns_force_tcp,
+  Optional[Array[String[1]]]     $dyndns_iface,
+  Optional[Integer[0]]           $dyndns_refresh_interval,
+  Optional[Simplib::Host]        $dyndns_server,
+  Optional[Integer[0]]           $dyndns_ttl,
+  Boolean                        $dyndns_update,
+  Optional[Boolean]              $dyndns_update_ptr,
+  Optional[String]               $ipa_automount_location,
+  Optional[Integer[0]]           $ipa_hbac_refresh,
+  Optional[String]               $ipa_hbac_search_base,
+  Optional[Integer[0]]           $ipa_hbac_selinux,
+  Optional[String]               $ipa_host_search_base,
+  Optional[String]               $ipa_master_domains_search_base,
+  Optional[String]               $ipa_selinux_search_base,
+  Optional[String]               $ipa_subdomains_search_base,
+  Optional[String]               $ipa_views_search_base,
+  Optional[Stdlib::AbsolutePath] $krb5_confd_path,
+  Optional[String]               $krb5_realm,
+  Boolean                        $krb5_store_password_if_offline,
+  Stdlib::AbsolutePath           $ldap_tls_cacert,
+  Array[String]                  $ldap_tls_cipher_suite,
+  Boolean                        $use_service_discovery,
+| -%>
+[domain/<%= $title %>]
+# sssd::provider::ipa
+ipa_domain = <%= $ipa_domain %>
+ipa_server = <%= $_ipa_server.join(',') %>
+<% unless $ipa_backup_server =~ Undef { -%>
+ipa_backup_server = <%= $ipa_backup_server.join(',') %>
+<% } -%>
+ipa_enable_dns_sites = <%= $ipa_enable_dns_sites %>
+ipa_hostname = <%= $ipa_hostname %>
+ipa_server_mode = <%= $ipa_server_mode %>
+dyndns_auth = <%= $dyndns_auth %>
+<% unless $dyndns_force_tcp =~ Undef { -%>
+dyndns_force_tcp = <%= $dyndns_force_tcp %>
+<% } -%>
+<% unless $dyndns_iface =~ Undef { -%>
+dyndns_iface = <%= $dyndns_iface.join(',') %>
+<% } -%>
+<% unless $dyndns_refresh_interval =~ Undef { -%>
+dyndns_refresh_interval = <%= $dyndns_refresh_interval %>
+<% } -%>
+<% unless $dyndns_server =~ Undef { -%>
+dyndns_server = <%= $dyndns_server %>
+<% } -%>
+<% unless $dyndns_ttl =~ Undef { -%>
+dyndns_ttl = <%= $dyndns_ttl %>
+<% } -%>
+dyndns_update = <%= $dyndns_update %>
+<% unless $dyndns_update_ptr =~ Undef { -%>
+dyndns_update_ptr = <%= $dyndns_update_ptr %>
+<% } -%>
+<% unless $ipa_automount_location =~ Undef { -%>
+ipa_automount_location = <%= $ipa_automount_location %>
+<% } -%>
+<% unless $ipa_hbac_refresh =~ Undef { -%>
+ipa_hbac_refresh = <%= $ipa_hbac_refresh %>
+<% } -%>
+<% unless $ipa_hbac_search_base =~ Undef { -%>
+ipa_hbac_search_base = <%= $ipa_hbac_search_base %>
+<% } -%>
+<% unless $ipa_hbac_selinux =~ Undef { -%>
+ipa_hbac_selinux = <%= $ipa_hbac_selinux %>
+<% } -%>
+<% unless $ipa_host_search_base =~ Undef { -%>
+ipa_host_search_base = <%= $ipa_host_search_base  %>
+<% } -%>
+<% unless $ipa_master_domains_search_base =~ Undef { -%>
+ipa_master_domains_search_base = <%= $ipa_master_domains_search_base %>
+<% } -%>
+<% unless $ipa_selinux_search_base =~ Undef { -%>
+ipa_selinux_search_base = <%= $ipa_selinux_search_base %>
+<% } -%>
+<% unless $ipa_subdomains_search_base =~ Undef { -%>
+ipa_subdomains_search_base = <%= $ipa_subdomains_search_base %>
+<% } -%>
+<% unless $ipa_views_search_base =~ Undef { -%>
+ipa_views_search_base = <%= $ipa_views_search_base %>
+<% } -%>
+<% unless $krb5_confd_path =~ Undef { -%>
+krb5_confd_path = <%= $krb5_confd_path %>
+<% } -%>
+<% unless $krb5_realm =~ Undef { -%>
+krb5_realm = <%= $krb5_realm %>
+<% } -%>
+krb5_store_password_if_offline = <%= $krb5_store_password_if_offline %>
+ldap_tls_cacert = <%= $ldap_tls_cacert %>
+ldap_tls_cipher_suite = <%= $ldap_tls_cipher_suite.join(':') %>

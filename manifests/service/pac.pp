@@ -25,19 +25,30 @@ class sssd::service::pac (
   Boolean                      $debug_timestamps   = true,
   Boolean                      $debug_microseconds = false,
   Array[String]                $allowed_uids       = [],
-  Optional[Hash]               $custom_options     = undef
-
+  Optional[Hash]               $custom_options     = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'pac',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/pac.erb")
+    $_content = epp(
+      "${module_name}/service/pac.epp",
+      {
+        'description'        => $description,
+        'debug_level'        => $debug_level,
+        'debug_timestamps'   => $debug_timestamps,
+        'debug_microseconds' => $debug_microseconds,
+        'allowed_uids'       => $allowed_uids,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_pac':
-    content => $_content
+    content => $_content,
   }
 }

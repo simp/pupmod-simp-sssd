@@ -22,6 +22,12 @@ define sssd::provider::files (
   Optional[Array[Stdlib::Absolutepath]] $group_files  = undef
 ) {
   sssd::config::entry { "puppet_provider_${name}_files":
-    content => template("${module_name}/provider/files.erb")
+    content => epp(
+      "${module_name}/provider/files.epp",
+      {
+        'passwd_files' => $passwd_files,
+        'group_files'  => $group_files,
+      }
+    ),
   }
 }

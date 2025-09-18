@@ -47,24 +47,27 @@ define sssd::provider::krb5 (
 ) {
 
   sssd::config::entry { "puppet_provider_${name}_krb5":
-    content => epp("${module_name}/provider/krb5", {
-      'domain'                         => $title,
-      'krb5_server'                    => $krb5_server,
-      'krb5_realm'                     => $krb5_realm,
-      'debug_level'                    => $debug_level,
-      'debug_timestamps'               => $debug_timestamps,
-      'debug_microseconds'             => $debug_microseconds,
-      'krb5_kpasswd'                   => $krb5_kpasswd,
-      'krb5_ccachedir'                 => $krb5_ccachedir,
-      'krb5_ccname_template'           => $krb5_ccname_template,
-      'krb5_auth_timeout'              => $krb5_auth_timeout,
-      'krb5_validate'                  => $krb5_validate,
-      'krb5_keytab'                    => $krb5_keytab,
-      'krb5_store_password_if_offline' => $krb5_store_password_if_offline,
-      'krb5_renewable_lifetime'        => $krb5_renewable_lifetime,
-      'krb5_lifetime'                  => $krb5_lifetime,
-      'krb5_renew_interval'            => $krb5_renew_interval,
-      'krb5_use_fast'                  => $krb5_use_fast
-    })
+    content => epp(
+      "${module_name}/provider/krb5",
+      {
+        'domain'                         => $title,
+        'krb5_server'                    => $krb5_server,
+        'krb5_realm'                     => $krb5_realm,
+        'debug_level'                    => $debug_level,
+        'debug_timestamps'               => $debug_timestamps,
+        'debug_microseconds'             => $debug_microseconds,
+        'krb5_kpasswd'                   => $krb5_kpasswd,
+        'krb5_ccachedir'                 => $krb5_ccachedir,
+        'krb5_ccname_template'           => $krb5_ccname_template,
+        'krb5_auth_timeout'              => $krb5_auth_timeout,
+        'krb5_validate'                  => $krb5_validate,
+        'krb5_keytab'                    => $krb5_keytab,
+        'krb5_store_password_if_offline' => $krb5_store_password_if_offline,
+        'krb5_renewable_lifetime'        => $krb5_renewable_lifetime,
+        'krb5_lifetime'                  => $krb5_lifetime,
+        'krb5_renew_interval'            => $krb5_renew_interval,
+        'krb5_use_fast'                  => $krb5_use_fast,
+      },
+    )
   }
 }

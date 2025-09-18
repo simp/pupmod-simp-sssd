@@ -26,18 +26,30 @@ class sssd::service::autofs (
   Boolean                     $debug_timestamps         = true,
   Boolean                     $debug_microseconds       = false,
   Optional[Integer]           $autofs_negative_timeout  = undef,
-  Optional[Hash]              $custom_options           = undef
+  Optional[Hash]              $custom_options           = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'autofs',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/autofs.erb")
+    $_content = epp(
+      "${module_name}/service/autofs.epp",
+      {
+        'description'              => $description,
+        'debug_level'              => $debug_level,
+        'debug_timestamps'         => $debug_timestamps,
+        'debug_microseconds'       => $debug_microseconds,
+        'autofs_negative_timeout'  => $autofs_negative_timeout,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_autofs':
-    content => $_content
+    content => $_content,
   }
 }
