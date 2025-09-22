@@ -9,7 +9,7 @@ debug_level = <%= @debug_level %>
 debug_timestamps = <%= @debug_timestamps.to_s %>
 debug_microseconds = <%= @debug_microseconds.to_s %>
 <% if @allowed_uids -%>
-allow_uids = <%= @allowed_uids.join(', ') %>
+allowed_uids = <%= @allowed_uids.join(', ') %>
 <% end -%>
 <% if @user_attributes -%>
 user_attributes = <%= @user_attributes.join(', ') %>

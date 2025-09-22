@@ -31,7 +31,7 @@ describe 'sssd::service::ifp' do
             [ifp]
             debug_timestamps = true
             debug_microseconds = false
-            allow_uids = me, you
+            allowed_uids = me, you
             user_attributes = x, y, z
             wildcard_limit = 5
             EXPECTED
