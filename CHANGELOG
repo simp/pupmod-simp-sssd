@@ -1,3 +1,9 @@
+* Mon Sep 22 2025 Patrick Brideau <patrick.brideau@teluq.ca> - 7.13.0
+- Fix allowed_uids parameter in ifp template
+
+* Mon Sep 22 2025 Paul Edmon <pedmon@cfa.harvard.edu> - 7.13.0
+- Add `sssd::domain::custom_options`
+
 * Mon Nov 18 2024 dpavlotzky <david@pavlotzky.nl> - 7.12.0
 - Add "ad" option to autofs_provider list (#147)
 
