@@ -1376,6 +1376,7 @@ The following parameters are available in the `sssd::domain` defined type:
 * [`proxy_pam_target`](#-sssd--domain--proxy_pam_target)
 * [`proxy_lib_name`](#-sssd--domain--proxy_lib_name)
 * [`ldap_user_search_filter`](#-sssd--domain--ldap_user_search_filter)
+* [`custom_options`](#-sssd--domain--custom_options)
 
 ##### <a name="-sssd--domain--name"></a>`name`
 
@@ -1728,7 +1729,17 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
+##### <a name="-sssd--domain--custom_options"></a>`custom_options`
 
+Data type: `Optional[Hash]`
+
+If defined, this hash will be used to create the service
+section instead of the parameters.  You must provide all options
+in the section you want to add.  Each entry in the hash will be
+added as a simple init pair
+key = value
+under the section in the sssd.conf file.
+No error checking will be performed.
 
 Default value: `undef`
 

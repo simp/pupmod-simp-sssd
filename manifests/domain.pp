@@ -66,6 +66,14 @@
 # @param proxy_lib_name
 # @param ldap_user_search_filter
 #
+# @param custom_options
+#   If defined, this hash will be used to create the service
+#   section instead of the parameters.  You must provide all options
+#   in the section you want to add.  Each entry in the hash will be
+#   added as a simple init pair key = value under the section in
+#   the sssd.conf file.
+#   No error checking will be performed.
+#
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 define sssd::domain (
@@ -112,7 +120,8 @@ define sssd::domain (
   Optional[String]                           $realmd_tags                  = undef,
   Optional[String]                           $proxy_pam_target             = undef,
   Optional[String]                           $proxy_lib_name               = undef,
-  Optional[String]                           $ldap_user_search_filter      = undef
+  Optional[String]                           $ldap_user_search_filter      = undef,
+  Optional[Hash]                             $custom_options               = undef
 ) {
 
   sssd::config::entry { "puppet_domain_${name}":

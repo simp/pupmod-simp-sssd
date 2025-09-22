@@ -107,3 +107,8 @@ proxy_pam_target = <%= @proxy_pam_target %>
 <% if @proxy_lib_name %>
 proxy_lib_name = <%= @proxy_lib_name %>
 <% end -%>
+<% if @custom_options -%>
+<% @custom_options.each do |opt,value| -%>
+<%= opt %> = <%= value %>
+<% end -%>
+<% end -%>
