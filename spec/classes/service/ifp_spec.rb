@@ -24,7 +24,7 @@ describe 'sssd::service::ifp' do
             {
               'wildcard_limit' => 5,
            'allowed_uids' => ['me', 'you'],
-           'user_attributes' => ['x', 'y', 'z']
+           'user_attributes' => ['x', 'y', 'z'],
             }
           end
 

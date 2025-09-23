@@ -11,7 +11,7 @@ describe 'sssd::provider::ipa' do
           let(:params) do
             {
               ipa_domain: facts[:domain],
-           ipa_server: ["ipaserver.#{facts[:domain]}"]
+           ipa_server: ["ipaserver.#{facts[:domain]}"],
             }
           end
 
@@ -69,7 +69,7 @@ describe 'sssd::provider::ipa' do
            krb5_store_password_if_offline: false,
            ldap_tls_cacert: '/etc/ipa/cacert.crt',
            ldap_tls_cipher_suite: ['HIGH'],
-           use_service_discovery: false
+           use_service_discovery: false,
             }
           end
 

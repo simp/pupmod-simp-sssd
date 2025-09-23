@@ -11,31 +11,31 @@ describe 'LDAP' do
 
   let(:client_manifest) do
     <<~EOS
-     #{local_domain}
+      #{local_domain}
 
-     sssd::domain { 'LDAP':
-        description       => 'LDAP Users Domain',
-        id_provider       => 'ldap',
-        auth_provider     => 'ldap',
-        chpass_provider   => 'ldap',
-        access_provider   => 'ldap',
-        sudo_provider     => 'ldap',
-        autofs_provider   => 'ldap',
-        min_id            => 500,
-        enumerate         => true,
-        cache_credentials => true
-      }
+      sssd::domain { 'LDAP':
+         description       => 'LDAP Users Domain',
+         id_provider       => 'ldap',
+         auth_provider     => 'ldap',
+         chpass_provider   => 'ldap',
+         access_provider   => 'ldap',
+         sudo_provider     => 'ldap',
+         autofs_provider   => 'ldap',
+         min_id            => 500,
+         enumerate         => true,
+         cache_credentials => true
+       }
 
-      sssd::provider::ldap { 'LDAP':
-        ldap_default_authtok_type => 'password',
-        ldap_user_gecos           => 'dn'
-      }
+       sssd::provider::ldap { 'LDAP':
+         ldap_default_authtok_type => 'password',
+         ldap_user_gecos           => 'dn'
+       }
 
-      class { 'nsswitch':
-        passwd => ['sss', 'files'],
-        group  => ['sss', 'files'],
-        shadow => ['sss', 'files'],
-      }
+       class { 'nsswitch':
+         passwd => ['sss', 'files'],
+         group  => ['sss', 'files'],
+         shadow => ['sss', 'files'],
+       }
     EOS
   end
 

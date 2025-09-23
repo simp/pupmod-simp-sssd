@@ -26,7 +26,7 @@ describe 'compliance_markup', type: :class do
     'documented_missing_parameters' => [
     ] + expected_classes.map { |c| Regexp.new("^(?!#{c}(::.*)?)") },
     'documented_missing_resources' => [
-    ] + expected_classes.map { |c| Regexp.new("^(?!#{c}(::.*)?)") }
+    ] + expected_classes.map { |c| Regexp.new("^(?!#{c}(::.*)?)") },
   }
 
   # Add any defined types that are necessary for full evaluation here
@@ -42,7 +42,7 @@ describe 'compliance_markup', type: :class do
         context "with compliance profile '#{target_profile}'" do
           let(:facts) do
             os_facts.merge({
-                             target_compliance_profile: target_profile
+                             target_compliance_profile: target_profile,
                            })
           end
           # rubocop:disable RSpec/InstanceVariable

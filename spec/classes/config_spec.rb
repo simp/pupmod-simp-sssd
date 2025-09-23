@@ -1,48 +1,48 @@
 require 'spec_helper'
 
-default_content = <<EOM
-# sssd::config
-[sssd]
-services = nss,pam,ssh
-config_file_version = 2
-reconnection_retries = 3
-enable_files_domain = true
-debug_timestamps = true
-debug_microseconds = false
+default_content = <<~EOM
+  # sssd::config
+  [sssd]
+  services = nss,pam,ssh
+  config_file_version = 2
+  reconnection_retries = 3
+  enable_files_domain = true
+  debug_timestamps = true
+  debug_microseconds = false
 EOM
 
-default_content_with_domains = <<EOM
-# sssd::config
-[sssd]
-services = nss,pam,ssh
-domains = FILE, LDAP
-config_file_version = 2
-reconnection_retries = 3
-enable_files_domain = true
-debug_timestamps = true
-debug_microseconds = false
+default_content_with_domains = <<~EOM
+  # sssd::config
+  [sssd]
+  services = nss,pam,ssh
+  domains = FILE, LDAP
+  config_file_version = 2
+  reconnection_retries = 3
+  enable_files_domain = true
+  debug_timestamps = true
+  debug_microseconds = false
 EOM
 default_content_with_ipa_domain = default_content_with_domains.gsub('FILE, LDAP', 'FILE, LDAP, ipa.example.com')
 
-default_content_plus_optional = <<EOM
-# sssd::config
-[sssd]
-services = nss,pam,ssh
-description = sssd section description
-domains = FILE, LDAP
-config_file_version = 2
-reconnection_retries = 3
-re_expression = (.+)@(.+)
-full_name_format =  %1$s@%2$s
-try_inotify = true
-krb5_rcache_dir = __LIBKRB5_DEFAULTS__
-user = sssduser
-default_domain_suffix = example.com
-override_space = __
-enable_files_domain = false
-debug_level = 3
-debug_timestamps = true
-debug_microseconds = false
+default_content_plus_optional = <<~EOM
+  # sssd::config
+  [sssd]
+  services = nss,pam,ssh
+  description = sssd section description
+  domains = FILE, LDAP
+  config_file_version = 2
+  reconnection_retries = 3
+  re_expression = (.+)@(.+)
+  full_name_format =  %1$s@%2$s
+  try_inotify = true
+  krb5_rcache_dir = __LIBKRB5_DEFAULTS__
+  user = sssduser
+  default_domain_suffix = example.com
+  override_space = __
+  enable_files_domain = false
+  debug_level = 3
+  debug_timestamps = true
+  debug_microseconds = false
 EOM
 
 shared_examples_for 'a sssd::config' do |content|
@@ -50,7 +50,7 @@ shared_examples_for 'a sssd::config' do |content|
   it {
     is_expected.to contain_file('/etc/sssd').with({
                                                     ensure: 'directory',
-    mode: 'go-rw'
+    mode: 'go-rw',
                                                   })
   }
   it {
@@ -58,7 +58,7 @@ shared_examples_for 'a sssd::config' do |content|
                                                               owner: 'root',
       group: 'root',
       mode: '0600',
-      content: content
+      content: content,
                                                             })
   }
 end
@@ -73,7 +73,7 @@ describe 'sssd' do
       ipa: {
         domain: 'ipa.example.com',
         server: 'ipaserver.example.com',
-      }
+      },
     }
   end
 
@@ -133,7 +133,7 @@ describe 'sssd' do
           let(:params) do
             {
               domains: sssd_domains,
-            auto_add_ipa_domain: false
+            auto_add_ipa_domain: false,
             }
           end
 
@@ -162,7 +162,7 @@ describe 'sssd' do
           let(:params) do
             {
               domains: sssd_domains,
-           services: ['nss', 'pam', 'ifp']
+           services: ['nss', 'pam', 'ifp'],
             }
           end
 

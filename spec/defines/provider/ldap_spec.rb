@@ -158,7 +158,7 @@ describe 'sssd::provider::ldap' do
       context 'with multiple ldap_uri values' do
         let(:params) do
           {
-            ldap_uri: ['ldap://test1.example.domain', 'ldap://test2.example.domain']
+            ldap_uri: ['ldap://test1.example.domain', 'ldap://test2.example.domain'],
           }
         end
 
@@ -302,7 +302,7 @@ describe 'sssd::provider::ldap' do
           ldap_user_shell: 'my_ldap_user_shell',
           ldap_user_ssh_public_key: 'my_ldap_user_ssh_public_key',
           ldap_user_uid_number: 'my_ldap_user_uid_number',
-          ldap_user_uuid: 'my_ldap_user_uuid'
+          ldap_user_uuid: 'my_ldap_user_uuid',
           }
         end
 

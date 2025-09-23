@@ -10,7 +10,7 @@ describe 'sssd class' do
       'simp_options::pki'         => true,
       'simp_options::pki::source' => '/etc/pki/simp-testing/pki',
       # This causes a lot of noise and reboots
-      'sssd::auditd'              => false
+      'sssd::auditd'              => false,
     }
   end
 

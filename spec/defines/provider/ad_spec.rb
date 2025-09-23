@@ -34,7 +34,7 @@ describe 'sssd::provider::ad' do
          dyndns_refresh_interval: 4,
          dyndns_update_ptr: false,
          dyndns_force_tcp: false,
-         dyndns_server: 'my.dyndns.server'
+         dyndns_server: 'my.dyndns.server',
           }
         end
 
@@ -105,7 +105,7 @@ describe 'sssd::provider::ad' do
          ldap_group_objectsid: 'my_ldap_group_objectsid',
          ldap_user_objectsid: 'my_ldap_user_objectsid',
          ldap_user_extra_attrs: 'altSecurityIdentities',
-         ldap_user_ssh_public_key: 'altSecurityIdentities'
+         ldap_user_ssh_public_key: 'altSecurityIdentities',
           }
         end
 

@@ -32,7 +32,7 @@ describe 'sssd' do
           it { is_expected.to create_class('auditd') }
           it {
             is_expected.to create_auditd__rule('sssd').with({
-                                                              content: '-w /etc/sssd/ -p wa -k CFG_sssd'
+                                                              content: '-w /etc/sssd/ -p wa -k CFG_sssd',
                                                             })
           }
         end
@@ -44,7 +44,7 @@ describe 'sssd' do
           it {
             is_expected.to create_pki__copy('sssd').with({
                                                            source: '/etc/pki/simp/x509',
-              pki: true
+              pki: true,
                                                          })
           }
         end
@@ -56,7 +56,7 @@ describe 'sssd' do
           it {
             is_expected.to create_pki__copy('sssd').with({
                                                            source: '/etc/pki/simp/x509',
-              pki: 'simp'
+              pki: 'simp',
                                                          })
           }
         end
@@ -103,8 +103,8 @@ describe 'sssd' do
               ldap_providers: {
                 test_provider: {
                   ldap_access_filter: 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com',
-                }
-              }
+                },
+              },
             }
           end
 

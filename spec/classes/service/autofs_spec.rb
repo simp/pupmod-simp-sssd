@@ -15,7 +15,7 @@ describe 'sssd::service::autofs' do
         context 'with custom options' do
           let(:params) do
             {
-              'custom_options' =>  { 'key1' => 'value1', 'key2' => 'value2' }
+              'custom_options' =>  { 'key1' => 'value1', 'key2' => 'value2' },
             }
           end
 

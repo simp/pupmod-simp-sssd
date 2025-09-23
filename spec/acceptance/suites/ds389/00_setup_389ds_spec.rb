@@ -32,8 +32,8 @@ describe 'sssd' do
     end
     let(:sssd_extra) do
       <<~EOM
-      simp_ds389::instances::accounts::root_pw: #{root_pw}
-    EOM
+        simp_ds389::instances::accounts::root_pw: #{root_pw}
+      EOM
     end
     let(:server_hieradata) do
       ERB.new(File.read(File.expand_path('templates/ds389_hiera.yaml.erb', File.dirname(__FILE__)))).result(binding) + "\n#{sssd_extra}"

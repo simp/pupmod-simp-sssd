@@ -9,7 +9,7 @@ describe 'sssd::domain' do
         let(:title) { 'ldap' }
         let(:params) do
           {
-            id_provider: 'ldap'
+            id_provider: 'ldap',
           }
         end
 

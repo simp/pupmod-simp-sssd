@@ -19,7 +19,7 @@ describe 'sssd::config::ipa_domain' do
                 domain: 'ipa.example.com',
                 realm: 'EXAMPLE.COM',
                 server: 'ipaserver.example.com',
-                connected: true
+                connected: true,
               },
             )
           end
@@ -54,7 +54,7 @@ describe 'sssd::config::ipa_domain' do
                 basedn: 'dc=example,dc=com',
                 domain: 'ipa.example.com',
                 realm: 'EXAMPLE.COM',
-                connected: false
+                connected: false,
               },
             )
           end

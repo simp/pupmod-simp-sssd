@@ -19,7 +19,7 @@ describe 'sssd' do
     'simp_options::ldap::bind_pw' => '<PASSWORD>',
     # This causes a lot of noise and reboots
     'sssd::auditd'                => false,
-    'sssd::domains'               => [ 'local', 'test.case' ]
+    'sssd::domains'               => [ 'local', 'test.case' ],
   }
 
   let(:manifest) do
@@ -59,7 +59,7 @@ describe 'sssd' do
       local_hiera = hiera.merge(
         {
           'sssd::enable_files_domain' => true,
-          'sssd::domains' => [ 'test.case' ]
+          'sssd::domains' => [ 'test.case' ],
         },
       )
 
