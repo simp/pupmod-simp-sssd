@@ -329,7 +329,7 @@
     $value = getvar($param)
 
     if $value and !$value.empty {
-      "${$param.sub(/^_/, '')} = ${Array($value).uniq.join($separator) }"
+      "${$param.sub(/^_/, '')} = ${Array($value).uniq.join($separator)}"
     }
   }
 -%>
