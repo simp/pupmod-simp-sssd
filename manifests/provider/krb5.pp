@@ -28,8 +28,8 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 define sssd::provider::krb5 (
-  Optional[Simplib::Host]                $krb5_server = undef,
   String                                 $krb5_realm,
+  Optional[Simplib::Host]                $krb5_server                    = undef,
   Optional[Sssd::DebugLevel]             $debug_level                    = undef,
   Boolean                                $debug_timestamps               = true,
   Boolean                                $debug_microseconds             = false,
@@ -43,9 +43,8 @@ define sssd::provider::krb5 (
   Optional[String]                       $krb5_renewable_lifetime        = undef,
   Optional[String]                       $krb5_lifetime                  = undef,
   Integer                                $krb5_renew_interval            = 0,
-  Optional[Enum['never','try','demand']] $krb5_use_fast                  = undef
+  Optional[Enum['never','try','demand']] $krb5_use_fast                  = undef,
 ) {
-
   sssd::config::entry { "puppet_provider_${name}_krb5":
     content => epp(
       "${module_name}/provider/krb5",
@@ -68,6 +67,6 @@ define sssd::provider::krb5 (
         'krb5_renew_interval'            => $krb5_renew_interval,
         'krb5_use_fast'                  => $krb5_use_fast,
       },
-    )
+    ),
   }
 }

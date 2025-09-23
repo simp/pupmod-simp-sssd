@@ -10,14 +10,14 @@
 #
 class sssd::service (
   Variant[String[1],Boolean] $ensure = sssd::supported_version(),
-  Boolean                    $enable = sssd::supported_version()
-){
+  Boolean                    $enable = sssd::supported_version(),
+) {
   assert_private()
 
   service { 'sssd':
     ensure     => $ensure,
     enable     => $enable,
     hasrestart => true,
-    hasstatus  => true
+    hasstatus  => true,
   }
 }

@@ -7,11 +7,13 @@
 #
 # @param content
 #   The content of the target file
+# @param order
+#   The order in which the file should be processed
 #
-define sssd::config::entry(
+define sssd::config::entry (
   String     $content,
-  Integer[0] $order    = 50
-){
+  Integer[0] $order = 50,
+) {
   assert_private()
 
   if $title =~ /\// {
@@ -28,6 +30,6 @@ define sssd::config::entry(
     group   => 'root',
     mode    => '0600',
     content => $content,
-    notify  => Class["${module_name}::service"]
+    notify  => Class["${module_name}::service"],
   }
 }

@@ -22,8 +22,7 @@
 #
 #   * If $sssd::pki = false, this variable has no effect.
 #
-class sssd::pki
-{
+class sssd::pki {
   assert_private()
 
   include "${module_name}::service"
@@ -32,7 +31,7 @@ class sssd::pki
     pki::copy { 'sssd' :
       source => $sssd::app_pki_cert_source,
       pki    => $sssd::pki,
-      notify => Class["${module_name}::service"]
+      notify => Class["${module_name}::service"],
     }
   }
 }

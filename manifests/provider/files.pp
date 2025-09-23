@@ -19,7 +19,7 @@
 #
 define sssd::provider::files (
   Optional[Array[Stdlib::Absolutepath]] $passwd_files = undef,
-  Optional[Array[Stdlib::Absolutepath]] $group_files  = undef
+  Optional[Array[Stdlib::Absolutepath]] $group_files  = undef,
 ) {
   sssd::config::entry { "puppet_provider_${name}_files":
     content => epp(

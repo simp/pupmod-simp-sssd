@@ -81,9 +81,9 @@
   Optional[Integer[0]]                  $ldap_deref_threshold,
   Sssd::LdapTlsReqcert                  $ldap_tls_reqcert,
   Optional[String[1]]                   $ldap_tls_cacert,
-  Optional[Stdlib::Absolutepath]        $app_pki_ca_dir,
-  Optional[Stdlib::Absolutepath]        $app_pki_key,
-  Optional[Stdlib::Absolutepath]        $app_pki_cert,
+  Optional[Stdlib::Absolutepath]        $ldap_tls_cacertdir,
+  Optional[Stdlib::Absolutepath]        $ldap_tls_key,
+  Optional[Stdlib::Absolutepath]        $ldap_tls_cert,
   Boolean                               $strip_128_bit_ciphers,
   Array[String[1]]                      $ldap_tls_cipher_suite,
   Boolean                               $ldap_id_use_start_tls,
@@ -153,14 +153,12 @@
 [domain/<%= $title %>]
 # sssd::provider::ldap
 <%
-  if $facts['sssd_version'] =~ Undef {
-    if $facts['os']['release']['major'] < '8' {
-      $sssd_major_version = 1
-    } else {
-      $sssd_major_version = 2
-    }
+  if $facts['sssd_version'] =~ String[1] {
+    $sssd_major_version = Integer($facts['sssd_version'].split(/\./)[0])
+  } elsif $facts['os']['release']['major'] < '8' {
+    $sssd_major_version = 1
   } else {
-    $sssd_major_version = Integer($facts['sssd_version'].split('.').first)
+    $sssd_major_version = 2
   }
 
   # Simply too many options to make it more confusing than this...
@@ -311,7 +309,7 @@
     # Make sure to distinguish between nil and false, as we may need to
     # set a parameter to false in this config!
     unless $value =~ Undef {
-      "${$param.sub(/^_/, '')} = ${value}"
+      "${$param.regsubst(/^_/, '')} = ${value}"
     }
   } + {
     'ldap_uri'               => ',',
@@ -329,7 +327,7 @@
     $value = getvar($param)
 
     if $value and !$value.empty {
-      "${$param.sub(/^_/, '')} = ${Array($value).uniq.join($separator)}"
+      "${$param.regsubst(/^_/, '')} = ${Array($value).unique.join($separator)}"
     }
   }
 -%>

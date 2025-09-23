@@ -2,7 +2,7 @@
   Optional[String]            $_description,
   Optional[Array[String]]     $_services,
   Optional[Array[String]]     $_domains,
-  String                      $_config_file_version,
+  Integer[1]                  $_config_file_version,
   Integer[0]                  $_reconnection_retries,
   Optional[String]            $_re_expression,
   Optional[String]            $_full_name_format,
