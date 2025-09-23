@@ -333,4 +333,4 @@
     }
   }
 -%>
-<%= $output.sort.join("\n") %>
+<%= $output.filter |$item| { $item =~ String[1] }.sort.join("\n") %>
