@@ -153,8 +153,18 @@
 [domain/<%= $title %>]
 # sssd::provider::ldap
 <%
-# Simply too many options to make it more confusing than this...
-  _string_params = [
+  if $facts['sssd_version'] =~ Undef {
+    if $facts['os']['release']['major'] < '8' {
+      $sssd_major_version = 1
+    } else {
+      $sssd_major_version = 2
+    }
+  } else {
+    $sssd_major_version = Integer($facts['sssd_version'].split('.').first)
+  }
+
+  # Simply too many options to make it more confusing than this...
+  $output = [
     'debug_level',
     'debug_timestamps',
     'debug_microseconds',
@@ -288,65 +298,39 @@
     'ldap_idmap_default_domain_sid',
     'ldap_idmap_default_domain',
     'ldap_idmap_autorid_compat'
-  ]
-
-  #options only available in sssd v1 (the version used prior to el8)
-  _string_params_v1 =  [
-    'ldap_groups_use_matching_rule_in_chain',
-    'ldap_initgroups_use_matching_rule_in_chain',
-  ]
-
-  _array_params = {
-    'ldap_uri' => ',',
-    'ldap_backup_uri' => ',',
-    'ldap_chpass_uri' => ',',
-    'ldap_chpass_backup_uri' => ',',
-    'ldap_user_extra_attrs' => ',',
-    'ldap_tls_cipher_suite' => ':',
-    'ldap_access_order' => ',',
-    'ldap_sudo_hostnames' => ' ',
-    'ldap_sudo_ip' => ' ',
-    'krb5_server' => ',',
-    'krb5_backup_server' => ','
-  }
-
-  if $facts['sssd_version'] =~ Undef {
-    if $facts['os']['release']['major'] < '8'
-      $_sssd_major_version = 1
-    else
-      $_sssd_major_version = 2
-    }
-  else
-    $_sssd_major_version = Integer($facts['sssd_version'].split('.').first)
-  }
-
-  _output = []
-  _string_params.each do |param|
-    value = eval(%(@#{param}))
+  ] + (($sssd_major_version < 2) ? {
+    true => [
+      # options only available in sssd v1 (the version used prior to el8)
+      'ldap_groups_use_matching_rule_in_chain',
+      'ldap_initgroups_use_matching_rule_in_chain',
+    ],
+    default=> [],
+  }).map |$param| {
+    $value = getvar($param)
 
     # Make sure to distinguish between nil and false, as we may need to
     # set a parameter to false in this config!
-    unless value =~ Undef {
-      _output << %(#{param.sub(/^_/,'')} = #{value})
+    unless $value =~ Undef {
+      "${$param.sub(/^_/, '')} = ${value}"
     }
-  }
+  } + {
+    'ldap_uri'               => ',',
+    'ldap_backup_uri'        => ',',
+    'ldap_chpass_uri'        => ',',
+    'ldap_chpass_backup_uri' => ',',
+    'ldap_user_extra_attrs'  => ',',
+    'ldap_tls_cipher_suite'  => ':',
+    'ldap_access_order'      => ',',
+    'ldap_sudo_hostnames'    => ' ',
+    'ldap_sudo_ip'           => ' ',
+    'krb5_server'            => ',',
+    'krb5_backup_server'     => ','
+  }.map |$param, $separator| {
+    $value = getvar($param)
 
-  # if os < el8 add in params used in sssd V1 only
-  if $_sssd_major_version < 2
-    _string_params_v1.each do |param|
-      value = eval(%(@#{param}))
-      unless value =~ Undef {
-        _output << %(#{param.sub(/^_/,'')} = #{value})
-      }
-    }
-  }
-
-  _array_params.keys.each do |param|
-    value = eval(%(@#{param}))
-
-    if value && !value.empty?
-      _output << %(#{param.sub(/^_/,'')} = #{Array(value).uniq.join(_array_params[param])})
+    if $value and !$value.empty {
+      "${$param.sub(/^_/, '')} = ${Array($value).uniq.join($separator) }"
     }
   }
 -%>
-<%= _output.sort.join("\n") %>
+<%= $output.sort.join("\n") %>

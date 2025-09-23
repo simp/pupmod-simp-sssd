@@ -69,7 +69,7 @@ ad_backup_server = <%= $ad_backup_servers.join(', ') %>
 <% if $ad_hostname { -%>
 ad_hostname = <%= $ad_hostname %>
 <% } -%>
-<% unless $ad_enable_dns_sites.nil? -%>
+<% unless $ad_enable_dns_sites =~ Undef { -%>
 ad_enable_dns_sites = <%= $ad_enable_dns_sites %>
 <% } -%>
 <% if $ad_access_filters { -%>
@@ -78,7 +78,7 @@ ad_access_filter = <%= $ad_access_filters.join('?') %>
 <% if $ad_site { -%>
 ad_site = <%= $ad_site %>
 <% } -%>
-<% unless $ad_enable_gc.nil? -%>
+<% unless $ad_enable_gc =~ Undef { -%>
 ad_enable_gc = <%= $ad_enable_gc %>
 <% } -%>
 <% if $ad_gpo_access_control { -%>
@@ -111,10 +111,10 @@ ad_gpo_map_deny = <%= $ad_gpo_map_deny.join(', ') %>
 <% if $ad_gpo_default_right { -%>
 ad_gpo_default_right = <%= $ad_gpo_default_right %>
 <% } -%>
-<% unless $ad_gpo_implicit_deny.nil?  -%>
+<% unless $ad_gpo_implicit_deny =~ Undef {  -%>
 ad_gpo_implicit_deny = <%= $ad_gpo_implicit_deny  %>
 <% } -%>
-<% unless $ad_gpo_ignore_unreadable.nil?  -%>
+<% unless $ad_gpo_ignore_unreadable =~ Undef {  -%>
 ad_gpo_ignore_unreadable = <%= $ad_gpo_ignore_unreadable  %>
 <% } -%>
 <% if $ad_maximum_machine_account_password_age { -%>
@@ -126,7 +126,7 @@ ad_machine_account_password_renewal_opts = <%= $ad_machine_account_password_rene
 <% if $default_shell { -%>
 default_shell = <%= $default_shell %>
 <% } -%>
-<% unless $dyndns_update.nil? -%>
+<% unless $dyndns_update =~ Undef { -%>
 dyndns_update = <%= $dyndns_update %>
 <% } -%>
 <% if $dyndns_update { -%>
@@ -139,10 +139,10 @@ dyndns_iface = <%= $dyndns_ifaces.join(', ') %>
 <%   if $dyndns_refresh_interval { -%>
 dyndns_refresh_interval = <%= $dyndns_refresh_interval %>
 <%   } -%>
-<%   unless $dyndns_update_ptr.nil? -%>
+<%   unless $dyndns_update_ptr =~ Undef { -%>
 dyndns_update_ptr = <%= $dyndns_update_ptr %>
 <%   } -%>
-<%   unless $dyndns_force_tcp.nil? -%>
+<%   unless $dyndns_force_tcp =~ Undef { -%>
 dyndns_force_tcp = <%= $dyndns_force_tcp %>
 <%   } -%>
 <%   if $dyndns_server { -%>
@@ -164,10 +164,10 @@ krb5_realm = <%= $krb5_realm %>
 <% if $krb5_confd_path { -%>
 krb5_confd_path = <%= $krb5_confd_path %>
 <% } -%>
-<% unless $krb5_use_enterprise_principal.nil? -%>
+<% unless $krb5_use_enterprise_principal =~ Undef { -%>
 krb5_use_enterprise_principal = <%= $krb5_use_enterprise_principal %>
 <% } -%>
-<% unless $krb5_store_password_if_offline.nil? -%>
+<% unless $krb5_store_password_if_offline =~ Undef { -%>
 krb5_store_password_if_offline = <%= $krb5_store_password_if_offline %>
 <% } -%>
 ldap_id_mapping = <%= $ldap_id_mapping %>
@@ -190,7 +190,7 @@ ldap_idmap_default_domain_sid = <%= $ldap_idmap_default_domain_sid %>
 <%   if $ldap_idmap_default_domain { -%>
 ldap_idmap_default_domain = <%= $ldap_idmap_default_domain %>
 <%   } -%>
-<%   unless $ldap_idmap_autorid_compat.nil? -%>
+<%   unless $ldap_idmap_autorid_compat =~ Undef { -%>
 ldap_idmap_autorid_compat = <%= $ldap_idmap_autorid_compat %>
 <%   } -%>
 <%   if $ldap_idmap_helper_table_size { -%>
