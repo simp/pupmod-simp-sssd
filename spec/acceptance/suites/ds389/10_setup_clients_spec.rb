@@ -19,17 +19,17 @@ describe '389ds' do
 
       # LDAP CONFIG
       sssd::domain { 'LDAP':
-        description       => 'LDAP Users Domain',
-        id_provider       => 'ldap',
-        auth_provider     => 'ldap',
-        chpass_provider   => 'ldap',
-        access_provider   => 'ldap',
-        sudo_provider     => 'ldap',
-        autofs_provider   => 'ldap',
-        min_id            => 1000,
-        enumerate         => false,
-        cache_credentials => true,
-        use_fully_qualified_names => false
+        description               => 'LDAP Users Domain',
+        id_provider               => 'ldap',
+        auth_provider             => 'ldap',
+        chpass_provider           => 'ldap',
+        access_provider           => 'ldap',
+        sudo_provider             => 'ldap',
+        autofs_provider           => 'ldap',
+        min_id                    => 1000,
+        enumerate                 => false,
+        cache_credentials         => true,
+        use_fully_qualified_names => false,
       }
       sssd::provider::ldap { 'LDAP':
         ldap_pwd_policy            => none,
@@ -39,14 +39,14 @@ describe '389ds' do
         ldap_id_mapping            => false,
         app_pki_key                => "/etc/pki/simp_apps/sssd/x509/private/#{fqdn}.pem",
         app_pki_cert               => "/etc/pki/simp_apps/sssd/x509/public/#{fqdn}.pub",
-        ldap_default_authtok_type  => 'password'
+        ldap_default_authtok_type  => 'password',
       }
 
       class { 'nsswitch':
         passwd  => ['sss', 'files'],
         group   => ['sss', 'files'],
         shadow  => ['sss', 'files'],
-        sudoers => ['files', 'sss']
+        sudoers => ['files', 'sss'],
       }
     EOS
   end

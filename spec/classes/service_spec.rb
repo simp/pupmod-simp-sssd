@@ -9,7 +9,7 @@ describe 'sssd::service' do
         let(:pre_condition) do
           <<~PRE_CONDITION
             function assert_private{ }
-            PRE_CONDITION
+          PRE_CONDITION
         end
 
         it { is_expected.to compile.with_all_deps }
@@ -22,7 +22,7 @@ describe 'sssd::service' do
 
         context 'with an unsupported version of sssd' do
           let(:facts) do
-            os_facts.merge({ sssd_version: '1.14.0' })
+            os_facts.merge(sssd_version: '1.14.0')
           end
 
           it { is_expected.to compile.with_all_deps }

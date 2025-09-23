@@ -12,7 +12,7 @@ describe 'sssd::service::ifp' do
             [ifp]
             debug_timestamps = true
             debug_microseconds = false
-            EXPECTED
+          EXPECTED
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd::service') }
@@ -22,9 +22,9 @@ describe 'sssd::service::ifp' do
         context 'with parameters' do
           let(:params) do
             {
-              'wildcard_limit' => 5,
-           'allowed_uids' => ['me', 'you'],
-           'user_attributes' => ['x', 'y', 'z'],
+              'wildcard_limit'  => 5,
+              'allowed_uids'    => ['me', 'you'],
+              'user_attributes' => ['x', 'y', 'z'],
             }
           end
 
@@ -36,7 +36,7 @@ describe 'sssd::service::ifp' do
             allowed_uids = me, you
             user_attributes = x, y, z
             wildcard_limit = 5
-            EXPECTED
+          EXPECTED
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd::service') }

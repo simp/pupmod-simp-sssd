@@ -70,7 +70,7 @@ describe 'AD' do
     end
 
     it 'creates test users' do
-      users_csv = <<-EOF.gsub(%r{^\s{8}}, '')
+      users_csv = <<~EOF
         SamAccountName;GivenName;Surname;Name;Password
         mike.hammer;Mike;Hammer;Mike Hammer;suP3rP@ssw0r!
         john.franklin;John;Franklin;John Franklin;suP3rP@ssw0r!

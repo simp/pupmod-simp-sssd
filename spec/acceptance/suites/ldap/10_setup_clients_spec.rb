@@ -23,12 +23,12 @@ describe 'LDAP' do
          autofs_provider   => 'ldap',
          min_id            => 500,
          enumerate         => true,
-         cache_credentials => true
+         cache_credentials => true,
        }
 
        sssd::provider::ldap { 'LDAP':
          ldap_default_authtok_type => 'password',
-         ldap_user_gecos           => 'dn'
+         ldap_user_gecos           => 'dn',
        }
 
        class { 'nsswitch':

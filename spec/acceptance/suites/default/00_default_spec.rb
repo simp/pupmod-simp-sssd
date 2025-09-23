@@ -15,25 +15,25 @@ describe 'sssd class' do
   end
 
   let(:manifest) do
-    <<-EOS
+    <<~EOS
       include sssd
-      EOS
+    EOS
   end
 
   # rubocop:disable RSpec/IndexedLet
   let(:manifest_el7) do
-    <<-EOS
-    # sssctl does not work with just the implicat_file domain on el7 so we set
-    # up a basic file provider here.
+    <<~EOS
+      # sssctl does not work with just the implicat_file domain on el7 so we set
+      # up a basic file provider here.
       class { 'sssd':
-        domains => ['FILES']
+        domains => ['FILES'],
       }
 
       # To be used with the default_hieradata above
-     sssd::domain { 'FILES':
+      sssd::domain { 'FILES':
         description   => 'Default Local domain',
         id_provider   => 'files',
-        auth_provider => 'files'
+        auth_provider => 'files',
       }
 
       sssd::provider::files { 'FILES': }
@@ -41,11 +41,11 @@ describe 'sssd class' do
   end
 
   let(:manifest_el8) do
-    <<-EOS
+    <<~EOS
       # Note: IFP is not needed for SSSD to work
       # it gives a simple way to test if sssd is working
       class {'sssd':
-        services      => ['nss','pam',"sudo", 'ssh', 'ifp']
+        services => ['nss','pam',"sudo", 'ssh', 'ifp'],
       }
     EOS
   end

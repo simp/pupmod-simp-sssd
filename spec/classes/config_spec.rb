@@ -48,18 +48,18 @@ EOM
 shared_examples_for 'a sssd::config' do |content|
   it { is_expected.to compile.with_all_deps }
   it {
-    is_expected.to contain_file('/etc/sssd').with({
-                                                    ensure: 'directory',
-    mode: 'go-rw',
-                                                  })
+    is_expected.to contain_file('/etc/sssd').with(
+      ensure: 'directory',
+      mode: 'go-rw',
+    )
   }
   it {
-    is_expected.to contain_file('/etc/sssd/sssd.conf').with({
-                                                              owner: 'root',
+    is_expected.to contain_file('/etc/sssd/sssd.conf').with(
+      owner: 'root',
       group: 'root',
       mode: '0600',
       content: content,
-                                                            })
+    )
   }
 end
 
@@ -113,16 +113,16 @@ describe 'sssd' do
           let(:params) do
             {
               domains: sssd_domains,
-            debug_level: 3,
-            description: 'sssd section description',
-            re_expression: '(.+)@(.+)',
-            enable_files_domain: false,
-            full_name_format: ' %1$s@%2$s',
-            try_inotify: true,
-            krb5_rcache_dir: '__LIBKRB5_DEFAULTS__',
-            user: 'sssduser',
-            default_domain_suffix: 'example.com',
-            override_space: '__',
+              debug_level: 3,
+              description: 'sssd section description',
+              re_expression: '(.+)@(.+)',
+              enable_files_domain: false,
+              full_name_format: ' %1$s@%2$s',
+              try_inotify: true,
+              krb5_rcache_dir: '__LIBKRB5_DEFAULTS__',
+              user: 'sssduser',
+              default_domain_suffix: 'example.com',
+              override_space: '__',
             }
           end
 
@@ -133,7 +133,7 @@ describe 'sssd' do
           let(:params) do
             {
               domains: sssd_domains,
-            auto_add_ipa_domain: false,
+              auto_add_ipa_domain: false,
             }
           end
 
@@ -162,7 +162,7 @@ describe 'sssd' do
           let(:params) do
             {
               domains: sssd_domains,
-           services: ['nss', 'pam', 'ifp'],
+              services: ['nss', 'pam', 'ifp'],
             }
           end
 

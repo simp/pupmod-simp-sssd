@@ -20,7 +20,7 @@ describe 'sssd' do
 
         context 'with an unsupported version of sssd' do
           let(:facts) do
-            os_facts.merge({ sssd_version: '1.14.0' })
+            os_facts.merge(sssd_version: '1.14.0')
           end
 
           it { is_expected.to compile.and_raise_error(%r{does not support}) }
@@ -31,9 +31,9 @@ describe 'sssd' do
 
           it { is_expected.to create_class('auditd') }
           it {
-            is_expected.to create_auditd__rule('sssd').with({
-                                                              content: '-w /etc/sssd/ -p wa -k CFG_sssd',
-                                                            })
+            is_expected.to create_auditd__rule('sssd').with(
+              content: '-w /etc/sssd/ -p wa -k CFG_sssd',
+            )
           }
         end
 
@@ -42,10 +42,10 @@ describe 'sssd' do
 
           it { is_expected.to create_class('sssd::pki') }
           it {
-            is_expected.to create_pki__copy('sssd').with({
-                                                           source: '/etc/pki/simp/x509',
+            is_expected.to create_pki__copy('sssd').with(
+              source: '/etc/pki/simp/x509',
               pki: true,
-                                                         })
+            )
           }
         end
 
@@ -54,10 +54,10 @@ describe 'sssd' do
 
           it { is_expected.to create_class('sssd::pki') }
           it {
-            is_expected.to create_pki__copy('sssd').with({
-                                                           source: '/etc/pki/simp/x509',
+            is_expected.to create_pki__copy('sssd').with(
+              source: '/etc/pki/simp/x509',
               pki: 'simp',
-                                                         })
+            )
           }
         end
 
@@ -109,9 +109,9 @@ describe 'sssd' do
           end
 
           it {
-            is_expected.to create_sssd__provider__ldap('test_provider').with({
-                                                                               ldap_access_filter: 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com',
-                                                                             })
+            is_expected.to create_sssd__provider__ldap('test_provider').with(
+              ldap_access_filter: 'memberOf=cn=allowedusers,ou=Groups,dc=example,dc=com',
+            )
           }
         end
       end

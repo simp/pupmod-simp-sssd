@@ -14,7 +14,7 @@ describe 'sssd::provider::files' do
             expected = <<~EOM
               [domain/#{title}]
               # sssd::provider::files
-              EOM
+            EOM
 
             is_expected.to create_sssd__config__entry("puppet_provider_#{title}_files").with_content(expected)
           }
@@ -24,7 +24,7 @@ describe 'sssd::provider::files' do
           let(:params) do
             {
               passwd_files: [ '/etc/passwd1', '/etc/passwd2'],
-           group_files: [ '/etc/group1', '/etc/group2'],
+              group_files: [ '/etc/group1', '/etc/group2'],
             }
           end
 
@@ -36,7 +36,7 @@ describe 'sssd::provider::files' do
               # sssd::provider::files
               passwd_files = /etc/passwd1, /etc/passwd2
               group_files = /etc/group1, /etc/group2
-              EOM
+            EOM
 
             is_expected.to create_sssd__config__entry("puppet_provider_#{title}_files").with_content(expected)
           }

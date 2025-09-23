@@ -9,7 +9,7 @@ describe 'sssd::config::entry' do
         let(:pre_condition) do
           <<~PRE_CONDITION
             function assert_private(){}
-            PRE_CONDITION
+          PRE_CONDITION
         end
 
         let(:title) { 'test' }

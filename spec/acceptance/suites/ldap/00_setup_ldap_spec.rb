@@ -6,9 +6,9 @@ describe 'LDAP' do
   ldap_servers = hosts_with_role(hosts, 'ldap')
 
   let(:server_manifest) do
-    <<-EOS
+    <<~EOS
       include 'simp_openldap::server'
-   EOS
+    EOS
   end
 
   ldap_servers.each do |server|

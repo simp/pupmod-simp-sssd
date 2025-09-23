@@ -23,7 +23,7 @@ describe 'sssd' do
   }
 
   let(:manifest) do
-    <<-EOF
+    <<~EOF
       include 'sssd'
 
       #{local_config}

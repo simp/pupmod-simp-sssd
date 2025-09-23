@@ -13,43 +13,43 @@ describe 'sssd class' do
   ad_ip = JSON.parse(on(ad, 'puppet facts').stdout)['values']['networking']['interfaces']['Ethernet 2']['ip']
 
   let(:v2_manifest) do
-    <<-EOF
+    <<~EOF
       include 'sssd'
       include 'resolv'
       include 'pam'
       include 'simp::nsswitch'
       include 'ssh'
-      EOF
+    EOF
   end
 
   let(:ad_manifest) do
-    <<-EOF
+    <<~EOF
       ####################################################################
       # AD CONFIG
       sssd::domain { 'AD':
-        access_provider   => 'ad',
-        cache_credentials => true,
-        id_provider       => 'ad',
-        enumerate         => undef,
-        realmd_tags       => 'manages-system joined-with-samba',
-        case_sensitive    => true,
-        max_id            => 0,
-        ignore_group_members => true,
-        use_fully_qualified_names => true
+        access_provider           => 'ad',
+        cache_credentials         => true,
+        id_provider               => 'ad',
+        enumerate                 => undef,
+        realmd_tags               => 'manages-system joined-with-samba',
+        case_sensitive            => true,
+        max_id                    => 0,
+        ignore_group_members      => true,
+        use_fully_qualified_names => true,
       }
 
       sssd::provider::ad { 'AD':
-        ad_domain         => '#{domain}',
-        ad_servers        => ['ad.#{domain}'],
-        # ad_access_filters => '#{domain}:OU=HeadQuarter,OU=Locations,#{ldap_dc}'
-        ldap_id_mapping   => true,
-        ldap_schema       => 'ad',
-        krb5_realm        => '#{domain.upcase}',
-        dyndns_update     => true,     # add the host to dns
-        dyndns_ifaces     => ['eth1'], # vagrant uses 2 interfaces, we want the second
-        default_shell     => '/bin/bash',
-        fallback_homedir  => '/home/%u@%d',
-        krb5_store_password_if_offline => true
+        ad_domain                      => '#{domain}',
+        ad_servers                     => ['ad.#{domain}'],
+        # ad_access_filters            => '#{domain}:OU=HeadQuarter,OU=Locations,#{ldap_dc}'
+        ldap_id_mapping                => true,
+        ldap_schema                    => 'ad',
+        krb5_realm                     => '#{domain.upcase}',
+        dyndns_update                  => true,     # add the host to dns
+        dyndns_ifaces                  => ['eth1'], # vagrant uses 2 interfaces, we want the second
+        default_shell                  => '/bin/bash',
+        fallback_homedir               => '/home/%u@%d',
+        krb5_store_password_if_offline => true,
       }
     EOF
   end
@@ -73,7 +73,7 @@ describe 'sssd class' do
     ssh::server::conf::authorizedkeysfile: '.ssh/authorized_keys'
     ssh::server::conf::gssapiauthentication: true
     ssh::server::conf::passwordauthentication: true
-    EOM
+  EOM
 
   context 'fix the hosts file' do
     clients.each do |host|
@@ -150,7 +150,7 @@ describe 'sssd class' do
       it 'updates sssd::domains in hiera' do
         # you can't have the domain in sssd before joing the realm or it
         # errors out so add it n here.
-        client_hiera = hieradata + <<-EOM.gsub(%r{^\s+}, '')
+        client_hiera = hieradata + <<~EOM
           simp_options::dns::servers:    ["#{ad_ip}"]
           sssd::domains: ['AD']
         EOM
