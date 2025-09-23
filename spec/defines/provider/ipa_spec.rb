@@ -10,8 +10,8 @@ describe 'sssd::provider::ipa' do
         context('with default parameters') do
           let(:params) do
             {
-              ipa_domain: facts[:domain],
-              ipa_server: ["ipaserver.#{facts[:domain]}"],
+              ipa_domain: facts[:networking][:domain],
+              ipa_server: ["ipaserver.#{facts[:networking][:domain]}"],
             }
           end
 
@@ -20,8 +20,8 @@ describe 'sssd::provider::ipa' do
             expected = <<~EXPECTED
               [domain/#{title}]
               # sssd::provider::ipa
-              ipa_domain = #{facts[:domain]}
-              ipa_server = _srv_,ipaserver.#{facts[:domain]}
+              ipa_domain = #{facts[:networking][:domain]}
+              ipa_server = _srv_,ipaserver.#{facts[:networking][:domain]}
               ipa_enable_dns_sites = false
               ipa_hostname = #{facts[:networking][:fqdn]}
               ipa_server_mode = false
@@ -41,17 +41,17 @@ describe 'sssd::provider::ipa' do
           # content gets generated appropriately.
           let(:params) do
             {
-              ipa_domain: facts[:domain],
-              ipa_server: ["ipaserver1.#{facts[:domain]}"],
-              ipa_backup_server: ["ipaserver2.#{facts[:domain]}"],
-              ipa_hostname: "ipaclient1.#{facts[:domain]}",
+              ipa_domain: facts[:networking][:domain],
+              ipa_server: ["ipaserver1.#{facts[:networking][:domain]}"],
+              ipa_backup_server: ["ipaserver2.#{facts[:networking][:domain]}"],
+              ipa_hostname: "ipaclient1.#{facts[:networking][:domain]}",
               ipa_enable_dns_sites: true,
               ipa_server_mode: true,
               dyndns_auth: 'none',
               dyndns_force_tcp: false,
               dyndns_iface: ['*'],
               dyndns_refresh_interval: 20,
-              dyndns_server: "dns1.#{facts[:domain]}",
+              dyndns_server: "dns1.#{facts[:networking][:domain]}",
               dyndns_ttl: 10,
               dyndns_update: false,
               dyndns_update_ptr: false,
@@ -78,17 +78,17 @@ describe 'sssd::provider::ipa' do
             expected = <<~EXPECTED
               [domain/#{title}]
               # sssd::provider::ipa
-              ipa_domain = #{facts[:domain]}
-              ipa_server = ipaserver1.#{facts[:domain]}
-              ipa_backup_server = ipaserver2.#{facts[:domain]}
+              ipa_domain = #{facts[:networking][:domain]}
+              ipa_server = ipaserver1.#{facts[:networking][:domain]}
+              ipa_backup_server = ipaserver2.#{facts[:networking][:domain]}
               ipa_enable_dns_sites = true
-              ipa_hostname = ipaclient1.#{facts[:domain]}
+              ipa_hostname = ipaclient1.#{facts[:networking][:domain]}
               ipa_server_mode = true
               dyndns_auth = none
               dyndns_force_tcp = false
               dyndns_iface = *
               dyndns_refresh_interval = 20
-              dyndns_server = dns1.#{facts[:domain]}
+              dyndns_server = dns1.#{facts[:networking][:domain]}
               dyndns_ttl = 10
               dyndns_update = false
               dyndns_update_ptr = false

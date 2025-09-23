@@ -39,12 +39,12 @@ describe 'sssd' do
       ERB.new(File.read(File.expand_path('templates/ds389_hiera.yaml.erb', File.dirname(__FILE__)))).result(binding) + "\n#{sssd_extra}"
     end
     let(:fqdn) do
-      fact_on(host, 'fqdn').strip
+      fact_on(host, 'networking.fqdn').strip
     end
     #  server_fqdn is used in hiera.yaml ERB.  In this case server_fqdn and fqdn are the same.
     let(:server_fqdn) { fqdn.to_s }
     let(:domain) do
-      fact_on(host, 'domain').strip
+      fact_on(host, 'networking.domain').strip
     end
 
     context 'install the server' do

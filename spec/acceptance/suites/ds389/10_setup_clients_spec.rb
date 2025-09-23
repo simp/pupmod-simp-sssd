@@ -52,8 +52,8 @@ describe '389ds' do
   end
 
   ldap_servers.each do |server|
-    server_fqdn  = fact_on(server, 'fqdn')
-    domain       = fact_on(server, 'domain')
+    server_fqdn  = fact_on(server, 'networking.fqdn')
+    domain       = fact_on(server, 'networking.domain')
     clients.each do |client|
       context 'on each client set up sssd' do
         # set sssd domains for template
@@ -62,7 +62,7 @@ describe '389ds' do
             sssd::enable_files_domain: true
           EOM
         end
-        let(:fqdn) { fact_on(client, 'fqdn') }
+        let(:fqdn) { fact_on(client, 'networking.fqdn') }
 
         let(:client_hieradata) do
           ERB.new(File.read(File.expand_path('templates/ds389_hiera.yaml.erb', File.dirname(__FILE__)))).result(binding) + "\n#{sssd_extra}"

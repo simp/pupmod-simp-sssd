@@ -12,8 +12,8 @@ describe 'LDAP' do
   end
 
   ldap_servers.each do |server|
-    server_fqdn  = fact_on(server, 'fqdn')
-    domain       = fact_on(server, 'domain')
+    server_fqdn  = fact_on(server, 'networking.fqdn')
+    domain       = fact_on(server, 'networking.domain')
     base_dn      = domain.split('.').map { |d| "dc=#{d}" }.join(',')
 
     let(:server_hieradata) do

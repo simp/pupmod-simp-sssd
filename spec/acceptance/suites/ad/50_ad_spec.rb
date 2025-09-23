@@ -6,7 +6,7 @@ describe 'sssd class' do
   clients     = hosts_with_role(hosts, 'client')
   ad          = hosts_with_role(hosts, 'ad').first
   domain_pass = '@dm1n=P@ssw0r'
-  domain      = fact_on(clients.first, 'domain')
+  domain      = fact_on(clients.first, 'networking.domain')
   ldap_dc     = domain.split('.').map { |x| "DC=#{x}" }.join(',')
 
   require 'json'

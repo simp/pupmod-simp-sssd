@@ -5,8 +5,8 @@ test_name 'Setup SSSD clients to talk to LDAP'
 describe 'LDAP' do
   ldap_servers = hosts_with_role(hosts, 'ldap')
   clients      = hosts_with_role(hosts, 'client')
-  server_fqdn  = fact_on(ldap_servers.first, 'fqdn')
-  domain       = fact_on(ldap_servers.first, 'domain')
+  server_fqdn  = fact_on(ldap_servers.first, 'networking.fqdn')
+  domain       = fact_on(ldap_servers.first, 'networking.domain')
   base_dn      = domain.split('.').map { |d| "DC=#{d}" }.join(',')
 
   let(:client_manifest) do

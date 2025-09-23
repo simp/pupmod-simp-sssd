@@ -9,7 +9,7 @@ describe 'AD' do
   domain_pass = '@dm1n=P@ssw0r'
 
   ad_servers.each do |server|
-    domain = fact_on(server, 'domain').strip
+    domain = fact_on(server, 'networking.domain').strip
     ldap_dc = domain.split('.').map { |x| "DC=#{x}" }.join(',')
 
     it 'installs the AD feature' do

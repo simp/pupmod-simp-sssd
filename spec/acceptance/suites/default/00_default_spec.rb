@@ -70,7 +70,7 @@ describe 'sssd class' do
     context 'with default files domain set up' do
       # To make sssctl work ifd needs to be turned on in EL8 and
       # a files domain needs to be created in EL7.
-      os_release = fact_on(client, 'operatingsystemmajrelease')
+      os_release = fact_on(client, 'os.release.major')
 
       it 'manifest should work with no errors' do
         os_specific_manifest = if os_release >= '8'
