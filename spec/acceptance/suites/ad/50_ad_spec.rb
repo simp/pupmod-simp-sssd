@@ -3,54 +3,56 @@ require 'spec_helper_acceptance'
 test_name 'SSSD connecting to an AD'
 
 describe 'sssd class' do
-  clients     = hosts_with_role(hosts,'client')
-  ad          = hosts_with_role(hosts,'ad').first
+  clients     = hosts_with_role(hosts, 'client')
+  ad          = hosts_with_role(hosts, 'ad').first
   domain_pass = '@dm1n=P@ssw0r'
-  domain      = fact_on(clients.first, 'domain')
-  ldap_dc     = domain.split('.').map{|x| "DC=#{x}"}.join(',')
+  domain      = fact_on(clients.first, 'networking.domain')
+  ldap_dc     = domain.split('.').map { |x| "DC=#{x}" }.join(',')
 
   require 'json'
-  ad_ip = JSON.load(on(ad, 'puppet facts').stdout)['values']['networking']['interfaces']['Ethernet 2']['ip']
+  ad_ip = JSON.parse(on(ad, 'puppet facts').stdout)['values']['networking']['interfaces']['Ethernet 2']['ip']
 
-  let(:v2_manifest) { <<-EOF
+  let(:v2_manifest) do
+    <<~EOF
       include 'sssd'
       include 'resolv'
       include 'pam'
       include 'simp::nsswitch'
       include 'ssh'
-      EOF
-  }
+    EOF
+  end
 
-  let(:ad_manifest) { <<-EOF
+  let(:ad_manifest) do
+    <<~EOF
       ####################################################################
       # AD CONFIG
       sssd::domain { 'AD':
-        access_provider   => 'ad',
-        cache_credentials => true,
-        id_provider       => 'ad',
-        enumerate         => undef,
-        realmd_tags       => 'manages-system joined-with-samba',
-        case_sensitive    => true,
-        max_id            => 0,
-        ignore_group_members => true,
-        use_fully_qualified_names => true
+        access_provider           => 'ad',
+        cache_credentials         => true,
+        id_provider               => 'ad',
+        enumerate                 => undef,
+        realmd_tags               => 'manages-system joined-with-samba',
+        case_sensitive            => true,
+        max_id                    => 0,
+        ignore_group_members      => true,
+        use_fully_qualified_names => true,
       }
 
       sssd::provider::ad { 'AD':
-        ad_domain         => '#{domain}',
-        ad_servers        => ['ad.#{domain}'],
-        # ad_access_filters => '#{domain}:OU=HeadQuarter,OU=Locations,#{ldap_dc}'
-        ldap_id_mapping   => true,
-        ldap_schema       => 'ad',
-        krb5_realm        => '#{domain.upcase}',
-        dyndns_update     => true,     # add the host to dns
-        dyndns_ifaces     => ['eth1'], # vagrant uses 2 interfaces, we want the second
-        default_shell     => '/bin/bash',
-        fallback_homedir  => '/home/%u@%d',
-        krb5_store_password_if_offline => true
+        ad_domain                      => '#{domain}',
+        ad_servers                     => ['ad.#{domain}'],
+        # ad_access_filters            => '#{domain}:OU=HeadQuarter,OU=Locations,#{ldap_dc}'
+        ldap_id_mapping                => true,
+        ldap_schema                    => 'ad',
+        krb5_realm                     => '#{domain.upcase}',
+        dyndns_update                  => true,     # add the host to dns
+        dyndns_ifaces                  => ['eth1'], # vagrant uses 2 interfaces, we want the second
+        default_shell                  => '/bin/bash',
+        fallback_homedir               => '/home/%u@%d',
+        krb5_store_password_if_offline => true,
       }
     EOF
-  }
+  end
 
   hieradata = <<~EOM
     ---
@@ -71,21 +73,21 @@ describe 'sssd class' do
     ssh::server::conf::authorizedkeysfile: '.ssh/authorized_keys'
     ssh::server::conf::gssapiauthentication: true
     ssh::server::conf::passwordauthentication: true
-    EOM
+  EOM
 
   context 'fix the hosts file' do
     clients.each do |host|
-      it 'should install packages for testing' do
+      it 'installs packages for testing' do
         host.install_package('epel-release')
         host.install_package('sshpass')
       end
       # On windows hosts, beaker does not detect the domain (that or it
       #  isn't set yet), so the bunk value must be removed and replaced with
       #  the FQDN of the AD server
-      it 'should have the ad host with its fqdn' do
+      it 'has the ad host with its fqdn' do
         require 'yaml'
         # Find the IP of the AD host and make a new host entry with FQDN and IP
-        ad_host = YAML.load(on(host, "puppet resource host ad. --to_yaml").stdout)
+        ad_host = YAML.safe_load(on(host, 'puppet resource host ad. --to_yaml').stdout)
         ip = ad_host['host']['ad.']['ip']
         on(host, "puppet resource host ad.#{domain} ensure=present ip=#{ip} host_aliases=ad")
         # Remove incorrect and incomplete hosts entry
@@ -93,7 +95,7 @@ describe 'sssd class' do
         # Also remove hosts entry with just a host shortname
         on(host, "puppet resource host #{host} ensure=absent")
       end
-      it 'should install the realm or adcli packages' do
+      it 'installs the realm or adcli packages' do
         # Some of these packages only exist on EL6 or EL7
         pp = "package { ['realmd','adcli','oddjob','oddjob-mkhomedir','samba-common-tools','pam_krb5','samba4-common','krb5-workstation']: ensure => installed }"
         apply_manifest_on(host, pp)
@@ -105,7 +107,7 @@ describe 'sssd class' do
     clients.each do |host|
       client_hiera = hieradata.dup
 
-      let(:manifest){ v2_manifest }
+      let(:manifest) { v2_manifest }
 
       # An error is raised if the domain is already in the sssd.conf so
       # need to configure sssd without the domain.  (It looks like this
@@ -117,12 +119,12 @@ describe 'sssd class' do
         sssd::domains: []
       EOM
 
-      it 'should run puppet without error configure basic SSSD' do
+      it 'runs puppet without error configure basic SSSD' do
         set_hieradata_on(host, client_hiera)
         apply_manifest_on(host, manifest, catch_failures: true)
       end
 
-      it 'should be idempotent' do
+      it 'is idempotent' do
         apply_manifest_on(host, manifest, catch_changes: true)
       end
     end
@@ -130,26 +132,25 @@ describe 'sssd class' do
 
   context 'joining AD' do
     clients.each do |host|
-      it 'should join the AD domain' do
+      it 'joins the AD domain' do
         on(host, "echo -n '#{domain_pass}' | adcli join -v -S #{ad} -U Administrator #{domain} -H #{host}.#{domain} --stdin-password --show-details")
       end
 
-      it 'should have a realm listed' do
+      it 'has a realm listed' do
         result = on(host, "adcli info -S #{ad} #{domain}")
-        expect(result.stdout).to match(/domain-name = #{domain}/)
+        expect(result.stdout).to match(%r{domain-name = #{domain}})
       end
     end
   end
 
   context 'when connected to AD' do
-
     clients.each do |host|
       let(:manifest) { v2_manifest }
 
-      it 'should update sssd::domains in hiera' do
-        #you can't have the domain in sssd before joing the realm or it
+      it 'updates sssd::domains in hiera' do
+        # you can't have the domain in sssd before joing the realm or it
         # errors out so add it n here.
-        client_hiera = hieradata + <<-EOM.gsub(/^\s+/,'')
+        client_hiera = hieradata + <<~EOM
           simp_options::dns::servers:    ["#{ad_ip}"]
           sssd::domains: ['AD']
         EOM
@@ -157,21 +158,21 @@ describe 'sssd class' do
         set_hieradata_on(host, client_hiera)
       end
 
-      let(:_ad_manifest) {
+      let(:_ad_manifest) do
         [manifest, ad_manifest].join("\n")
-      }
-      it "should run puppet without error connected to AD" do
+      end
+      it 'runs puppet without error connected to AD' do
         apply_manifest_on(host, _ad_manifest, catch_failures: true)
       end
 
-      it 'should be idempotent' do
+      it 'is idempotent' do
         apply_manifest_on(host, _ad_manifest, catch_changes: true)
       end
 
-      it 'should be able to id one of the test users' do
-        ['mike.hammer','john.franklin','davegrohl'].each do |user|
+      it 'is able to id one of the test users' do
+        ['mike.hammer', 'john.franklin', 'davegrohl'].each do |user|
           id = on(host, "id #{user}@AD")
-          expect(id.stdout).to match(/#{user}@AD/)
+          expect(id.stdout).to match(%r{#{user}@AD})
 
           su = on(host, "su #{user}@AD -c 'cd; pwd; exit'")
           expect(su.stdout).to match(%r{/home/#{user}@AD})
@@ -188,8 +189,8 @@ describe 'sssd class' do
     }
 
     clients.each do |host|
-      users.each do |user,pass|
-        it 'should be able to log in with password' do
+      users.each_key do |user|
+        it 'is able to log in with password' do
           ssh_cmd = [
             'sshpass',
             "-p 'suP3rP@ssw0r!'",
@@ -199,7 +200,7 @@ describe 'sssd class' do
             '-o StrictHostKeyChecking=no',
             "-l #{user}@AD",
             "#{host}.#{domain}",
-            "'cd; pwd; exit'"
+            "'cd; pwd; exit'",
           ].join(' ')
           ssh = on(host, ssh_cmd)
 

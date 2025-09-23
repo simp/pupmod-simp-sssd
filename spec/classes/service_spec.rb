@@ -4,13 +4,13 @@ describe 'sssd::service' do
   context 'supported operating systems' do
     on_supported_os.each do |os, os_facts|
       context "on #{os}" do
-        let(:facts){ os_facts }
+        let(:facts) { os_facts }
 
-        let(:pre_condition){
+        let(:pre_condition) do
           <<~PRE_CONDITION
             function assert_private{ }
-            PRE_CONDITION
-        }
+          PRE_CONDITION
+        end
 
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to create_class('sssd::service') }
@@ -21,9 +21,9 @@ describe 'sssd::service' do
         }
 
         context 'with an unsupported version of sssd' do
-          let(:facts){
-            os_facts.merge({:sssd_version => '1.14.0'})
-          }
+          let(:facts) do
+            os_facts.merge(sssd_version: '1.14.0')
+          end
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd::service') }

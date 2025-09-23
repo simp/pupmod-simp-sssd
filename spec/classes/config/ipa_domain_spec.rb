@@ -14,13 +14,13 @@ describe 'sssd::config::ipa_domain' do
         context 'when joined to an IPA domain' do
           let(:facts) do
             os_facts.merge(
-              :ipa => {
-                :basedn => "dc=example,dc=com",
-                :domain => 'ipa.example.com',
-                :realm => 'EXAMPLE.COM',
-                :server => 'ipaserver.example.com',
-                :connected => true
-              }
+              ipa: {
+                basedn: 'dc=example,dc=com',
+                domain: 'ipa.example.com',
+                realm: 'EXAMPLE.COM',
+                server: 'ipaserver.example.com',
+                connected: true,
+              },
             )
           end
 
@@ -50,12 +50,12 @@ describe 'sssd::config::ipa_domain' do
         context 'when not joined to an IPA domain' do
           let(:facts) do
             os_facts.merge(
-              :ipa => {
-                :basedn => "dc=example,dc=com",
-                :domain => 'ipa.example.com',
-                :realm => 'EXAMPLE.COM',
-                :connected => false
-              }
+              ipa: {
+                basedn: 'dc=example,dc=com',
+                domain: 'ipa.example.com',
+                realm: 'EXAMPLE.COM',
+                connected: false,
+              },
             )
           end
 

@@ -5,15 +5,14 @@ require 'erb'
 test_name 'Prepare Windows for AD'
 
 describe 'AD' do
-
-  ad_servers  = hosts_with_role(hosts,'ad')
+  ad_servers  = hosts_with_role(hosts, 'ad')
   domain_pass = '@dm1n=P@ssw0r'
 
   ad_servers.each do |server|
-    domain = fact_on(server, 'domain').strip
-    ldap_dc = domain.split('.').map{|x| "DC=#{x}"}.join(',')
+    domain = fact_on(server, 'networking.domain').strip
+    ldap_dc = domain.split('.').map { |x| "DC=#{x}" }.join(',')
 
-    it 'should install the AD feature' do
+    it 'installs the AD feature' do
       # https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/install-active-directory-domain-services--level-100-#BKMK_PS
       exec_ps_script_on(server, 'Install-WindowsFeature AD-Domain-Services -IncludeManagementTools')
       exec_ps_script_on(server, 'Import-Module ADDSDeployment')
@@ -25,19 +24,19 @@ describe 'AD' do
         %(-DomainName "#{domain}"),
         '-InstallDns',
         '-SafeModeAdministratorPassword $Pass',
-        '-LogPath C:\Windows\Logs'
+        '-LogPath C:\Windows\Logs',
       ].join(' ')
       # this command reboots the system
       on(server, exec_ps_cmd(forest_cmd), expect_connection_failure: true)
     end
 
-    it 'should add unix compatibility' do
+    it 'adds unix compatibility' do
       # on(server, exec_ps_cmd('dism.exe /online /enable-feature /featurename:adminui /featurename:nis /all /quiet'))
       on(server, exec_ps_cmd('Enable-WindowsOptionalFeature -Online -FeatureName NIS -All -NoRestart'))
       on(server, exec_ps_cmd('Enable-WindowsOptionalFeature -Online -FeatureName AdminUI -All -NoRestart'))
     end
 
-    it 'should set the time' do
+    it 'sets the time' do
       time_cmd = 'w32tm.exe /config /manualpeerlist:"time.nist.gov" /syncfromflags:manual /reliable:YES /update'
       on(server, time_cmd)
       on(server, 'w32tm.exe /config /update')
@@ -53,7 +52,7 @@ describe 'AD' do
       it 'with a healthy forest' do
         # https://technet.microsoft.com/en-us/library/cc758753(v=ws.10).aspx
         result = on(server, 'dcdiag')
-        expect(result.stdout).not_to match(/failed/)
+        expect(result.stdout).not_to match(%r{failed})
       end
       # it 'with a healthy DDNS service' do
       #   result = on(server, 'dcdiag /test:dns /DnsDynamicUpdate')
@@ -61,17 +60,17 @@ describe 'AD' do
       # end
     end
 
-    it 'should set the Administrator password' do
+    it 'sets the Administrator password' do
       cmd = [
         '([adsi]\\"WinNT://' + domain.split('.').first.upcase + '/Administrator\\").SetPassword(\\"',
         domain_pass,
-        '\\")'
+        '\\")',
       ].join
       on(server, exec_ps_cmd(cmd))
     end
 
-    it 'should create test users' do
-      users_csv = <<-EOF.gsub(/^\s{8}/,'')
+    it 'creates test users' do
+      users_csv = <<~EOF
         SamAccountName;GivenName;Surname;Name;Password
         mike.hammer;Mike;Hammer;Mike Hammer;suP3rP@ssw0r!
         john.franklin;John;Franklin;John Franklin;suP3rP@ssw0r!
@@ -86,12 +85,12 @@ describe 'AD' do
       sleep 40
     end
 
-    it 'should have users from the CSV and vagrant' do
+    it 'has users from the CSV and vagrant' do
       # https://social.technet.microsoft.com/Forums/ie/en-US/67aab9d3-1ced-4d33-8252-66a6f88713b0/exporting-ad-user-list-to-a-text-or-excel-document?forum=winserverDS
       result = exec_ps_script_on(server, 'Get-ADUser -Filter * -SearchBase "' + ldap_dc + '" | select Name')
-      expect(result.stdout).to match(/vagrant/)
-      expect(result.stdout).to match(/Mike Hammer/)
-      expect(result.stdout).to match(/John Franklin/)
+      expect(result.stdout).to match(%r{vagrant})
+      expect(result.stdout).to match(%r{Mike Hammer})
+      expect(result.stdout).to match(%r{John Franklin})
     end
   end
 end

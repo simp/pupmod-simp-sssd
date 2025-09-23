@@ -1,3 +1,6 @@
+* Wed Jun 11 2025 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.13.1
+- Fix rubocop issues
+
 * Mon Sep 22 2025 Patrick Brideau <patrick.brideau@teluq.ca> - 7.13.0
 - Fix allowed_uids parameter in ifp template
 
