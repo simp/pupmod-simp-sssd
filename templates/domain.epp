@@ -154,6 +154,6 @@ proxy_pam_target = <%= $proxy_pam_target %>
 <% if $proxy_lib_name { -%>
 proxy_lib_name = <%= $proxy_lib_name %>
 <% } -%>
-<% $custom_options.each |$opt, $value| { -%>
+<% $custom_options.lest || { {} }.each |$opt, $value| { -%>
 <%= $opt %> = <%= $value %>
 <% } -%>

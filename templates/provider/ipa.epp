@@ -32,7 +32,11 @@
 [domain/<%= $title %>]
 # sssd::provider::ipa
 ipa_domain = <%= $ipa_domain %>
-ipa_server = <%= $_ipa_server.join(',') %>
+<% if $use_service_discovery { -%>
+ipa_server = _srv_,<%= $ipa_server.join(',') %>
+<% } else { -%>
+ipa_server = <%= $ipa_server.join(',') %>
+<% } -%>
 <% unless $ipa_backup_server =~ Undef { -%>
 ipa_backup_server = <%= $ipa_backup_server.join(',') %>
 <% } -%>

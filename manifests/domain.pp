@@ -121,7 +121,7 @@ define sssd::domain (
   Optional[String]                           $proxy_pam_target             = undef,
   Optional[String]                           $proxy_lib_name               = undef,
   Optional[String]                           $ldap_user_search_filter      = undef,
-  Optional[Hash]                             $custom_options               = undef
+  Optional[Hash]                             $custom_options               = undef,
 ) {
   sssd::config::entry { "puppet_domain_${name}":
     content => epp(
@@ -171,7 +171,8 @@ define sssd::domain (
         'proxy_pam_target'             => $proxy_pam_target,
         'proxy_lib_name'               => $proxy_lib_name,
         'ldap_user_search_filter'      => $ldap_user_search_filter,
+        'custom_options'               => $custom_options,
       },
-    )
+    ),
   }
 }
