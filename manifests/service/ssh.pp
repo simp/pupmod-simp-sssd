@@ -39,15 +39,55 @@ class sssd::service::ssh (
       },
     )
   } else {
+    # Build configuration content for the SSH service
+    $_base_content = [
+      '# sssd::service::ssh',
+      '[ssh]',
+    ]
+
+    # Add conditional parameters if defined
+    if $description {
+      $_description_entries = ["description = ${description}"]
+    } else {
+      $_description_entries = []
+    }
+
+    if $debug_level {
+      $_debug_level_entries = ["debug_level = ${debug_level}"]
+    } else {
+      $_debug_level_entries = []
+    }
+
+    $_debug_timestamps_entries = $debug_timestamps ? {
+      true  => ['debug_timestamps = true'],
+      false => ['debug_timestamps = false'],
+    }
+
+    $_debug_microseconds_entries = $debug_microseconds ? {
+      true  => ['debug_microseconds = true'],
+      false => ['debug_microseconds = false'],
+    }
+
+    $_ssh_hash_known_hosts_entries = $ssh_hash_known_hosts ? {
+      true  => ['ssh_hash_known_hosts = true'],
+      false => ['ssh_hash_known_hosts = false'],
+    }
+
+    if $ssh_known_hosts_timeout {
+      $_ssh_known_hosts_timeout_entries = ["ssh_known_hosts_timeout = ${ssh_known_hosts_timeout}"]
+    } else {
+      $_ssh_known_hosts_timeout_entries = []
+    }
+
+    # Combine all configuration entries in the expected order
+    $_all_entries = $_base_content + $_description_entries + $_debug_level_entries + $_debug_timestamps_entries + $_debug_microseconds_entries + $_ssh_hash_known_hosts_entries + $_ssh_known_hosts_timeout_entries
+
+    $_final_content = $_all_entries.join("\n")
+
     $_content = epp(
       "${module_name}/service/ssh.epp",
       {
-        'description'             => $description,
-        'debug_level'             => $debug_level,
-        'debug_timestamps'        => $debug_timestamps,
-        'debug_microseconds'      => $debug_microseconds,
-        'ssh_hash_known_hosts'    => $ssh_hash_known_hosts,
-        'ssh_known_hosts_timeout' => $ssh_known_hosts_timeout,
+        'content' => $_final_content,
       },
     )
   }
