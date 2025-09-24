@@ -90,4 +90,4 @@ CONFIG:
     - hmac-md5
     - hmac-md5-96
     - none
-  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'puppet7') %>"
+  puppet_collection: "<%= ENV.fetch('BEAKER_PUPPET_COLLECTION', 'puppet8') %>"
