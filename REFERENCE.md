@@ -436,11 +436,11 @@ The following parameters are available in the `sssd::install::client` class:
 
 ##### <a name="-sssd--install--client--ensure"></a>`ensure`
 
-Data type: `Any`
+Data type: `String`
 
 Ensure setting for 'sssd-client' package
 
-Default value: `$::sssd::install::package_ensure`
+Default value: `$sssd::install::package_ensure`
 
 ### <a name="sssd--pki"></a>`sssd::pki`
 
@@ -1302,7 +1302,7 @@ The content of the target file
 
 Data type: `Integer[0]`
 
-
+The order in which the file should be processed
 
 Default value: `50`
 
@@ -1729,6 +1729,10 @@ Default value: `undef`
 
 Data type: `Optional[String]`
 
+
+
+Default value: `undef`
+
 ##### <a name="-sssd--domain--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
@@ -1736,9 +1740,8 @@ Data type: `Optional[Hash]`
 If defined, this hash will be used to create the service
 section instead of the parameters.  You must provide all options
 in the section you want to add.  Each entry in the hash will be
-added as a simple init pair
-key = value
-under the section in the sssd.conf file.
+added as a simple init pair key = value under the section in
+the sssd.conf file.
 No error checking will be performed.
 
 Default value: `undef`

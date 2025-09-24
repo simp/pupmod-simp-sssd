@@ -44,6 +44,7 @@ class sssd::service::pac (
         'debug_timestamps'   => $debug_timestamps,
         'debug_microseconds' => $debug_microseconds,
         'allowed_uids'       => $allowed_uids,
+        'custom_options'     => $custom_options,
       },
     )
   }

@@ -1,4 +1,5 @@
 <% |
+  String                                                     $title,
   Optional[String[1]]                                        $ad_domain,
   Optional[Array[String[1],1]]                               $ad_enabled_domains,
   Optional[Array[Variant[Simplib::Hostname, Enum['_srv_']]]] $ad_servers,

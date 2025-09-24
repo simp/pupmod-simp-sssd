@@ -154,6 +154,7 @@ define sssd::provider::ad (
     content => epp(
       "${module_name}/provider/ad.epp",
       {
+        'title'                                    => $title,
         'ad_domain'                                => $ad_domain,
         'ad_enabled_domains'                       => $ad_enabled_domains,
         'ad_servers'                               => $ad_servers,
