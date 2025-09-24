@@ -1,51 +1,5 @@
-<% |
-  Optional[String]             $description,
-  Optional[Sssd::DebugLevel]   $debug_level,
-  Boolean                      $debug_timestamps,
-  Boolean                      $debug_microseconds,
-  Boolean                      $pam_cert_auth,
-  Integer                      $reconnection_retries,
-  Optional[String]             $command,
-  Integer                      $offline_credentials_expiration,
-  Integer                      $offline_failed_login_attempts,
-  Integer                      $offline_failed_login_delay,
-  Integer                      $pam_verbosity,
-  Integer                      $pam_id_timeout,
-  Integer                      $pam_pwd_expiration_warning,
-  Optional[Integer]            $get_domains_timeout,
-  Optional[String]             $pam_trusted_users,
-  Optional[String]             $pam_public_domains,
+<%- |
+  String $content,
 | -%>
-
-# sssd::service::pam
 [pam]
-<% if $description { -%>
-description = <%= $description %>
-<% } -%>
-<% if $debug_level { -%>
-debug_level = <%= $debug_level %>
-<% } -%>
-debug_timestamps = <%= $debug_timestamps %>
-debug_microseconds = <%= $debug_microseconds %>
-reconnection_retries = <%= $reconnection_retries %>
-<% if $command { -%>
-command = <%= $command %>
-<% } -%>
-offline_credentials_expiration = <%= $offline_credentials_expiration %>
-offline_failed_login_attempts = <%= $offline_failed_login_attempts %>
-offline_failed_login_delay = <%= $offline_failed_login_delay %>
-pam_verbosity = <%= $pam_verbosity %>
-pam_id_timeout = <%= $pam_id_timeout %>
-pam_pwd_expiration_warning = <%= $pam_pwd_expiration_warning %>
-<% if $get_domains_timeout { -%>
-get_domains_timeout = <%= $get_domains_timeout %>
-<% } -%>
-<% if $pam_trusted_users { -%>
-pam_trusted_users = <%= $pam_trusted_users %>
-<% } -%>
-<% if $pam_public_domains { -%>
-pam_public_domains = <%= $pam_public_domains %>
-<% } -%>
-<% if $pam_cert_auth { -%>
-pam_cert_auth = True
-<% } -%>
+<%= $content %>
