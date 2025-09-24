@@ -1,20 +1,4 @@
-<% |
-  Optional[String]            $description,
-  Optional[Sssd::Debuglevel]  $debug_level,
-  Boolean                     $debug_timestamps,
-  Boolean                     $debug_microseconds,
-  Boolean                     $sudo_timed,
-  Integer[1]                  $sudo_threshold,
+<%- |
+  String $content,
 | -%>
-
-# sssd::service::sudo
-[sudo]
-<% if $description { -%>
-description = <%= $description %>
-<% } -%>
-<% if $debug_level { -%>
-debug_level = <%= $debug_level %>
-<% } -%>
-debug_timestamps = <%= $debug_timestamps %>
-debug_microseconds = <%= $debug_microseconds %>
-sudo_timed = <%= $sudo_timed %>
+<%= $content %>
