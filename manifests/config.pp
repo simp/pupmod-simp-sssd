@@ -132,8 +132,8 @@ class sssd::config (
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    content => epp("${module_name}/sssd.conf.epp", {
-        'content' => $content,
+    content => epp("${module_name}/content_only.epp", {
+        'content' => "# sssd::config\n[sssd]\n${content}",
     }),
     notify  => Class["${module_name}::service"],
   }

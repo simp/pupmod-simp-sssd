@@ -1,6 +1,6 @@
 <%- |
-  String $title,
-  String $content,
+  String[1] $title,
+  String[1] $content,
 | -%>
 [<%= $title %>]
 <%= $content %>

@@ -1,7 +1,0 @@
-<% |
-  String[1] $name,
-  String[1] $content,
-| -%>
-# sssd::domain <%= $name %>
-[domain/<%= $name %>]
-<%= $content %>

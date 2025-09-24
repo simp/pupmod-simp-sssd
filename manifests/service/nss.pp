@@ -135,9 +135,13 @@ class sssd::service::nss (
     # Join all configuration lines
     $content = $config_lines.join("\n")
 
-    $_content = epp("${module_name}/service/nss.epp", {
-        'content' => $content,
-    })
+    $_content = epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => 'nss',
+        'content' => "# sssd::service::nss\n${content}",
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_nss':

@@ -156,12 +156,12 @@ define sssd::provider::ipa (
   )
 
   # Join all configuration lines
-  $content = $config_lines.join("\n")
+  $_final_content = $config_lines.join("\n")
 
   sssd::config::entry { "puppet_provider_${name}_ipa":
-    content => epp("${module_name}/provider/ipa.epp", {
-        'title'   => $title,
-        'content' => $content,
+    content => epp("${module_name}/generic.epp", {
+        'title'   => "domain/${title}",
+        'content' => "# sssd::provider::ipa\n${_final_content}",
     }),
   }
 }

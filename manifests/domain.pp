@@ -249,9 +249,9 @@ define sssd::domain (
   $content = $config_lines.join("\n")
 
   sssd::config::entry { "puppet_domain_${name}":
-    content => epp('sssd/domain.epp', {
-        'name'    => $name,
-        'content' => $content,
+    content => epp("${module_name}/generic", {
+        'title'   => "domain/${name}",
+        'content' => "# sssd::domain ${name}\n${content}",
     }),
   }
 }
