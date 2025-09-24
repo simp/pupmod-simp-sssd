@@ -61,25 +61,81 @@ class sssd::service::pam (
       },
     )
   } else {
+    # Build configuration content for the PAM service
+    $_base_content = [
+      '# sssd::service::pam',
+    ]
+
+    # Add conditional parameters if defined
+    if $description {
+      $_description_entries = ["description = ${description}"]
+    } else {
+      $_description_entries = []
+    }
+
+    if $debug_level {
+      $_debug_level_entries = ["debug_level = ${debug_level}"]
+    } else {
+      $_debug_level_entries = []
+    }
+
+    $_debug_timestamps_entries = $debug_timestamps ? {
+      true  => ['debug_timestamps = true'],
+      false => ['debug_timestamps = false'],
+    }
+
+    $_debug_microseconds_entries = $debug_microseconds ? {
+      true  => ['debug_microseconds = true'],
+      false => ['debug_microseconds = false'],
+    }
+
+    $_reconnection_retries_entries = ["reconnection_retries = ${reconnection_retries}"]
+
+    if $command {
+      $_command_entries = ["command = ${command}"]
+    } else {
+      $_command_entries = []
+    }
+
+    $_offline_credentials_expiration_entries = ["offline_credentials_expiration = ${offline_credentials_expiration}"]
+    $_offline_failed_login_attempts_entries = ["offline_failed_login_attempts = ${offline_failed_login_attempts}"]
+    $_offline_failed_login_delay_entries = ["offline_failed_login_delay = ${offline_failed_login_delay}"]
+    $_pam_verbosity_entries = ["pam_verbosity = ${pam_verbosity}"]
+    $_pam_id_timeout_entries = ["pam_id_timeout = ${pam_id_timeout}"]
+    $_pam_pwd_expiration_warning_entries = ["pam_pwd_expiration_warning = ${pam_pwd_expiration_warning}"]
+
+    if $get_domains_timeout {
+      $_get_domains_timeout_entries = ["get_domains_timeout = ${get_domains_timeout}"]
+    } else {
+      $_get_domains_timeout_entries = []
+    }
+
+    if $pam_trusted_users {
+      $_pam_trusted_users_entries = ["pam_trusted_users = ${pam_trusted_users}"]
+    } else {
+      $_pam_trusted_users_entries = []
+    }
+
+    if $pam_public_domains {
+      $_pam_public_domains_entries = ["pam_public_domains = ${pam_public_domains}"]
+    } else {
+      $_pam_public_domains_entries = []
+    }
+
+    $_pam_cert_auth_entries = $pam_cert_auth ? {
+      true  => ['pam_cert_auth = True'],
+      false => [],
+    }
+
+    # Combine all configuration entries in the expected order
+    $_all_entries = $_base_content + $_description_entries + $_debug_level_entries + $_debug_timestamps_entries + $_debug_microseconds_entries + $_reconnection_retries_entries + $_command_entries + $_offline_credentials_expiration_entries + $_offline_failed_login_attempts_entries + $_offline_failed_login_delay_entries + $_pam_verbosity_entries + $_pam_id_timeout_entries + $_pam_pwd_expiration_warning_entries + $_get_domains_timeout_entries + $_pam_trusted_users_entries + $_pam_public_domains_entries + $_pam_cert_auth_entries
+
+    $_final_content = $_all_entries.join("\n")
+
     $_content = epp(
       "${module_name}/service/pam.epp",
       {
-        'description'                    => $description,
-        'debug_level'                    => $debug_level,
-        'debug_timestamps'               => $debug_timestamps,
-        'debug_microseconds'             => $debug_microseconds,
-        'pam_cert_auth'                  => $pam_cert_auth,
-        'reconnection_retries'           => $reconnection_retries,
-        'command'                        => $command,
-        'offline_credentials_expiration' => $offline_credentials_expiration,
-        'offline_failed_login_attempts'  => $offline_failed_login_attempts,
-        'offline_failed_login_delay'     => $offline_failed_login_delay,
-        'pam_verbosity'                  => $pam_verbosity,
-        'pam_id_timeout'                 => $pam_id_timeout,
-        'pam_pwd_expiration_warning'     => $pam_pwd_expiration_warning,
-        'get_domains_timeout'            => $get_domains_timeout,
-        'pam_trusted_users'              => $pam_trusted_users,
-        'pam_public_domains'             => $pam_public_domains,
+        'content' => $_final_content,
       },
     )
   }
