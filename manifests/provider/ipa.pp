@@ -75,48 +75,93 @@ define sssd::provider::ipa (
   Array[String]                  $ldap_tls_cipher_suite          = ['HIGH','-SSLv2'],
   Boolean                        $use_service_discovery          = true,
 ) {
-  if $use_service_discovery {
-    $_ipa_server = ['_srv_'] + $ipa_server
-  }
-  else {
-    $_ipa_server = $ipa_server
+  # Build configuration lines in order (matching expected test output)
+  # IPA domain configuration (required)
+  $ipa_domain_line = ["ipa_domain = ${ipa_domain}"]
+
+  # IPA server configuration with service discovery logic
+  $ipa_server_line = $use_service_discovery ? {
+    true => ["ipa_server = _srv_,${ipa_server.join(',')}"],
+    false => ["ipa_server = ${ipa_server.join(',')}"]
   }
 
+  # IPA backup server configuration (optional)
+  $ipa_backup_server_line = $ipa_backup_server ? { undef => [], default => ["ipa_backup_server = ${ipa_backup_server.join(',')}"] }
+
+  # IPA boolean settings (required)
+  $ipa_enable_dns_sites_line = ["ipa_enable_dns_sites = ${ipa_enable_dns_sites}"]
+  $ipa_hostname_line = ["ipa_hostname = ${ipa_hostname}"]
+  $ipa_server_mode_line = ["ipa_server_mode = ${ipa_server_mode}"]
+
+  # Dynamic DNS settings
+  $dyndns_auth_line = ["dyndns_auth = ${dyndns_auth}"]
+  $dyndns_force_tcp_line = $dyndns_force_tcp ? { undef => [], default => ["dyndns_force_tcp = ${dyndns_force_tcp}"] }
+  $dyndns_iface_line = $dyndns_iface ? { undef => [], default => ["dyndns_iface = ${dyndns_iface.join(',')}"] }
+  $dyndns_refresh_interval_line = $dyndns_refresh_interval ? { undef => [], default => ["dyndns_refresh_interval = ${dyndns_refresh_interval}"] }
+  $dyndns_server_line = $dyndns_server ? { undef => [], default => ["dyndns_server = ${dyndns_server}"] }
+  $dyndns_ttl_line = $dyndns_ttl ? { undef => [], default => ["dyndns_ttl = ${dyndns_ttl}"] }
+  $dyndns_update_line = ["dyndns_update = ${dyndns_update}"]
+  $dyndns_update_ptr_line = $dyndns_update_ptr ? { undef => [], default => ["dyndns_update_ptr = ${dyndns_update_ptr}"] }
+
+  # IPA-specific optional settings
+  $ipa_automount_location_line = $ipa_automount_location ? { undef => [], default => ["ipa_automount_location = ${ipa_automount_location}"] }
+  $ipa_hbac_refresh_line = $ipa_hbac_refresh ? { undef => [], default => ["ipa_hbac_refresh = ${ipa_hbac_refresh}"] }
+  $ipa_hbac_search_base_line = $ipa_hbac_search_base ? { undef => [], default => ["ipa_hbac_search_base = ${ipa_hbac_search_base}"] }
+  $ipa_hbac_selinux_line = $ipa_hbac_selinux ? { undef => [], default => ["ipa_hbac_selinux = ${ipa_hbac_selinux}"] }
+  $ipa_host_search_base_line = $ipa_host_search_base ? { undef => [], default => ["ipa_host_search_base = ${ipa_host_search_base}"] }
+  $ipa_master_domains_search_base_line = $ipa_master_domains_search_base ? { undef => [], default => ["ipa_master_domains_search_base = ${ipa_master_domains_search_base}"] }
+  $ipa_selinux_search_base_line = $ipa_selinux_search_base ? { undef => [], default => ["ipa_selinux_search_base = ${ipa_selinux_search_base}"] }
+  $ipa_subdomains_search_base_line = $ipa_subdomains_search_base ? { undef => [], default => ["ipa_subdomains_search_base = ${ipa_subdomains_search_base}"] }
+  $ipa_views_search_base_line = $ipa_views_search_base ? { undef => [], default => ["ipa_views_search_base = ${ipa_views_search_base}"] }
+
+  # Kerberos settings
+  $krb5_confd_path_line = $krb5_confd_path ? { undef => [], default => ["krb5_confd_path = ${krb5_confd_path}"] }
+  $krb5_realm_line = $krb5_realm ? { undef => [], default => ["krb5_realm = ${krb5_realm}"] }
+  $krb5_store_password_if_offline_line = ["krb5_store_password_if_offline = ${krb5_store_password_if_offline}"]
+
+  # LDAP TLS settings (required)
+  $ldap_tls_cacert_line = ["ldap_tls_cacert = ${ldap_tls_cacert}"]
+  $ldap_tls_cipher_suite_line = ["ldap_tls_cipher_suite = ${ldap_tls_cipher_suite.join(':')}"]
+
+  # Combine all lines in order
+  $config_lines = (
+    $ipa_domain_line +
+    $ipa_server_line +
+    $ipa_backup_server_line +
+    $ipa_enable_dns_sites_line +
+    $ipa_hostname_line +
+    $ipa_server_mode_line +
+    $dyndns_auth_line +
+    $dyndns_force_tcp_line +
+    $dyndns_iface_line +
+    $dyndns_refresh_interval_line +
+    $dyndns_server_line +
+    $dyndns_ttl_line +
+    $dyndns_update_line +
+    $dyndns_update_ptr_line +
+    $ipa_automount_location_line +
+    $ipa_hbac_refresh_line +
+    $ipa_hbac_search_base_line +
+    $ipa_hbac_selinux_line +
+    $ipa_host_search_base_line +
+    $ipa_master_domains_search_base_line +
+    $ipa_selinux_search_base_line +
+    $ipa_subdomains_search_base_line +
+    $ipa_views_search_base_line +
+    $krb5_confd_path_line +
+    $krb5_realm_line +
+    $krb5_store_password_if_offline_line +
+    $ldap_tls_cacert_line +
+    $ldap_tls_cipher_suite_line
+  )
+
+  # Join all configuration lines
+  $content = $config_lines.join("\n")
+
   sssd::config::entry { "puppet_provider_${name}_ipa":
-    content => epp(
-      "${module_name}/provider/ipa.epp",
-      {
-        'title'                          => $title,
-        'ipa_domain'                     => $ipa_domain,
-        'ipa_server'                     => $ipa_server,
-        'ipa_backup_server'              => $ipa_backup_server,
-        'ipa_enable_dns_sites'           => $ipa_enable_dns_sites,
-        'ipa_hostname'                   => $ipa_hostname,
-        'ipa_server_mode'                => $ipa_server_mode,
-        'dyndns_auth'                    => $dyndns_auth,
-        'dyndns_force_tcp'               => $dyndns_force_tcp,
-        'dyndns_iface'                   => $dyndns_iface,
-        'dyndns_refresh_interval'        => $dyndns_refresh_interval,
-        'dyndns_server'                  => $dyndns_server,
-        'dyndns_ttl'                     => $dyndns_ttl,
-        'dyndns_update'                  => $dyndns_update,
-        'dyndns_update_ptr'              => $dyndns_update_ptr,
-        'ipa_automount_location'         => $ipa_automount_location,
-        'ipa_hbac_refresh'               => $ipa_hbac_refresh,
-        'ipa_hbac_search_base'           => $ipa_hbac_search_base,
-        'ipa_hbac_selinux'               => $ipa_hbac_selinux,
-        'ipa_host_search_base'           => $ipa_host_search_base,
-        'ipa_master_domains_search_base' => $ipa_master_domains_search_base,
-        'ipa_selinux_search_base'        => $ipa_selinux_search_base,
-        'ipa_subdomains_search_base'     => $ipa_subdomains_search_base,
-        'ipa_views_search_base'          => $ipa_views_search_base,
-        'krb5_confd_path'                => $krb5_confd_path,
-        'krb5_realm'                     => $krb5_realm,
-        'krb5_store_password_if_offline' => $krb5_store_password_if_offline,
-        'ldap_tls_cacert'                => $ldap_tls_cacert,
-        'ldap_tls_cipher_suite'          => $ldap_tls_cipher_suite,
-        'use_service_discovery'          => $use_service_discovery,
-      }
-    ),
+    content => epp("${module_name}/provider/ipa.epp", {
+        'title'   => $title,
+        'content' => $content,
+    }),
   }
 }
