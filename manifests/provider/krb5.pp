@@ -134,11 +134,11 @@ define sssd::provider::krb5 (
   # Combine all configuration entries in the expected order
   $_all_entries = $_content + $_debug_level_entries + $_debug_timestamps_entries + $_debug_microseconds_entries + $_krb5_server_entries + $_krb5_realm_entries + $_krb5_kpasswd_entries + $_krb5_ccachedir_entries + $_krb5_ccname_template_entries + $_krb5_auth_timeout_entries + $_krb5_validate_entries + $_krb5_keytab_entries + $_krb5_store_password_if_offline_entries + $_krb5_renewable_lifetime_entries + $_krb5_lifetime_entries + $_krb5_renew_interval_entries + $_krb5_use_fast_entries
 
-  $_final_content = $_all_entries.join("\n")
+  $_final_content = "${_all_entries.join("\n")}"
 
   sssd::config::entry { "puppet_provider_${name}_krb5":
     content => epp(
-      "${module_name}/provider/krb5",
+      "${module_name}/generic.epp",
       {
         'title'   => "domain/${title}",
         'content' => $_final_content,

@@ -1,7 +1,0 @@
-<% |
-  String[1] $title,
-  String[1] $content,
-| -%>
-[domain/<%= $title %>]
-# sssd::provider::ldap
-<%= $content %>

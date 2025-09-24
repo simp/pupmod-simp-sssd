@@ -77,10 +77,10 @@ class sssd::service::sudo (
     # Combine all configuration entries in the expected order
     $_all_entries = $_base_content + $_description_entries + $_debug_level_entries + $_debug_timestamps_entries + $_debug_microseconds_entries + $_sudo_timed_entries
 
-    $_final_content = $_all_entries.join("\n")
+    $_final_content = "${_all_entries.join("\n")}"
 
     $_content = epp(
-      "${module_name}/service/sudo.epp",
+      "${module_name}/content_only.epp",
       {
         'content' => $_final_content,
       },

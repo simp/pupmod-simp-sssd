@@ -1,6 +1,4 @@
-<% |
+<%- |
   String[1] $content,
 | -%>
-# sssd::service::nss
-[nss]
 <%= $content %>

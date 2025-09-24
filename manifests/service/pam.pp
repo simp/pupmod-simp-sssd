@@ -130,11 +130,12 @@ class sssd::service::pam (
     # Combine all configuration entries in the expected order
     $_all_entries = $_base_content + $_description_entries + $_debug_level_entries + $_debug_timestamps_entries + $_debug_microseconds_entries + $_reconnection_retries_entries + $_command_entries + $_offline_credentials_expiration_entries + $_offline_failed_login_attempts_entries + $_offline_failed_login_delay_entries + $_pam_verbosity_entries + $_pam_id_timeout_entries + $_pam_pwd_expiration_warning_entries + $_get_domains_timeout_entries + $_pam_trusted_users_entries + $_pam_public_domains_entries + $_pam_cert_auth_entries
 
-    $_final_content = $_all_entries.join("\n")
+    $_final_content = "${_all_entries.join("\n")}"
 
     $_content = epp(
-      "${module_name}/service/pam.epp",
+      "${module_name}/generic.epp",
       {
+        'title'   => 'pam',
         'content' => $_final_content,
       },
     )

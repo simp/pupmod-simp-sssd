@@ -1,5 +1,0 @@
-<%- |
-  String $content,
-| -%>
-[pam]
-<%= $content %>

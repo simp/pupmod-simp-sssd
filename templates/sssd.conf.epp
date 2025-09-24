@@ -1,6 +1,0 @@
-<% |
-  String[1] $content,
-| -%>
-# sssd::config
-[sssd]
-<%= $content %>

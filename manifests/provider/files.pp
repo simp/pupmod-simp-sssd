@@ -42,11 +42,11 @@ define sssd::provider::files (
   # Combine all configuration entries
   $_all_entries = $_content + $_passwd_files_entries + $_group_files_entries
 
-  $_final_content = $_all_entries.join("\n")
+  $_final_content = "${_all_entries.join("\n")}"
 
   sssd::config::entry { "puppet_provider_${name}_files":
     content => epp(
-      "${module_name}/provider/files.epp",
+      "${module_name}/generic.epp",
       {
         'title'   => "domain/${title}",
         'content' => $_final_content,
