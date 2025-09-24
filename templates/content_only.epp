@@ -1,4 +1,0 @@
-<%- |
-  String[1] $content,
-| -%>
-<%= $content %>
