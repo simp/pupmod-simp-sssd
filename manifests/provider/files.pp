@@ -21,13 +21,35 @@ define sssd::provider::files (
   Optional[Array[Stdlib::Absolutepath]] $passwd_files = undef,
   Optional[Array[Stdlib::Absolutepath]] $group_files  = undef,
 ) {
+  # Build configuration content for the Files provider
+  $_content = [
+    '# sssd::provider::files',
+  ]
+
+  # Add conditional parameters if defined
+  if $passwd_files and !$passwd_files.empty {
+    $_passwd_files_entries = ["passwd_files = ${passwd_files.join(', ')}"]
+  } else {
+    $_passwd_files_entries = []
+  }
+
+  if $group_files and !$group_files.empty {
+    $_group_files_entries = ["group_files = ${group_files.join(', ')}"]
+  } else {
+    $_group_files_entries = []
+  }
+
+  # Combine all configuration entries
+  $_all_entries = $_content + $_passwd_files_entries + $_group_files_entries
+
+  $_final_content = $_all_entries.join("\n")
+
   sssd::config::entry { "puppet_provider_${name}_files":
     content => epp(
       "${module_name}/provider/files.epp",
       {
-        'title'        => $title,
-        'passwd_files' => $passwd_files,
-        'group_files'  => $group_files,
+        'title'   => "domain/${title}",
+        'content' => $_final_content,
       }
     ),
   }
