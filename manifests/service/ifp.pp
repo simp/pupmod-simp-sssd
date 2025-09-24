@@ -42,16 +42,62 @@ class sssd::service::ifp (
       },
     )
   } else {
+    # Build configuration content for the IFP service
+    $_base_content = [
+      '# sssd::service::ifp',
+      '[ifp]',
+    ]
+
+    # Add conditional parameters if defined
+    if $description {
+      $_description_entries = ["description = ${description}"]
+    } else {
+      $_description_entries = []
+    }
+
+    if $debug_level {
+      $_debug_level_entries = ["debug_level = ${debug_level}"]
+    } else {
+      $_debug_level_entries = []
+    }
+
+    $_debug_timestamps_entries = $debug_timestamps ? {
+      true  => ['debug_timestamps = true'],
+      false => ['debug_timestamps = false'],
+    }
+
+    $_debug_microseconds_entries = $debug_microseconds ? {
+      true  => ['debug_microseconds = true'],
+      false => ['debug_microseconds = false'],
+    }
+
+    if $allowed_uids {
+      $_allowed_uids_entries = ["allowed_uids = ${allowed_uids.join(', ')}"]
+    } else {
+      $_allowed_uids_entries = []
+    }
+
+    if $user_attributes {
+      $_user_attributes_entries = ["user_attributes = ${user_attributes.join(', ')}"]
+    } else {
+      $_user_attributes_entries = []
+    }
+
+    if $wildcard_limit {
+      $_wildcard_limit_entries = ["wildcard_limit = ${wildcard_limit}"]
+    } else {
+      $_wildcard_limit_entries = []
+    }
+
+    # Combine all configuration entries in the expected order
+    $_all_entries = $_base_content + $_description_entries + $_debug_level_entries + $_debug_timestamps_entries + $_debug_microseconds_entries + $_allowed_uids_entries + $_user_attributes_entries + $_wildcard_limit_entries
+
+    $_final_content = $_all_entries.join("\n")
+
     $_content = epp(
       "${module_name}/service/ifp.epp",
       {
-        'description'        => $description,
-        'debug_level'        => $debug_level,
-        'debug_timestamps'   => $debug_timestamps,
-        'debug_microseconds' => $debug_microseconds,
-        'wildcard_limit'     => $wildcard_limit,
-        'allowed_uids'       => $allowed_uids,
-        'user_attributes'    => $user_attributes,
+        'content' => $_final_content,
       },
     )
   }
