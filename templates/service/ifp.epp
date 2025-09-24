@@ -1,28 +1,4 @@
-<% |
-  Optional[String]            $description,
-  Optional[Sssd::Debuglevel]  $debug_level,
-  Boolean                     $debug_timestamps,
-  Boolean                     $debug_microseconds,
-  Optional[Integer[0]]        $wildcard_limit,
-  Optional[Array[String[1]]]  $allowed_uids,
-  Optional[Array[String[1]]]  $user_attributes,
+<%- |
+  String $content,
 | -%>
-# sssd::service::ifp
-[ifp]
-<% if $description { -%>
-description = <%= $description %>
-<% } -%>
-<% if $debug_level { -%>
-debug_level = <%= $debug_level %>
-<% } -%>
-debug_timestamps = <%= $debug_timestamps %>
-debug_microseconds = <%= $debug_microseconds %>
-<% if $allowed_uids { -%>
-allowed_uids = <%= $allowed_uids.join(', ') %>
-<% } -%>
-<% if $user_attributes { -%>
-user_attributes = <%= $user_attributes.join(', ') %>
-<% } -%>
-<% if $wildcard_limit { -%>
-wildcard_limit = <%= $wildcard_limit %>
-<% } -%>
+<%= $content %>
