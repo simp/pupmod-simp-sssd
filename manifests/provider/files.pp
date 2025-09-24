@@ -25,6 +25,7 @@ define sssd::provider::files (
     content => epp(
       "${module_name}/provider/files.epp",
       {
+        'title'        => $title,
         'passwd_files' => $passwd_files,
         'group_files'  => $group_files,
       }

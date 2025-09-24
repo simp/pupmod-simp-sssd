@@ -45,6 +45,7 @@ class sssd::service::autofs (
         'debug_timestamps'         => $debug_timestamps,
         'debug_microseconds'       => $debug_microseconds,
         'autofs_negative_timeout'  => $autofs_negative_timeout,
+        'custom_options'           => $custom_options,
       },
     )
   }

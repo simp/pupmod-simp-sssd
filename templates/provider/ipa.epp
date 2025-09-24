@@ -1,4 +1,5 @@
 <% |
+  String                         $title,
   String[1]                      $ipa_domain,
   Array[Simplib::Host]           $ipa_server,
   Optional[Array[Simplib::Host]] $ipa_backup_server,

@@ -1,4 +1,5 @@
 <% |
+  String                                $title,
   Optional[Array[Stdlib::Absolutepath]] $passwd_files,
   Optional[Array[Stdlib::Absolutepath]] $group_files,
 | -%>

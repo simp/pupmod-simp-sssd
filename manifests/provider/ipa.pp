@@ -86,6 +86,7 @@ define sssd::provider::ipa (
     content => epp(
       "${module_name}/provider/ipa.epp",
       {
+        'title'                          => $title,
         'ipa_domain'                     => $ipa_domain,
         'ipa_server'                     => $ipa_server,
         'ipa_backup_server'              => $ipa_backup_server,
