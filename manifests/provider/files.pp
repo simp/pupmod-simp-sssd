@@ -21,35 +21,25 @@ define sssd::provider::files (
   Optional[Array[Stdlib::Absolutepath]] $passwd_files = undef,
   Optional[Array[Stdlib::Absolutepath]] $group_files  = undef,
 ) {
-  # Build configuration content for the Files provider
-  $_content = [
-    '# sssd::provider::files',
-  ]
+  # Build configuration lines in order (matching expected test output)
+  $passwd_files_line = ($passwd_files and !$passwd_files.empty) ? { true => ["passwd_files = ${passwd_files.join(', ')}"], false => [] }
+  $group_files_line = ($group_files and !$group_files.empty) ? { true => ["group_files = ${group_files.join(', ')}"], false => [] }
 
-  # Add conditional parameters if defined
-  if $passwd_files and !$passwd_files.empty {
-    $_passwd_files_entries = ["passwd_files = ${passwd_files.join(', ')}"]
-  } else {
-    $_passwd_files_entries = []
-  }
+  # Combine all lines in order
+  $config_lines = (
+    $passwd_files_line +
+    $group_files_line
+  )
 
-  if $group_files and !$group_files.empty {
-    $_group_files_entries = ["group_files = ${group_files.join(', ')}"]
-  } else {
-    $_group_files_entries = []
-  }
-
-  # Combine all configuration entries
-  $_all_entries = $_content + $_passwd_files_entries + $_group_files_entries
-
-  $_final_content = "${_all_entries.join("\n")}"
+  # Join all configuration lines
+  $content = "${(['# sssd::provider::files'] + $config_lines).join("\n")}"
 
   sssd::config::entry { "puppet_provider_${name}_files":
     content => epp(
       "${module_name}/generic.epp",
       {
         'title'   => "domain/${title}",
-        'content' => $_final_content,
+        'content' => $content,
       }
     ),
   }

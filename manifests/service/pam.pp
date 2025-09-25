@@ -61,82 +61,61 @@ class sssd::service::pam (
       },
     )
   } else {
-    # Build configuration content for the PAM service
-    $_base_content = [
-      '# sssd::service::pam',
-    ]
+    # Build configuration lines in order (matching expected test output)
+    # Debug settings
+    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
+    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
+    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
+    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
 
-    # Add conditional parameters if defined
-    if $description {
-      $_description_entries = ["description = ${description}"]
-    } else {
-      $_description_entries = []
-    }
+    # Connection settings
+    $reconnection_retries_line = ["reconnection_retries = ${reconnection_retries}"]
+    $command_line = $command ? { undef => [], default => ["command = ${command}"] }
 
-    if $debug_level {
-      $_debug_level_entries = ["debug_level = ${debug_level}"]
-    } else {
-      $_debug_level_entries = []
-    }
+    # Offline settings
+    $offline_credentials_expiration_line = ["offline_credentials_expiration = ${offline_credentials_expiration}"]
+    $offline_failed_login_attempts_line = ["offline_failed_login_attempts = ${offline_failed_login_attempts}"]
+    $offline_failed_login_delay_line = ["offline_failed_login_delay = ${offline_failed_login_delay}"]
 
-    $_debug_timestamps_entries = $debug_timestamps ? {
-      true  => ['debug_timestamps = true'],
-      false => ['debug_timestamps = false'],
-    }
+    # PAM-specific settings
+    $pam_verbosity_line = ["pam_verbosity = ${pam_verbosity}"]
+    $pam_id_timeout_line = ["pam_id_timeout = ${pam_id_timeout}"]
+    $pam_pwd_expiration_warning_line = ["pam_pwd_expiration_warning = ${pam_pwd_expiration_warning}"]
+    $pam_cert_auth_line = $pam_cert_auth ? { true => ['pam_cert_auth = True'], false => [] }
 
-    $_debug_microseconds_entries = $debug_microseconds ? {
-      true  => ['debug_microseconds = true'],
-      false => ['debug_microseconds = false'],
-    }
+    # Optional settings
+    $get_domains_timeout_line = $get_domains_timeout ? { undef => [], default => ["get_domains_timeout = ${get_domains_timeout}"] }
+    $pam_trusted_users_line = $pam_trusted_users ? { undef => [], default => ["pam_trusted_users = ${pam_trusted_users}"] }
+    $pam_public_domains_line = $pam_public_domains ? { undef => [], default => ["pam_public_domains = ${pam_public_domains}"] }
 
-    $_reconnection_retries_entries = ["reconnection_retries = ${reconnection_retries}"]
+    # Combine all lines in order
+    $config_lines = (
+      $description_line +
+      $debug_level_line +
+      $debug_timestamps_line +
+      $debug_microseconds_line +
+      $reconnection_retries_line +
+      $command_line +
+      $offline_credentials_expiration_line +
+      $offline_failed_login_attempts_line +
+      $offline_failed_login_delay_line +
+      $pam_verbosity_line +
+      $pam_id_timeout_line +
+      $pam_pwd_expiration_warning_line +
+      $get_domains_timeout_line +
+      $pam_trusted_users_line +
+      $pam_public_domains_line +
+      $pam_cert_auth_line
+    )
 
-    if $command {
-      $_command_entries = ["command = ${command}"]
-    } else {
-      $_command_entries = []
-    }
-
-    $_offline_credentials_expiration_entries = ["offline_credentials_expiration = ${offline_credentials_expiration}"]
-    $_offline_failed_login_attempts_entries = ["offline_failed_login_attempts = ${offline_failed_login_attempts}"]
-    $_offline_failed_login_delay_entries = ["offline_failed_login_delay = ${offline_failed_login_delay}"]
-    $_pam_verbosity_entries = ["pam_verbosity = ${pam_verbosity}"]
-    $_pam_id_timeout_entries = ["pam_id_timeout = ${pam_id_timeout}"]
-    $_pam_pwd_expiration_warning_entries = ["pam_pwd_expiration_warning = ${pam_pwd_expiration_warning}"]
-
-    if $get_domains_timeout {
-      $_get_domains_timeout_entries = ["get_domains_timeout = ${get_domains_timeout}"]
-    } else {
-      $_get_domains_timeout_entries = []
-    }
-
-    if $pam_trusted_users {
-      $_pam_trusted_users_entries = ["pam_trusted_users = ${pam_trusted_users}"]
-    } else {
-      $_pam_trusted_users_entries = []
-    }
-
-    if $pam_public_domains {
-      $_pam_public_domains_entries = ["pam_public_domains = ${pam_public_domains}"]
-    } else {
-      $_pam_public_domains_entries = []
-    }
-
-    $_pam_cert_auth_entries = $pam_cert_auth ? {
-      true  => ['pam_cert_auth = True'],
-      false => [],
-    }
-
-    # Combine all configuration entries in the expected order
-    $_all_entries = $_base_content + $_description_entries + $_debug_level_entries + $_debug_timestamps_entries + $_debug_microseconds_entries + $_reconnection_retries_entries + $_command_entries + $_offline_credentials_expiration_entries + $_offline_failed_login_attempts_entries + $_offline_failed_login_delay_entries + $_pam_verbosity_entries + $_pam_id_timeout_entries + $_pam_pwd_expiration_warning_entries + $_get_domains_timeout_entries + $_pam_trusted_users_entries + $_pam_public_domains_entries + $_pam_cert_auth_entries
-
-    $_final_content = "${_all_entries.join("\n")}"
+    # Join all configuration lines
+    $content = $config_lines.join("\n")
 
     $_content = epp(
       "${module_name}/generic.epp",
       {
         'title'   => 'pam',
-        'content' => $_final_content,
+        'content' => "# sssd::service::pam\n${content}",
       },
     )
   }
