@@ -8,8 +8,8 @@ describe 'sssd::service::ifp' do
 
         context 'with default params' do
           expected = <<~EXPECTED
-            # sssd::service::ifp
             [ifp]
+            # sssd::service::ifp
             debug_timestamps = true
             debug_microseconds = false
           EXPECTED
@@ -29,8 +29,8 @@ describe 'sssd::service::ifp' do
           end
 
           expected = <<~EXPECTED
-            # sssd::service::ifp
             [ifp]
+            # sssd::service::ifp
             debug_timestamps = true
             debug_microseconds = false
             allowed_uids = me, you

@@ -42,57 +42,39 @@ class sssd::service::ifp (
       },
     )
   } else {
-    # Build configuration content for the IFP service
-    $_base_content = [
-      '# sssd::service::ifp',
-      '[ifp]',
-    ]
+    # Build configuration lines in order (matching expected test output)
+    # Debug settings
+    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
+    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
+    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
+    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
 
-    # Add conditional parameters if defined
-    if $description {
-      $_description_entries = ["description = ${description}"]
-    } else {
-      $_description_entries = []
-    }
+    # IFP-specific settings
+    $allowed_uids_line = $allowed_uids ? { undef => [], default => ["allowed_uids = ${allowed_uids.join(', ')}"] }
+    $user_attributes_line = $user_attributes ? { undef => [], default => ["user_attributes = ${user_attributes.join(', ')}"] }
+    $wildcard_limit_line = $wildcard_limit ? { undef => [], default => ["wildcard_limit = ${wildcard_limit}"] }
 
-    if $debug_level {
-      $_debug_level_entries = ["debug_level = ${debug_level}"]
-    } else {
-      $_debug_level_entries = []
-    }
+    # Combine all lines in order
+    $config_lines = (
+      $description_line +
+      $debug_level_line +
+      $debug_timestamps_line +
+      $debug_microseconds_line +
+      $allowed_uids_line +
+      $user_attributes_line +
+      $wildcard_limit_line
+    )
 
-    $_debug_timestamps_entries = $debug_timestamps ? {
-      true  => ['debug_timestamps = true'],
-      false => ['debug_timestamps = false'],
-    }
+    # Join all configuration lines
+    $content = $config_lines.join("\n")
 
-    $_debug_microseconds_entries = $debug_microseconds ? {
-      true  => ['debug_microseconds = true'],
-      false => ['debug_microseconds = false'],
-    }
-
-    if $allowed_uids {
-      $_allowed_uids_entries = ["allowed_uids = ${allowed_uids.join(', ')}"]
-    } else {
-      $_allowed_uids_entries = []
-    }
-
-    if $user_attributes {
-      $_user_attributes_entries = ["user_attributes = ${user_attributes.join(', ')}"]
-    } else {
-      $_user_attributes_entries = []
-    }
-
-    if $wildcard_limit {
-      $_wildcard_limit_entries = ["wildcard_limit = ${wildcard_limit}"]
-    } else {
-      $_wildcard_limit_entries = []
-    }
-
-    # Combine all configuration entries in the expected order
-    $_all_entries = $_base_content + $_description_entries + $_debug_level_entries + $_debug_timestamps_entries + $_debug_microseconds_entries + $_allowed_uids_entries + $_user_attributes_entries + $_wildcard_limit_entries
-
-    $_content = "${_all_entries.join("\n")}\n"
+    $_content = epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => 'ifp',
+        'content' => "# sssd::service::ifp\n${content}",
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_ifp':

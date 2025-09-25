@@ -37,45 +37,35 @@ class sssd::service::autofs (
       },
     )
   } else {
-    # Build configuration content for the AutoFS service
-    $_base_content = [
-      '# sssd::service::autofs',
-      '[autofs]',
-    ]
+    # Build configuration lines in order (matching expected test output)
+    # Debug settings
+    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
+    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
+    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
+    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
 
-    # Add conditional parameters if defined
-    if $description {
-      $_description_entries = ["description = ${description}"]
-    } else {
-      $_description_entries = []
-    }
+    # AutoFS-specific settings
+    $autofs_negative_timeout_line = $autofs_negative_timeout ? { undef => [], default => ["autofs_negative_timeout = ${autofs_negative_timeout}"] }
 
-    if $debug_level {
-      $_debug_level_entries = ["debug_level = ${debug_level}"]
-    } else {
-      $_debug_level_entries = []
-    }
+    # Combine all lines in order
+    $config_lines = (
+      $description_line +
+      $debug_level_line +
+      $debug_timestamps_line +
+      $debug_microseconds_line +
+      $autofs_negative_timeout_line
+    )
 
-    $_debug_timestamps_entries = $debug_timestamps ? {
-      true  => ['debug_timestamps = true'],
-      false => ['debug_timestamps = false'],
-    }
+    # Join all configuration lines
+    $content = $config_lines.join("\n")
 
-    $_debug_microseconds_entries = $debug_microseconds ? {
-      true  => ['debug_microseconds = true'],
-      false => ['debug_microseconds = false'],
-    }
-
-    if $autofs_negative_timeout {
-      $_autofs_negative_timeout_entries = ["autofs_negative_timeout = ${autofs_negative_timeout}"]
-    } else {
-      $_autofs_negative_timeout_entries = []
-    }
-
-    # Combine all configuration entries in the expected order
-    $_all_entries = $_base_content + $_description_entries + $_debug_level_entries + $_debug_timestamps_entries + $_debug_microseconds_entries + $_autofs_negative_timeout_entries
-
-    $_content = "${_all_entries.join("\n")}\n"
+    $_content = epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => 'autofs',
+        'content' => "# sssd::service::autofs\n${content}",
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_autofs':
