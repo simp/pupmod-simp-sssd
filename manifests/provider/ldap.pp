@@ -709,14 +709,14 @@ define sssd::provider::ldap (
 
   # Combine all configuration lines and sort them
   $all_config_lines = ($simple_config_lines + $account_expire_line + $array_config_lines).sort
-  $content = "${all_config_lines.join("\n")}"
+  $content = (['# sssd::provider::ldap'] + $all_config_lines).join("\n")
 
   sssd::config::entry { "puppet_provider_${title}_ldap":
     content => epp(
       "${module_name}/generic.epp",
       {
         'title'   => "domain/${title}",
-        'content' => "# sssd::provider::ldap\n${content}",
+        'content' => $content,
       },
     ),
   }

@@ -133,13 +133,13 @@ class sssd::service::nss (
     )
 
     # Join all configuration lines
-    $content = $config_lines.join("\n")
+    $content = (['# sssd::service::nss'] + $config_lines).join("\n")
 
     $_content = epp(
       "${module_name}/generic.epp",
       {
         'title'   => 'nss',
-        'content' => "# sssd::service::nss\n${content}",
+        'content' => $content,
       },
     )
   }

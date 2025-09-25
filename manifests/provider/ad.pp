@@ -370,12 +370,15 @@ define sssd::provider::ad (
   }
 
   # Join all configuration lines
-  $content = $config_lines.join("\n")
+  $content = (['# sssd::provider::ad'] + $config_lines).join("\n")
 
   sssd::config::entry { "puppet_provider_${name}_ad":
-    content => epp("${module_name}/generic.epp", {
+    content => epp(
+      "${module_name}/generic.epp",
+      {
         'title'   => "domain/${title}",
-        'content' => "# sssd::provider::ad\n${content}",
-    }),
+        'content' => $content,
+      },
+    ),
   }
 }

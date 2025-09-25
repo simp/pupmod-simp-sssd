@@ -109,13 +109,13 @@ class sssd::service::pam (
     )
 
     # Join all configuration lines
-    $content = $config_lines.join("\n")
+    $content = (['# sssd::service::pam'] + $config_lines).join("\n")
 
     $_content = epp(
       "${module_name}/generic.epp",
       {
         'title'   => 'pam',
-        'content' => "# sssd::service::pam\n${content}",
+        'content' => $content,
       },
     )
   }
