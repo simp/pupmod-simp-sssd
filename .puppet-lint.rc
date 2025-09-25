@@ -5,10 +5,15 @@
 # The next baseline sync will overwrite any local changes made to this file.
 # ------------------------------------------------------------------------------
 --log-format="%{path}:%{line}:%{check}:%{KIND}:%{message}"
+--fail-on-warnings
 --relative
---no-class_inherits_from_params_class-check
+--no-80chars-check
 --no-140chars-check
---no-trailing_comma-check
+--no-class_inherits_from_params_class-check
+--no-autoloader_layout-check
+--no-documentation-check
+--no-single_quote_string_with_variables-check
+--ignore-paths=.vendor/**/*.pp,.bundle/**/*.pp,pkg/**/*.pp,spec/**/*.pp,tests/**/*.pp,vendor/**/*.pp
 --no-params-empty-string-assignment-check
 # This is here because the code can't handle lookups in parameters and SIMP
 # modules have a LOT of those
