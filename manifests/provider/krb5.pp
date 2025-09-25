@@ -95,14 +95,14 @@ define sssd::provider::krb5 (
   )
 
   # Join all configuration lines
-  $content = $config_lines.join("\n")
+  $content = (['# sssd::provider::krb5'] + $config_lines).join("\n")
 
   sssd::config::entry { "puppet_provider_${name}_krb5":
     content => epp(
       "${module_name}/generic.epp",
       {
         'title'   => "domain/${title}",
-        'content' => "# sssd::provider::krb5\n${content}",
+        'content' => $content,
       },
     ),
   }

@@ -62,13 +62,13 @@ class sssd::service::sudo (
     )
 
     # Join all configuration lines
-    $content = $config_lines.join("\n")
+    $content = (['# sssd::service::sudo'] + $config_lines).join("\n")
 
     $_content = epp(
       "${module_name}/generic.epp",
       {
         'title'   => 'sudo',
-        'content' => "# sssd::service::sudo\n${content}",
+        'content' => $content,
       },
     )
   }

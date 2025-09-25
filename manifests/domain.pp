@@ -246,12 +246,15 @@ define sssd::domain (
   )
 
   # Join all configuration lines
-  $content = $config_lines.join("\n")
+  $content = (["# sssd::domain ${name}"] + $config_lines).join("\n")
 
   sssd::config::entry { "puppet_domain_${name}":
-    content => epp("${module_name}/generic", {
+    content => epp(
+      "${module_name}/generic",
+      {
         'title'   => "domain/${name}",
-        'content' => "# sssd::domain ${name}\n${content}",
-    }),
+        'content' => $content,
+      },
+    ),
   }
 }

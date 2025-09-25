@@ -32,7 +32,7 @@ define sssd::provider::files (
   )
 
   # Join all configuration lines
-  $content = "${(['# sssd::provider::files'] + $config_lines).join("\n")}"
+  $content = (['# sssd::provider::files'] + $config_lines).join("\n")
 
   sssd::config::entry { "puppet_provider_${name}_files":
     content => epp(

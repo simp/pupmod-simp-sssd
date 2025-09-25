@@ -1,8 +1,8 @@
 require 'spec_helper'
 
 default_content = <<~EOM
-  # sssd::config
   [sssd]
+  # sssd::config
   services = nss,pam,ssh
   config_file_version = 2
   reconnection_retries = 3
@@ -12,8 +12,8 @@ default_content = <<~EOM
 EOM
 
 default_content_with_domains = <<~EOM
-  # sssd::config
   [sssd]
+  # sssd::config
   services = nss,pam,ssh
   domains = FILE, LDAP
   config_file_version = 2
@@ -25,8 +25,8 @@ EOM
 default_content_with_ipa_domain = default_content_with_domains.gsub('FILE, LDAP', 'FILE, LDAP, ipa.example.com')
 
 default_content_plus_optional = <<~EOM
-  # sssd::config
   [sssd]
+  # sssd::config
   services = nss,pam,ssh
   description = sssd section description
   domains = FILE, LDAP

@@ -126,13 +126,19 @@ class sssd::config (
   )
 
   # Join all configuration lines
-  $content = "# sssd::config\n[sssd]\n${$config_lines.join("\n")}\n"
+  $content = (['# sssd::config'] + $config_lines).join("\n")
 
   file { '/etc/sssd/sssd.conf':
     owner   => 'root',
     group   => 'root',
     mode    => '0600',
-    content => $content,
+    content => epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => 'sssd',
+        'content' => $content,
+      },
+    ),
     notify  => Class["${module_name}::service"],
   }
 }

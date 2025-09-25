@@ -57,13 +57,13 @@ class sssd::service::autofs (
     )
 
     # Join all configuration lines
-    $content = $config_lines.join("\n")
+    $content = (['# sssd::service::autofs'] + $config_lines).join("\n")
 
     $_content = epp(
       "${module_name}/generic.epp",
       {
         'title'   => 'autofs',
-        'content' => "# sssd::service::autofs\n${content}",
+        'content' => $content,
       },
     )
   }
