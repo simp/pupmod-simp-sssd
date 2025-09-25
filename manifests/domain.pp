@@ -121,10 +121,140 @@ define sssd::domain (
   Optional[String]                           $proxy_pam_target             = undef,
   Optional[String]                           $proxy_lib_name               = undef,
   Optional[String]                           $ldap_user_search_filter      = undef,
-  Optional[Hash]                             $custom_options               = undef
+  Optional[Hash]                             $custom_options               = undef,
 ) {
+  # Build configuration lines in order (matching expected test output)
+  # Debug settings
+  $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
+  $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
+  $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
+
+  # Description and basic settings
+  $description_line = $description ? { undef => [], default => ["description = ${description}"] }
+  $min_id_line = ["min_id = ${min_id}"]
+  $max_id_line = ["max_id = ${max_id}"]
+  $enumerate_line = ["enumerate = ${enumerate}"]
+
+  # Subdomain and timeout settings
+  $subdomain_enumerate_line = $subdomain_enumerate ? { false => [], default => ["subdomain_enumerate = ${subdomain_enumerate}"] }
+  $force_timeout_line = $force_timeout ? { undef => [], default => ["force_timeout = ${force_timeout}"] }
+
+  # Entry cache timeout settings
+  $entry_cache_timeout_line = $entry_cache_timeout ? { undef => [], default => ["entry_cache_timeout = ${entry_cache_timeout}"] }
+  $entry_cache_user_timeout_line = $entry_cache_user_timeout ? { undef => [], default => ["entry_cache_user_timeout = ${entry_cache_user_timeout}"] }
+  $entry_cache_group_timeout_line = $entry_cache_group_timeout ? { undef => [], default => ["entry_cache_group_timeout = ${entry_cache_group_timeout}"] }
+  $entry_cache_netgroup_timeout_line = $entry_cache_netgroup_timeout ? { undef => [], default => ["entry_cache_netgroup_timeout = ${entry_cache_netgroup_timeout}"] }
+  $entry_cache_service_timeout_line = $entry_cache_service_timeout ? { undef => [], default => ["entry_cache_service_timeout = ${entry_cache_service_timeout}"] }
+  $entry_cache_sudo_timeout_line = $entry_cache_sudo_timeout ? { undef => [], default => ["entry_cache_sudo_timeout = ${entry_cache_sudo_timeout}"] }
+  $entry_cache_autofs_timeout_line = $entry_cache_autofs_timeout ? { undef => [], default => ["entry_cache_autofs_timeout = ${entry_cache_autofs_timeout}"] }
+  $entry_cache_ssh_host_timeout_line = $entry_cache_ssh_host_timeout ? { undef => [], default => ["entry_cache_ssh_host_timeout = ${entry_cache_ssh_host_timeout}"] }
+  $refresh_expired_interval_line = $refresh_expired_interval ? { undef => [], default => ["refresh_expired_interval = ${refresh_expired_interval}"] }
+
+  # Cache settings
+  $cache_credentials_line = ["cache_credentials = ${cache_credentials}"]
+  $account_cache_expiration_line = ["account_cache_expiration = ${account_cache_expiration}"]
+  $pwd_expiration_warning_line = $pwd_expiration_warning ? { undef => [], default => ["pwd_expiration_warning = ${pwd_expiration_warning}"] }
+
+  # Naming settings
+  $use_fully_qualified_names_line = ["use_fully_qualified_names = ${use_fully_qualified_names}"]
+  $ignore_group_members_line = ["ignore_group_members = ${ignore_group_members}"]
+
+  # Provider settings (id_provider is required, others optional)
+  $id_provider_line = ["id_provider = ${id_provider}"]
+  $auth_provider_line = $auth_provider ? { undef => [], default => ["auth_provider = ${auth_provider}"] }
+  $access_provider_line = $access_provider ? { undef => [], default => ["access_provider = ${access_provider}"] }
+  $chpass_provider_line = $chpass_provider ? { undef => [], default => ["chpass_provider = ${chpass_provider}"] }
+  $sudo_provider_line = $sudo_provider ? { undef => [], default => ["sudo_provider = ${sudo_provider}"] }
+  $selinux_provider_line = $selinux_provider ? { undef => [], default => ["selinux_provider = ${selinux_provider}"] }
+  $subdomains_provider_line = $subdomains_provider ? { undef => [], default => ["subdomains_provider = ${subdomains_provider}"] }
+  $autofs_provider_line = $autofs_provider ? { undef => [], default => ["autofs_provider = ${autofs_provider}"] }
+  $hostid_provider_line = $hostid_provider ? { undef => [], default => ["hostid_provider = ${hostid_provider}"] }
+
+  # Pattern and formatting settings
+  $re_expression_line = $re_expression ? { undef => [], default => ["re_expression = ${re_expression}"] }
+  $full_name_format_line = $full_name_format ? { undef => [], default => ["full_name_format = ${full_name_format}"] }
+  $lookup_family_order_line = $lookup_family_order ? { undef => [], default => ["lookup_family_order = ${lookup_family_order}"] }
+
+  # DNS settings
+  $dns_resolver_timeout_line = ["dns_resolver_timeout = ${dns_resolver_timeout}"]
+  $dns_discovery_domain_line = $dns_discovery_domain ? { undef => [], default => ["dns_discovery_domain = ${dns_discovery_domain}"] }
+
+  # Override and case sensitivity settings
+  $override_gid_line = $override_gid ? { undef => [], default => ["override_gid = ${override_gid}"] }
+  $case_sensitive_line = ["case_sensitive = ${case_sensitive}"]
+  $proxy_fast_alias_line = ["proxy_fast_alias = ${proxy_fast_alias}"]
+
+  # Optional provider-specific settings
+  $realmd_tags_line = $realmd_tags ? { undef => [], default => ["realmd_tags = ${realmd_tags}"] }
+  $ldap_user_search_filter_line = $ldap_user_search_filter ? { undef => [], default => ["ldap_user_search_filter = ${ldap_user_search_filter}"] }
+  $proxy_pam_target_line = $proxy_pam_target ? { undef => [], default => ["proxy_pam_target = ${proxy_pam_target}"] }
+  $proxy_lib_name_line = $proxy_lib_name ? { undef => [], default => ["proxy_lib_name = ${proxy_lib_name}"] }
+
+  # Custom options processing
+  $custom_options_lines = $custom_options ? {
+    undef => [],
+    default => $custom_options.keys.sort.map |$opt| { "${opt} = ${custom_options[$opt]}" }
+  }
+
+  # Combine all lines in order
+  $config_lines = (
+    $debug_level_line +
+    $debug_timestamps_line +
+    $debug_microseconds_line +
+    $description_line +
+    $min_id_line +
+    $max_id_line +
+    $enumerate_line +
+    $subdomain_enumerate_line +
+    $force_timeout_line +
+    $entry_cache_timeout_line +
+    $entry_cache_user_timeout_line +
+    $entry_cache_group_timeout_line +
+    $entry_cache_netgroup_timeout_line +
+    $entry_cache_service_timeout_line +
+    $entry_cache_sudo_timeout_line +
+    $entry_cache_autofs_timeout_line +
+    $entry_cache_ssh_host_timeout_line +
+    $refresh_expired_interval_line +
+    $cache_credentials_line +
+    $account_cache_expiration_line +
+    $pwd_expiration_warning_line +
+    $use_fully_qualified_names_line +
+    $ignore_group_members_line +
+    $id_provider_line +
+    $auth_provider_line +
+    $access_provider_line +
+    $chpass_provider_line +
+    $sudo_provider_line +
+    $selinux_provider_line +
+    $subdomains_provider_line +
+    $autofs_provider_line +
+    $hostid_provider_line +
+    $re_expression_line +
+    $full_name_format_line +
+    $lookup_family_order_line +
+    $dns_resolver_timeout_line +
+    $dns_discovery_domain_line +
+    $override_gid_line +
+    $case_sensitive_line +
+    $proxy_fast_alias_line +
+    $realmd_tags_line +
+    $ldap_user_search_filter_line +
+    $proxy_pam_target_line +
+    $proxy_lib_name_line +
+    $custom_options_lines
+  )
+
+  # Join all configuration lines
+  $content = (["# sssd::domain ${name}"] + $config_lines).join("\n")
 
   sssd::config::entry { "puppet_domain_${name}":
-    content => template('sssd/domain.erb')
+    content => epp(
+      "${module_name}/generic",
+      {
+        'title'   => "domain/${name}",
+        'content' => $content,
+      },
+    ),
   }
 }

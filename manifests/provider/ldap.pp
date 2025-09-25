@@ -357,24 +357,367 @@ define sssd::provider::ldap (
   }
 
   if $app_pki_ca_dir {
-    $ldap_tls_cacertdir = $app_pki_ca_dir
+    $_ldap_tls_cacertdir = $app_pki_ca_dir
   } elsif $client_tls {
-    $ldap_tls_cacertdir = "${sssd::app_pki_dir}/cacerts"
+    $_ldap_tls_cacertdir = "${sssd::app_pki_dir}/cacerts"
+  } else {
+    $_ldap_tls_cacertdir = undef
   }
 
   if $app_pki_key {
-    $ldap_tls_key = $app_pki_key
+    $_ldap_tls_key = $app_pki_key
   } elsif $client_tls {
-    $ldap_tls_key = "${sssd::app_pki_dir}/private/${$facts['networking']['fqdn']}.pem"
+    $_ldap_tls_key = "${sssd::app_pki_dir}/private/${$facts['networking']['fqdn']}.pem"
+  } else {
+    $_ldap_tls_key = undef
   }
 
   if $app_pki_cert {
-    $ldap_tls_cert = $app_pki_cert
+    $_ldap_tls_cert = $app_pki_cert
   } elsif $client_tls {
-    $ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['networking']['fqdn']}.pub"
+    $_ldap_tls_cert = "${sssd::app_pki_dir}/public/${$facts['networking']['fqdn']}.pub"
+  } else {
+    $_ldap_tls_cert = undef
   }
 
+  # Determine SSSD major version
+  if $facts['sssd_version'] =~ String[1] {
+    $sssd_major_version = Integer($facts['sssd_version'].split(/\./)[0])
+  } elsif $facts['os']['release']['major'] < '8' {
+    $sssd_major_version = 1
+  } else {
+    $sssd_major_version = 2
+  }
+
+  # Build configuration content
+  $simple_params = [
+    'debug_level',
+    'debug_timestamps',
+    'debug_microseconds',
+    'ldap_search_base',
+    'ldap_schema',
+    'ldap_default_bind_dn',
+    'ldap_default_authtok_type',
+    'ldap_default_authtok',
+    'ldap_user_cert',
+    'ldap_user_object_class',
+    'ldap_user_name',
+    'ldap_user_uid_number',
+    'ldap_user_gid_number',
+    'ldap_user_gecos',
+    'ldap_user_home_directory',
+    'ldap_user_shell',
+    'ldap_user_uuid',
+    'ldap_user_objectsid',
+    'ldap_user_modify_timestamp',
+    'ldap_user_shadow_last_change',
+    'ldap_user_shadow_min',
+    'ldap_user_shadow_max',
+    'ldap_user_shadow_warning',
+    'ldap_user_shadow_inactive',
+    'ldap_user_shadow_expire',
+    'ldap_user_krb_last_pwd_change',
+    'ldap_user_krb_password_expiration',
+    'ldap_user_ad_account_expires',
+    'ldap_user_ad_user_account_control',
+    'ldap_ns_account_lock',
+    'ldap_user_nds_login_disabled',
+    'ldap_user_nds_login_expiration_time',
+    'ldap_user_nds_login_allowed_time_map',
+    'ldap_user_principal',
+    'ldap_user_ssh_public_key',
+    'ldap_force_upper_case_realm',
+    'ldap_enumeration_refresh_timeout',
+    'ldap_purge_cache_timeout',
+    'ldap_user_fullname',
+    'ldap_user_member_of',
+    'ldap_user_authorized_service',
+    'ldap_user_authorized_host',
+    'ldap_group_object_class',
+    'ldap_group_name',
+    'ldap_group_gid_number',
+    'ldap_group_member',
+    'ldap_group_uuid',
+    'ldap_group_objectsid',
+    'ldap_group_modify_timestamp',
+    'ldap_group_type',
+    'ldap_group_nesting_level',
+    'ldap_use_tokengroups',
+    'ldap_netgroup_object_class',
+    'ldap_netgroup_name',
+    'ldap_netgroup_member',
+    'ldap_netgroup_triple',
+    'ldap_netgroup_uuid',
+    'ldap_netgroup_modify_timestamp',
+    'ldap_service_name',
+    'ldap_service_port',
+    'ldap_service_proto',
+    'ldap_service_search_base',
+    'ldap_search_timeout',
+    'ldap_enumeration_search_timeout',
+    'ldap_network_timeout',
+    'ldap_opt_timeout',
+    'ldap_connection_expire_timeout',
+    'ldap_page_size',
+    'ldap_disable_paging',
+    'ldap_disable_range_retrieval',
+    'ldap_sasl_minssf',
+    'ldap_deref_threshold',
+    'ldap_tls_reqcert',
+    'ldap_tls_cacert',
+    'ldap_tls_cacertdir',
+    'ldap_tls_cert',
+    'ldap_tls_key',
+    'ldap_id_use_start_tls',
+    'ldap_id_mapping',
+    'ldap_min_id',
+    'ldap_max_id',
+    'ldap_sasl_mech',
+    'ldap_sasl_authid',
+    'ldap_sasl_realm',
+    'ldap_sasl_canonicalize',
+    'ldap_krb5_keytab',
+    'ldap_krb5_init_creds',
+    'ldap_krb5_ticket_lifetime',
+    'krb5_realm',
+    'krb5_canonicalize',
+    'krb5_use_kdcinfo',
+    'ldap_pwd_policy',
+    'ldap_referrals',
+    'ldap_dns_service_name',
+    'ldap_chpass_dns_service_name',
+    'ldap_chpass_update_last_change',
+    'ldap_access_filter',
+    'ldap_pwdlockout_dn',
+    'ldap_deref',
+    'ldap_sudorule_object_class',
+    'ldap_sudorule_name',
+    'ldap_sudorule_command',
+    'ldap_sudorule_host',
+    'ldap_sudorule_user',
+    'ldap_sudorule_option',
+    'ldap_sudorule_runasuser',
+    'ldap_sudorule_runasgroup',
+    'ldap_sudorule_notbefore',
+    'ldap_sudorule_notafter',
+    'ldap_sudorule_order',
+    'ldap_sudo_full_refresh_interval',
+    'ldap_sudo_smart_refresh_interval',
+    'ldap_sudo_use_host_filter',
+    'ldap_sudo_include_netgroups ',
+    'ldap_sudo_include_regexp',
+    'ldap_autofs_map_master_name',
+    'ldap_autofs_map_object_class',
+    'ldap_autofs_map_name',
+    'ldap_autofs_entry_object_class',
+    'ldap_autofs_entry_key',
+    'ldap_autofs_entry_value',
+    'ldap_netgroup_search_base',
+    'ldap_user_search_base',
+    'ldap_group_search_base',
+    'ldap_sudo_search_base',
+    'ldap_autofs_search_base',
+    'ldap_idmap_range_min',
+    'ldap_idmap_range_max',
+    'ldap_idmap_range_size',
+    'ldap_idmap_default_domain_sid',
+    'ldap_idmap_default_domain',
+    'ldap_idmap_autorid_compat',
+  ]
+
+  # Add version-specific parameters
+  if versioncmp(String($sssd_major_version), '2') < 0 {
+    $version_specific_params = [
+      'ldap_groups_use_matching_rule_in_chain',
+      'ldap_initgroups_use_matching_rule_in_chain',
+    ]
+  } else {
+    $version_specific_params = []
+  }
+
+  # Create a hash of all parameters for easier access
+  $param_values = {
+    'debug_level'                                => $debug_level,
+    'debug_timestamps'                           => $debug_timestamps,
+    'debug_microseconds'                         => $debug_microseconds,
+    'ldap_search_base'                           => $ldap_search_base,
+    'ldap_schema'                                => $ldap_schema,
+    'ldap_default_bind_dn'                       => $ldap_default_bind_dn,
+    'ldap_default_authtok_type'                  => $ldap_default_authtok_type,
+    'ldap_default_authtok'                       => $ldap_default_authtok,
+    'ldap_user_cert'                             => $ldap_user_cert,
+    'ldap_user_object_class'                     => $ldap_user_object_class,
+    'ldap_user_name'                             => $ldap_user_name,
+    'ldap_user_uid_number'                       => $ldap_user_uid_number,
+    'ldap_user_gid_number'                       => $ldap_user_gid_number,
+    'ldap_user_gecos'                            => $ldap_user_gecos,
+    'ldap_user_home_directory'                   => $ldap_user_home_directory,
+    'ldap_user_shell'                            => $ldap_user_shell,
+    'ldap_user_uuid'                             => $ldap_user_uuid,
+    'ldap_user_objectsid'                        => $ldap_user_objectsid,
+    'ldap_user_modify_timestamp'                 => $ldap_user_modify_timestamp,
+    'ldap_user_shadow_last_change'               => $ldap_user_shadow_last_change,
+    'ldap_user_shadow_min'                       => $ldap_user_shadow_min,
+    'ldap_user_shadow_max'                       => $ldap_user_shadow_max,
+    'ldap_user_shadow_warning'                   => $ldap_user_shadow_warning,
+    'ldap_user_shadow_inactive'                  => $ldap_user_shadow_inactive,
+    'ldap_user_shadow_expire'                    => $ldap_user_shadow_expire,
+    'ldap_user_krb_last_pwd_change'              => $ldap_user_krb_last_pwd_change,
+    'ldap_user_krb_password_expiration'          => $ldap_user_krb_password_expiration,
+    'ldap_user_ad_account_expires'               => $ldap_user_ad_account_expires,
+    'ldap_user_ad_user_account_control'          => $ldap_user_ad_user_account_control,
+    'ldap_ns_account_lock'                       => $ldap_ns_account_lock,
+    'ldap_user_nds_login_disabled'               => $ldap_user_nds_login_disabled,
+    'ldap_user_nds_login_expiration_time'        => $ldap_user_nds_login_expiration_time,
+    'ldap_user_nds_login_allowed_time_map'       => $ldap_user_nds_login_allowed_time_map,
+    'ldap_user_principal'                        => $ldap_user_principal,
+    'ldap_user_ssh_public_key'                   => $ldap_user_ssh_public_key,
+    'ldap_force_upper_case_realm'                => $ldap_force_upper_case_realm,
+    'ldap_enumeration_refresh_timeout'           => $ldap_enumeration_refresh_timeout,
+    'ldap_purge_cache_timeout'                   => $ldap_purge_cache_timeout,
+    'ldap_user_fullname'                         => $ldap_user_fullname,
+    'ldap_user_member_of'                        => $ldap_user_member_of,
+    'ldap_user_authorized_service'               => $ldap_user_authorized_service,
+    'ldap_user_authorized_host'                  => $ldap_user_authorized_host,
+    'ldap_group_object_class'                    => $ldap_group_object_class,
+    'ldap_group_name'                            => $ldap_group_name,
+    'ldap_group_gid_number'                      => $ldap_group_gid_number,
+    'ldap_group_member'                          => $ldap_group_member,
+    'ldap_group_uuid'                            => $ldap_group_uuid,
+    'ldap_group_objectsid'                       => $ldap_group_objectsid,
+    'ldap_group_modify_timestamp'                => $ldap_group_modify_timestamp,
+    'ldap_group_type'                            => $ldap_group_type,
+    'ldap_group_nesting_level'                   => $ldap_group_nesting_level,
+    'ldap_use_tokengroups'                       => $ldap_use_tokengroups,
+    'ldap_netgroup_object_class'                 => $ldap_netgroup_object_class,
+    'ldap_netgroup_name'                         => $ldap_netgroup_name,
+    'ldap_netgroup_member'                       => $ldap_netgroup_member,
+    'ldap_netgroup_triple'                       => $ldap_netgroup_triple,
+    'ldap_netgroup_uuid'                         => $ldap_netgroup_uuid,
+    'ldap_netgroup_modify_timestamp'             => $ldap_netgroup_modify_timestamp,
+    'ldap_service_name'                          => $ldap_service_name,
+    'ldap_service_port'                          => $ldap_service_port,
+    'ldap_service_proto'                         => $ldap_service_proto,
+    'ldap_service_search_base'                   => $ldap_service_search_base,
+    'ldap_search_timeout'                        => $ldap_search_timeout,
+    'ldap_enumeration_search_timeout'            => $ldap_enumeration_search_timeout,
+    'ldap_network_timeout'                       => $ldap_network_timeout,
+    'ldap_opt_timeout'                           => $ldap_opt_timeout,
+    'ldap_connection_expire_timeout'             => $ldap_connection_expire_timeout,
+    'ldap_page_size'                             => $ldap_page_size,
+    'ldap_disable_paging'                        => $ldap_disable_paging,
+    'ldap_disable_range_retrieval'               => $ldap_disable_range_retrieval,
+    'ldap_sasl_minssf'                           => $ldap_sasl_minssf,
+    'ldap_deref_threshold'                       => $ldap_deref_threshold,
+    'ldap_tls_reqcert'                           => $ldap_tls_reqcert,
+    'ldap_tls_cacert'                            => $ldap_tls_cacert,
+    'ldap_tls_cacertdir'                         => $_ldap_tls_cacertdir,
+    'ldap_tls_cert'                              => $_ldap_tls_cert,
+    'ldap_tls_key'                               => $_ldap_tls_key,
+    'ldap_id_use_start_tls'                      => $ldap_id_use_start_tls,
+    'ldap_id_mapping'                            => $ldap_id_mapping,
+    'ldap_min_id'                                => $ldap_min_id,
+    'ldap_max_id'                                => $ldap_max_id,
+    'ldap_sasl_mech'                             => $ldap_sasl_mech,
+    'ldap_sasl_authid'                           => $ldap_sasl_authid,
+    'ldap_sasl_realm'                            => $ldap_sasl_realm,
+    'ldap_sasl_canonicalize'                     => $ldap_sasl_canonicalize,
+    'ldap_krb5_keytab'                           => $ldap_krb5_keytab,
+    'ldap_krb5_init_creds'                       => $ldap_krb5_init_creds,
+    'ldap_krb5_ticket_lifetime'                  => $ldap_krb5_ticket_lifetime,
+    'krb5_realm'                                 => $krb5_realm,
+    'krb5_canonicalize'                          => $krb5_canonicalize,
+    'krb5_use_kdcinfo'                           => $krb5_use_kdcinfo,
+    'ldap_pwd_policy'                            => $ldap_pwd_policy,
+    'ldap_referrals'                             => $ldap_referrals,
+    'ldap_dns_service_name'                      => $ldap_dns_service_name,
+    'ldap_chpass_dns_service_name'               => $ldap_chpass_dns_service_name,
+    'ldap_chpass_update_last_change'             => $ldap_chpass_update_last_change,
+    'ldap_access_filter'                         => $ldap_access_filter,
+    'ldap_pwdlockout_dn'                         => $ldap_pwdlockout_dn,
+    'ldap_deref'                                 => $ldap_deref,
+    'ldap_sudorule_object_class'                 => $ldap_sudorule_object_class,
+    'ldap_sudorule_name'                         => $ldap_sudorule_name,
+    'ldap_sudorule_command'                      => $ldap_sudorule_command,
+    'ldap_sudorule_host'                         => $ldap_sudorule_host,
+    'ldap_sudorule_user'                         => $ldap_sudorule_user,
+    'ldap_sudorule_option'                       => $ldap_sudorule_option,
+    'ldap_sudorule_runasuser'                    => $ldap_sudorule_runasuser,
+    'ldap_sudorule_runasgroup'                   => $ldap_sudorule_runasgroup,
+    'ldap_sudorule_notbefore'                    => $ldap_sudorule_notbefore,
+    'ldap_sudorule_notafter'                     => $ldap_sudorule_notafter,
+    'ldap_sudorule_order'                        => $ldap_sudorule_order,
+    'ldap_sudo_full_refresh_interval'            => $ldap_sudo_full_refresh_interval,
+    'ldap_sudo_smart_refresh_interval'           => $ldap_sudo_smart_refresh_interval,
+    'ldap_sudo_use_host_filter'                  => $ldap_sudo_use_host_filter,
+    'ldap_sudo_include_netgroups '               => $ldap_sudo_include_netgroups,
+    'ldap_sudo_include_regexp'                   => $ldap_sudo_include_regexp,
+    'ldap_autofs_map_master_name'                => $ldap_autofs_map_master_name,
+    'ldap_autofs_map_object_class'               => $ldap_autofs_map_object_class,
+    'ldap_autofs_map_name'                       => $ldap_autofs_map_name,
+    'ldap_autofs_entry_object_class'             => $ldap_autofs_entry_object_class,
+    'ldap_autofs_entry_key'                      => $ldap_autofs_entry_key,
+    'ldap_autofs_entry_value'                    => $ldap_autofs_entry_value,
+    'ldap_netgroup_search_base'                  => $ldap_netgroup_search_base,
+    'ldap_user_search_base'                      => $ldap_user_search_base,
+    'ldap_group_search_base'                     => $ldap_group_search_base,
+    'ldap_sudo_search_base'                      => $ldap_sudo_search_base,
+    'ldap_autofs_search_base'                    => $ldap_autofs_search_base,
+    'ldap_idmap_range_min'                       => $ldap_idmap_range_min,
+    'ldap_idmap_range_max'                       => $ldap_idmap_range_max,
+    'ldap_idmap_range_size'                      => $ldap_idmap_range_size,
+    'ldap_idmap_default_domain_sid'              => $ldap_idmap_default_domain_sid,
+    'ldap_idmap_default_domain'                  => $ldap_idmap_default_domain,
+    'ldap_idmap_autorid_compat'                  => $ldap_idmap_autorid_compat,
+    'ldap_groups_use_matching_rule_in_chain'     => $ldap_groups_use_matching_rule_in_chain,
+    'ldap_initgroups_use_matching_rule_in_chain' => $ldap_initgroups_use_matching_rule_in_chain,
+  }
+
+  # Process simple parameters
+  $simple_config_lines = ($simple_params + $version_specific_params).filter |$param| {
+    $param_values[$param] != undef
+  }.map |$param| {
+    "${param} = ${$param_values[$param]}"
+  }
+
+  # Handle special case for ldap_account_expire_policy
+  $account_expire_line = $_ldap_account_expire_policy ? {
+    undef   => [],
+    default => ["ldap_account_expire_policy = ${_ldap_account_expire_policy}"],
+  }
+
+  # Process array parameters with custom separators
+  $array_params = {
+    'ldap_uri'               => { 'value' => $ldap_uri, 'separator' => ',' },
+    'ldap_backup_uri'        => { 'value' => $ldap_backup_uri, 'separator' => ',' },
+    'ldap_chpass_uri'        => { 'value' => $ldap_chpass_uri, 'separator' => ',' },
+    'ldap_chpass_backup_uri' => { 'value' => $ldap_chpass_backup_uri, 'separator' => ',' },
+    'ldap_user_extra_attrs'  => { 'value' => $ldap_user_extra_attrs, 'separator' => ',' },
+    'ldap_tls_cipher_suite'  => { 'value' => $ldap_tls_cipher_suite, 'separator' => ':' },
+    'ldap_access_order'      => { 'value' => $ldap_access_order, 'separator' => ',' },
+    'ldap_sudo_hostnames'    => { 'value' => $ldap_sudo_hostnames, 'separator' => ' ' },
+    'ldap_sudo_ip'           => { 'value' => $ldap_sudo_ip, 'separator' => ' ' },
+    'krb5_server'            => { 'value' => $krb5_server, 'separator' => ',' },
+    'krb5_backup_server'     => { 'value' => $krb5_backup_server, 'separator' => ',' },
+  }
+
+  $array_config_lines = $array_params.filter |$param, $config| {
+    $config['value'] != undef and !$config['value'].empty
+  }.map |$param, $config| {
+    "${param} = ${Array($config['value']).unique.join($config['separator'])}"
+  }
+
+  # Combine all configuration lines and sort them
+  $all_config_lines = ($simple_config_lines + $account_expire_line + $array_config_lines).sort
+  $content = (['# sssd::provider::ldap'] + $all_config_lines).join("\n")
+
   sssd::config::entry { "puppet_provider_${title}_ldap":
-    content => template("${module_name}/provider/ldap.erb")
+    content => epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => "domain/${title}",
+        'content' => $content,
+      },
+    ),
   }
 }

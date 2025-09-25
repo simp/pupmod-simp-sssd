@@ -50,19 +50,77 @@ class sssd::service::pam (
   Optional[Integer]            $get_domains_timeout            = undef,
   Optional[String]             $pam_trusted_users              = undef,
   Optional[String]             $pam_public_domains             = undef,
-  Optional[Hash]               $custom_options                 = undef
-
+  Optional[Hash]               $custom_options                 = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'pam',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/pam.erb")
+    # Build configuration lines in order (matching expected test output)
+    # Debug settings
+    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
+    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
+    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
+    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
+
+    # Connection settings
+    $reconnection_retries_line = ["reconnection_retries = ${reconnection_retries}"]
+    $command_line = $command ? { undef => [], default => ["command = ${command}"] }
+
+    # Offline settings
+    $offline_credentials_expiration_line = ["offline_credentials_expiration = ${offline_credentials_expiration}"]
+    $offline_failed_login_attempts_line = ["offline_failed_login_attempts = ${offline_failed_login_attempts}"]
+    $offline_failed_login_delay_line = ["offline_failed_login_delay = ${offline_failed_login_delay}"]
+
+    # PAM-specific settings
+    $pam_verbosity_line = ["pam_verbosity = ${pam_verbosity}"]
+    $pam_id_timeout_line = ["pam_id_timeout = ${pam_id_timeout}"]
+    $pam_pwd_expiration_warning_line = ["pam_pwd_expiration_warning = ${pam_pwd_expiration_warning}"]
+    $pam_cert_auth_line = $pam_cert_auth ? { true => ['pam_cert_auth = True'], false => [] }
+
+    # Optional settings
+    $get_domains_timeout_line = $get_domains_timeout ? { undef => [], default => ["get_domains_timeout = ${get_domains_timeout}"] }
+    $pam_trusted_users_line = $pam_trusted_users ? { undef => [], default => ["pam_trusted_users = ${pam_trusted_users}"] }
+    $pam_public_domains_line = $pam_public_domains ? { undef => [], default => ["pam_public_domains = ${pam_public_domains}"] }
+
+    # Combine all lines in order
+    $config_lines = (
+      $description_line +
+      $debug_level_line +
+      $debug_timestamps_line +
+      $debug_microseconds_line +
+      $reconnection_retries_line +
+      $command_line +
+      $offline_credentials_expiration_line +
+      $offline_failed_login_attempts_line +
+      $offline_failed_login_delay_line +
+      $pam_verbosity_line +
+      $pam_id_timeout_line +
+      $pam_pwd_expiration_warning_line +
+      $get_domains_timeout_line +
+      $pam_trusted_users_line +
+      $pam_public_domains_line +
+      $pam_cert_auth_line
+    )
+
+    # Join all configuration lines
+    $content = (['# sssd::service::pam'] + $config_lines).join("\n")
+
+    $_content = epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => 'pam',
+        'content' => $content,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_pam':
-    content => $_content
+    content => $_content,
   }
 }

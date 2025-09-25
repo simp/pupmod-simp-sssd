@@ -59,18 +59,92 @@ class sssd::service::nss (
   Optional[Integer]            $get_domains_timeout           = undef,
   Optional[Integer]            $memcache_timeout              = undef,
   Optional[String]             $user_attributes               = undef,
-  Optional[Hash]               $custom_options                = undef
+  Optional[Hash]               $custom_options                = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    # Use custom options template for backwards compatibility
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'nss',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/nss.erb")
+    # Build configuration lines in order (matching expected test output)
+    # Debug settings
+    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
+    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
+    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
+    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
+
+    # Connection settings
+    $reconnection_retries_line = ["reconnection_retries = ${reconnection_retries}"]
+    $fd_limit_line = $fd_limit ? { undef => [], default => ["fd_limit = ${fd_limit}"] }
+    $command_line = $command ? { undef => [], default => ["command = ${command}"] }
+
+    # Cache settings
+    $enum_cache_timeout_line = ["enum_cache_timeout = ${enum_cache_timeout}"]
+    $entry_cache_nowait_percentage_line = ["entry_cache_nowait_percentage = ${entry_cache_nowait_percentage}"]
+    $entry_negative_timeout_line = ["entry_negative_timeout = ${entry_negative_timeout}"]
+
+    # Filter settings
+    $filter_users_line = ["filter_users = ${filter_users}"]
+    $filter_groups_line = ["filter_groups = ${filter_groups}"]
+    $filter_users_in_groups_line = ["filter_users_in_groups = ${filter_users_in_groups}"]
+
+    # Home directory settings
+    $override_homedir_line = $override_homedir ? { undef => [], default => ["override_homedir = ${override_homedir}"] }
+    $fallback_homedir_line = $fallback_homedir ? { undef => [], default => ["fallback_homedir = ${fallback_homedir}"] }
+
+    # Shell settings
+    $override_shell_line = $override_shell ? { undef => [], default => ["override_shell = ${override_shell}"] }
+    $vetoed_shells_line = $vetoed_shells ? { undef => [], default => ["vetoed_shells = ${vetoed_shells}"] }
+    $default_shell_line = $default_shell ? { undef => [], default => ["default_shell = ${default_shell}"] }
+
+    # Timeout and attribute settings
+    $get_domains_timeout_line = $get_domains_timeout ? { undef => [], default => ["get_domains_timeout = ${get_domains_timeout}"] }
+    $memcache_timeout_line = $memcache_timeout ? { undef => [], default => ["memcache_timeout = ${memcache_timeout}"] }
+    $user_attributes_line = $user_attributes ? { undef => [], default => ["user_attributes = ${user_attributes}"] }
+
+    # Combine all lines in order
+    $config_lines = (
+      $description_line +
+      $debug_level_line +
+      $debug_timestamps_line +
+      $debug_microseconds_line +
+      $reconnection_retries_line +
+      $fd_limit_line +
+      $command_line +
+      $enum_cache_timeout_line +
+      $entry_cache_nowait_percentage_line +
+      $entry_negative_timeout_line +
+      $filter_users_line +
+      $filter_groups_line +
+      $filter_users_in_groups_line +
+      $override_homedir_line +
+      $fallback_homedir_line +
+      $override_shell_line +
+      $vetoed_shells_line +
+      $default_shell_line +
+      $get_domains_timeout_line +
+      $memcache_timeout_line +
+      $user_attributes_line
+    )
+
+    # Join all configuration lines
+    $content = (['# sssd::service::nss'] + $config_lines).join("\n")
+
+    $_content = epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => 'nss',
+        'content' => $content,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_nss':
-    content => $_content
+    content => $_content,
   }
 }

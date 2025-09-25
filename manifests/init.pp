@@ -121,7 +121,7 @@ class sssd (
   Stdlib::Absolutepath          $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509'}),
   Stdlib::Absolutepath          $app_pki_dir           = '/etc/pki/simp_apps/sssd/x509',
   Boolean                       $auto_add_ipa_domain   = true,
-  Optional[String[1]]           $custom_config         = undef
+  Optional[String[1]]           $custom_config         = undef,
 ) {
   include 'sssd::install'
   include 'sssd::config'
@@ -135,7 +135,7 @@ class sssd (
   if $custom_config {
     sssd::config::entry { 'puppet_custom':
       content => $custom_config,
-      order   => 99999
+      order   => 99999,
     }
   }
 
@@ -153,7 +153,7 @@ class sssd (
     include 'auditd'
 
     auditd::rule { 'sssd':
-      content => '-w /etc/sssd/ -p wa -k CFG_sssd'
+      content => '-w /etc/sssd/ -p wa -k CFG_sssd',
     }
   }
 

@@ -1,3 +1,6 @@
+* Tue Sep 23 2025 Steven Pritchard <steve@sicura.us> - 8.0.0
+- Migrate ERB templates to EPP (#152)
+
 * Wed Jun 11 2025 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.13.1
 - Fix rubocop issues
 

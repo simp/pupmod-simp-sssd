@@ -28,19 +28,51 @@ class sssd::service::ssh (
   Boolean                      $debug_microseconds      = false,
   Boolean                      $ssh_hash_known_hosts    = true,
   Optional[Integer]            $ssh_known_hosts_timeout = undef,
-  Optional[Hash]               $custom_options          = undef
-
+  Optional[Hash]               $custom_options          = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'ssh',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/ssh.erb")
+    # Build configuration lines in order (matching expected test output)
+    # Debug settings
+    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
+    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
+    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
+    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
+
+    # SSH-specific settings
+    $ssh_hash_known_hosts_line = ["ssh_hash_known_hosts = ${ssh_hash_known_hosts}"]
+    $ssh_known_hosts_timeout_line = $ssh_known_hosts_timeout ? { undef => [], default => ["ssh_known_hosts_timeout = ${ssh_known_hosts_timeout}"] }
+
+    # Combine all lines in order
+    $config_lines = (
+      $description_line +
+      $debug_level_line +
+      $debug_timestamps_line +
+      $debug_microseconds_line +
+      $ssh_hash_known_hosts_line +
+      $ssh_known_hosts_timeout_line
+    )
+
+    # Join all configuration lines
+    $content = (['# sssd::service::ssh'] + $config_lines).join("\n")
+
+    $_content = epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => 'ssh',
+        'content' => $content,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_ssh':
-    content => $_content
+    content => $_content,
   }
 }

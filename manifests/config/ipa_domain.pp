@@ -18,13 +18,12 @@ class sssd::config::ipa_domain {
       autofs_provider   => 'ipa',
       min_id            => $sssd::min_id,
       enumerate         => $sssd::enumerate_users,
-      cache_credentials => $sssd::cache_credentials
+      cache_credentials => $sssd::cache_credentials,
     }
 
     sssd::provider::ipa { $_ipa_domain:
       ipa_domain => $_ipa_domain,
-      ipa_server => [ $_ipa_server ]
+      ipa_server => [$_ipa_server],
     }
   }
 }
-
