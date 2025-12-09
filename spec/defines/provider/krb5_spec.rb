@@ -33,6 +33,32 @@ describe 'sssd::provider::krb5' do
         }
       end
 
+      context 'with single krb5 server (backwards compatibility)' do
+        let(:params) do
+          {
+            krb5_server: 'test.example.domain',
+            krb5_realm: 'EXAMPLE.REALM',
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_krb5")
+            .with_content(<<~EOM)
+              [domain/krb5_test_domain]
+              # sssd::provider::krb5
+              debug_timestamps = true
+              debug_microseconds = false
+              krb5_server = test.example.domain
+              krb5_realm = EXAMPLE.REALM
+              krb5_auth_timeout = 15
+              krb5_validate = false
+              krb5_store_password_if_offline = false
+              krb5_renew_interval = 0
+            EOM
+        }
+      end
+
       context 'with optional parameters' do
         let(:params) do
           {
