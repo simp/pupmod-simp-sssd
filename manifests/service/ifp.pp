@@ -34,15 +34,50 @@ class sssd::service::ifp (
   Optional[Hash]              $custom_options     = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'ifp',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/ifp.erb")
+    # Build configuration lines in order (matching expected test output)
+    # Debug settings
+    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
+    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
+    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
+    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
+
+    # IFP-specific settings
+    $allowed_uids_line = $allowed_uids ? { undef => [], default => ["allowed_uids = ${allowed_uids.join(', ')}"] }
+    $user_attributes_line = $user_attributes ? { undef => [], default => ["user_attributes = ${user_attributes.join(', ')}"] }
+    $wildcard_limit_line = $wildcard_limit ? { undef => [], default => ["wildcard_limit = ${wildcard_limit}"] }
+
+    # Combine all lines in order
+    $config_lines = (
+      $description_line +
+      $debug_level_line +
+      $debug_timestamps_line +
+      $debug_microseconds_line +
+      $allowed_uids_line +
+      $user_attributes_line +
+      $wildcard_limit_line
+    )
+
+    # Join all configuration lines
+    $content = (['# sssd::service::ifp'] + $config_lines).join("\n")
+
+    $_content = epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => 'ifp',
+        'content' => $content,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_ifp':
-    content => $_content
+    content => $_content,
   }
 }

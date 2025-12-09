@@ -26,18 +26,49 @@ class sssd::service::autofs (
   Boolean                     $debug_timestamps         = true,
   Boolean                     $debug_microseconds       = false,
   Optional[Integer]           $autofs_negative_timeout  = undef,
-  Optional[Hash]              $custom_options           = undef
+  Optional[Hash]              $custom_options           = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'autofs',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/autofs.erb")
+    # Build configuration lines in order (matching expected test output)
+    # Debug settings
+    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
+    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
+    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
+    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
+
+    # AutoFS-specific settings
+    $autofs_negative_timeout_line = $autofs_negative_timeout ? { undef => [], default => ["autofs_negative_timeout = ${autofs_negative_timeout}"] }
+
+    # Combine all lines in order
+    $config_lines = (
+      $description_line +
+      $debug_level_line +
+      $debug_timestamps_line +
+      $debug_microseconds_line +
+      $autofs_negative_timeout_line
+    )
+
+    # Join all configuration lines
+    $content = (['# sssd::service::autofs'] + $config_lines).join("\n")
+
+    $_content = epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => 'autofs',
+        'content' => $content,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_autofs':
-    content => $_content
+    content => $_content,
   }
 }

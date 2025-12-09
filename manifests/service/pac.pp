@@ -25,19 +25,49 @@ class sssd::service::pac (
   Boolean                      $debug_timestamps   = true,
   Boolean                      $debug_microseconds = false,
   Array[String]                $allowed_uids       = [],
-  Optional[Hash]               $custom_options     = undef
-
+  Optional[Hash]               $custom_options     = undef,
 ) {
   if $custom_options {
-    $_content = epp("${module_name}/service/custom_options.epp", {
+    $_content = epp(
+      "${module_name}/service/custom_options.epp",
+      {
         'service_name' => 'pac',
-        'options'      => $custom_options
-      })
+        'options'      => $custom_options,
+      },
+    )
   } else {
-    $_content = template("${module_name}/service/pac.erb")
+    # Build configuration lines in order (matching expected test output)
+    # Debug settings
+    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
+    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
+    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
+    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
+
+    # PAC-specific settings
+    $allowed_uids_line = $allowed_uids.empty ? { true => [], false => ["allowed_uids = ${allowed_uids.join(',')}"] }
+
+    # Combine all lines in order
+    $config_lines = (
+      $description_line +
+      $debug_level_line +
+      $debug_timestamps_line +
+      $debug_microseconds_line +
+      $allowed_uids_line
+    )
+
+    # Join all configuration lines
+    $content = (['# sssd::service::pac'] + $config_lines).join("\n")
+
+    $_content = epp(
+      "${module_name}/generic.epp",
+      {
+        'title'   => 'pac',
+        'content' => $content,
+      },
+    )
   }
 
   sssd::config::entry { 'puppet_service_pac':
-    content => $_content
+    content => $_content,
   }
 }

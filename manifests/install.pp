@@ -15,7 +15,7 @@
 class sssd::install (
   Boolean $install_client     = true,
   Boolean $install_user_tools = true,
-  String  $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' })
+  String  $package_ensure     = simplib::lookup('simp_options::package_ensure', { 'default_value' => 'installed' }),
 ) {
   assert_private()
 
@@ -24,12 +24,12 @@ class sssd::install (
   }
 
   package { ['sssd', 'sssd-dbus']:
-    ensure => $package_ensure
+    ensure => $package_ensure,
   }
 
   if $install_user_tools {
     package { 'sssd-tools':
-      ensure => $package_ensure
+      ensure => $package_ensure,
     }
   }
 }
