@@ -19,6 +19,18 @@ class sssd::config (
 
   include $module_name
 
+  if $facts['os']['release']['major'].scanf('%d')[0] < 10 {
+    $owner = "root"
+    $group = "root"
+    $mode = "0600"
+    $confdirmode = "go-rw"
+  } else {
+    $owner = "root"
+    $group = "sssd"
+    $mode = "0640"
+    $confdirmode = "g-w,o-rw"
+  }
+
   if ($sssd::auto_add_ipa_domain and $facts['ipa']) {
     # this host has joined an IPA domain
     $_domains = unique(concat($sssd::domains, $facts['ipa']['domain']))
@@ -52,7 +64,7 @@ class sssd::config (
 
   file { '/etc/sssd':
     ensure => 'directory',
-    mode   => 'go-rw',
+    mode   => $confdirmode,
   }
 
   file { '/etc/sssd/conf.d':
@@ -129,9 +141,9 @@ class sssd::config (
   $content = (['# sssd::config'] + $config_lines).join("\n")
 
   file { '/etc/sssd/sssd.conf':
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0600',
+    owner   => $owner,
+    group   => $group,
+    mode    => $mode,
     content => epp(
       "${module_name}/generic.epp",
       {

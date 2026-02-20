@@ -26,9 +26,9 @@ define sssd::config::entry (
   $_safe_filename = simplib::safe_filename("${order}_${title}.conf")
 
   file { "/etc/sssd/conf.d/${_safe_filename}":
-    owner   => 'root',
-    group   => 'root',
-    mode    => '0600',
+    owner   => $::sssd::config::owner,
+    group   => $::sssd::config::group,
+    mode    => $::sssd::config::mode,
     content => $content,
     notify  => Class["${module_name}::service"],
   }
