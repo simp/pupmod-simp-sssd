@@ -6,17 +6,21 @@ describe 'sssd::service::sudo' do
       context "on #{os}" do
         let(:facts) { os_facts }
 
+        let(:os_major) { Integer(os_facts.dig(:os, :release, :major)) }
+
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to create_sssd__config__entry('puppet_service_sudo').without_content(%r{=\s*$}) }
-        it {
-          is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf')
-            .with_unit('sssd-sudo.service')
-            .with_content(%r{ExecStartPre=-/bin/touch /var/log/sssd/sssd_sudo.log})
-            .with_content(%r{ExecStartPre=-/bin/chown sssd:sssd /var/log/sssd/sssd_sudo.log})
-            .with_content(%r{User=root})
-            .with_content(%r{Group=root})
-            .with_selinux_ignore_defaults(true)
-        }
+        if os_major < 10
+          it {
+            is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf')
+              .with_unit('sssd-sudo.service')
+              .with_content(%r{ExecStartPre=-/bin/touch /var/log/sssd/sssd_sudo.log})
+              .with_content(%r{ExecStartPre=-/bin/chown sssd:sssd /var/log/sssd/sssd_sudo.log})
+              .with_content(%r{User=root})
+              .with_content(%r{Group=root})
+              .with_selinux_ignore_defaults(true)
+          }
+        end
         it {
           is_expected.to create_service('sssd-sudo.socket')
             .with_enable(true)
