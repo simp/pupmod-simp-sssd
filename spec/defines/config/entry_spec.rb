@@ -14,6 +14,9 @@ describe 'sssd::config::entry' do
 
         let(:title) { 'test' }
         let(:params) { { content: 'foo' } }
+        let(:os_major) { facts.dig('os', 'release', 'major').to_i }
+        let(:group) { os_major < 10 ? 'root' : 'sssd' }
+        let(:mode)  { os_major < 10 ? '0600' : '0640' }
 
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('sssd::config') }
@@ -21,8 +24,8 @@ describe 'sssd::config::entry' do
         it {
           is_expected.to contain_file('/etc/sssd/conf.d/50_test.conf')
             .with_owner('root')
-            .with_group('root')
-            .with_mode('0600')
+            .with_group(group)
+            .with_mode(mode)
             .with_content('foo')
             .that_notifies('Class[sssd::service]')
         }
