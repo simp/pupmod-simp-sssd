@@ -88,7 +88,7 @@ class sssd::service::sudo (
     | END
 
   systemd::dropin_file { '00_sssd_sudo_user_group.conf':
-    ensure                  => $facts['os']['release']['major'].scanf('%d')[0] < 10 ? { true => "present", false => "absent" },
+    ensure                  => Integer($facts['os']['release']['major']) < 10 ? { true => 'present', false => 'absent' },
     unit                    => 'sssd-sudo.service',
     content                 => $_override_content,
     selinux_ignore_defaults => true,

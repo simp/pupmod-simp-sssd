@@ -19,16 +19,16 @@ class sssd::config (
 
   include $module_name
 
-  if $facts['os']['release']['major'].scanf('%d')[0] < 10 {
-    $owner = "root"
-    $group = "root"
-    $mode = "0600"
-    $confdirmode = "go-rw"
+  if Integer($facts['os']['release']['major']) < 10 {
+    $owner = 'root'
+    $group = 'root'
+    $mode = '0600'
+    $confdirmode = 'go-rw'
   } else {
-    $owner = "root"
-    $group = "sssd"
-    $mode = "0640"
-    $confdirmode = "g-w,o-rw"
+    $owner = 'root'
+    $group = 'sssd'
+    $mode = '0640'
+    $confdirmode = 'g-w,o-rw'
   }
 
   if ($sssd::auto_add_ipa_domain and $facts['ipa']) {
