@@ -6,10 +6,11 @@ describe 'sssd::service::sudo' do
       context "on #{os}" do
         let(:facts) { os_facts }
 
-        let(:os_major) { Integer(os_facts.dig(:os, :release, :major)) }
-
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to create_sssd__config__entry('puppet_service_sudo').without_content(%r{=\s*$}) }
+
+        os_major = Integer(os_facts.dig(:os, :release, :major))
+
         if os_major < 10
           it {
             is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf')
@@ -20,14 +21,22 @@ describe 'sssd::service::sudo' do
               .with_content(%r{Group=root})
               .with_selinux_ignore_defaults(true)
           }
+
+          it {
+            is_expected.to create_service('sssd-sudo.socket')
+              .with_enable(true)
+              .that_requires('Sssd::Config::Entry[puppet_service_sudo]')
+              .that_requires('Systemd::Dropin_file[00_sssd_sudo_user_group.conf]')
+              .that_notifies('Class[sssd::service]')
+          }
+        else
+          it {
+            is_expected.to create_service('sssd-sudo.socket')
+              .with_enable(true)
+              .that_requires('Sssd::Config::Entry[puppet_service_sudo]')
+              .that_notifies('Class[sssd::service]')
+          }
         end
-        it {
-          is_expected.to create_service('sssd-sudo.socket')
-            .with_enable(true)
-            .that_requires('Sssd::Config::Entry[puppet_service_sudo]')
-            .that_requires('Systemd::Dropin_file[00_sssd_sudo_user_group.conf]')
-            .that_notifies('Class[sssd::service]')
-        }
       end
     end
   end
