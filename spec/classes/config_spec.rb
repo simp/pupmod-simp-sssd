@@ -47,7 +47,7 @@ EOM
 
 shared_examples_for 'a sssd::config' do |content|
   it { is_expected.to compile.with_all_deps }
-  let(:os_major) { facts.dig('os', 'release', 'major').to_i }
+  let(:os_major) { facts.dig(:os, :release, :major).to_i }
   let(:dir_mode)  { (os_major < 10) ? 'go-rw' : 'g-w,o-rw' }
   let(:group)     { (os_major < 10) ? 'root' : 'sssd' }
   let(:mode)      { (os_major < 10) ? '0600' : '0640' }

@@ -28,7 +28,7 @@ class sssd::config (
     $owner = 'root'
     $group = 'sssd'
     $mode = '0640'
-    $confdirmode = 'g-w,o-rw'
+    $confdirmode = '0750'
   }
 
   if ($sssd::auto_add_ipa_domain and $facts['ipa']) {

@@ -14,7 +14,7 @@ describe 'sssd::config::entry' do
 
         let(:title) { 'test' }
         let(:params) { { content: 'foo' } }
-        let(:os_major) { facts.dig('os', 'release', 'major').to_i }
+        let(:os_major) { facts.dig(:os, :release, :major).to_i }
         let(:group) { (os_major < 10) ? 'root' : 'sssd' }
         let(:mode)  { (os_major < 10) ? '0600' : '0640' }
 
