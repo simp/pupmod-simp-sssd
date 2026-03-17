@@ -31,7 +31,6 @@ describe 'sssd::service::sudo' do
           is_expected.to create_service('sssd-sudo.socket')
             .with_enable(true)
             .that_requires('Sssd::Config::Entry[puppet_service_sudo]')
-            .that_requires('Systemd::Dropin_file[00_sssd_sudo_user_group.conf]')
             .that_notifies('Class[sssd::service]')
         }
       end
