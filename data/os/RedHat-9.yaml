@@ -1,0 +1,8 @@
+---
+sssd::service::sudo::manage_group_dropin_file: true
+sssd::config::sssd_config_dir_mode: 'go-rw'
+sssd::config::manage_base_domain: false
+sssd::config::sssd_config_file_params:
+  owner: 'root'
+  group: 'root'
+  mode: '0600'

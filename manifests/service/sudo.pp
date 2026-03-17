@@ -20,6 +20,9 @@
 #   under the section in the sssd.conf file.
 #   No error checking will be performed.
 #
+# @param manage_group_dropin_file
+#   If true, a systemd drop-in file will be created to ensure the sssd-sudo service runs as root.
+#
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::service::sudo (
@@ -30,6 +33,7 @@ class sssd::service::sudo (
   Boolean                     $sudo_timed         = false,
   Integer[1]                  $sudo_threshold     = 50,
   Optional[Hash]              $custom_options     = undef,
+  Boolean                     $manage_group_dropin_file, # In data
 ) {
   if $custom_options {
     $_content = epp(
@@ -87,17 +91,21 @@ class sssd::service::sudo (
     Group=root
     | END
 
-  systemd::dropin_file { '00_sssd_sudo_user_group.conf':
-    unit                    => 'sssd-sudo.service',
-    content                 => $_override_content,
-    selinux_ignore_defaults => true,
+  if $manage_group_dropin_file {
+    systemd::dropin_file { '00_sssd_sudo_user_group.conf':
+      ensure                  => 'present',
+      unit                    => 'sssd-sudo.service',
+      content                 => $_override_content,
+      selinux_ignore_defaults => true,
+    }
+
+    Systemd::Dropin_file['00_sssd_sudo_user_group.conf'] -> Service['sssd-sudo.socket']
   }
 
   service { 'sssd-sudo.socket':
     enable  => true,
     require => [
       Sssd::Config::Entry['puppet_service_sudo'],
-      Systemd::Dropin_file['00_sssd_sudo_user_group.conf'],
     ],
     notify  => Class["${module_name}::service"],
   }

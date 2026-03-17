@@ -1,3 +1,6 @@
+* Mon Mar 16 2026 Mike Riddle <mike@sicura.us> - 8.1.0
+- Cleaned up ownership for sssd config file and dir
+
 * Mon Dec 08 2025 Steven Pritchard <steve@sicura.us> - 8.0.0
 - Migrate ERB templates to EPP (#152)
 

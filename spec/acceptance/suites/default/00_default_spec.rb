@@ -20,26 +20,6 @@ describe 'sssd class' do
     EOS
   end
 
-  # rubocop:disable RSpec/IndexedLet
-  let(:manifest_el7) do
-    <<~EOS
-      # sssctl does not work with just the implicat_file domain on el7 so we set
-      # up a basic file provider here.
-      class { 'sssd':
-        domains => ['FILES'],
-      }
-
-      # To be used with the default_hieradata above
-      sssd::domain { 'FILES':
-        description   => 'Default Local domain',
-        id_provider   => 'files',
-        auth_provider => 'files',
-      }
-
-      sssd::provider::files { 'FILES': }
-    EOS
-  end
-
   let(:manifest_el8) do
     <<~EOS
       # Note: IFP is not needed for SSSD to work
@@ -49,7 +29,6 @@ describe 'sssd class' do
       }
     EOS
   end
-  # rubocop:enable RSpec/IndexedLet
 
   clients.each do |client|
     context 'default parameters' do
@@ -73,17 +52,12 @@ describe 'sssd class' do
       os_release = fact_on(client, 'os.release.major')
 
       it 'manifest should work with no errors' do
-        os_specific_manifest = if os_release >= '8'
-                                 manifest_el8
-                               else
-                                 manifest_el7
-                               end
         set_hieradata_on(client, default_hieradata)
-        apply_manifest_on(client, os_specific_manifest, catch_failures: true)
+        apply_manifest_on(client, manifest_el8, catch_failures: true)
 
         # idempotent
 
-        apply_manifest_on(client, os_specific_manifest, catch_changes: true)
+        apply_manifest_on(client, manifest_el8, catch_changes: true)
       end
 
       # rubocop:disable RSpec/RepeatedDescription
