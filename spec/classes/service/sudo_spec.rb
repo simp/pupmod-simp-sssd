@@ -21,12 +21,9 @@ describe 'sssd::service::sudo' do
               .with_content(%r{Group=root})
               .with_selinux_ignore_defaults(true)
           }
-
         else
           it {
-            is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf')
-              .with_unit('sssd-sudo.service')
-              .with_ensure('absent')
+            is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf')
           }
 
         end
