@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'support/hiera_data_helper'
 
 describe 'sssd::config::entry' do
   context 'supported operating systems' do
@@ -14,9 +15,9 @@ describe 'sssd::config::entry' do
 
         let(:title) { 'test' }
         let(:params) { { content: 'foo' } }
-        let(:os_major) { facts.dig(:os, :release, :major).to_i }
-        let(:group) { (os_major < 10) ? 'root' : 'sssd' }
-        let(:mode)  { (os_major < 10) ? '0600' : '0640' }
+        let(:hiera) { module_hiera_data(facts[:os]) }
+        let(:group) { hiera.dig('sssd::config::sssd_config_file_params', 'group') }
+        let(:mode)  { hiera.dig('sssd::config::sssd_config_file_params', 'mode') }
 
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('sssd::config') }

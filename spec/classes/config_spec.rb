@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'support/hiera_data_helper'
 
 default_content = <<~EOM
   [sssd]
@@ -47,10 +48,10 @@ EOM
 
 shared_examples_for 'a sssd::config' do |content|
   it { is_expected.to compile.with_all_deps }
-  let(:os_major) { facts.dig(:os, :release, :major).to_i }
-  let(:dir_mode)  { (os_major < 10) ? 'go-rw' : 'g-w,o-rw' }
-  let(:group)     { (os_major < 10) ? 'root' : 'sssd' }
-  let(:mode)      { (os_major < 10) ? '0600' : '0640' }
+  let(:hiera)    { module_hiera_data(facts[:os]) }
+  let(:dir_mode) { hiera['sssd::config::sssd_config_dir_mode'] }
+  let(:group)    { hiera.dig('sssd::config::sssd_config_file_params', 'group') }
+  let(:mode)     { hiera.dig('sssd::config::sssd_config_file_params', 'mode') }
   it {
     is_expected.to contain_file('/etc/sssd').with(
       ensure: 'directory',
