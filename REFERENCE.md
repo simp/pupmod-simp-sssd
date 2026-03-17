@@ -298,7 +298,7 @@ Data type: `Boolean`
 
 
 
-Default value: `simplib::lookup('simp_options::auditd', { 'default_value' => false})`
+Default value: `simplib::lookup('simp_options::auditd', { 'default_value' => false })`
 
 ##### <a name="-sssd--pki"></a>`pki`
 
@@ -316,7 +316,7 @@ Data type: `Variant[Boolean,Enum['simp']]`
   * app_pki_ca
   * app_pki_ca_dir
 
-Default value: `simplib::lookup('simp_options::pki', { 'default_value' => false})`
+Default value: `simplib::lookup('simp_options::pki', { 'default_value' => false })`
 
 ##### <a name="-sssd--app_pki_cert_source"></a>`app_pki_cert_source`
 
@@ -327,7 +327,7 @@ Data type: `Stdlib::Absolutepath`
 
 * If pki = false, this variable has no effect.
 
-Default value: `simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509'})`
+Default value: `simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' })`
 
 ##### <a name="-sssd--app_pki_dir"></a>`app_pki_dir`
 
@@ -374,6 +374,9 @@ in the ``[sssd]`` section.
 The following parameters are available in the `sssd::config` class:
 
 * [`authoritative`](#-sssd--config--authoritative)
+* [`manage_base_domain`](#-sssd--config--manage_base_domain)
+* [`sssd_config_dir_mode`](#-sssd--config--sssd_config_dir_mode)
+* [`sssd_config_file_params`](#-sssd--config--sssd_config_file_params)
 
 ##### <a name="-sssd--config--authoritative"></a>`authoritative`
 
@@ -382,6 +385,26 @@ Data type: `Boolean`
 Set to `true` to purge unmanaged configuration files
 
 Default value: `pick(getvar("${module_name}::authoritative"), false)`
+
+##### <a name="-sssd--config--manage_base_domain"></a>`manage_base_domain`
+
+Data type: `Boolean`
+
+EL10+ requires a domain to be configured in order for SSSD to start.
+This parameter will be managed in hieradata by default.
+
+##### <a name="-sssd--config--sssd_config_dir_mode"></a>`sssd_config_dir_mode`
+
+Data type: `String`
+
+The mode to set on the /etc/sssd/conf.d directory
+
+##### <a name="-sssd--config--sssd_config_file_params"></a>`sssd_config_file_params`
+
+Data type: `Hash`
+
+A hash of parameters to apply to all files managed in /etc/sssd and /etc/sssd/conf.d.
+This should include at least the owner, group, and mode parameters.
 
 ### <a name="sssd--config--ipa_domain"></a>`sssd::config::ipa_domain`
 
@@ -1209,6 +1232,7 @@ The following parameters are available in the `sssd::service::sudo` class:
 * [`sudo_threshold`](#-sssd--service--sudo--sudo_threshold)
 * [`sudo_timed`](#-sssd--service--sudo--sudo_timed)
 * [`custom_options`](#-sssd--service--sudo--custom_options)
+* [`manage_group_dropin_file`](#-sssd--service--sudo--manage_group_dropin_file)
 
 ##### <a name="-sssd--service--sudo--description"></a>`description`
 
@@ -1271,6 +1295,12 @@ under the section in the sssd.conf file.
 No error checking will be performed.
 
 Default value: `undef`
+
+##### <a name="-sssd--service--sudo--manage_group_dropin_file"></a>`manage_group_dropin_file`
+
+Data type: `Boolean`
+
+If true, a systemd drop-in file will be created to ensure the sssd-sudo service runs as root.
 
 ## Defined types
 
