@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'support/hiera_data_helper'
 
 describe 'sssd::service::sudo' do
   context 'supported operating systems' do
@@ -9,9 +10,9 @@ describe 'sssd::service::sudo' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to create_sssd__config__entry('puppet_service_sudo').without_content(%r{=\s*$}) }
 
-        os_major = Integer(os_facts.dig(:os, :release, :major))
+        manage_dropin = module_hiera_data(os_facts[:os]).fetch('sssd::service::sudo::manage_group_dropin_file', false)
 
-        if os_major < 10
+        if manage_dropin
           it {
             is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf')
               .with_unit('sssd-sudo.service')
