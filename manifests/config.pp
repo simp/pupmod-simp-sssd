@@ -10,26 +10,29 @@
 # @param authoritative
 #   Set to `true` to purge unmanaged configuration files
 #
+# @param manage_base_domain
+#   EL10+ requires a domain to be configured in order for SSSD to start.
+#   This parameter will be managed in hieradata by default.
+#   
+#
+# @param sssd_config_dir_mode
+#   The mode to set on the /etc/sssd/conf.d directory
+#
+# @param sssd_config_file_params
+#   A hash of parameters to apply to all files managed in /etc/sssd and /etc/sssd/conf.d.
+#   This should include at least the owner, group, and mode parameters.
+#
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::config (
   Boolean $authoritative = pick(getvar("${module_name}::authoritative"), false),
+  Boolean $manage_base_domain,
+  String  $sssd_config_dir_mode,
+  Hash    $sssd_config_file_params,
 ) {
   assert_private()
 
   include $module_name
-
-  if Integer($facts['os']['release']['major']) < 10 {
-    $owner = 'root'
-    $group = 'root'
-    $mode = '0600'
-    $confdirmode = 'go-rw'
-  } else {
-    $owner = 'root'
-    $group = 'sssd'
-    $mode = '0640'
-    $confdirmode = '0750'
-  }
 
   if ($sssd::auto_add_ipa_domain and $facts['ipa']) {
     # this host has joined an IPA domain
@@ -64,7 +67,7 @@ class sssd::config (
 
   file { '/etc/sssd':
     ensure => 'directory',
-    mode   => $confdirmode,
+    mode   => $sssd_config_dir_mode,
   }
 
   file { '/etc/sssd/conf.d':
@@ -141,9 +144,7 @@ class sssd::config (
   $content = (['# sssd::config'] + $config_lines).join("\n")
 
   file { '/etc/sssd/sssd.conf':
-    owner   => $owner,
-    group   => $group,
-    mode    => $mode,
+    *       => $sssd_config_file_params,
     content => epp(
       "${module_name}/generic.epp",
       {
@@ -152,5 +153,16 @@ class sssd::config (
       },
     ),
     notify  => Class["${module_name}::service"],
+  }
+
+  if $manage_base_domain {
+    sssd::domain { 'LOCAL':
+      id_provider       => 'proxy',
+      proxy_lib_name    => 'files',
+      auth_provider     => 'none',
+      access_provider   => 'permit',
+      cache_credentials => false,
+      enumerate         => false,
+    }
   }
 }

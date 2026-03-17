@@ -1,0 +1,10 @@
+---
+sssd::domains:
+  - 'LOCAL'
+sssd::service::sudo::manage_group_dropin_file: false
+sssd::config::manage_base_domain: true
+sssd::config::sssd_config_dir_mode: 'g-w,o-rw'
+sssd::config::sssd_config_file_params:
+  owner: 'root'
+  group: 'sssd'
+  mode: '0640'
