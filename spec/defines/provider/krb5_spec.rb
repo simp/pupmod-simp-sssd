@@ -10,6 +10,32 @@ describe 'sssd::provider::krb5' do
       context 'with default parameters' do
         let(:params) do
           {
+            krb5_server: ['test.example.domain'],
+            krb5_realm: 'EXAMPLE.REALM',
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_krb5")
+            .with_content(<<~EOM)
+              [domain/krb5_test_domain]
+              # sssd::provider::krb5
+              debug_timestamps = true
+              debug_microseconds = false
+              krb5_server = test.example.domain
+              krb5_realm = EXAMPLE.REALM
+              krb5_auth_timeout = 15
+              krb5_validate = false
+              krb5_store_password_if_offline = false
+              krb5_renew_interval = 0
+            EOM
+        }
+      end
+
+      context 'with single krb5 server (backwards compatibility)' do
+        let(:params) do
+          {
             krb5_server: 'test.example.domain',
             krb5_realm: 'EXAMPLE.REALM',
           }
@@ -36,7 +62,7 @@ describe 'sssd::provider::krb5' do
       context 'with optional parameters' do
         let(:params) do
           {
-            krb5_server: 'test.example.domain',
+            krb5_server: ['test.example.domain'],
             krb5_realm: 'EXAMPLE.REALM',
             debug_level: '0x0080',
             krb5_kpasswd: 'the_krb5_kpasswd',
@@ -71,6 +97,32 @@ describe 'sssd::provider::krb5' do
               krb5_lifetime = 90m
               krb5_renew_interval = 0
               krb5_use_fast = try
+            EOM
+        }
+      end
+
+      context 'with multiple krb5 servers' do
+        let(:params) do
+          {
+            krb5_server: ['kdc1.example.domain', 'kdc2.example.domain', '192.168.1.100'],
+            krb5_realm: 'EXAMPLE.REALM',
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_krb5")
+            .with_content(<<~EOM)
+              [domain/krb5_test_domain]
+              # sssd::provider::krb5
+              debug_timestamps = true
+              debug_microseconds = false
+              krb5_server = kdc1.example.domain,kdc2.example.domain,192.168.1.100
+              krb5_realm = EXAMPLE.REALM
+              krb5_auth_timeout = 15
+              krb5_validate = false
+              krb5_store_password_if_offline = false
+              krb5_renew_interval = 0
             EOM
         }
       end

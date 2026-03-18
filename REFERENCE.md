@@ -2631,7 +2631,7 @@ The name of the associated domain section in the configuration file.
 
 ##### <a name="-sssd--provider--krb5--krb5_server"></a>`krb5_server`
 
-Data type: `Optional[Simplib::Host]`
+Data type: `Optional[Variant[Simplib::Host, Array[Simplib::Host,1]]]`
 
 
 

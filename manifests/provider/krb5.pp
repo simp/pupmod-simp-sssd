@@ -28,9 +28,9 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 define sssd::provider::krb5 (
-  String                                 $krb5_realm,
-  Optional[Simplib::Host]                $krb5_server                    = undef,
-  Optional[Sssd::DebugLevel]             $debug_level                    = undef,
+  String                                           $krb5_realm,
+  Optional[Variant[Simplib::Host, Array[Simplib::Host,1]]] $krb5_server                    = undef,
+  Optional[Sssd::DebugLevel]                       $debug_level                    = undef,
   Boolean                                $debug_timestamps               = true,
   Boolean                                $debug_microseconds             = false,
   Optional[String]                       $krb5_kpasswd                   = undef,
@@ -52,7 +52,13 @@ define sssd::provider::krb5 (
   $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
 
   # Kerberos server settings
-  $krb5_server_line = $krb5_server ? { undef => [], default => ["krb5_server = ${krb5_server}"] }
+  $krb5_server_line = $krb5_server ? {
+    undef   => [],
+    default => $krb5_server =~ Array ? {
+      true    => ["krb5_server = ${krb5_server.join(',')}"],
+      default => ["krb5_server = ${krb5_server}"],
+    }
+  }
   $krb5_realm_line = ["krb5_realm = ${krb5_realm}"]
   $krb5_kpasswd_line = $krb5_kpasswd ? { undef => [], default => ["krb5_kpasswd = ${krb5_kpasswd}"] }
 
