@@ -9,6 +9,7 @@
 #   The name of the associated domain section in the configuration file.
 #
 # @param krb5_server
+# @param krb5_backup_server
 # @param krb5_realm
 # @param debug_level
 # @param debug_timestamps
@@ -28,9 +29,10 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 define sssd::provider::krb5 (
-  String                                           $krb5_realm,
-  Optional[Variant[Simplib::Host, Array[Simplib::Host,1]]] $krb5_server                    = undef,
-  Optional[Sssd::DebugLevel]                       $debug_level                    = undef,
+  String                                 $krb5_realm,
+  Optional[Sssd::Krb5Server]             $krb5_server                    = undef,
+  Optional[Sssd::Krb5Server]             $krb5_backup_server             = undef,
+  Optional[Sssd::DebugLevel]             $debug_level                    = undef,
   Boolean                                $debug_timestamps               = true,
   Boolean                                $debug_microseconds             = false,
   Optional[String]                       $krb5_kpasswd                   = undef,
@@ -52,13 +54,8 @@ define sssd::provider::krb5 (
   $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
 
   # Kerberos server settings
-  $krb5_server_line = $krb5_server ? {
-    undef   => [],
-    default => $krb5_server =~ Array ? {
-      true    => ["krb5_server = ${krb5_server.join(',')}"],
-      default => ["krb5_server = ${krb5_server}"],
-    }
-  }
+  $krb5_server_line = $krb5_server ? { undef => [], default => ["krb5_server = ${($krb5_server ? { Array => $krb5_server, default => [$krb5_server] }).join(',')}"] }
+  $krb5_backup_server_line = $krb5_backup_server ? { undef => [], default => ["krb5_backup_server = ${($krb5_backup_server ? { Array => $krb5_backup_server, default => [$krb5_backup_server] }).join(',')}"] }
   $krb5_realm_line = ["krb5_realm = ${krb5_realm}"]
   $krb5_kpasswd_line = $krb5_kpasswd ? { undef => [], default => ["krb5_kpasswd = ${krb5_kpasswd}"] }
 
@@ -86,6 +83,7 @@ define sssd::provider::krb5 (
     $debug_timestamps_line +
     $debug_microseconds_line +
     $krb5_server_line +
+    $krb5_backup_server_line +
     $krb5_realm_line +
     $krb5_kpasswd_line +
     $krb5_ccachedir_line +

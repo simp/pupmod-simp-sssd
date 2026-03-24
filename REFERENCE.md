@@ -43,6 +43,7 @@
 * [`Sssd::ChpassProvider`](#Sssd--ChpassProvider): List of valid types for sssd domain change password provider
 * [`Sssd::DebugLevel`](#Sssd--DebugLevel): Integer[0-9] or 2 byte Hexidecimal (ex. 0x0201)
 * [`Sssd::IdProvider`](#Sssd--IdProvider): List of valid type for sssd domain ID provider.
+* [`Sssd::Krb5Server`](#Sssd--Krb5Server): Valid krb5_server/krb5_backup_server
 * [`Sssd::LdapAccessOrder`](#Sssd--LdapAccessOrder): List of valid values for ldap provider ldap_access_order setting
 * [`Sssd::LdapAccountExpirePol`](#Sssd--LdapAccountExpirePol): List of valid values for ldap provider ldap_account_expire_policy '' corresponds to the default value (empty) per sssd-ldap(5) man page
 * [`Sssd::LdapDefaultAuthtok`](#Sssd--LdapDefaultAuthtok): List of valid values for ldap provider default auth token
@@ -2609,6 +2610,7 @@ The following parameters are available in the `sssd::provider::krb5` defined typ
 
 * [`name`](#-sssd--provider--krb5--name)
 * [`krb5_server`](#-sssd--provider--krb5--krb5_server)
+* [`krb5_backup_server`](#-sssd--provider--krb5--krb5_backup_server)
 * [`krb5_realm`](#-sssd--provider--krb5--krb5_realm)
 * [`debug_level`](#-sssd--provider--krb5--debug_level)
 * [`debug_timestamps`](#-sssd--provider--krb5--debug_timestamps)
@@ -2631,7 +2633,15 @@ The name of the associated domain section in the configuration file.
 
 ##### <a name="-sssd--provider--krb5--krb5_server"></a>`krb5_server`
 
-Data type: `Optional[Variant[Simplib::Host, Array[Simplib::Host,1]]]`
+Data type: `Optional[Sssd::Krb5Server]`
+
+
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--krb5--krb5_backup_server"></a>`krb5_backup_server`
+
+Data type: `Optional[Sssd::Krb5Server]`
 
 
 
@@ -3750,7 +3760,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--provider--ldap--krb5_server"></a>`krb5_server`
 
-Data type: `Optional[Array[String[1],1]]`
+Data type: `Optional[Sssd::Krb5Server]`
 
 
 
@@ -3758,7 +3768,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--provider--ldap--krb5_backup_server"></a>`krb5_backup_server`
 
-Data type: `Optional[Array[String[1],1]]`
+Data type: `Optional[Sssd::Krb5Server]`
 
 
 
@@ -4198,6 +4208,12 @@ Alias of `Variant[Integer[0,9], Pattern[/0x\h{4}$/]]`
 List of valid type for sssd domain ID provider.
 
 Alias of `Enum['proxy', 'ldap', 'ipa', 'ad', 'files']`
+
+### <a name="Sssd--Krb5Server"></a>`Sssd::Krb5Server`
+
+Valid krb5_server/krb5_backup_server
+
+Alias of `Variant[Simplib::Host, Simplib::Host::Port, Array[Variant[Simplib::Host, Simplib::Host::Port], 1]]`
 
 ### <a name="Sssd--LdapAccessOrder"></a>`Sssd::LdapAccessOrder`
 

@@ -85,7 +85,7 @@ class sssd::config (
 
   # Build configuration lines in order (matching expected test output)
   # Services configuration - sudo has to be started by the socket
-  $filtered_services = Array($_services) - ['sudo']
+  $filtered_services = $_services - ['sudo']
   $services_line = $_services.empty ? {
     true => [],
     false => $filtered_services.empty ? { true => [], false => ["services = ${filtered_services.join(',')}"] }
@@ -95,7 +95,7 @@ class sssd::config (
   $description_line = $_description ? { undef => [], default => ["description = ${_description}"] }
 
   # Domains configuration
-  $domains_line = $_domains.empty ? { true => [], false => ["domains = ${Array($_domains).join(', ')}"] }
+  $domains_line = $_domains.empty ? { true => [], false => ["domains = ${$_domains.join(', ')}"] }
 
   # Required configuration parameters
   $config_file_version_line = ["config_file_version = ${_config_file_version}"]

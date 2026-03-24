@@ -1,6 +1,8 @@
-* Wed Mar 18 2026 GitHub Copilot <copilot@github.com> - 8.2.0
-- Allow multiple krb5_server hosts in sssd::provider::krb5
-- krb5_server now accepts both single host (backwards compatible) and array of hosts
+* Mon Mar 23 2026 Steven Pritchard <steve@sicura.us> - 8.2.0
+- Allow multiple krb5_server hosts in sssd::provider::krb5 (#160)
+- Support krb5_backup_server in sssd::provider::krb5
+- Update types for krb5_server and krb5_backup_server in
+  sssd::provider::ldap to match sssd::provider::krb5 parameters
 
 * Mon Mar 16 2026 Mike Riddle <mike@sicura.us> - 8.1.0
 - Cleaned up ownership for sssd config file and dir

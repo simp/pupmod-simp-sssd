@@ -59,12 +59,69 @@ describe 'sssd::provider::krb5' do
         }
       end
 
+      context 'with a single krb5_backup_server (string)' do
+        let(:params) do
+          {
+            krb5_server: ['test.example.domain'],
+            krb5_realm: 'EXAMPLE.REALM',
+            krb5_backup_server: 'backup.example.domain',
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_krb5")
+            .with_content(<<~EOM)
+              [domain/krb5_test_domain]
+              # sssd::provider::krb5
+              debug_timestamps = true
+              debug_microseconds = false
+              krb5_server = test.example.domain
+              krb5_backup_server = backup.example.domain
+              krb5_realm = EXAMPLE.REALM
+              krb5_auth_timeout = 15
+              krb5_validate = false
+              krb5_store_password_if_offline = false
+              krb5_renew_interval = 0
+            EOM
+        }
+      end
+
+      context 'with multiple krb5_backup_servers' do
+        let(:params) do
+          {
+            krb5_server: ['kdc1.example.domain'],
+            krb5_realm: 'EXAMPLE.REALM',
+            krb5_backup_server: ['backup1.example.domain', 'backup2.example.domain'],
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_krb5")
+            .with_content(<<~EOM)
+              [domain/krb5_test_domain]
+              # sssd::provider::krb5
+              debug_timestamps = true
+              debug_microseconds = false
+              krb5_server = kdc1.example.domain
+              krb5_backup_server = backup1.example.domain,backup2.example.domain
+              krb5_realm = EXAMPLE.REALM
+              krb5_auth_timeout = 15
+              krb5_validate = false
+              krb5_store_password_if_offline = false
+              krb5_renew_interval = 0
+            EOM
+        }
+      end
+
       context 'with optional parameters' do
         let(:params) do
           {
             krb5_server: ['test.example.domain'],
             krb5_realm: 'EXAMPLE.REALM',
             debug_level: '0x0080',
+            krb5_backup_server: ['backup.example.domain'],
             krb5_kpasswd: 'the_krb5_kpasswd',
             krb5_ccachedir: '/alternate/krb5/ccache/dir',
             krb5_ccname_template: '/alternate/krb5/ccname/template',
@@ -85,6 +142,7 @@ describe 'sssd::provider::krb5' do
               debug_timestamps = true
               debug_microseconds = false
               krb5_server = test.example.domain
+              krb5_backup_server = backup.example.domain
               krb5_realm = EXAMPLE.REALM
               krb5_kpasswd = the_krb5_kpasswd
               krb5_ccachedir = /alternate/krb5/ccache/dir
