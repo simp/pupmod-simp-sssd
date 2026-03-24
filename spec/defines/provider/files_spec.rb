@@ -23,8 +23,8 @@ describe 'sssd::provider::files' do
         context('with explicit parameters') do
           let(:params) do
             {
-              passwd_files: [ '/etc/passwd1', '/etc/passwd2'],
-              group_files: [ '/etc/group1', '/etc/group2'],
+              passwd_files: ['/etc/passwd1', '/etc/passwd2'],
+              group_files: ['/etc/group1', '/etc/group2'],
             }
           end
 
