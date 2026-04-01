@@ -192,9 +192,9 @@ describe 'sssd::provider::ldap' do
           {
             debug_level: 3,
             debug_timestamps: false,
-            krb5_backup_server: [ '1.2.3.4:5678', 'backup.example.domain'],
+            krb5_backup_server: ['1.2.3.4:5678', 'backup.example.domain'],
             krb5_realm: 'my_krb5_realm',
-            krb5_server: [ '1.2.3.5:5678', 'primary.example.domain'],
+            krb5_server: ['1.2.3.5:5678', 'primary.example.domain'],
             ldap_access_filter: 'my_ldap_access_filter',
             ldap_autofs_entry_key: 'my_ldap_autofs_entry_key',
             ldap_autofs_entry_object_class: 'my_ldap_autofs_entry_object_class',
@@ -257,7 +257,7 @@ describe 'sssd::provider::ldap' do
             ldap_service_search_base: 'my_sldap_ervice_search_base',
             ldap_sudo_full_refresh_interval: 22,
             ldap_sudo_hostnames: ['sudo1.example.com', 'sudo2.example.com'],
-            ldap_sudo_ip: [ '2.3.4.1', '2.3.4.2'],
+            ldap_sudo_ip: ['2.3.4.1', '2.3.4.2'],
             ldap_sudo_search_base: 'my_ldap_sudo_search_base',
             ldap_sudo_smart_refresh_interval: 23,
             ldap_sudorule_command: 'my_ldap_sudorule_command',
@@ -460,6 +460,34 @@ describe 'sssd::provider::ldap' do
 
           is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap").with_content(expected)
         end
+      end
+
+      context 'with krb5_server as a plain string (backwards compatibility)' do
+        let(:params) do
+          {
+            krb5_server: 'primary.example.domain',
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
+            .with_content(%r{krb5_server = primary\.example\.domain})
+        }
+      end
+
+      context 'with krb5_backup_server as a plain string (backwards compatibility)' do
+        let(:params) do
+          {
+            krb5_backup_server: 'backup.example.domain',
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
+            .with_content(%r{krb5_backup_server = backup\.example\.domain})
+        }
       end
     end
   end

@@ -287,7 +287,7 @@ configure it using the defaults from its module, sssd::service::*\{service name\
 Use hiera to override the defaults.
 
 ```yaml
-  sssd::services: [ 'nss', 'pam', 'autofs']
+  sssd::services: ['nss', 'pam', 'autofs']
 ```
 
 The settings for the services have been known to change from one version of sssd

@@ -294,8 +294,8 @@ define sssd::provider::ldap (
   Optional[Stdlib::Absolutepath]        $ldap_krb5_keytab                  = undef,
   Boolean                               $ldap_krb5_init_creds              = true,
   Optional[Integer]                     $ldap_krb5_ticket_lifetime         = undef,
-  Optional[Array[String[1],1]]          $krb5_server                       = undef,
-  Optional[Array[String[1],1]]          $krb5_backup_server                = undef,
+  Optional[Sssd::Krb5Server]            $krb5_server                       = undef,
+  Optional[Sssd::Krb5Server]            $krb5_backup_server                = undef,
   Optional[String[1]]                   $krb5_realm                        = undef,
   Boolean                               $krb5_canonicalize                 = false,
   Boolean                               $krb5_use_kdcinfo                  = true,
@@ -704,7 +704,7 @@ define sssd::provider::ldap (
   $array_config_lines = $array_params.filter |$param, $config| {
     $config['value'] != undef and !$config['value'].empty
   }.map |$param, $config| {
-    "${param} = ${Array($config['value']).unique.join($config['separator'])}"
+    "${param} = ${($config['value'] ? { Array => $config['value'], default => [$config['value']] }).unique.join($config['separator'])}"
   }
 
   # Combine all configuration lines and sort them
