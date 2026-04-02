@@ -7,7 +7,6 @@ describe 'LDAP' do
 
   let(:server_manifest) do
     <<~EOS
-      include 'simp_openldap::server'
     EOS
   end
 

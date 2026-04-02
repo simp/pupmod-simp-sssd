@@ -12,7 +12,6 @@ describe 'sssd' do
     'simp_options::selinux'       => true,
     'simp_options::stunnel'       => true,
     'simp_options::syslog'        => true,
-    'simp_options::tcpwrappers'   => true,
     'simp_options::ldap::uri'     => ['ldap://FIXME'],
     'simp_options::ldap::bind_dn' => 'cn=Administrator,cn=Users,dc=test,dc=case',
     'simp_options::ldap::base_dn' => 'dc=test,dc=case',
