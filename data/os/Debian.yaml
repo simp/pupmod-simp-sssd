@@ -1,0 +1,6 @@
+---
+# Debian sssd package runs as root and its upstream service unit applies
+# `chmod -R g+r /etc/sssd` in ExecStartPre, expecting group-readable config.
+# The common.yaml defaults (mode 0640, group sssd) already satisfy this.
+# Set manage_base_domain false: the LOCAL domain workaround is only needed on EL10+.
+sssd::config::manage_base_domain: false
