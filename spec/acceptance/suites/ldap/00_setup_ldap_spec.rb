@@ -3,7 +3,7 @@ require 'spec_helper_acceptance'
 test_name 'Setup LDAP'
 
 describe 'LDAP' do
-  ldap_servers = hosts_with_role(hosts, 'ldap')
+  let(:ldap_servers) { hosts_with_role(hosts, 'ldap') }
 
   let(:server_manifest) do
     <<~EOS
@@ -11,9 +11,9 @@ describe 'LDAP' do
   end
 
   ldap_servers.each do |server|
-    server_fqdn  = fact_on(server, 'networking.fqdn')
-    domain       = fact_on(server, 'networking.domain')
-    base_dn      = domain.split('.').map { |d| "dc=#{d}" }.join(',')
+    let(:server_fqdn) { fact_on(server, 'networking.fqdn') }
+    let(:domain) { fact_on(server, 'networking.domain') }
+    let(:base_dn) { domain.split('.').map { |d| "dc=#{d}" }.join(',') }
 
     let(:server_hieradata) do
       ERB.new(File.read(File.expand_path('templates/server_hieradata_tls.yaml.erb', File.dirname(__FILE__)))).result(binding)

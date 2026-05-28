@@ -5,12 +5,11 @@ require 'erb'
 test_name 'Prepare Windows for AD'
 
 describe 'AD' do
-  ad_servers  = hosts_with_role(hosts, 'ad')
-  domain_pass = '@dm1n=P@ssw0r'
+  let(:domain_pass) { '@dm1n=P@ssw0r' }
 
-  ad_servers.each do |server|
-    domain = fact_on(server, 'networking.domain').strip
-    ldap_dc = domain.split('.').map { |x| "DC=#{x}" }.join(',')
+  hosts_with_role(hosts, 'ad').each do |server|
+    let(:domain) { fact_on(server, 'networking.domain').strip }
+    let(:ldap_dc) { domain.split('.').map { |x| "DC=#{x}" }.join(',') }
 
     it 'installs the AD feature' do
       # https://docs.microsoft.com/en-us/windows-server/identity/ad-ds/deploy/install-active-directory-domain-services--level-100-#BKMK_PS

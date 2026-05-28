@@ -1,50 +1,19 @@
 require 'spec_helper'
 require 'support/hiera_data_helper'
 
-default_content = <<~EOM
-  [sssd]
-  # sssd::config
-  services = nss,pam,ssh
-  config_file_version = 2
-  reconnection_retries = 3
-  enable_files_domain = true
-  debug_timestamps = true
-  debug_microseconds = false
-EOM
-
-default_content_with_domains = <<~EOM
-  [sssd]
-  # sssd::config
-  services = nss,pam,ssh
-  domains = FILE, LDAP
-  config_file_version = 2
-  reconnection_retries = 3
-  enable_files_domain = true
-  debug_timestamps = true
-  debug_microseconds = false
-EOM
-default_content_with_ipa_domain = default_content_with_domains.gsub('FILE, LDAP', 'FILE, LDAP, ipa.example.com')
-
-default_content_plus_optional = <<~EOM
-  [sssd]
-  # sssd::config
-  services = nss,pam,ssh
-  description = sssd section description
-  domains = FILE, LDAP
-  config_file_version = 2
-  reconnection_retries = 3
-  re_expression = (.+)@(.+)
-  full_name_format =  %1$s@%2$s
-  try_inotify = true
-  krb5_rcache_dir = __LIBKRB5_DEFAULTS__
-  user = sssduser
-  default_domain_suffix = example.com
-  override_space = __
-  enable_files_domain = false
-  debug_level = 3
-  debug_timestamps = true
-  debug_microseconds = false
-EOM
+def default_content_with_domains
+  <<~EOM
+    [sssd]
+    # sssd::config
+    services = nss,pam,ssh
+    domains = FILE, LDAP
+    config_file_version = 2
+    reconnection_retries = 3
+    enable_files_domain = true
+    debug_timestamps = true
+    debug_microseconds = false
+  EOM
+end
 
 shared_examples_for 'a sssd::config' do |content|
   it { is_expected.to compile.with_all_deps }
@@ -93,7 +62,16 @@ describe 'sssd' do
 
           # make sure no IPA domains are defined
           it { is_expected.not_to contain_class('sssd::config::ipa_domain') }
-          it_behaves_like 'a sssd::config', default_content
+          it_behaves_like 'a sssd::config', <<~EOM
+            [sssd]
+            # sssd::config
+            services = nss,pam,ssh
+            config_file_version = 2
+            reconnection_retries = 3
+            enable_files_domain = true
+            debug_timestamps = true
+            debug_microseconds = false
+          EOM
         end
 
         context 'with domains defined used by sssd::config' do
@@ -109,7 +87,7 @@ describe 'sssd' do
           context 'when joined to an IPA domain' do
             let(:facts) { os_facts.merge(ipa_fact_joined) }
 
-            it_behaves_like 'a sssd::config', default_content_with_ipa_domain
+            it_behaves_like 'a sssd::config', default_content_with_domains.gsub('FILE, LDAP', 'FILE, LDAP, ipa.example.com')
             it { is_expected.to contain_class('sssd::config::ipa_domain') }
           end
         end
@@ -131,7 +109,26 @@ describe 'sssd' do
             }
           end
 
-          it_behaves_like 'a sssd::config', default_content_plus_optional
+          it_behaves_like 'a sssd::config', <<~EOM
+            [sssd]
+            # sssd::config
+            services = nss,pam,ssh
+            description = sssd section description
+            domains = FILE, LDAP
+            config_file_version = 2
+            reconnection_retries = 3
+            re_expression = (.+)@(.+)
+            full_name_format =  %1$s@%2$s
+            try_inotify = true
+            krb5_rcache_dir = __LIBKRB5_DEFAULTS__
+            user = sssduser
+            default_domain_suffix = example.com
+            override_space = __
+            enable_files_domain = false
+            debug_level = 3
+            debug_timestamps = true
+            debug_microseconds = false
+          EOM
         end
 
         context 'when $::sssd::auto_add_ip_domain is false' do
