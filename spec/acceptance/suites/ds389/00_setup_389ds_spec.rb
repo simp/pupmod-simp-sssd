@@ -3,7 +3,7 @@
 require 'spec_helper_acceptance'
 
 describe 'sssd' do
-  ldapservers = hosts_with_role(hosts, 'ldap')
+  let(:ldapservers) { hosts_with_role(hosts, 'ldap') }
 
   ldapservers.each do |host|
     let(:root_pw) { 's00perS3kr!tP@ssw0rd' }
