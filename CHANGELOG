@@ -1,5 +1,10 @@
 * Mon May 11 2026 Steven Pritchard <steve@sicura.us> - 9.0.0
 - Remove unmaintained Compliance Engine data
+- Drop support for Puppet 7
+- Switch `requirements` from `puppet` to `openvox` (>= 8 < 9)
+- Add `openvox` to the test Gemfile alongside `puppet`
+- Update `issues_url` to point at GitHub issues
+- Widen `simp/simplib` dependency upper bound to allow 5.x
 
 * Mon Mar 16 2026 Mike Riddle <mike@sicura.us> - 8.1.0
 - Cleaned up ownership for sssd config file and dir
