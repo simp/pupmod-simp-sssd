@@ -51,7 +51,7 @@ describe 'AD' do
       it 'with a healthy forest' do
         # https://technet.microsoft.com/en-us/library/cc758753(v=ws.10).aspx
         result = on(server, 'dcdiag')
-        expect(result.stdout).not_to match(%r{failed})
+        expect(result.stdout).not_to include('failed')
       end
       # it 'with a healthy DDNS service' do
       #   result = on(server, 'dcdiag /test:dns /DnsDynamicUpdate')
@@ -87,9 +87,9 @@ describe 'AD' do
     it 'has users from the CSV and vagrant' do
       # https://social.technet.microsoft.com/Forums/ie/en-US/67aab9d3-1ced-4d33-8252-66a6f88713b0/exporting-ad-user-list-to-a-text-or-excel-document?forum=winserverDS
       result = exec_ps_script_on(server, 'Get-ADUser -Filter * -SearchBase "' + ldap_dc + '" | select Name')
-      expect(result.stdout).to match(%r{vagrant})
-      expect(result.stdout).to match(%r{Mike Hammer})
-      expect(result.stdout).to match(%r{John Franklin})
+      expect(result.stdout).to include('vagrant')
+      expect(result.stdout).to include('Mike Hammer')
+      expect(result.stdout).to include('John Franklin')
     end
   end
 end

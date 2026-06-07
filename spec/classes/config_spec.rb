@@ -21,6 +21,7 @@ shared_examples_for 'a sssd::config' do |content|
   let(:dir_mode) { hiera['sssd::config::sssd_config_dir_mode'] }
   let(:group)    { hiera.dig('sssd::config::sssd_config_file_params', 'group') }
   let(:mode)     { hiera.dig('sssd::config::sssd_config_file_params', 'mode') }
+
   it {
     is_expected.to contain_file('/etc/sssd').with(
       ensure: 'directory',
