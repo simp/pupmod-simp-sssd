@@ -1,3 +1,6 @@
+* Mon Jun 08 2026 Steven Pritchard <steve@sicura.us> - 10.0.0
+- Allow `simp-auditd` 10.x and `simp-pki` 7.x optional dependencies.
+
 * Thu Jun 18 2026 Mike Riddle <mike@sicura.us> - 9.0.1
 - Manage mode under /etc/sssd/conf.d recursively
 
