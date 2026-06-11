@@ -114,6 +114,7 @@ describe 'sssd' do
               user: 'sssduser',
               default_domain_suffix: 'example.com',
               override_space: '__',
+              certificate_verification: 'ocsp_dgst=sha1, no_ocsp',
             }
           end
 
@@ -132,6 +133,7 @@ describe 'sssd' do
             user = sssduser
             default_domain_suffix = example.com
             override_space = __
+            certificate_verification = ocsp_dgst=sha1, no_ocsp
             enable_files_domain = false
             debug_level = 3
             debug_timestamps = true
