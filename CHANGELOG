@@ -1,3 +1,13 @@
+* Thu Jun 11 2026 Nicholas Markowski <nmarkowski17.misc@gmail.com> - 10.0.0
+- Rename the ldap provider parameter `ldap_user_cert` to `ldap_user_certificate`
+  so that the value is emitted under the correct `sssd-ldap(5)` key (#206).
+  This is a breaking change for callers that set `ldap_user_cert`.
+- Add the `ldap_user_certificate` parameter to the ad provider (#206).
+- Add the `certificate_verification` parameter to the `[sssd]` section
+  via `sssd::certificate_verification` (#146).
+- Add `sssd::force_ipa_domain`, `sssd::ipa_domain_name`, and `sssd::ipa_servers`
+  so that the IPA domain can be pre-staged before the host has joined (#115).
+
 * Mon May 11 2026 Steven Pritchard <steve@sicura.us> - 9.0.0
 - Remove unmaintained Compliance Engine data
 - Drop support for Puppet 7

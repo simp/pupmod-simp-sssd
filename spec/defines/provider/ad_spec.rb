@@ -104,6 +104,7 @@ describe 'sssd::provider::ad' do
             ldap_idmap_helper_table_size: 8,
             ldap_group_objectsid: 'my_ldap_group_objectsid',
             ldap_user_objectsid: 'my_ldap_user_objectsid',
+            ldap_user_certificate: 'userCertificate;binary',
             ldap_user_extra_attrs: 'altSecurityIdentities',
             ldap_user_ssh_public_key: 'altSecurityIdentities',
           }
@@ -161,6 +162,7 @@ describe 'sssd::provider::ad' do
             ldap_use_tokengroups = true
             ldap_group_objectsid = my_ldap_group_objectsid
             ldap_user_objectsid = my_ldap_user_objectsid
+            ldap_user_certificate = userCertificate;binary
             ldap_user_extra_attrs = altSecurityIdentities
             ldap_user_ssh_public_key = altSecurityIdentities
           EXPECTED
