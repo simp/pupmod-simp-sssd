@@ -27,6 +27,11 @@
 # @param user
 # @param default_domain_suffix
 # @param override_space
+# @param certificate_verification
+#   Value of the ``certificate_verification`` option written to the ``[sssd]``
+#   section.  Used to tune OCSP/CRL behavior for smartcard authentication.
+#   Accepts a comma-separated list of tokens (e.g., ``ocsp_dgst=sha1, no_ocsp``)
+#   per ``sssd.conf(5)``.
 # @param ldap_providers
 #   This allows users to set up ldap sssd::provider::ldap resources via hieradata
 # @example sssd::provider::ldap in hieradata:
@@ -87,6 +92,22 @@
 #   lockout for IPA-managed user accounts.  Otherwise, you must
 #   configure the IPA domain yourself.
 #
+# @param force_ipa_domain
+#   Configure sssd for the IPA domain even when the ``ipa`` fact reports
+#   ``connected => false`` (or is absent).  Useful when pre-staging
+#   configuration before the host has actually joined the realm.
+#
+#   * When the ``ipa`` fact is missing or incomplete, ``ipa_domain_name``
+#     and ``ipa_servers`` must be supplied.
+#
+# @param ipa_domain_name
+#   The IPA domain name to use when ``force_ipa_domain`` is enabled and
+#   ``$facts['ipa']['domain']`` is not available.
+#
+# @param ipa_servers
+#   The IPA servers to use when ``force_ipa_domain`` is enabled and
+#   ``$facts['ipa']['server']`` is not available.
+#
 # @param custom_config
 #   A configuration that will be added to
 #   /etc/sssd/conf.d/00_puppet_custom.conf *without validation*
@@ -110,6 +131,7 @@ class sssd (
   Optional[String[1]]           $user                  = undef,
   Optional[String[1]]           $default_domain_suffix = undef,
   Optional[String[1]]           $override_space        = undef,
+  Optional[String[1]]           $certificate_verification = undef,
   Hash                          $ldap_providers        = {},
   Boolean                       $enable_files_domain   = true,
   Boolean                       $enumerate_users       = false,
@@ -121,6 +143,9 @@ class sssd (
   Stdlib::Absolutepath          $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' }),
   Stdlib::Absolutepath          $app_pki_dir           = '/etc/pki/simp_apps/sssd/x509',
   Boolean                       $auto_add_ipa_domain   = true,
+  Boolean                       $force_ipa_domain      = false,
+  Optional[String[1]]           $ipa_domain_name       = undef,
+  Optional[Array[Simplib::Hostname,1]] $ipa_servers     = undef,
   Optional[String[1]]           $custom_config         = undef,
 ) {
   include 'sssd::install'
