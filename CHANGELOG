@@ -1,3 +1,6 @@
+* Thu Jun 18 2026 Mike Riddle <mike@sicura.us> - 9.0.1
+- Manage mode under /etc/sssd/conf.d recursively
+
 * Mon May 11 2026 Steven Pritchard <steve@sicura.us> - 9.0.0
 - Remove unmaintained Compliance Engine data
 - Drop support for Puppet 7
