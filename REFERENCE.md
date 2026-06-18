@@ -397,7 +397,12 @@ This parameter will be managed in hieradata by default.
 
 Data type: `String`
 
-The mode to set on the /etc/sssd/conf.d directory
+The mode to set on the /etc/sssd/conf.d directory and, recursively,
+on the files within it
+
+* A symbolic mode (for example `g-w,o-rw`) is recommended so that the
+  directory retains its execute bits while world/group-readable files
+  dropped in by other tools are corrected to a mode SSSD will accept
 
 ##### <a name="-sssd--config--sssd_config_file_params"></a>`sssd_config_file_params`
 
