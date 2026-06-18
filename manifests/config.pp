@@ -13,10 +13,10 @@
 # @param manage_base_domain
 #   EL10+ requires a domain to be configured in order for SSSD to start.
 #   This parameter will be managed in hieradata by default.
-#   
 #
 # @param sssd_config_dir_mode
-#   The mode to set on the /etc/sssd/conf.d directory
+#   The mode to set on the /etc/sssd/conf.d directory and, recursively,
+#   on the files within it
 #
 # @param sssd_config_file_params
 #   A hash of parameters to apply to all files managed in /etc/sssd and /etc/sssd/conf.d.
@@ -72,6 +72,7 @@ class sssd::config (
 
   file { '/etc/sssd/conf.d':
     ensure  => 'directory',
+    mode    => $sssd_config_dir_mode,
     purge   => $authoritative,
     recurse => true,
   }

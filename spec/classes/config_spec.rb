@@ -29,6 +29,13 @@ shared_examples_for 'a sssd::config' do |content|
     )
   }
   it {
+    is_expected.to contain_file('/etc/sssd/conf.d').with(
+      ensure: 'directory',
+      mode: dir_mode,
+      recurse: true,
+    )
+  }
+  it {
     is_expected.to contain_file('/etc/sssd/sssd.conf').with(
       owner: 'root',
       group: group,

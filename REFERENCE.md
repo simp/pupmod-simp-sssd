@@ -397,7 +397,8 @@ This parameter will be managed in hieradata by default.
 
 Data type: `String`
 
-The mode to set on the /etc/sssd/conf.d directory
+The mode to set on the /etc/sssd/conf.d directory and, recursively,
+on the files within it
 
 ##### <a name="-sssd--config--sssd_config_file_params"></a>`sssd_config_file_params`
 
