@@ -26,5 +26,3 @@ fixtures:
     ds389: https://github.com/simp/pupmod-simp-ds389.git
     simp_firewalld: https://github.com/simp/pupmod-simp-simp_firewalld.git
     firewalld: https://github.com/simp/pupmod-voxpupuli-firewalld.git
-  symlinks:
-    sssd: "#{source_dir}"
