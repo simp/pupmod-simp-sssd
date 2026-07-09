@@ -1,3 +1,9 @@
+* Thu Jul 09 2026 Steven Pritchard <steve@sicura.us> - 9.0.2
+- Remove duplicate `@param strip_128_bit_ciphers` doc block in
+  `sssd::provider::ldap` that was tripping the puppet-lint
+  parameter_documentation check
+- Regenerate REFERENCE.md
+
 * Thu Jun 18 2026 Mike Riddle <mike@sicura.us> - 9.0.1
 - Manage mode under /etc/sssd/conf.d recursively
 

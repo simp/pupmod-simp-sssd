@@ -2892,7 +2892,6 @@ The following parameters are available in the `sssd::provider::ldap` defined typ
 * [`app_pki_ca_dir`](#-sssd--provider--ldap--app_pki_ca_dir)
 * [`app_pki_key`](#-sssd--provider--ldap--app_pki_key)
 * [`app_pki_cert`](#-sssd--provider--ldap--app_pki_cert)
-* [`strip_128_bit_ciphers`](#-sssd--provider--ldap--strip_128_bit_ciphers)
 * [`ldap_tls_cipher_suite`](#-sssd--provider--ldap--ldap_tls_cipher_suite)
 * [`ldap_id_use_start_tls`](#-sssd--provider--ldap--ldap_id_use_start_tls)
 * [`ldap_id_mapping`](#-sssd--provider--ldap--ldap_id_mapping)
@@ -3654,12 +3653,6 @@ Data type: `Optional[Stdlib::Absolutepath]`
 
 
 Default value: `undef`
-
-##### <a name="-sssd--provider--ldap--strip_128_bit_ciphers"></a>`strip_128_bit_ciphers`
-
-
-
-Default value: `true`
 
 ##### <a name="-sssd--provider--ldap--ldap_tls_cipher_suite"></a>`ldap_tls_cipher_suite`
 
