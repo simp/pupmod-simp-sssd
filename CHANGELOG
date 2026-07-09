@@ -24,11 +24,11 @@
 * Mon Nov 24 2025 Steven Pritchard <steve@sicura.us> - 7.13.2
 - Update module dependencies
 
-* Wed Jun 11 2025 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.13.1
-- Fix rubocop issues
-
 * Mon Sep 22 2025 Patrick Brideau <patrick.brideau@teluq.ca> - 7.13.0
 - Fix allowed_uids parameter in ifp template
+
+* Wed Jun 11 2025 Chris Tessmer <chris.tessmer@onyxpoint.com> - 7.13.1
+- Fix rubocop issues
 
 * Mon Sep 22 2025 Paul Edmon <pedmon@cfa.harvard.edu> - 7.13.0
 - Add `sssd::domain::custom_options`
