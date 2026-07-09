@@ -25,7 +25,7 @@ supplied by the operator (directly, or via the `ldap_providers` hash / IPA
 auto-detection).
 
 **It forcefully disables `nscd`** — you cannot run an `nscd` module at the same
-time; this is intentional (`manifests/init.pp:3-4`).
+time; this is intentional (`manifests/init.pp`).
 
 ### Business logic
 
@@ -35,79 +35,79 @@ them, wraps the result in an INI section header via `templates/generic.epp`, and
 hands it to the **`sssd::config::entry`** define, which writes it to a
 `conf.d/<order>_<name>.conf` file and notifies the daemon.
 
-- **`sssd` (`manifests/init.pp:96-165`)** — Public entry class (consumers
+- **`sssd` (`manifests/init.pp`)** — Public entry class (consumers
   `include 'sssd'`; not `assert_private()`'d). Key parameters:
-  - `$domains` (`Array[String]`, default `[]`, `init.pp:98`) — the domain names
+  - `$domains` (`Array[String]`, default `[]`, `init.pp`) — the domain names
     to list in the `[sssd]` `domains =` line. Listing a domain here does **not**
     create it; you still declare `sssd::domain` / `sssd::provider::*` resources.
   - `$services` (`Sssd::Services`, default `['nss','pam','ssh','sudo']`,
-    `init.pp:104`) — the responder services.
-  - `$ldap_providers` (`Hash`, default `{}`, `init.pp:113`) — Hiera-driven
+    `init.pp`) — the responder services.
+  - `$ldap_providers` (`Hash`, default `{}`, `init.pp`) — Hiera-driven
     convenience: each entry is splatted into an `sssd::provider::ldap` resource
-    (`init.pp:160-164`).
-  - `$auto_add_ipa_domain` (`Boolean`, default `true`, `init.pp:123`) — when the
+    (`init.pp`).
+  - `$auto_add_ipa_domain` (`Boolean`, default `true`, `init.pp`) — when the
     host is IPA-joined, auto-configure the IPA domain (see IPA path below).
-  - `$auditd` / `$pki` / `$app_pki_cert_source` (`init.pp:119-121`) — SIMP
+  - `$auditd` / `$pki` / `$app_pki_cert_source` (`init.pp`) — SIMP
     integration toggles fed by the `simp_options::*` seam (table below).
-  - `$custom_config` (`Optional[String]`, `init.pp:124`) — raw config appended
+  - `$custom_config` (`Optional[String]`, `init.pp`) — raw config appended
     verbatim to `conf.d/99999_puppet_custom.conf` **without validation**
-    (`init.pp:135-140`).
+    (`init.pp`).
 
   Control flow:
   - `include 'sssd::install'` then `include 'sssd::config'`, ordered
-    `Class['sssd::install'] -> Class['sssd::config']` (`init.pp:126-133`).
-  - **Version guard** (`init.pp:129-131`): `unless sssd::supported_version() {
+    `Class['sssd::install'] -> Class['sssd::config']` (`init.pp`).
+  - **Version guard** (`init.pp`): `unless sssd::supported_version() {
     fail(...) }` — refuses to proceed on SSSD older than the supported baseline.
-  - **PKI branch** (`init.pp:142-148`): when `$pki` is truthy, asserts the
+  - **PKI branch** (`init.pp`): when `$pki` is truthy, asserts the
     optional `simp/pki` dependency, `include`s `sssd::pki`, and orders
     `Class['sssd::config'] -> Class['sssd::pki']`.
-  - **auditd branch** (`init.pp:150-158`): when `$auditd`, asserts the optional
+  - **auditd branch** (`init.pp`): when `$auditd`, asserts the optional
     `simp/auditd` dependency, `include`s `auditd`, and adds an `auditd::rule`
     watching `/etc/sssd/`.
-  - **`ldap_providers` loop** (`init.pp:160-164`): each hash entry becomes an
+  - **`ldap_providers` loop** (`init.pp`): each hash entry becomes an
     `sssd::provider::ldap { $key: * => $value }`.
 
-- **`sssd::install` (`manifests/install.pp:15-35`, `assert_private` at :20)** —
-  installs `sssd` + `sssd-dbus` (`install.pp:26-28`), optionally `sssd-tools`
-  when `$install_user_tools` (`install.pp:30-34`), and `include`s
-  `sssd::install::client` when `$install_client` (`install.pp:22-24`), which
-  installs `sssd-client` (`install/client.pp:11-13`). All use
-  `$package_ensure` (from `simp_options::package_ensure`, `install.pp:18`).
+- **`sssd::install` (`manifests/install.pp`, `assert_private` at :20)** —
+  installs `sssd` + `sssd-dbus` (`install.pp`), optionally `sssd-tools`
+  when `$install_user_tools` (`install.pp`), and `include`s
+  `sssd::install::client` when `$install_client` (`install.pp`), which
+  installs `sssd-client` (`install/client.pp`). All use
+  `$package_ensure` (from `simp_options::package_ensure`, `install.pp`).
 
-- **`sssd::config` (`manifests/config.pp:27-169`, `assert_private` at :33)** —
+- **`sssd::config` (`manifests/config.pp`, `assert_private` at :33)** —
   the `[sssd]` section builder.
-  - **IPA auto-detection** (`config.pp:37-44`): if `$sssd::auto_add_ipa_domain`
+  - **IPA auto-detection** (`config.pp`): if `$sssd::auto_add_ipa_domain`
     and the `ipa` fact is present, `include 'sssd::config::ipa_domain'` and merge
     `$facts['ipa']['domain']` into the computed domain list.
-  - **Responder loop** (`config.pp:62-66`): when `$sssd::include_svc_config`,
+  - **Responder loop** (`config.pp`): when `$sssd::include_svc_config`,
     `include "sssd::service::${service}"` for each service in `$services`.
   - Manages `/etc/sssd` and `/etc/sssd/conf.d` directories; `purge` on `conf.d`
-    is driven by `$authoritative` (`config.pp:68-85`). When **not**
+    is driven by `$authoritative` (`config.pp`). When **not**
     authoritative it instead `tidy`s stale `*_puppet_*.conf` files
-    (`config.pp:80-85`).
+    (`config.pp`).
   - Builds the `[sssd]` line array and writes `/etc/sssd/sssd.conf` via
-    `generic.epp`, `notify => Class['sssd::service']` (`config.pp:87-157`). Note
+    `generic.epp`, `notify => Class['sssd::service']` (`config.pp`). Note
     `sudo` is filtered out of the `services =` line because it is socket-activated
-    (`config.pp:88-93`).
-  - **`manage_base_domain`** (`config.pp:159-168`): EL10+ requires at least one
+    (`config.pp`).
+  - **`manage_base_domain`** (`config.pp`): EL10+ requires at least one
     domain for SSSD to start, so a `LOCAL` proxy-to-`files` domain is declared
     when this is true. This is set in module Hiera per OS.
 
-- **`sssd::config::entry` (`manifests/config/entry.pp:13-33`, `assert_private`
+- **`sssd::config::entry` (`manifests/config/entry.pp`, `assert_private`
   at :17)** — the central snippet writer used by *every* domain, provider, and
   responder. Writes `/etc/sssd/conf.d/<order>_<title>.conf` (via
   `simplib::safe_filename`, default `$order` = 50), applies
   `$sssd::config::sssd_config_file_params`, and `notify => Class['sssd::service']`.
-  Rejects a fully-qualified `$name` (`entry.pp:19-21`).
+  Rejects a fully-qualified `$name` (`entry.pp`).
 
-- **`sssd::config::ipa_domain` (`manifests/config/ipa_domain.pp:3-29`,
+- **`sssd::config::ipa_domain` (`manifests/config/ipa_domain.pp`,
   `assert_private` at :4)** — when `$facts.dig('ipa','connected')`, declares an
   `sssd::domain` (all providers set to `ipa`) plus an `sssd::provider::ipa`
-  keyed to the detected IPA domain/server (`ipa_domain.pp:6-28`).
+  keyed to the detected IPA domain/server (`ipa_domain.pp`).
 
-- **`sssd::service` (`manifests/service.pp:11-23`, `assert_private` at :15)** —
+- **`sssd::service` (`manifests/service.pp`, `assert_private` at :15)** —
   the actual `service { 'sssd' }` resource. `$ensure`/`$enable` both default to
-  `sssd::supported_version()` (`service.pp:12-13`), i.e. the daemon is only
+  `sssd::supported_version()` (`service.pp`), i.e. the daemon is only
   running/enabled on a supported SSSD.
 
 - **`sssd::service::{nss,pam,ssh,sudo,autofs,ifp,pac}`** — the **responder**
@@ -115,25 +115,25 @@ hands it to the **`sssd::config::entry`** define, which writes it to a
   options; it builds a line array, renders it through `generic.epp` (title =
   responder name), and emits an `sssd::config::entry`. If a `$custom_options`
   hash is supplied instead, it renders `templates/service/custom_options.epp`
-  and skips the typed parameters entirely (see `service/nss.pp:64-149` for the
+  and skips the typed parameters entirely (see `service/nss.pp` for the
   canonical shape). `sudo` additionally manages a systemd drop-in / the
   `sssd-sudo.socket` (socket activation).
 
-- **`sssd::pki` (`manifests/pki.pp:25-37`, `assert_private` at :26)** — when
+- **`sssd::pki` (`manifests/pki.pp`, `assert_private` at :26)** — when
   `$sssd::pki` is truthy, `pki::copy { 'sssd' }` copies certs from
   `$app_pki_cert_source` into `/etc/pki/simp_apps/sssd/x509`, notifying the
-  service (`pki.pp:30-36`). `$pki` accepts `'simp'` (include SIMP's `pki`
+  service (`pki.pp`). `$pki` accepts `'simp'` (include SIMP's `pki`
   module), `true` (copy but don't include `pki`), or `false` (do nothing;
   manage the `app_pki_*` paths yourself).
 
-- **`sssd::domain` (`manifests/domain.pp:79-260`)** — a define that writes one
+- **`sssd::domain` (`manifests/domain.pp`)** — a define that writes one
   `[domain/<name>]` section. `$id_provider` (`Sssd::IdProvider`) is the only
-  **required** parameter (`domain.pp:80`); the other provider *selectors*
+  **required** parameter (`domain.pp`); the other provider *selectors*
   (`auth_provider`, `access_provider`, `chpass_provider`, `sudo_provider`,
   `selinux_provider`, `subdomains_provider`, `autofs_provider`, `hostid_provider`,
-  `domain.pp:104-111`) are optional strings that name the back-end *type* to use
+  `domain.pp`) are optional strings that name the back-end *type* to use
   for that facet. It emits an `sssd::config::entry` named
-  `puppet_domain_${name}` (`domain.pp:251-259`). A domain by itself only names
+  `puppet_domain_${name}` (`domain.pp`). A domain by itself only names
   providers; the provider *settings* come from the `sssd::provider::*` defines.
 
 - **`sssd::provider::{ldap,ad,ipa,krb5,files}` (`manifests/provider/*.pp`)** —
@@ -142,7 +142,7 @@ hands it to the **`sssd::config::entry`** define, which writes it to a
   settings attach to a domain. Each emits an `sssd::config::entry` named
   `puppet_provider_${name}_<type>`:
   - **`ldap`** — LDAP URIs, bind DN/pw, schema, TLS. Its bind/URI parameters are
-    the module's LDAP `simp_options` seam (`provider/ldap.pp:202,207,209,211`).
+    the module's LDAP `simp_options` seam (`provider/ldap.pp`).
   - **`ad`** — Active Directory: `ad_domain`/`ad_servers`, GPO access-control
     mapping, dynamic DNS; `ldap_id_mapping`/`ldap_use_tokengroups` default true.
   - **`ipa`** — FreeIPA: `ipa_domain`/`ipa_server`, HBAC/SELinux/automount search
@@ -156,39 +156,39 @@ hands it to the **`sssd::config::entry`** define, which writes it to a
   (so it lands in the `[sssd]` `domains =` line), declare `sssd::domain { NAME }`
   with an `id_provider`, and declare the matching
   `sssd::provider::<type> { NAME }` for the actual back-end settings. The name
-  is the join key across all three (`domain.pp:14-15,251`; `init.pp:98`).
+  is the join key across all three (`domain.pp`; `init.pp`).
 - **Everything routes through `sssd::config::entry`.** Domains, providers, and
   responders all become `conf.d/<order>_<name>.conf` snippets, never direct edits
   to `sssd.conf`. Only the `[sssd]` section itself lives in `sssd.conf`
-  (`config.pp:147-157`). This is the seam a new section should hook into.
+  (`config.pp`). This is the seam a new section should hook into.
 - **`sudo` is socket-activated and is stripped from the `services =` line**
-  (`config.pp:88-93`); the `sssd::service::sudo` responder manages the
+  (`config.pp`); the `sssd::service::sudo` responder manages the
   `sssd-sudo.socket` instead. Don't "fix" the missing `sudo` in the services
   line.
 - **`$custom_config` and per-section `custom_options` bypass validation.** They
-  are written verbatim (`init.pp:135-140`; `service/nss.pp:64-72` via
+  are written verbatim (`init.pp`; `service/nss.pp` via
   `custom_options.epp`). Typos land in `sssd.conf` unchecked and can stop the
   daemon.
 - **`authoritative` is a foot-gun.** `true` purges *all* unmanaged files in
-  `/etc/sssd/conf.d` (`config.pp:76`); `false` only tidies Puppet's own
-  `*_puppet_*.conf` (`config.pp:80-85`).
+  `/etc/sssd/conf.d` (`config.pp`); `false` only tidies Puppet's own
+  `*_puppet_*.conf` (`config.pp`).
 - **EL10 needs a domain to even start.** `manage_base_domain` (module Hiera,
-  `config.pp:159-168`) declares a `LOCAL` proxy/`files` domain so SSSD can start
+  `config.pp`) declares a `LOCAL` proxy/`files` domain so SSSD can start
   on a host with no real domain configured.
 - **IPA auto-config is on by default.** On an IPA-joined host, a domain +
-  `ipa` provider are created automatically (`config.pp:37-40`;
+  `ipa` provider are created automatically (`config.pp`;
   `config/ipa_domain.pp`). Set `auto_add_ipa_domain => false` to manage it
   yourself.
 - **The version guard depends on the `sssd_version` fact.** `sssd_version`
   shells out to `sssd --version` and is only present when the `sssd` binary is
-  on `PATH` (`lib/facter/sssd_version.rb:4-11`); `sssd::supported_version()`
+  on `PATH` (`lib/facter/sssd_version.rb`); `sssd::supported_version()`
   returns `true` when the fact is absent (assumes a modern system) and `false`
-  only when it is present and `< 1.16.0` (`functions/supported_version.pp:8-15`).
+  only when it is present and `< 1.16.0` (`functions/supported_version.pp`).
   When the fact is missing, the daemon defaults to running/enabled
-  (`service.pp:12-13`).
+  (`service.pp`).
 - **`simp/pki` and `simp/auditd` are optional dependencies**, asserted at
   runtime with `simplib::assert_optional_dependency` only when the corresponding
-  toggle is on (`init.pp:143,151`) — they are *not* hard `metadata.json`
+  toggle is on (`init.pp`) — they are *not* hard `metadata.json`
   dependencies.
 
 ## The `simp_options` / `simplib::lookup` seam
@@ -199,14 +199,14 @@ lookup-path unit test). All calls resolve `simp_options::*` with an explicit
 
 | Key | Location | `default_value` |
 |-----|----------|-----------------|
-| `simp_options::auditd` | `init.pp:119` | `false` |
-| `simp_options::pki` | `init.pp:120` | `false` |
-| `simp_options::pki::source` | `init.pp:121` | `'/etc/pki/simp/x509'` |
-| `simp_options::package_ensure` | `install.pp:18` | `'installed'` |
-| `simp_options::ldap::uri` | `provider/ldap.pp:202` | `undef` |
-| `simp_options::ldap::base_dn` | `provider/ldap.pp:207` | `undef` |
-| `simp_options::ldap::bind_dn` | `provider/ldap.pp:209` | `undef` |
-| `simp_options::ldap::bind_pw` | `provider/ldap.pp:211` | `undef` |
+| `simp_options::auditd` | `init.pp` | `false` |
+| `simp_options::pki` | `init.pp` | `false` |
+| `simp_options::pki::source` | `init.pp` | `'/etc/pki/simp/x509'` |
+| `simp_options::package_ensure` | `install.pp` | `'installed'` |
+| `simp_options::ldap::uri` | `provider/ldap.pp` | `undef` |
+| `simp_options::ldap::base_dn` | `provider/ldap.pp` | `undef` |
+| `simp_options::ldap::bind_dn` | `provider/ldap.pp` | `undef` |
+| `simp_options::ldap::bind_pw` | `provider/ldap.pp` | `undef` |
 
 Keep routing SIMP feature toggles through `simplib::lookup('simp_options::*', {
 'default_value' => ... })` with an explicit default rather than assuming
@@ -226,9 +226,9 @@ Hard dependencies (from `metadata.json`):
 Optional dependencies (from `metadata.json` `simp.optional_dependencies`, each
 asserted at runtime via `assert_optional_dependency`):
 
-- `simp/pki` `>= 6.2.0 < 7.0.0` — asserted at `manifests/init.pp:143` when
+- `simp/pki` `>= 6.2.0 < 7.0.0` — asserted at `manifests/init.pp` when
   `$pki` is truthy.
-- `simp/auditd` `>= 8.5.0 < 10.0.0` — asserted at `manifests/init.pp:151` when
+- `simp/auditd` `>= 8.5.0 < 10.0.0` — asserted at `manifests/init.pp` when
   `$auditd` is true.
 
 Runtime requirement (from `metadata.json` `requirements`): `openvox
@@ -269,8 +269,8 @@ OracleLinux 8/9/10; Rocky 8/9/10; AlmaLinux 8/9/10.
   `spec/acceptance/nodesets/`.
 - `REFERENCE.md` — generated Puppet Strings reference.
 - **Acceptance runs in CI:** `.github/workflows/pr_tests.yml` has an
-  `acceptance` job (`pr_tests.yml:116`) on nodes `almalinux9`/`almalinux10`
-  under `BEAKER_HYPERVISOR: 'vagrant_libvirt'` (`pr_tests.yml:143`), alongside
+  `acceptance` job (`pr_tests.yml`) on nodes `almalinux9`/`almalinux10`
+  under `BEAKER_HYPERVISOR: 'vagrant_libvirt'` (`pr_tests.yml`), alongside
   the standard syntax/unit jobs.
 
 ## Common commands
@@ -301,8 +301,8 @@ bundle exec rake beaker:suites[default]
 Relevant gem pins (from `Gemfile`): `puppetlabs_spec_helper ~> 8.0.0`,
 `simp-rake-helpers ~> 5.24.0`, `simp-beaker-helpers ~> 2.0.0`. Rubocop is pinned
 to `~> 1.88.0`. The `Gemfile` installs **both** the `openvox` and `puppet` gems
-(`Gemfile:30`) and defaults the tested version range to `>= 8 < 9`
-(`Gemfile:23`). `spec/spec_helper.rb:11` requires
+(`Gemfile`) and defaults the tested version range to `>= 8 < 9`
+(`Gemfile`). `spec/spec_helper.rb` requires
 `puppetlabs_spec_helper/module_spec_helper`. There are 15 nodesets
 (almalinux8/9/10, centos9/10, default, oel8/9/10, rhel8/9/10, rocky8/9/10).
 
@@ -315,7 +315,7 @@ to `~> 1.88.0`. The `Gemfile` installs **both** the `openvox` and `puppet` gems
 - **Keep the domain ↔ provider `$name` contract.** A `sssd::provider::*`
   attaches to a `sssd::domain` solely by sharing its `$name`.
 - **Guard optional integrations** (`simp/pki`, `simp/auditd`) with
-  `simplib::assert_optional_dependency` and a toggle check, as `init.pp:142-158`
+  `simplib::assert_optional_dependency` and a toggle check, as `init.pp`
   does — don't hard-`include` optional modules.
 - Continue routing SIMP feature toggles through
   `simplib::lookup('simp_options::*', { 'default_value' => ... })` rather than
