@@ -393,6 +393,8 @@ Data type: `Boolean`
 EL10+ requires a domain to be configured in order for SSSD to start.
 This parameter will be managed in hieradata by default.
 
+Default value: `true`
+
 ##### <a name="-sssd--config--sssd_config_dir_mode"></a>`sssd_config_dir_mode`
 
 Data type: `String`
@@ -400,12 +402,16 @@ Data type: `String`
 The mode to set on the /etc/sssd/conf.d directory and, recursively,
 on the files within it
 
+Default value: `'g-w,o-rw'`
+
 ##### <a name="-sssd--config--sssd_config_file_params"></a>`sssd_config_file_params`
 
 Data type: `Hash`
 
 A hash of parameters to apply to all files managed in /etc/sssd and /etc/sssd/conf.d.
 This should include at least the owner, group, and mode parameters.
+
+Default value: `{ 'owner' => 'root', 'group' => 'sssd', 'mode' => '0640' }`
 
 ### <a name="sssd--config--ipa_domain"></a>`sssd::config::ipa_domain`
 
@@ -1302,6 +1308,8 @@ Default value: `undef`
 Data type: `Boolean`
 
 If true, a systemd drop-in file will be created to ensure the sssd-sudo service runs as root.
+
+Default value: `false`
 
 ## Defined types
 
@@ -2884,7 +2892,6 @@ The following parameters are available in the `sssd::provider::ldap` defined typ
 * [`app_pki_ca_dir`](#-sssd--provider--ldap--app_pki_ca_dir)
 * [`app_pki_key`](#-sssd--provider--ldap--app_pki_key)
 * [`app_pki_cert`](#-sssd--provider--ldap--app_pki_cert)
-* [`strip_128_bit_ciphers`](#-sssd--provider--ldap--strip_128_bit_ciphers)
 * [`ldap_tls_cipher_suite`](#-sssd--provider--ldap--ldap_tls_cipher_suite)
 * [`ldap_id_use_start_tls`](#-sssd--provider--ldap--ldap_id_use_start_tls)
 * [`ldap_id_mapping`](#-sssd--provider--ldap--ldap_id_mapping)
@@ -3646,12 +3653,6 @@ Data type: `Optional[Stdlib::Absolutepath]`
 
 
 Default value: `undef`
-
-##### <a name="-sssd--provider--ldap--strip_128_bit_ciphers"></a>`strip_128_bit_ciphers`
-
-
-
-Default value: `true`
 
 ##### <a name="-sssd--provider--ldap--ldap_tls_cipher_suite"></a>`ldap_tls_cipher_suite`
 

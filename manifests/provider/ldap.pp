@@ -124,7 +124,6 @@
 # @param app_pki_ca_dir
 # @param app_pki_key
 # @param app_pki_cert
-# @param strip_128_bit_ciphers
 # @param ldap_tls_cipher_suite
 # @param ldap_id_use_start_tls
 # @param ldap_id_mapping
