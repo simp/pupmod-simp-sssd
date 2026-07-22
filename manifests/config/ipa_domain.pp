@@ -17,7 +17,7 @@ class sssd::config::ipa_domain {
     }
 
     if empty($_ipa_domain) or empty($_ipa_servers) {
-      fail('sssd::ipa_domain_name and sssd::ipa_servers must be set when sssd::force_ipa_domain is true and the ipa fact does not provide them')
+      fail('The IPA domain and server(s) must be provided by the ipa fact or set via sssd::ipa_domain_name and sssd::ipa_servers')
     }
 
     sssd::domain { $_ipa_domain:

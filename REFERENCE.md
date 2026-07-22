@@ -389,7 +389,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--ipa_servers"></a>`ipa_servers`
 
-Data type: `Optional[Array[Simplib::Hostname,1]]`
+Data type: `Optional[Array[Simplib::Host,1]]`
 
 The IPA servers to use when ``force_ipa_domain`` is enabled and
 ``$facts['ipa']['server']`` is not available.

@@ -131,7 +131,7 @@ describe 'sssd::config::ipa_domain' do
           end
           let(:facts) { os_facts }
 
-          it { is_expected.to compile.and_raise_error(%r{sssd::ipa_domain_name must be set}) }
+          it { is_expected.to compile.and_raise_error(%r{The IPA domain must be provided}) }
         end
       end
     end

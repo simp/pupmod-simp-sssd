@@ -34,12 +34,12 @@ class sssd::config (
 
   include $module_name
 
-  if $sssd::auto_add_ipa_domain and ($facts['ipa'] or $sssd::force_ipa_domain) {
+  if $sssd::auto_add_ipa_domain and ($facts.dig('ipa', 'connected') or $sssd::force_ipa_domain) {
     # this host has joined an IPA domain, or the operator is forcing the
     # IPA domain to be configured ahead of the join
     $_ipa_domain_name = pick_default($facts.dig('ipa', 'domain'), $sssd::ipa_domain_name)
     if empty($_ipa_domain_name) {
-      fail('sssd::ipa_domain_name must be set when sssd::force_ipa_domain is true and the ipa fact is unavailable')
+      fail('The IPA domain must be provided by the ipa fact or set via sssd::ipa_domain_name')
     }
     $_domains = unique(concat($sssd::domains, $_ipa_domain_name))
     include 'sssd::config::ipa_domain'

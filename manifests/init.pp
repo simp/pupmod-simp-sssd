@@ -145,7 +145,7 @@ class sssd (
   Boolean                       $auto_add_ipa_domain   = true,
   Boolean                       $force_ipa_domain      = false,
   Optional[String[1]]           $ipa_domain_name       = undef,
-  Optional[Array[Simplib::Hostname,1]] $ipa_servers     = undef,
+  Optional[Array[Simplib::Host,1]] $ipa_servers         = undef,
   Optional[String[1]]           $custom_config         = undef,
 ) {
   include 'sssd::install'
