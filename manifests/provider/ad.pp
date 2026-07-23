@@ -85,6 +85,8 @@
 # @param ldap_use_tokengroups
 # @param ldap_group_objectsid
 # @param ldap_user_objectsid
+# @param ldap_user_certificate
+#   The LDAP attribute that holds the user certificate used for smartcard authentication.
 # @param ldap_user_extra_attrs
 #   Can be used to enable public key storage for ssh
 #   When used this way, set this param and param ldap_user_ssh_public_key
@@ -147,6 +149,7 @@ define sssd::provider::ad (
   Boolean                                                    $ldap_use_tokengroups                     = true,
   Optional[String[1]]                                        $ldap_group_objectsid                     = undef,
   Optional[String[1]]                                        $ldap_user_objectsid                      = undef,
+  Optional[String[1]]                                        $ldap_user_certificate                    = undef,
   Optional[String[1]]                                        $ldap_user_extra_attrs                    = undef,
   Optional[String[1]]                                        $ldap_user_ssh_public_key                 = undef,
 ) {
@@ -195,6 +198,7 @@ define sssd::provider::ad (
     'ldap_use_tokengroups'                     => $ldap_use_tokengroups,
     'ldap_group_objectsid'                     => $ldap_group_objectsid,
     'ldap_user_objectsid'                      => $ldap_user_objectsid,
+    'ldap_user_certificate'                    => $ldap_user_certificate,
     'ldap_user_extra_attrs'                    => $ldap_user_extra_attrs,
     'ldap_user_ssh_public_key'                 => $ldap_user_ssh_public_key,
   }
@@ -280,6 +284,7 @@ define sssd::provider::ad (
   $ldap_use_tokengroups_line = ["ldap_use_tokengroups = ${ldap_use_tokengroups}"]
   $ldap_group_objectsid_line = $ldap_group_objectsid ? { undef => [], default => ["ldap_group_objectsid = ${ldap_group_objectsid}"] }
   $ldap_user_objectsid_line = $ldap_user_objectsid ? { undef => [], default => ["ldap_user_objectsid = ${ldap_user_objectsid}"] }
+  $ldap_user_certificate_line = $ldap_user_certificate ? { undef => [], default => ["ldap_user_certificate = ${ldap_user_certificate}"] }
   $ldap_user_extra_attrs_line = $ldap_user_extra_attrs ? { undef => [], default => ["ldap_user_extra_attrs = ${ldap_user_extra_attrs}"] }
   $ldap_user_ssh_public_key_line = $ldap_user_ssh_public_key ? { undef => [], default => ["ldap_user_ssh_public_key = ${ldap_user_ssh_public_key}"] }
 
@@ -322,6 +327,7 @@ define sssd::provider::ad (
     $ldap_use_tokengroups_line +
     $ldap_group_objectsid_line +
     $ldap_user_objectsid_line +
+    $ldap_user_certificate_line +
     $ldap_user_extra_attrs_line +
     $ldap_user_ssh_public_key_line
   )

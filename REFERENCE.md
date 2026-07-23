@@ -8,7 +8,7 @@
 
 * [`sssd`](#sssd): This class allows you to install and configure SSSD.  It will forcefully disable nscd which consequently prevents you from using an nscd modu
 * [`sssd::config`](#sssd--config): Configuration class called from sssd.  Sets up the ``[sssd]`` section of '/etc/sssd/sssd.conf', and, optionally, a domain section for the IPA
-* [`sssd::config::ipa_domain`](#sssd--config--ipa_domain): Configures SSSD for the IPA domain to which the host has joined
+* [`sssd::config::ipa_domain`](#sssd--config--ipa_domain): Configures SSSD for the IPA domain to which the host has joined.  When ``sssd::force_ipa_domain`` is true, the IPA domain is configured even 
 * [`sssd::install`](#sssd--install): Install the required packages for SSSD
 * [`sssd::install::client`](#sssd--install--client): Install the sssd-client package
 * [`sssd::pki`](#sssd--pki): Class: sssd::pki  Uses the following sssd class parameters to copy certs into a directory for the sssd application  $sssd::pki   * If 'simp',
@@ -97,6 +97,7 @@ The following parameters are available in the `sssd` class:
 * [`user`](#-sssd--user)
 * [`default_domain_suffix`](#-sssd--default_domain_suffix)
 * [`override_space`](#-sssd--override_space)
+* [`certificate_verification`](#-sssd--certificate_verification)
 * [`ldap_providers`](#-sssd--ldap_providers)
 * [`enumerate_users`](#-sssd--enumerate_users)
 * [`include_svc_config`](#-sssd--include_svc_config)
@@ -107,6 +108,9 @@ The following parameters are available in the `sssd` class:
 * [`app_pki_cert_source`](#-sssd--app_pki_cert_source)
 * [`app_pki_dir`](#-sssd--app_pki_dir)
 * [`auto_add_ipa_domain`](#-sssd--auto_add_ipa_domain)
+* [`force_ipa_domain`](#-sssd--force_ipa_domain)
+* [`ipa_domain_name`](#-sssd--ipa_domain_name)
+* [`ipa_servers`](#-sssd--ipa_servers)
 * [`custom_config`](#-sssd--custom_config)
 
 ##### <a name="-sssd--authoritative"></a>`authoritative`
@@ -245,6 +249,17 @@ Data type: `Optional[String[1]]`
 
 Default value: `undef`
 
+##### <a name="-sssd--certificate_verification"></a>`certificate_verification`
+
+Data type: `Optional[String[1]]`
+
+Value of the ``certificate_verification`` option written to the ``[sssd]``
+section.  Used to tune OCSP/CRL behavior for smartcard authentication.
+Accepts a comma-separated list of tokens (e.g., ``ocsp_dgst=sha1, no_ocsp``)
+per ``sssd.conf(5)``.
+
+Default value: `undef`
+
 ##### <a name="-sssd--ldap_providers"></a>`ldap_providers`
 
 Data type: `Hash`
@@ -350,6 +365,37 @@ configure the IPA domain yourself.
 
 Default value: `true`
 
+##### <a name="-sssd--force_ipa_domain"></a>`force_ipa_domain`
+
+Data type: `Boolean`
+
+Configure sssd for the IPA domain even when the ``ipa`` fact reports
+``connected => false`` (or is absent).  Useful when pre-staging
+configuration before the host has actually joined the realm.
+
+* When the ``ipa`` fact is missing or incomplete, ``ipa_domain_name``
+  and ``ipa_servers`` must be supplied.
+
+Default value: `false`
+
+##### <a name="-sssd--ipa_domain_name"></a>`ipa_domain_name`
+
+Data type: `Optional[String[1]]`
+
+The IPA domain name to use when ``force_ipa_domain`` is enabled and
+``$facts['ipa']['domain']`` is not available.
+
+Default value: `undef`
+
+##### <a name="-sssd--ipa_servers"></a>`ipa_servers`
+
+Data type: `Optional[Array[Simplib::Host,1]]`
+
+The IPA servers to use when ``force_ipa_domain`` is enabled and
+``$facts['ipa']['server']`` is not available.
+
+Default value: `undef`
+
 ##### <a name="-sssd--custom_config"></a>`custom_config`
 
 Data type: `Optional[String[1]]`
@@ -415,7 +461,12 @@ Default value: `{ 'owner' => 'root', 'group' => 'sssd', 'mode' => '0640' }`
 
 ### <a name="sssd--config--ipa_domain"></a>`sssd::config::ipa_domain`
 
-Configures SSSD for the IPA domain to which the host has joined
+Configures SSSD for the IPA domain to which the host has joined.
+
+When ``sssd::force_ipa_domain`` is true, the IPA domain is configured even
+if the ``ipa`` fact reports ``connected => false`` or is missing entirely.
+In that case ``sssd::ipa_domain_name`` and ``sssd::ipa_servers`` are used
+to fill in any values the fact does not provide.
 
 ### <a name="sssd--install"></a>`sssd::install`
 
@@ -1849,6 +1900,7 @@ The following parameters are available in the `sssd::provider::ad` defined type:
 * [`ldap_use_tokengroups`](#-sssd--provider--ad--ldap_use_tokengroups)
 * [`ldap_group_objectsid`](#-sssd--provider--ad--ldap_group_objectsid)
 * [`ldap_user_objectsid`](#-sssd--provider--ad--ldap_user_objectsid)
+* [`ldap_user_certificate`](#-sssd--provider--ad--ldap_user_certificate)
 * [`ldap_user_extra_attrs`](#-sssd--provider--ad--ldap_user_extra_attrs)
 * [`ldap_user_ssh_public_key`](#-sssd--provider--ad--ldap_user_ssh_public_key)
 
@@ -2259,6 +2311,14 @@ Default value: `undef`
 Data type: `Optional[String[1]]`
 
 
+
+Default value: `undef`
+
+##### <a name="-sssd--provider--ad--ldap_user_certificate"></a>`ldap_user_certificate`
+
+Data type: `Optional[String[1]]`
+
+The LDAP attribute that holds the user certificate used for smartcard authentication.
 
 Default value: `undef`
 
@@ -2820,7 +2880,7 @@ The following parameters are available in the `sssd::provider::ldap` defined typ
 * [`ldap_default_bind_dn`](#-sssd--provider--ldap--ldap_default_bind_dn)
 * [`ldap_default_authtok_type`](#-sssd--provider--ldap--ldap_default_authtok_type)
 * [`ldap_default_authtok`](#-sssd--provider--ldap--ldap_default_authtok)
-* [`ldap_user_cert`](#-sssd--provider--ldap--ldap_user_cert)
+* [`ldap_user_certificate`](#-sssd--provider--ldap--ldap_user_certificate)
 * [`ldap_user_object_class`](#-sssd--provider--ldap--ldap_user_object_class)
 * [`ldap_user_name`](#-sssd--provider--ldap--ldap_user_name)
 * [`ldap_user_uid_number`](#-sssd--provider--ldap--ldap_user_uid_number)
@@ -3078,7 +3138,7 @@ Data type: `Optional[String[1]]`
 
 Default value: `simplib::lookup('simp_options::ldap::bind_pw', { 'default_value' => undef })`
 
-##### <a name="-sssd--provider--ldap--ldap_user_cert"></a>`ldap_user_cert`
+##### <a name="-sssd--provider--ldap--ldap_user_certificate"></a>`ldap_user_certificate`
 
 Data type: `Optional[String[1]]`
 

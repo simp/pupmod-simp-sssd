@@ -105,13 +105,13 @@ describe 'sssd::provider::ldap' do
         end
       end
 
-      context 'with ldap_user_cert set' do
-        let(:params) { { ldap_user_cert: 'userCertificate;binary' } }
+      context 'with ldap_user_certificate set' do
+        let(:params) { { ldap_user_certificate: 'userCertificate;binary' } }
 
         it { is_expected.to compile.with_all_deps }
         it {
           is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
-            .with_content(%r{ldap_user_cert = userCertificate;binary})
+            .with_content(%r{ldap_user_certificate = userCertificate;binary})
         }
       end
 

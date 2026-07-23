@@ -53,6 +53,7 @@ describe 'sssd' do
   let(:ipa_fact_joined) do
     {
       ipa: {
+        connected: true,
         domain: 'ipa.example.com',
         server: 'ipaserver.example.com',
       },
@@ -98,6 +99,24 @@ describe 'sssd' do
             it_behaves_like 'a sssd::config', default_content_with_domains.gsub('FILE, LDAP', 'FILE, LDAP, ipa.example.com')
             it { is_expected.to contain_class('sssd::config::ipa_domain') }
           end
+
+          context 'with the ipa fact present but not connected' do
+            let(:facts) do
+              os_facts.merge(
+                ipa: {
+                  domain: 'ipa.example.com',
+                  server: 'ipaserver.example.com',
+                  connected: false,
+                },
+              )
+            end
+
+            # The domain must not be added to the domains list nor
+            # sssd::config::ipa_domain included, otherwise sssd.conf would
+            # reference an unconfigured domain.
+            it_behaves_like 'a sssd::config', default_content_with_domains
+            it { is_expected.not_to contain_class('sssd::config::ipa_domain') }
+          end
         end
 
         context 'with all optional sssd config parameters specified' do
@@ -114,6 +133,7 @@ describe 'sssd' do
               user: 'sssduser',
               default_domain_suffix: 'example.com',
               override_space: '__',
+              certificate_verification: 'ocsp_dgst=sha1, no_ocsp',
             }
           end
 
@@ -132,6 +152,7 @@ describe 'sssd' do
             user = sssduser
             default_domain_suffix = example.com
             override_space = __
+            certificate_verification = ocsp_dgst=sha1, no_ocsp
             enable_files_domain = false
             debug_level = 3
             debug_timestamps = true
