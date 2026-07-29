@@ -9,6 +9,11 @@
 #   The name of the associated domain section in the configuration file.
 #
 # @param krb5_server
+#   One or more KDCs (optionally `host:port`). Rendered as a comma-separated
+#   `krb5_server` list.
+# @param krb5_backup_server
+#   One or more backup KDCs (optionally `host:port`). Rendered as a
+#   comma-separated `krb5_backup_server` list.
 # @param krb5_realm
 # @param debug_level
 # @param debug_timestamps
@@ -29,7 +34,8 @@
 #
 define sssd::provider::krb5 (
   String                                 $krb5_realm,
-  Optional[Simplib::Host]                $krb5_server                    = undef,
+  Optional[Sssd::Krb5Server]             $krb5_server                    = undef,
+  Optional[Sssd::Krb5Server]             $krb5_backup_server             = undef,
   Optional[Sssd::DebugLevel]             $debug_level                    = undef,
   Boolean                                $debug_timestamps               = true,
   Boolean                                $debug_microseconds             = false,
@@ -51,8 +57,12 @@ define sssd::provider::krb5 (
   $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
   $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
 
-  # Kerberos server settings
-  $krb5_server_line = $krb5_server ? { undef => [], default => ["krb5_server = ${krb5_server}"] }
+  # Kerberos server settings (accept a single host or an array; render as a
+  # comma-separated list)
+  $_krb5_servers = [$krb5_server].flatten
+  $_krb5_backup_servers = [$krb5_backup_server].flatten
+  $krb5_server_line = $krb5_server ? { undef => [], default => ["krb5_server = ${_krb5_servers.join(',')}"] }
+  $krb5_backup_server_line = $krb5_backup_server ? { undef => [], default => ["krb5_backup_server = ${_krb5_backup_servers.join(',')}"] }
   $krb5_realm_line = ["krb5_realm = ${krb5_realm}"]
   $krb5_kpasswd_line = $krb5_kpasswd ? { undef => [], default => ["krb5_kpasswd = ${krb5_kpasswd}"] }
 
@@ -80,6 +90,7 @@ define sssd::provider::krb5 (
     $debug_timestamps_line +
     $debug_microseconds_line +
     $krb5_server_line +
+    $krb5_backup_server_line +
     $krb5_realm_line +
     $krb5_kpasswd_line +
     $krb5_ccachedir_line +

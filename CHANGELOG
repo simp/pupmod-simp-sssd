@@ -1,3 +1,12 @@
+* Wed Jul 29 2026 Nicholas Markowski <nicholas.markowski@onyxpoint.com> - 10.1.0
+- Support multiple servers and a backup server in `sssd::provider::krb5`:
+  `krb5_server` now accepts one or more hosts (optionally `host:port`), and a
+  new `krb5_backup_server` parameter was added. Both render as comma-separated
+  lists.
+- Add the `Sssd::Krb5Server` type and use it for the `krb5_server` /
+  `krb5_backup_server` parameters of both `sssd::provider::krb5` and
+  `sssd::provider::ldap`, harmonizing their types.
+
 * Thu Jul 16 2026 Nicholas Markowski <nmarkowski17.misc@gmail.com> - 10.0.0
 - Rename the ldap provider parameter `ldap_user_cert` to `ldap_user_certificate`
   so that the value is emitted under the correct `sssd-ldap(5)` key (#206).
