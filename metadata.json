@@ -1,6 +1,6 @@
 {
   "name": "simp-sssd",
-  "version": "10.1.0",
+  "version": "10.1.1",
   "author": "SIMP Team",
   "summary": "Manages SSSD",
   "license": "Apache-2.0",
@@ -14,26 +14,26 @@
   "dependencies": [
     {
       "name": "puppet/systemd",
-      "version_requirement": ">= 4.0.2 < 10.0.0"
+      "version_requirement": ">= 4.0.2 < 11.0.0"
     },
     {
       "name": "puppetlabs/stdlib",
-      "version_requirement": ">= 8.0.0 < 10.0.0"
+      "version_requirement": ">= 8.0.0 < 11.0.0"
     },
     {
       "name": "simp/simplib",
-      "version_requirement": ">= 4.9.0 < 6.0.0"
+      "version_requirement": ">= 4.9.0 < 8.0.0"
     }
   ],
   "simp": {
     "optional_dependencies": [
       {
         "name": "simp/auditd",
-        "version_requirement": ">= 8.5.0 < 10.0.0"
+        "version_requirement": ">= 8.5.0 < 11.0.0"
       },
       {
         "name": "simp/pki",
-        "version_requirement": ">= 6.2.0 < 7.0.0"
+        "version_requirement": ">= 6.2.0 < 8.0.0"
       }
     ]
   },
