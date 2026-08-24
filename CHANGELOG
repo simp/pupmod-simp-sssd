@@ -1,3 +1,6 @@
+* Mon Aug 24 2026 Steven Pritchard <steve@sicura.us> - 10.1.1
+- [puppetsync] Update metadata.json dependency ranges from the Forge
+
 * Wed Jul 29 2026 Nicholas Markowski <nicholas.markowski@onyxpoint.com> - 10.1.0
 - Support multiple servers and a backup server in `sssd::provider::krb5`:
   `krb5_server` now accepts one or more hosts (optionally `host:port`), and a
