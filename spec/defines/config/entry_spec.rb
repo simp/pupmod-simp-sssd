@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'support/hiera_data_helper'
 
 describe 'sssd::config::entry' do
   context 'supported operating systems' do
@@ -15,9 +14,11 @@ describe 'sssd::config::entry' do
 
         let(:title) { 'test' }
         let(:params) { { content: 'foo' } }
-        let(:hiera) { module_hiera_data(facts[:os]) }
-        let(:group) { hiera.dig('sssd::config::sssd_config_file_params', 'group') }
-        let(:mode)  { hiera.dig('sssd::config::sssd_config_file_params', 'mode') }
+        # Explicit per-release expectations: EL10 configs are group-readable
+        # by the (non-root) sssd daemon user; EL8/9 stay root-only.
+        let(:el10)  { facts[:os][:release][:major].to_s == '10' }
+        let(:group) { el10 ? 'sssd' : 'root' }
+        let(:mode)  { el10 ? '0640' : '0600' }
 
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to contain_class('sssd::config') }

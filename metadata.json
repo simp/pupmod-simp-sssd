@@ -1,6 +1,6 @@
 {
   "name": "simp-sssd",
-  "version": "10.1.1",
+  "version": "10.1.2",
   "author": "SIMP Team",
   "summary": "Manages SSSD",
   "license": "Apache-2.0",
@@ -75,21 +75,6 @@
         "8",
         "9",
         "10"
-      ]
-    },
-    {
-      "operatingsystem": "Debian",
-      "operatingsystemrelease": [
-        "11",
-        "12",
-        "13"
-      ]
-    },
-    {
-      "operatingsystem": "Ubuntu",
-      "operatingsystemrelease": [
-        "22.04",
-        "24.04"
       ]
     }
   ],

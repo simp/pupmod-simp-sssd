@@ -87,6 +87,23 @@ describe 'sssd' do
         expect(response['service']['sssd-sudo.socket']['enable']).to eq('true')
       end
 
+      it 'creates the sssd-sudo run-as-root drop-in' do
+        on(host, 'test -f /etc/systemd/system/sssd-sudo.service.d/00_sssd_sudo_user_group.conf')
+      end
+
+      it 'sets the expected ownership and mode on sssd.conf' do
+        # On EL10 sssd runs as sssd:sssd and the config must be group-readable;
+        # EL8/9 run sssd as root and keep the config root-only.  Compare the
+        # release as an integer: a string compare would sort '10' before '8'.
+        expected = if fact_on(host, 'os.release.major').to_s.to_i >= 10
+                     'root:sssd 640'
+                   else
+                     'root:root 600'
+                   end
+        stat = on(host, 'stat -c "%U:%G %a" /etc/sssd/sssd.conf').stdout.strip
+        expect(stat).to eq(expected)
+      end
+
       it 'does not change the system after reboot' do
         host.reboot
         apply_manifest_on(host, manifest, catch_changes: true)

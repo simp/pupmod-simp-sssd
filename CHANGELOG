@@ -1,3 +1,10 @@
+* Wed Sep 02 2026 Sergey Ivanov <seriv@cs.umd.edu> - 10.1.2
+- Enable the sssd-sudo run-as-root systemd drop-in on EL10
+  (`sssd::service::sudo::manage_group_dropin_file: true`), matching EL8/9.
+  Without it the sssd-sudo responder cannot read /var/lib/sss/db/config.ldb.
+- Add explicit per-OS-release spec assertions for the sssd.conf/config
+  directory permissions and the sudo drop-in data.
+
 * Mon Aug 24 2026 Steven Pritchard <steve@sicura.us> - 10.1.1
 - [puppetsync] Update metadata.json dependency ranges from the Forge
 
