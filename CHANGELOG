@@ -1,3 +1,19 @@
+* Wed Sep 02 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.1.2
+- Test hardening only, no functional change.  Investigating whether EL10
+  needs the sssd-sudo run-as-root systemd drop-in (raised by Sergey Ivanov
+  in #198) showed the opposite: EL10's shipped sssd-sudo.service runs the
+  whole stack as sssd and sets CapabilityBoundingSet= (empty), so a
+  User=root override cannot read the sssd-owned 0600 config.ldb and the
+  responder crash-loops.  EL10 keeps the common.yaml defaults; the drop-in
+  stays EL8/9-only.
+- Add explicit per-OS-release spec assertions (sudo drop-in presence,
+  sssd.conf and config directory permissions, LOCAL base domain) instead of
+  expectations derived from the module's own Hiera data.
+- Strengthen the acceptance suite: verify sssd.conf ownership/mode, the
+  per-release drop-in state, and that a socket-triggered sssd-sudo responder
+  actually starts and stays up (the socket unit alone is 'active' even when
+  the responder cannot start).
+
 * Mon Aug 24 2026 Steven Pritchard <steve@sicura.us> - 10.1.1
 - [puppetsync] Update metadata.json dependency ranges from the Forge
 

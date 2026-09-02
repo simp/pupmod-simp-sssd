@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'support/hiera_data_helper'
 
 def default_content_with_domains
   <<~EOM
@@ -17,10 +16,15 @@ end
 
 shared_examples_for 'a sssd::config' do |content|
   it { is_expected.to compile.with_all_deps }
-  let(:hiera)    { module_hiera_data(facts[:os]) }
-  let(:dir_mode) { hiera['sssd::config::sssd_config_dir_mode'] }
-  let(:group)    { hiera.dig('sssd::config::sssd_config_file_params', 'group') }
-  let(:mode)     { hiera.dig('sssd::config::sssd_config_file_params', 'mode') }
+
+  # The expected permissions are stated explicitly per OS release instead of
+  # being derived from the module's own Hiera data, so a data regression
+  # fails these tests.  On EL10 sssd runs as sssd:sssd and the config must
+  # be group-readable; EL8/9 run sssd as root and keep the config root-only.
+  let(:el10)     { facts[:os][:release][:major].to_i >= 10 }
+  let(:dir_mode) { el10 ? 'g-w,o-rw' : 'go-rw' }
+  let(:group)    { el10 ? 'sssd' : 'root' }
+  let(:mode)     { el10 ? '0640' : '0600' }
 
   it {
     is_expected.to contain_file('/etc/sssd').with(
@@ -71,6 +75,15 @@ describe 'sssd' do
 
           # make sure no IPA domains are defined
           it { is_expected.not_to contain_class('sssd::config::ipa_domain') }
+
+          # EL10 requires at least one configured domain for sssd to start,
+          # so common.yaml enables sssd::config::manage_base_domain and the
+          # LOCAL proxy domain is created; EL8/9 override it off.
+          if os_facts[:os][:release][:major].to_i >= 10
+            it { is_expected.to contain_sssd__domain('LOCAL').with_id_provider('proxy') }
+          else
+            it { is_expected.not_to contain_sssd__domain('LOCAL') }
+          end
           it_behaves_like 'a sssd::config', <<~EOM
             [sssd]
             # sssd::config

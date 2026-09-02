@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'support/hiera_data_helper'
 
 describe 'sssd::service::sudo' do
   context 'supported operating systems' do
@@ -10,9 +9,17 @@ describe 'sssd::service::sudo' do
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to create_sssd__config__entry('puppet_service_sudo').without_content(%r{=\s*$}) }
 
-        manage_dropin = module_hiera_data(os_facts[:os]).fetch('sssd::service::sudo::manage_group_dropin_file', false)
-
-        if manage_dropin
+        # The run-as-root drop-in works around the EL8/9 split where sssd
+        # itself runs as root (root-owned config.ldb) but the socket-activated
+        # responder does not (SSSD/sssd#5781).  On EL10 the whole stack runs
+        # as sssd and the shipped unit sets CapabilityBoundingSet= (empty), so
+        # a User=root override cannot read the sssd-owned 0600 config.ldb and
+        # the responder crash-loops — the drop-in must stay OFF there.  These
+        # expectations are deliberately not derived from the module's own
+        # Hiera data, so a data regression fails this test.
+        if os_facts[:os][:release][:major].to_i >= 10
+          it { is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf') }
+        else
           it {
             is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf')
               .with_unit('sssd-sudo.service')
@@ -22,12 +29,15 @@ describe 'sssd::service::sudo' do
               .with_content(%r{Group=root})
               .with_selinux_ignore_defaults(true)
           }
-        else
-          it {
-            is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf')
-          }
-
         end
+
+        context 'with manage_group_dropin_file disabled' do
+          let(:hieradata) { 'sssd__service__sudo_no_dropin' }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf') }
+        end
+
         it {
           is_expected.to create_service('sssd-sudo.socket')
             .with_enable(true)

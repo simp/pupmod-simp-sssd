@@ -1,0 +1,2 @@
+---
+sssd::service::sudo::manage_group_dropin_file: false
