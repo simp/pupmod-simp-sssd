@@ -7,12 +7,14 @@ describe 'sssd::service::ifp' do
         let(:facts) { os_facts }
 
         context 'with default params' do
-          expected = <<~EXPECTED
-            [ifp]
-            # sssd::service::ifp
-            debug_timestamps = true
-            debug_microseconds = false
-          EXPECTED
+          let(:expected) do
+            <<~EXPECTED
+              [ifp]
+              # sssd::service::ifp
+              debug_timestamps = true
+              debug_microseconds = false
+            EXPECTED
+          end
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd::service') }
@@ -28,15 +30,17 @@ describe 'sssd::service::ifp' do
             }
           end
 
-          expected = <<~EXPECTED
-            [ifp]
-            # sssd::service::ifp
-            debug_timestamps = true
-            debug_microseconds = false
-            allowed_uids = me, you
-            user_attributes = x, y, z
-            wildcard_limit = 5
-          EXPECTED
+          let(:expected) do
+            <<~EXPECTED
+              [ifp]
+              # sssd::service::ifp
+              debug_timestamps = true
+              debug_microseconds = false
+              allowed_uids = me, you
+              user_attributes = x, y, z
+              wildcard_limit = 5
+            EXPECTED
+          end
 
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd::service') }

@@ -52,7 +52,7 @@
 # @param ldap_default_bind_dn
 # @param ldap_default_authtok_type
 # @param ldap_default_authtok
-# @param ldap_user_cert
+# @param ldap_user_certificate
 # @param ldap_user_object_class
 # @param ldap_user_name
 # @param ldap_user_uid_number
@@ -124,7 +124,6 @@
 # @param app_pki_ca_dir
 # @param app_pki_key
 # @param app_pki_cert
-# @param strip_128_bit_ciphers
 # @param ldap_tls_cipher_suite
 # @param ldap_id_use_start_tls
 # @param ldap_id_mapping
@@ -209,7 +208,7 @@ define sssd::provider::ldap (
   Optional[String[1]]                   $ldap_default_bind_dn              = simplib::lookup('simp_options::ldap::bind_dn', { 'default_value' => undef }),
   Optional[Sssd::LdapDefaultAuthtok]    $ldap_default_authtok_type         = undef,
   Optional[String[1]]                   $ldap_default_authtok              = simplib::lookup('simp_options::ldap::bind_pw', { 'default_value' => undef }),
-  Optional[String[1]]                   $ldap_user_cert                    = undef,
+  Optional[String[1]]                   $ldap_user_certificate             = undef,
   Optional[String[1]]                   $ldap_user_object_class            = undef,
   Optional[String[1]]                   $ldap_user_name                    = undef,
   Optional[String[1]]                   $ldap_user_uid_number              = undef,
@@ -294,8 +293,8 @@ define sssd::provider::ldap (
   Optional[Stdlib::Absolutepath]        $ldap_krb5_keytab                  = undef,
   Boolean                               $ldap_krb5_init_creds              = true,
   Optional[Integer]                     $ldap_krb5_ticket_lifetime         = undef,
-  Optional[Array[String[1],1]]          $krb5_server                       = undef,
-  Optional[Array[String[1],1]]          $krb5_backup_server                = undef,
+  Optional[Sssd::Krb5Server]            $krb5_server                       = undef,
+  Optional[Sssd::Krb5Server]            $krb5_backup_server                = undef,
   Optional[String[1]]                   $krb5_realm                        = undef,
   Boolean                               $krb5_canonicalize                 = false,
   Boolean                               $krb5_use_kdcinfo                  = true,
@@ -399,7 +398,7 @@ define sssd::provider::ldap (
     'ldap_default_bind_dn',
     'ldap_default_authtok_type',
     'ldap_default_authtok',
-    'ldap_user_cert',
+    'ldap_user_certificate',
     'ldap_user_object_class',
     'ldap_user_name',
     'ldap_user_uid_number',
@@ -545,7 +544,7 @@ define sssd::provider::ldap (
     'ldap_default_bind_dn'                       => $ldap_default_bind_dn,
     'ldap_default_authtok_type'                  => $ldap_default_authtok_type,
     'ldap_default_authtok'                       => $ldap_default_authtok,
-    'ldap_user_cert'                             => $ldap_user_cert,
+    'ldap_user_certificate'                      => $ldap_user_certificate,
     'ldap_user_object_class'                     => $ldap_user_object_class,
     'ldap_user_name'                             => $ldap_user_name,
     'ldap_user_uid_number'                       => $ldap_user_uid_number,
@@ -704,7 +703,10 @@ define sssd::provider::ldap (
   $array_config_lines = $array_params.filter |$param, $config| {
     $config['value'] != undef and !$config['value'].empty
   }.map |$param, $config| {
-    "${param} = ${Array($config['value']).unique.join($config['separator'])}"
+    # flatten to accept a single value or an array without splitting a single
+    # string into characters (which Array() would do)
+    $_values = [$config['value']].flatten.unique
+    "${param} = ${_values.join($config['separator'])}"
   }
 
   # Combine all configuration lines and sort them

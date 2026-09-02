@@ -1,25 +1,27 @@
 require 'spec_helper_acceptance'
 
 describe 'sssd' do
-  hiera = {
-    'simp_options::pki'           => true,
-    'simp_options::pki::source'   => '/etc/pki/simp-testing/pki',
-    'simp_options::clamav'        => true,
-    'simp_options::firewall'      => true,
-    'simp_options::haveged'       => true,
-    'simp_options::logrotate'     => true,
-    'simp_options::pam'           => true,
-    'simp_options::selinux'       => true,
-    'simp_options::stunnel'       => true,
-    'simp_options::syslog'        => true,
-    'simp_options::ldap::uri'     => ['ldap://FIXME'],
-    'simp_options::ldap::bind_dn' => 'cn=Administrator,cn=Users,dc=test,dc=case',
-    'simp_options::ldap::base_dn' => 'dc=test,dc=case',
-    'simp_options::ldap::bind_pw' => '<PASSWORD>',
-    # This causes a lot of noise and reboots
-    'sssd::auditd'                => false,
-    'sssd::domains'               => [ 'local', 'LDAP' ],
-  }
+  let(:hiera) do
+    {
+      'simp_options::pki'           => true,
+      'simp_options::pki::source'   => '/etc/pki/simp-testing/pki',
+      'simp_options::clamav'        => true,
+      'simp_options::firewall'      => true,
+      'simp_options::haveged'       => true,
+      'simp_options::logrotate'     => true,
+      'simp_options::pam'           => true,
+      'simp_options::selinux'       => true,
+      'simp_options::stunnel'       => true,
+      'simp_options::syslog'        => true,
+      'simp_options::ldap::uri'     => ['ldap://FIXME'],
+      'simp_options::ldap::bind_dn' => 'cn=Administrator,cn=Users,dc=test,dc=case',
+      'simp_options::ldap::base_dn' => 'dc=test,dc=case',
+      'simp_options::ldap::bind_pw' => '<PASSWORD>',
+      # This causes a lot of noise and reboots
+      'sssd::auditd'                => false,
+      'sssd::domains'               => [ 'local', 'LDAP' ],
+    }
+  end
 
   let(:manifest) do
     <<~EOF
@@ -55,12 +57,14 @@ describe 'sssd' do
     hosts.each do |host|
       let(:local_config) { '' }
 
-      local_hiera = hiera.merge(
-        {
-          'sssd::enable_files_domain' => true,
-          'sssd::domains' => [ 'LDAP' ],
-        },
-      )
+      let(:local_hiera) do
+        hiera.merge(
+          {
+            'sssd::enable_files_domain' => true,
+            'sssd::domains' => [ 'LDAP' ],
+          },
+        )
+      end
 
       it 'applies enough to generate sssd.conf' do
         set_hieradata_on(host, local_hiera)

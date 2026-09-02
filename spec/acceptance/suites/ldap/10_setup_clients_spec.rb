@@ -3,11 +3,11 @@ require 'spec_helper_acceptance'
 test_name 'Setup SSSD clients to talk to LDAP'
 
 describe 'LDAP' do
-  ldap_servers = hosts_with_role(hosts, 'ldap')
-  clients      = hosts_with_role(hosts, 'client')
-  server_fqdn  = fact_on(ldap_servers.first, 'networking.fqdn')
-  domain       = fact_on(ldap_servers.first, 'networking.domain')
-  base_dn      = domain.split('.').map { |d| "DC=#{d}" }.join(',')
+  let(:ldap_servers) { hosts_with_role(hosts, 'ldap') }
+  let(:clients) { hosts_with_role(hosts, 'client') }
+  let(:server_fqdn) { fact_on(ldap_servers.first, 'networking.fqdn') }
+  let(:domain) { fact_on(ldap_servers.first, 'networking.domain') }
+  let(:base_dn) { domain.split('.').map { |d| "DC=#{d}" }.join(',') }
 
   let(:client_manifest) do
     <<~EOS

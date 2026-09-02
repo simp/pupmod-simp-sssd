@@ -1,17 +1,16 @@
 ---
 HOSTS:
-  server-almalinux9.simp.beaker:
+  server-centos9.simp.beaker:
     roles:
-    - default
     - ldap
     - client
     - el9
     platform: el-9-x86_64
-    box: almalinux/9
+    box: generic/centos9s
     hypervisor: "<%= ENV.fetch('BEAKER_HYPERVISOR', 'vagrant') %>"
     vagrant_memsize: 2048
     vagrant_cpus: 2
-    family: almalinux-cloud/almalinux-9
+    family: centos-cloud/centos-stream-9
     gce_machine_type: n1-standard-2
 CONFIG:
   log_level: verbose

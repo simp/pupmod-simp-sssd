@@ -13,10 +13,10 @@
 # @param manage_base_domain
 #   EL10+ requires a domain to be configured in order for SSSD to start.
 #   This parameter will be managed in hieradata by default.
-#   
 #
 # @param sssd_config_dir_mode
-#   The mode to set on the /etc/sssd/conf.d directory
+#   The mode to set on the /etc/sssd/conf.d directory and, recursively,
+#   on the files within it
 #
 # @param sssd_config_file_params
 #   A hash of parameters to apply to all files managed in /etc/sssd and /etc/sssd/conf.d.
@@ -34,9 +34,14 @@ class sssd::config (
 
   include $module_name
 
-  if ($sssd::auto_add_ipa_domain and $facts['ipa']) {
-    # this host has joined an IPA domain
-    $_domains = unique(concat($sssd::domains, $facts['ipa']['domain']))
+  if $sssd::auto_add_ipa_domain and ($facts.dig('ipa', 'connected') or $sssd::force_ipa_domain) {
+    # this host has joined an IPA domain, or the operator is forcing the
+    # IPA domain to be configured ahead of the join
+    $_ipa_domain_name = pick_default($facts.dig('ipa', 'domain'), $sssd::ipa_domain_name)
+    if empty($_ipa_domain_name) {
+      fail('The IPA domain must be provided by the ipa fact or set via sssd::ipa_domain_name')
+    }
+    $_domains = unique(concat($sssd::domains, $_ipa_domain_name))
     include 'sssd::config::ipa_domain'
   }
   else {
@@ -56,8 +61,9 @@ class sssd::config (
   $_try_inotify           = $sssd::try_inotify
   $_krb5_rcache_dir       = $sssd::krb5_rcache_dir
   $_user                  = $sssd::user
-  $_default_domain_suffix = $sssd::default_domain_suffix
-  $_override_space        = $sssd::override_space
+  $_default_domain_suffix    = $sssd::default_domain_suffix
+  $_override_space           = $sssd::override_space
+  $_certificate_verification = $sssd::certificate_verification
 
   if $sssd::include_svc_config {
     $_services.each | $service | {
@@ -72,6 +78,7 @@ class sssd::config (
 
   file { '/etc/sssd/conf.d':
     ensure  => 'directory',
+    mode    => $sssd_config_dir_mode,
     purge   => $authoritative,
     recurse => true,
   }
@@ -114,6 +121,7 @@ class sssd::config (
   $user_line = $_user ? { undef => [], default => ["user = ${_user}"] }
   $default_domain_suffix_line = $_default_domain_suffix ? { undef => [], default => ["default_domain_suffix = ${_default_domain_suffix}"] }
   $override_space_line = $_override_space ? { undef => [], default => ["override_space = ${_override_space}"] }
+  $certificate_verification_line = $_certificate_verification ? { undef => [], default => ["certificate_verification = ${_certificate_verification}"] }
 
   # Debug configuration
   $debug_level_line = $_debug_level ? { undef => [], default => ["debug_level = ${_debug_level}"] }
@@ -134,6 +142,7 @@ class sssd::config (
     $user_line +
     $default_domain_suffix_line +
     $override_space_line +
+    $certificate_verification_line +
     $enable_files_domain_line +
     $debug_level_line +
     $debug_timestamps_line +

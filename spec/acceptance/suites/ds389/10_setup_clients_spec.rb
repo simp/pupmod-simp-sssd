@@ -3,10 +3,10 @@ require 'spec_helper_acceptance'
 test_name 'Setup SSSD clients to talk to LDAP'
 
 describe '389ds' do
-  ldap_servers = hosts_with_role(hosts, 'ldap')
-  clients      = hosts_with_role(hosts, 'client')
+  let(:ldap_servers) { hosts_with_role(hosts, 'ldap') }
+  let(:clients) { hosts_with_role(hosts, 'client') }
   # base dn must match what is set in server setup.
-  base_dn      = 'dc=test,dc=org'
+  let(:base_dn) { 'dc=test,dc=org' }
 
   let(:client_manifest) do
     <<~EOS
@@ -52,10 +52,10 @@ describe '389ds' do
   end
 
   ldap_servers.each do |server|
-    server_fqdn  = fact_on(server, 'networking.fqdn')
-    domain       = fact_on(server, 'networking.domain')
     clients.each do |client|
       context 'on each client set up sssd' do
+        let(:server_fqdn) { fact_on(server, 'networking.fqdn') }
+        let(:domain) { fact_on(server, 'networking.domain') }
         # set sssd domains for template
         let(:sssd_extra) do
           <<~EOM

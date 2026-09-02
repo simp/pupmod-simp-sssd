@@ -33,6 +33,26 @@ describe 'sssd::provider::krb5' do
         }
       end
 
+      context 'with multiple krb5 servers and a backup server' do
+        let(:params) do
+          {
+            krb5_server: ['kdc1.example.domain', 'kdc2.example.domain:88'],
+            krb5_backup_server: 'kdc3.example.domain',
+            krb5_realm: 'EXAMPLE.REALM',
+          }
+        end
+
+        it { is_expected.to compile.with_all_deps }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_krb5")
+            .with_content(%r{^krb5_server = kdc1\.example\.domain,kdc2\.example\.domain:88$})
+        }
+        it {
+          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_krb5")
+            .with_content(%r{^krb5_backup_server = kdc3\.example\.domain$})
+        }
+      end
+
       context 'with optional parameters' do
         let(:params) do
           {

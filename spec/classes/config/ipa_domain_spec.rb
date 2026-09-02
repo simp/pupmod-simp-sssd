@@ -64,6 +64,75 @@ describe 'sssd::config::ipa_domain' do
           it { is_expected.not_to contain_sssd__domain('ipa.example.com') }
           it { is_expected.not_to contain_sssd__provider__ipa('ipa.example.com') }
         end
+
+        context 'when forcing the IPA domain with the ipa fact present but not connected' do
+          let(:pre_condition) do
+            <<~PRECOND
+              function assert_private {}
+              class { 'sssd':
+                force_ipa_domain => true,
+                ipa_servers      => ['fallback.ipa.example.com'],
+              }
+            PRECOND
+          end
+
+          let(:facts) do
+            os_facts.merge(
+              ipa: {
+                basedn: 'dc=example,dc=com',
+                domain: 'ipa.example.com',
+                realm: 'EXAMPLE.COM',
+                connected: false,
+              },
+            )
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it do
+            is_expected.to contain_sssd__domain('ipa.example.com')
+              .with_id_provider('ipa')
+          end
+          it do
+            is_expected.to contain_sssd__provider__ipa('ipa.example.com')
+              .with_ipa_domain('ipa.example.com')
+              .with_ipa_server(['fallback.ipa.example.com'])
+          end
+        end
+
+        context 'when forcing the IPA domain with no ipa fact and override params' do
+          let(:pre_condition) do
+            <<~PRECOND
+              function assert_private {}
+              class { 'sssd':
+                force_ipa_domain => true,
+                ipa_domain_name  => 'staged.example.com',
+                ipa_servers      => ['ipa1.example.com', 'ipa2.example.com'],
+              }
+            PRECOND
+          end
+          let(:facts) { os_facts }
+
+          it { is_expected.to compile.with_all_deps }
+          it do
+            is_expected.to contain_sssd__provider__ipa('staged.example.com')
+              .with_ipa_domain('staged.example.com')
+              .with_ipa_server(['ipa1.example.com', 'ipa2.example.com'])
+          end
+        end
+
+        context 'when forcing the IPA domain without enough information' do
+          let(:pre_condition) do
+            <<~PRECOND
+              function assert_private {}
+              class { 'sssd':
+                force_ipa_domain => true,
+              }
+            PRECOND
+          end
+          let(:facts) { os_facts }
+
+          it { is_expected.to compile.and_raise_error(%r{The IPA domain must be provided}) }
+        end
       end
     end
   end

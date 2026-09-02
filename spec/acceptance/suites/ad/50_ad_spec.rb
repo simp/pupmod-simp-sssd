@@ -3,14 +3,16 @@ require 'spec_helper_acceptance'
 test_name 'SSSD connecting to an AD'
 
 describe 'sssd class' do
-  clients     = hosts_with_role(hosts, 'client')
-  ad          = hosts_with_role(hosts, 'ad').first
-  domain_pass = '@dm1n=P@ssw0r'
-  domain      = fact_on(clients.first, 'networking.domain')
-  ldap_dc     = domain.split('.').map { |x| "DC=#{x}" }.join(',')
+  let(:clients) { hosts_with_role(hosts, 'client') }
+  let(:ad) { hosts_with_role(hosts, 'ad').first }
+  let(:domain_pass) { '@dm1n=P@ssw0r' }
+  let(:domain) { fact_on(clients.first, 'networking.domain') }
+  let(:ldap_dc) { domain.split('.').map { |x| "DC=#{x}" }.join(',') }
 
-  require 'json'
-  ad_ip = JSON.parse(on(ad, 'puppet facts').stdout)['values']['networking']['interfaces']['Ethernet 2']['ip']
+  let(:ad_ip) do
+    require 'json'
+    JSON.parse(on(ad, 'puppet facts').stdout)['values']['networking']['interfaces']['Ethernet 2']['ip']
+  end
 
   let(:v2_manifest) do
     <<~EOF
@@ -54,26 +56,28 @@ describe 'sssd class' do
     EOF
   end
 
-  hieradata = <<~EOM
-    ---
-    simp_options::sssd: true
-    simp_options::pki: true
-    simp_options::pki::source: '/etc/pki/simp-testing/pki'
-    simp_options::ldap::uri: ['ldap://FIXME']
-    simp_options::ldap::bind_dn: "CN=Administrator,CN=Users,#{ldap_dc}"
-    simp_options::ldap::base_dn: "#{ldap_dc}"
-    simp_options::ldap::bind_pw: '<PASSWORD>'
-    # This causes a lot of noise and reboots
-    sssd::auditd: false
-    resolv::named_autoconf: false
-    resolv::caching: false
-    resolv::resolv_domain: "#{domain}"
-    pam::disable_authconfig: false
-    ssh::server::conf::permitrootlogin: true
-    ssh::server::conf::authorizedkeysfile: '.ssh/authorized_keys'
-    ssh::server::conf::gssapiauthentication: true
-    ssh::server::conf::passwordauthentication: true
-  EOM
+  let(:hieradata) do
+    <<~EOM
+      ---
+      simp_options::sssd: true
+      simp_options::pki: true
+      simp_options::pki::source: '/etc/pki/simp-testing/pki'
+      simp_options::ldap::uri: ['ldap://FIXME']
+      simp_options::ldap::bind_dn: "CN=Administrator,CN=Users,#{ldap_dc}"
+      simp_options::ldap::base_dn: "#{ldap_dc}"
+      simp_options::ldap::bind_pw: '<PASSWORD>'
+      # This causes a lot of noise and reboots
+      sssd::auditd: false
+      resolv::named_autoconf: false
+      resolv::caching: false
+      resolv::resolv_domain: "#{domain}"
+      pam::disable_authconfig: false
+      ssh::server::conf::permitrootlogin: true
+      ssh::server::conf::authorizedkeysfile: '.ssh/authorized_keys'
+      ssh::server::conf::gssapiauthentication: true
+      ssh::server::conf::passwordauthentication: true
+    EOM
+  end
 
   context 'fix the hosts file' do
     clients.each do |host|
@@ -105,19 +109,19 @@ describe 'sssd class' do
 
   context 'configure basic SSSD' do
     clients.each do |host|
-      client_hiera = hieradata.dup
+      let(:client_hiera) do
+        # An error is raised if the domain is already in the sssd.conf so
+        # need to configure sssd without the domain.  (It looks like this
+        # is an old error that was fixed in 2015 but el8 has the latest
+        # version of realmd.)
+        hieradata + <<~EOM
+          simp_options::dns::servers: ["#{ad_ip}"]
+          sssd::enable_files_domain: true
+          sssd::domains: []
+        EOM
+      end
 
       let(:manifest) { v2_manifest }
-
-      # An error is raised if the domain is already in the sssd.conf so
-      # need to configure sssd without the domain.  (It looks like this
-      # is an old error that was fixed in 2015 but el8 has the latest
-      # version of realmd.)
-      client_hiera += <<~EOM
-        simp_options::dns::servers: ["#{ad_ip}"]
-        sssd::enable_files_domain: true
-        sssd::domains: []
-      EOM
 
       it 'runs puppet without error configure basic SSSD' do
         set_hieradata_on(host, client_hiera)
