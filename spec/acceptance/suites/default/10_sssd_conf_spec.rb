@@ -87,8 +87,31 @@ describe 'sssd' do
         expect(response['service']['sssd-sudo.socket']['enable']).to eq('true')
       end
 
-      it 'creates the sssd-sudo run-as-root drop-in' do
-        on(host, 'test -f /etc/systemd/system/sssd-sudo.service.d/00_sssd_sudo_user_group.conf')
+      it 'manages the sssd-sudo run-as-root drop-in per release' do
+        # The drop-in fixes the EL8/9 root-monitor/non-root-responder split;
+        # on EL10 the responder runs as sssd with no capabilities, so a
+        # User=root override cannot read the sssd-owned config.ldb and the
+        # drop-in must NOT be present.
+        dropin = '/etc/systemd/system/sssd-sudo.service.d/00_sssd_sudo_user_group.conf'
+        if fact_on(host, 'os.release.major').to_s.to_i >= 10
+          on(host, "test ! -f #{dropin}")
+        else
+          on(host, "test -f #{dropin}")
+        end
+      end
+
+      it 'activates a working sssd-sudo responder through its socket' do
+        # The socket unit stays 'active' even when the service it activates
+        # cannot start, and sssd-sudo.service sets RefuseManualStart, so
+        # trigger the responder with a real socket connection and assert it
+        # comes up and stays up.
+        py = '$(command -v python3 || echo /usr/libexec/platform-python)'
+        trigger = 'import socket; s = socket.socket(socket.AF_UNIX); s.connect("/var/lib/sss/pipes/sudo")'
+        on(host, %(#{py} -c '#{trigger}'))
+        sleep(3)
+        on(host, 'systemctl is-active sssd-sudo.service')
+        result = on(host, 'systemctl show -p Result sssd-sudo.service').stdout.strip
+        expect(result).to eq('Result=success')
       end
 
       it 'sets the expected ownership and mode on sssd.conf' do

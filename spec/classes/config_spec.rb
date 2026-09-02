@@ -21,7 +21,7 @@ shared_examples_for 'a sssd::config' do |content|
   # being derived from the module's own Hiera data, so a data regression
   # fails these tests.  On EL10 sssd runs as sssd:sssd and the config must
   # be group-readable; EL8/9 run sssd as root and keep the config root-only.
-  let(:el10)     { facts[:os][:release][:major].to_s == '10' }
+  let(:el10)     { facts[:os][:release][:major].to_i >= 10 }
   let(:dir_mode) { el10 ? 'g-w,o-rw' : 'go-rw' }
   let(:group)    { el10 ? 'sssd' : 'root' }
   let(:mode)     { el10 ? '0640' : '0600' }
@@ -79,7 +79,7 @@ describe 'sssd' do
           # EL10 requires at least one configured domain for sssd to start,
           # so common.yaml enables sssd::config::manage_base_domain and the
           # LOCAL proxy domain is created; EL8/9 override it off.
-          if os_facts[:os][:release][:major].to_s == '10'
+          if os_facts[:os][:release][:major].to_i >= 10
             it { is_expected.to contain_sssd__domain('LOCAL').with_id_provider('proxy') }
           else
             it { is_expected.not_to contain_sssd__domain('LOCAL') }

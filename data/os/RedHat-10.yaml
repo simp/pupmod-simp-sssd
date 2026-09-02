@@ -1,7 +1,0 @@
----
-# On EL10, common.yaml already provides the correct defaults for a non-root
-# sssd daemon (root:sssd 0640 config, manage_base_domain). The sssd-sudo
-# responder still needs the systemd drop-in that runs it as root (due to the
-# permissions on /var/lib/sss/db/config.ldb), the same as EL8/9 — see
-# data/os/RedHat-8.yaml and data/os/RedHat-9.yaml.
-sssd::service::sudo::manage_group_dropin_file: true

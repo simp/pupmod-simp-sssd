@@ -16,7 +16,7 @@ describe 'sssd::config::entry' do
         let(:params) { { content: 'foo' } }
         # Explicit per-release expectations: EL10 configs are group-readable
         # by the (non-root) sssd daemon user; EL8/9 stay root-only.
-        let(:el10)  { facts[:os][:release][:major].to_s == '10' }
+        let(:el10)  { facts[:os][:release][:major].to_i >= 10 }
         let(:group) { el10 ? 'sssd' : 'root' }
         let(:mode)  { el10 ? '0640' : '0600' }
 
