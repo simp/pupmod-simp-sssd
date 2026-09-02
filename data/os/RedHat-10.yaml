@@ -1,0 +1,11 @@
+---
+# On EL10 sssd runs as User=sssd Group=sssd (unlike EL8/9 where it runs as root).
+# Config files must be group-readable by the sssd group.
+# EL10+ also requires at least one domain for sssd to start (manage_base_domain).
+sssd::service::sudo::manage_group_dropin_file: true
+sssd::config::manage_base_domain: true
+sssd::config::sssd_config_dir_mode: 'g-w,o-rw'
+sssd::config::sssd_config_file_params:
+  owner: 'root'
+  group: 'sssd'
+  mode: '0640'
