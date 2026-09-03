@@ -27,7 +27,7 @@
 #   section instead of the parameters.  You must provide all options
 #   in the section you want to add.  Each entry in the hash will be
 #   added as a simple init pair key = value under the section in
-#   the sssd.conf file.
+#   the generated `/etc/sssd/conf.d/` drop-in file.
 #   No error checking will be performed.
 #
 

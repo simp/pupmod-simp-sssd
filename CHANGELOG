@@ -1,3 +1,16 @@
+* Thu Sep 03 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.1.3
+- Documentation only, no functional change.  Correct the sssd::domain
+  custom_options documentation: the hash is appended to the options generated
+  by the other parameters, it does not replace them the way the
+  sssd::service::* classes do (the docstring was copied from the service
+  classes when the parameter was added).
+- Point the sssd::service::* custom_options documentation at the
+  /etc/sssd/conf.d/ drop-in file the options are actually written to, rather
+  than sssd.conf.
+- Add a README recipe for restricting Active Directory logins with the simple
+  access provider and simple_allow_groups (#128).
+- Add unit tests pinning the additive sssd::domain custom_options behavior.
+
 * Wed Sep 02 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.1.2
 - Test hardening only, no functional change.  Investigating whether EL10
   needs the sssd-sudo run-as-root systemd drop-in (raised by Sergey Ivanov

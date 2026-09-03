@@ -17,7 +17,7 @@
 #   in the section you want to add.  Each entry in the hash will be
 #   added as a simple init pair
 #   key = value
-#   under the section in the sssd.conf file.
+#   under the section in the generated `/etc/sssd/conf.d/` drop-in file.
 #   No error checking will be performed.
 #
 # @param manage_group_dropin_file
