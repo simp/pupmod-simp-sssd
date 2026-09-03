@@ -1467,6 +1467,10 @@ The following parameters are available in the `sssd::domain` defined type:
 * [`proxy_pam_target`](#-sssd--domain--proxy_pam_target)
 * [`proxy_lib_name`](#-sssd--domain--proxy_lib_name)
 * [`ldap_user_search_filter`](#-sssd--domain--ldap_user_search_filter)
+* [`simple_allow_users`](#-sssd--domain--simple_allow_users)
+* [`simple_deny_users`](#-sssd--domain--simple_deny_users)
+* [`simple_allow_groups`](#-sssd--domain--simple_allow_groups)
+* [`simple_deny_groups`](#-sssd--domain--simple_deny_groups)
 * [`custom_options`](#-sssd--domain--custom_options)
 
 ##### <a name="-sssd--domain--name"></a>`name`
@@ -1824,6 +1828,46 @@ Data type: `Optional[String]`
 
 Default value: `undef`
 
+##### <a name="-sssd--domain--simple_allow_users"></a>`simple_allow_users`
+
+Data type: `Optional[Array[String[1]]]`
+
+Users always allowed to log in when `access_provider` is `simple`.
+
+Rendered as the comma-separated list that the `simple_allow_users` option
+of `sssd-simple(5)` expects.  When unset or empty, the option is omitted
+from the generated configuration.  See `sssd-simple(5)` for how the allow
+and deny lists interact.
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--simple_deny_users"></a>`simple_deny_users`
+
+Data type: `Optional[Array[String[1]]]`
+
+Users always denied access when `access_provider` is `simple`.
+Rendered like `simple_allow_users`.
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--simple_allow_groups"></a>`simple_allow_groups`
+
+Data type: `Optional[Array[String[1]]]`
+
+Groups whose members are allowed to log in when `access_provider` is
+`simple`.  Rendered like `simple_allow_users`.
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--simple_deny_groups"></a>`simple_deny_groups`
+
+Data type: `Optional[Array[String[1]]]`
+
+Groups whose members are denied access when `access_provider` is
+`simple`.  Rendered like `simple_allow_users`.
+
+Default value: `undef`
+
 ##### <a name="-sssd--domain--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
@@ -1836,15 +1880,13 @@ the other parameters.  Unlike the `sssd::service::*` classes, this does
 **not** replace the parameter-driven configuration.
 
 Use this for any `sssd.conf(5)` domain option that this define does not
-expose as a parameter, such as the options of the `simple` access
-provider:
+expose as a parameter:
 
 ```puppet
 sssd::domain { 'my.ad.domain':
-  id_provider     => 'ad',
-  access_provider => 'simple',
-  custom_options  => {
-    'simple_allow_groups' => 'linux-admins,linux-users'
+  id_provider    => 'ad',
+  custom_options => {
+    'ad_site' => 'Default-First-Site-Name'
   }
 }
 ```

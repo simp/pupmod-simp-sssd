@@ -66,6 +66,26 @@
 # @param proxy_lib_name
 # @param ldap_user_search_filter
 #
+# @param simple_allow_users
+#   Users always allowed to log in when `access_provider` is `simple`.
+#
+#   Rendered as the comma-separated list that the `simple_allow_users` option
+#   of `sssd-simple(5)` expects.  When unset or empty, the option is omitted
+#   from the generated configuration.  See `sssd-simple(5)` for how the allow
+#   and deny lists interact.
+#
+# @param simple_deny_users
+#   Users always denied access when `access_provider` is `simple`.
+#   Rendered like `simple_allow_users`.
+#
+# @param simple_allow_groups
+#   Groups whose members are allowed to log in when `access_provider` is
+#   `simple`.  Rendered like `simple_allow_users`.
+#
+# @param simple_deny_groups
+#   Groups whose members are denied access when `access_provider` is
+#   `simple`.  Rendered like `simple_allow_users`.
+#
 # @param custom_options
 #   A hash of additional options to add to this domain's section.
 #
@@ -75,15 +95,13 @@
 #   **not** replace the parameter-driven configuration.
 #
 #   Use this for any `sssd.conf(5)` domain option that this define does not
-#   expose as a parameter, such as the options of the `simple` access
-#   provider:
+#   expose as a parameter:
 #
 #   ```puppet
 #   sssd::domain { 'my.ad.domain':
-#     id_provider     => 'ad',
-#     access_provider => 'simple',
-#     custom_options  => {
-#       'simple_allow_groups' => 'linux-admins,linux-users'
+#     id_provider    => 'ad',
+#     custom_options => {
+#       'ad_site' => 'Default-First-Site-Name'
 #     }
 #   }
 #   ```
@@ -139,6 +157,10 @@ define sssd::domain (
   Optional[String]                           $proxy_pam_target             = undef,
   Optional[String]                           $proxy_lib_name               = undef,
   Optional[String]                           $ldap_user_search_filter      = undef,
+  Optional[Array[String[1]]]                 $simple_allow_users           = undef,
+  Optional[Array[String[1]]]                 $simple_deny_users            = undef,
+  Optional[Array[String[1]]]                 $simple_allow_groups          = undef,
+  Optional[Array[String[1]]]                 $simple_deny_groups           = undef,
   Optional[Hash]                             $custom_options               = undef,
 ) {
   # Build configuration lines in order (matching expected test output)
@@ -208,6 +230,15 @@ define sssd::domain (
   $proxy_pam_target_line = $proxy_pam_target ? { undef => [], default => ["proxy_pam_target = ${proxy_pam_target}"] }
   $proxy_lib_name_line = $proxy_lib_name ? { undef => [], default => ["proxy_lib_name = ${proxy_lib_name}"] }
 
+  # 'simple' access provider settings, rendered as the comma-separated lists
+  # that sssd-simple(5) expects; unset or empty lists are omitted
+  $simple_access_lines = {
+    'simple_allow_users'  => $simple_allow_users,
+    'simple_deny_users'   => $simple_deny_users,
+    'simple_allow_groups' => $simple_allow_groups,
+    'simple_deny_groups'  => $simple_deny_groups,
+  }.filter |$_opt, $_value| { $_value =~ Array[String[1], 1] }.map |$_opt, $_value| { "${_opt} = ${_value.join(',')}" }
+
   # Custom options processing
   $custom_options_lines = $custom_options ? {
     undef => [],
@@ -260,6 +291,7 @@ define sssd::domain (
     $ldap_user_search_filter_line +
     $proxy_pam_target_line +
     $proxy_lib_name_line +
+    $simple_access_lines +
     $custom_options_lines
   )
 
