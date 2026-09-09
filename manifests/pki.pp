@@ -31,6 +31,7 @@ class sssd::pki {
     pki::copy { 'sssd' :
       source => $sssd::app_pki_cert_source,
       pki    => $sssd::pki,
+      group  => $sssd::app_pki_group,
       notify => Class["${module_name}::service"],
     }
   }

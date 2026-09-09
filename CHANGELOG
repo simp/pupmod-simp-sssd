@@ -1,3 +1,12 @@
+* Wed Sep 09 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.2.0
+- Add `sssd::app_pki_group` to control the group ownership of the
+  certificates copied by `pki::copy` (#212, reported by Steven Pritchard).
+  On EL10+ sssd runs its backend as the unprivileged `sssd` user, which
+  could not read the root-only copied TLS private key, so StartTLS to the
+  LDAP server failed and the domain stayed offline.  The new parameter
+  defaults to `sssd` on EL10+ and remains `root` on releases where sssd
+  runs as root, leaving EL8/9 behavior unchanged.
+
 * Wed Sep 02 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.1.2
 - Test hardening only, no functional change.  Investigating whether EL10
   needs the sssd-sudo run-as-root systemd drop-in (raised by Sergey Ivanov
