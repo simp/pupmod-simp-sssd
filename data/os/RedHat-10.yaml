@@ -1,4 +1,0 @@
----
-# On EL10, sssd_be runs as the unprivileged 'sssd' user and must be able to
-# read the pki::copy'd TLS certificates (simp/pupmod-simp-sssd#212).
-sssd::app_pki_group: 'sssd'
