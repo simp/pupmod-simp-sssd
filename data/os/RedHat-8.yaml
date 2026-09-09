@@ -1,4 +1,5 @@
 ---
+sssd::app_pki_group: 'root'
 sssd::service::sudo::manage_group_dropin_file: true
 sssd::config::sssd_config_dir_mode: 'go-rw'
 sssd::config::manage_base_domain: false

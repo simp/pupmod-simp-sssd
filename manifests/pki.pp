@@ -22,6 +22,14 @@
 #
 #   * If $sssd::pki = false, this variable has no effect.
 #
+# $sssd::app_pki_group
+#   * If $sssd::pki = 'simp' or true, this is the group ownership applied to
+#     the copied certs.  Defaults to 'sssd' (a group the runtime sssd user
+#     belongs to, so it can read the TLS private key), overridden to 'root'
+#     on releases where sssd runs as root (EL8/9).
+#
+#   * If $sssd::pki = false, this variable has no effect.
+#
 class sssd::pki {
   assert_private()
 
@@ -31,6 +39,7 @@ class sssd::pki {
     pki::copy { 'sssd' :
       source => $sssd::app_pki_cert_source,
       pki    => $sssd::pki,
+      group  => $sssd::app_pki_group,
       notify => Class["${module_name}::service"],
     }
   }

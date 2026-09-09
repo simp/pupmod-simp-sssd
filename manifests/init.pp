@@ -86,6 +86,17 @@
 #   $app_pki_ca, $app_pki_ca_dir, and $app_pki_crl.
 #   It defaults to /etc/pki/simp_apps/sssd/x509.
 #
+# @param app_pki_group
+#   Group ownership applied to the certificates copied by ``pki::copy``
+#   when ``$pki`` is ``'simp'`` or ``true``.
+#
+#   * The sssd processes must be able to read the copied TLS private key,
+#     so this must be a group the runtime sssd user belongs to.  On EL10+,
+#     where sssd runs as the unprivileged ``sssd`` user, this defaults to
+#     ``'sssd'``; on releases where sssd runs as root it remains ``'root'``.
+#
+#   * If ``$pki`` = ``false``, this variable has no effect.
+#
 # @param auto_add_ipa_domain
 #   Whether to configure sssd for an IPA domain, when the host is joined
 #   to an IPA domain. When enabled, this feature helps to prevent user
@@ -142,6 +153,7 @@ class sssd (
   Variant[Boolean,Enum['simp']] $pki                   = simplib::lookup('simp_options::pki', { 'default_value' => false }),
   Stdlib::Absolutepath          $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' }),
   Stdlib::Absolutepath          $app_pki_dir           = '/etc/pki/simp_apps/sssd/x509',
+  String[1]                     $app_pki_group         = 'root',
   Boolean                       $auto_add_ipa_domain   = true,
   Boolean                       $force_ipa_domain      = false,
   Optional[String[1]]           $ipa_domain_name       = undef,

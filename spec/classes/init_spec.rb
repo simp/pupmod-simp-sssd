@@ -5,6 +5,9 @@ describe 'sssd' do
     on_supported_os.each do |os, os_facts|
       context "on #{os}" do
         let(:facts) { os_facts }
+        # On EL10+ sssd runs as the unprivileged 'sssd' user, which must be
+        # able to read the copied certs (simp/pupmod-simp-sssd#212)
+        let(:expected_app_pki_group) { (facts[:os][:release][:major].to_i >= 10) ? 'sssd' : 'root' }
 
         context 'with_defaults' do
           it { is_expected.to compile.with_all_deps }
@@ -45,6 +48,7 @@ describe 'sssd' do
             is_expected.to create_pki__copy('sssd').with(
               source: '/etc/pki/simp/x509',
               pki: true,
+              group: expected_app_pki_group,
             )
           }
         end
@@ -57,8 +61,15 @@ describe 'sssd' do
             is_expected.to create_pki__copy('sssd').with(
               source: '/etc/pki/simp/x509',
               pki: 'simp',
+              group: expected_app_pki_group,
             )
           }
+        end
+
+        context 'with pki = true and a custom app_pki_group' do
+          let(:params) { { pki: true, app_pki_group: 'sssd-certs' } }
+
+          it { is_expected.to create_pki__copy('sssd').with_group('sssd-certs') }
         end
 
         context 'with debug_level as an integer' do

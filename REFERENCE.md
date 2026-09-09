@@ -108,6 +108,7 @@ The following parameters are available in the `sssd` class:
 * [`pki`](#-sssd--pki)
 * [`app_pki_cert_source`](#-sssd--app_pki_cert_source)
 * [`app_pki_dir`](#-sssd--app_pki_dir)
+* [`app_pki_group`](#-sssd--app_pki_group)
 * [`auto_add_ipa_domain`](#-sssd--auto_add_ipa_domain)
 * [`force_ipa_domain`](#-sssd--force_ipa_domain)
 * [`ipa_domain_name`](#-sssd--ipa_domain_name)
@@ -355,6 +356,22 @@ It defaults to /etc/pki/simp_apps/sssd/x509.
 
 Default value: `'/etc/pki/simp_apps/sssd/x509'`
 
+##### <a name="-sssd--app_pki_group"></a>`app_pki_group`
+
+Data type: `String[1]`
+
+Group ownership applied to the certificates copied by ``pki::copy``
+when ``$pki`` is ``'simp'`` or ``true``.
+
+* The sssd processes must be able to read the copied TLS private key,
+  so this must be a group the runtime sssd user belongs to.  On EL10+,
+  where sssd runs as the unprivileged ``sssd`` user, this defaults to
+  ``'sssd'``; on releases where sssd runs as root it remains ``'root'``.
+
+* If ``$pki`` = ``false``, this variable has no effect.
+
+Default value: `'root'`
+
 ##### <a name="-sssd--auto_add_ipa_domain"></a>`auto_add_ipa_domain`
 
 Data type: `Boolean`
@@ -547,6 +564,14 @@ $sssd::pki
 $ssd::app_pki_cert_source
   * If $sssd::pki = 'simp' or true, this is the directory from which certs will be
     copied, via pki::copy.  Defaults to /etc/pki/simp/x509.
+
+  * If $sssd::pki = false, this variable has no effect.
+
+$sssd::app_pki_group
+  * If $sssd::pki = 'simp' or true, this is the group ownership applied to
+    the copied certs.  Defaults to 'sssd' (a group the runtime sssd user
+    belongs to, so it can read the TLS private key), overridden to 'root'
+    on releases where sssd runs as root (EL8/9).
 
   * If $sssd::pki = false, this variable has no effect.
 
