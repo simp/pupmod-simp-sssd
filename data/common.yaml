@@ -1,4 +1,8 @@
 ---
+# On EL10+, sssd_be runs as the unprivileged 'sssd' user and must be able to
+# read the pki::copy'd TLS certificates (simp/pupmod-simp-sssd#212).  Releases
+# where sssd runs as root override this back to 'root' in data/os/.
+sssd::app_pki_group: 'sssd'
 sssd::domains:
   - 'LOCAL'
 sssd::service::sudo::manage_group_dropin_file: false
