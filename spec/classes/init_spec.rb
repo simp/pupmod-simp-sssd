@@ -108,6 +108,83 @@ describe 'sssd' do
           }
         end
 
+        context 'with custom settings' do
+          let(:params) do
+            {
+              custom_settings: {
+                'certmap/EXAMPLE.COM/rule1' => {
+                  'matchrule' => '<ISSUER>CN=Example CA',
+                  'priority'  => 10,
+                },
+              },
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it {
+            is_expected.to create_sssd__config__entry('puppet_custom')
+              .with_content(
+                "[certmap/EXAMPLE.COM/rule1]\nmatchrule = <ISSUER>CN=Example CA\npriority = 10",
+              )
+              .with_order(99_999)
+          }
+        end
+
+        context 'with both custom settings and a custom config' do
+          let(:params) do
+            {
+              custom_settings: { 'nss' => { 'memcache_timeout' => 300 } },
+              custom_config:   "[pam]\npam_verbosity = 2",
+            }
+          end
+
+          it 'renders the structured sections first and appends the raw String' do
+            is_expected.to create_sssd__config__entry('puppet_custom')
+              .with_content("[nss]\nmemcache_timeout = 300\n[pam]\npam_verbosity = 2")
+          end
+        end
+
+        context 'with an empty custom settings Hash' do
+          let(:params) { { custom_settings: {} } }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.not_to create_sssd__config__entry('puppet_custom') }
+        end
+
+        context 'with custom settings that render to nothing' do
+          let(:params) do
+            {
+              custom_settings: {
+                'domain/EXAMPLE.COM' => {},
+                'nss'                => { 'filter_users' => :undef },
+              },
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.not_to create_sssd__config__entry('puppet_custom') }
+        end
+
+        context 'with custom settings that render to nothing alongside a custom config' do
+          let(:params) do
+            {
+              custom_settings: { 'nss' => { 'filter_users' => :undef } },
+              custom_config:   "[pam]\npam_verbosity = 2",
+            }
+          end
+
+          it 'does not prepend a blank line to the raw String' do
+            is_expected.to create_sssd__config__entry('puppet_custom')
+              .with_content("[pam]\npam_verbosity = 2")
+          end
+        end
+
+        context 'with invalid custom settings' do
+          let(:params) { { custom_settings: { 'nss' => { 'filter_users' => "root\n[pam]" } } } }
+
+          it { is_expected.to compile.and_raise_error(%r{parameter 'custom_settings' entry 'nss' entry 'filter_users' expects a Sssd::IniValue}) }
+        end
+
         context 'with ldap provider' do
           let(:params) do
             {

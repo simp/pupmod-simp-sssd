@@ -34,6 +34,7 @@
 ### Functions
 
 * [`sssd::supported_version`](#sssd--supported_version): Returns ``true`` if the version of SSSD installed on the system is supported and ``false`` otherwise.  Assumes that the system is relatively 
+* [`sssd::to_ini`](#sssd--to_ini): Render structured configuration data as ``sssd.conf``-style INI content.  Sections and settings are emitted in Hash insertion order, so the o
 
 ### Data types
 
@@ -43,6 +44,9 @@
 * [`Sssd::ChpassProvider`](#Sssd--ChpassProvider): List of valid types for sssd domain change password provider
 * [`Sssd::DebugLevel`](#Sssd--DebugLevel): Integer[0-9] or 2 byte Hexidecimal (ex. 0x0201)
 * [`Sssd::IdProvider`](#Sssd--IdProvider): List of valid type for sssd domain ID provider.
+* [`Sssd::IniSectionName`](#Sssd--IniSectionName): The name of a section in an ``sssd.conf``-style file
+* [`Sssd::IniSettings`](#Sssd--IniSettings): An ``sssd.conf``-style configuration expressed as structured data
+* [`Sssd::IniValue`](#Sssd--IniValue): A single value for an ``sssd.conf`` setting
 * [`Sssd::Krb5Server`](#Sssd--Krb5Server): Valid `krb5_server`/`krb5_backup_server` value: a single host (optionally with a port), or a non-empty array of them. Rendered as a comma-sep
 * [`Sssd::LdapAccessOrder`](#Sssd--LdapAccessOrder): List of valid values for ldap provider ldap_access_order setting
 * [`Sssd::LdapAccountExpirePol`](#Sssd--LdapAccountExpirePol): List of valid values for ldap provider ldap_account_expire_policy '' corresponds to the default value (empty) per sssd-ldap(5) man page
@@ -75,6 +79,15 @@ sssd::ldap_providers:
     ldap_chpass_uri: empty
     ldap_access_order: 'expire'
     etc...
+```
+
+##### Adding a section via `custom_settings`
+
+```puppet
+sssd::custom_settings:
+  'certmap/EXAMPLE.COM/rule1':
+    matchrule: '<ISSUER>CN=Example CA'
+    maprule: '(userCertificate;binary={cert!bin})'
 ```
 
 #### Parameters
@@ -114,6 +127,7 @@ The following parameters are available in the `sssd` class:
 * [`ipa_domain_name`](#-sssd--ipa_domain_name)
 * [`ipa_servers`](#-sssd--ipa_servers)
 * [`custom_config`](#-sssd--custom_config)
+* [`custom_settings`](#-sssd--custom_settings)
 
 ##### <a name="-sssd--authoritative"></a>`authoritative`
 
@@ -418,8 +432,31 @@ Default value: `undef`
 
 Data type: `Optional[String[1]]`
 
-A configuration that will be added to
-/etc/sssd/conf.d/00_puppet_custom.conf *without validation*
+Raw configuration that will be added to
+/etc/sssd/conf.d/99999_puppet_custom.conf *without validation*
+
+* Prefer `custom_settings` unless you need something the structured form
+  cannot express
+
+Default value: `undef`
+
+##### <a name="-sssd--custom_settings"></a>`custom_settings`
+
+Data type: `Optional[Sssd::IniSettings]`
+
+Configuration to add to /etc/sssd/conf.d/99999_puppet_custom.conf,
+expressed as a Hash of section name to setting name to value
+
+* Unlike `custom_config`, the section names, setting names, and values are
+  type-validated at compile time and the file is rendered by the module
+* Unlike the per-section `custom_options` parameters, this *adds* sections
+  rather than replacing a section the module already manages
+* Settings with an `undef` value are omitted, and Array values are
+  rendered as comma-separated lists
+* A section left with no settings to render is omitted entirely, so an
+  empty Hash never produces a bare `[section]` header
+* If both this and `custom_config` are set, the rendered sections are
+  written first and the raw String is appended
 
 Default value: `undef`
 
@@ -4260,6 +4297,66 @@ Assumes that the system is relatively modern and therefore, supported by default
 
 Returns: `Boolean`
 
+### <a name="sssd--to_ini"></a>`sssd::to_ini`
+
+Type: Puppet Language
+
+Render structured configuration data as ``sssd.conf``-style INI content.
+
+Sections and settings are emitted in Hash insertion order, so the output is
+deterministic.  Settings with an ``undef`` value are omitted, and ``Array``
+values are rendered as comma-separated lists.
+
+A section with no settings left to render is omitted entirely, so an empty
+Hash -- or one whose every setting is ``undef`` -- does not leave a bare
+``[section]`` header behind.
+
+The returned String has no trailing newline; callers add one if the
+destination needs it.
+
+#### Examples
+
+##### 
+
+```puppet
+sssd::to_ini({ 'nss' => { 'filter_users' => ['root','named'] } })
+
+# => "[nss]\nfilter_users = root, named"
+```
+
+#### `sssd::to_ini(Sssd::IniSettings $settings)`
+
+Render structured configuration data as ``sssd.conf``-style INI content.
+
+Sections and settings are emitted in Hash insertion order, so the output is
+deterministic.  Settings with an ``undef`` value are omitted, and ``Array``
+values are rendered as comma-separated lists.
+
+A section with no settings left to render is omitted entirely, so an empty
+Hash -- or one whose every setting is ``undef`` -- does not leave a bare
+``[section]`` header behind.
+
+The returned String has no trailing newline; callers add one if the
+destination needs it.
+
+Returns: `String`
+
+##### Examples
+
+###### 
+
+```puppet
+sssd::to_ini({ 'nss' => { 'filter_users' => ['root','named'] } })
+
+# => "[nss]\nfilter_users = root, named"
+```
+
+##### `settings`
+
+Data type: `Sssd::IniSettings`
+
+The sections to render
+
 ## Data types
 
 ### <a name="Sssd--ADDefaultRight"></a>`Sssd::ADDefaultRight`
@@ -4297,6 +4394,66 @@ Alias of `Variant[Integer[0,9], Pattern[/0x\h{4}$/]]`
 List of valid type for sssd domain ID provider.
 
 Alias of `Enum['proxy', 'ldap', 'ipa', 'ad', 'files']`
+
+### <a name="Sssd--IniSectionName"></a>`Sssd::IniSectionName`
+
+Covers the plain sections (``sssd``, ``nss``, ``pam``, ...) as well as the
+path-style sections that SSSD uses for domains and rules
+(``domain/EXAMPLE.COM``, ``certmap/EXAMPLE.COM/rule1``,
+``prompting/2fa/sshd``, ...).
+
+The brackets that delimit the section header in the file itself are added by
+the renderer and are not part of the name.
+
+Alias of `Pattern[/\A[a-z][a-z0-9_]*(\/[^\[\]\n\/]+){0,2}\z/]`
+
+### <a name="Sssd--IniSettings"></a>`Sssd::IniSettings`
+
+A Hash of section name to a Hash of setting name to value.  Puppet Hashes
+preserve insertion order, so the rendered output is deterministic.
+
+Settings whose value is ``undef`` are dropped by the renderer, which lets a
+Hiera-supplied Hash carry a ``~`` for "leave this one out".
+
+#### Examples
+
+##### 
+
+```puppet
+{
+  'nss' => {
+    'filter_users' => ['root', 'named'],
+    'memcache_timeout' => 300,
+  },
+  'domain/EXAMPLE.COM' => {
+    'id_provider' => 'ldap',
+  },
+}
+```
+
+Alias of
+
+```puppet
+Hash[Sssd::IniSectionName, Hash[
+    Pattern[/\A[a-zA-Z][a-zA-Z0-9_]*\z/],
+    Optional[Sssd::IniValue]
+  ]]
+```
+
+### <a name="Sssd--IniValue"></a>`Sssd::IniValue`
+
+Newlines are rejected because the renderer emits one ``key = value`` line
+per entry; a newline in a value would let it forge a new ``[section]``
+header.  Brackets are *allowed* -- they are legitimate in values such as
+``re_expression``, which contains regex character classes.
+
+``Array`` values are rendered as comma-separated lists, so their elements
+may not contain a comma, and -- unlike a scalar value -- may not be empty.
+
+The empty String is accepted for a scalar value: ``key =`` is meaningful to
+SSSD, which reads it as "explicitly unset" rather than "absent".
+
+Alias of `Variant[Pattern[/\A[^\n]*\z/], Integer, Float, Boolean, Array[Variant[Pattern[/\A[^\n,]+\z/], Integer, Float], 1]]`
 
 ### <a name="Sssd--Krb5Server"></a>`Sssd::Krb5Server`
 
