@@ -52,6 +52,12 @@ hands it to the **`sssd::config::entry`** define, which writes it to a
   - `$custom_config` (`Optional[String]`, `init.pp`) — raw config appended
     verbatim to `conf.d/99999_puppet_custom.conf` **without validation**
     (`init.pp`).
+  - `$custom_settings` (`Optional[Sssd::IniSettings]`, `init.pp`) — a Hash of
+    section name → setting name → value, validated at compile time and rendered
+    into the same `conf.d/99999_puppet_custom.conf` via `sssd::to_ini()`
+    (structured sections first, then any raw `$custom_config`). Unlike
+    `custom_options` it *adds* sections rather than replacing module-managed
+    ones. Prefer it over `$custom_config`.
 
   Control flow:
   - `include 'sssd::install'` then `include 'sssd::config'`, ordered
@@ -168,7 +174,9 @@ hands it to the **`sssd::config::entry`** define, which writes it to a
 - **`$custom_config` and per-section `custom_options` bypass validation.** They
   are written verbatim (`init.pp`; `service/nss.pp` via
   `custom_options.epp`). Typos land in `sssd.conf` unchecked and can stop the
-  daemon.
+  daemon. `$custom_settings` is the validated alternative — its structure is
+  type-checked at compile time (`types/inisettings.pp`), though setting *names*
+  are only pattern-checked, not validated against sssd's schema.
 - **`authoritative` is a foot-gun.** `true` purges *all* unmanaged files in
   `/etc/sssd/conf.d` (`config.pp`); `false` only tidies Puppet's own
   `*_puppet_*.conf` (`config.pp`).
@@ -253,12 +261,16 @@ OracleLinux 8/9/10; Rocky 8/9/10; AlmaLinux 8/9/10.
 - `manifests/provider/{ldap,ad,ipa,krb5,files}.pp` — the five provider defines.
 - `functions/supported_version.pp` — `sssd::supported_version()` (Puppet-lang
   function).
+- `functions/to_ini.pp` — `sssd::to_ini()` (Puppet-lang function): renders an
+  `Sssd::IniSettings` Hash as INI text (insertion-ordered, `undef` settings
+  omitted, Arrays comma-joined).
 - `lib/facter/sssd_version.rb` — the `sssd_version` fact (`sssd --version`).
-- `types/` — 13 data types constraining config values (`Sssd::Services`,
+- `types/` — 16 data types constraining config values (`Sssd::Services`,
   `Sssd::IdProvider`, `Sssd::AuthProvider`, `Sssd::AccessProvider`,
   `Sssd::ChpassProvider`, `Sssd::DebugLevel`, `Sssd::LdapSchema`,
   `Sssd::LdapAccessOrder`, `Sssd::LdapAccountExpirePol`, `Sssd::LdapDefaultAuthtok`,
-  `Sssd::LdapDeref`, `Sssd::LdapTlsReqcert`, `Sssd::ADDefaultRight`).
+  `Sssd::LdapDeref`, `Sssd::LdapTlsReqcert`, `Sssd::ADDefaultRight`,
+  `Sssd::IniSettings`, `Sssd::IniSectionName`, `Sssd::IniValue`).
 - `templates/generic.epp` — INI section renderer: `[title]` + content.
 - `templates/service/custom_options.epp` — renders a `[service]` section from a
   raw `key => value` hash (used by the `custom_options` escape hatch).

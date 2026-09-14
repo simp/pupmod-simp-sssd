@@ -120,8 +120,30 @@
 #   ``$facts['ipa']['server']`` is not available.
 #
 # @param custom_config
-#   A configuration that will be added to
-#   /etc/sssd/conf.d/00_puppet_custom.conf *without validation*
+#   Raw configuration that will be added to
+#   /etc/sssd/conf.d/99999_puppet_custom.conf *without validation*
+#
+#   * Prefer `custom_settings` unless you need something the structured form
+#     cannot express
+#
+# @param custom_settings
+#   Configuration to add to /etc/sssd/conf.d/99999_puppet_custom.conf,
+#   expressed as a Hash of section name to setting name to value
+#
+#   * Unlike `custom_config`, the section names, setting names, and values are
+#     type-validated at compile time and the file is rendered by the module
+#   * Unlike the per-section `custom_options` parameters, this *adds* sections
+#     rather than replacing a section the module already manages
+#   * Settings with an `undef` value are omitted, and Array values are
+#     rendered as comma-separated lists
+#   * If both this and `custom_config` are set, the rendered sections are
+#     written first and the raw String is appended
+#
+# @example Adding a section via `custom_settings`
+#   sssd::custom_settings:
+#     'certmap/EXAMPLE.COM/rule1':
+#       matchrule: '<ISSUER>CN=Example CA'
+#       maprule: '(userCertificate;binary={cert!bin})'
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
@@ -159,6 +181,7 @@ class sssd (
   Optional[String[1]]           $ipa_domain_name       = undef,
   Optional[Array[Simplib::Host,1]] $ipa_servers         = undef,
   Optional[String[1]]           $custom_config         = undef,
+  Optional[Sssd::IniSettings]   $custom_settings       = undef,
 ) {
   include 'sssd::install'
   include 'sssd::config'
@@ -169,9 +192,18 @@ class sssd (
 
   Class['sssd::install'] -> Class['sssd::config']
 
-  if $custom_config {
+  $_custom_settings = pick_default($custom_settings, {})
+
+  $_custom_settings_content = empty($_custom_settings) ? {
+    true    => [],
+    default => [sssd::to_ini($_custom_settings)],
+  }
+
+  $_custom_content = ($_custom_settings_content + [$custom_config].delete_undef_values).join("\n")
+
+  unless empty($_custom_content) {
     sssd::config::entry { 'puppet_custom':
-      content => $custom_config,
+      content => $_custom_content,
       order   => 99999,
     }
   }
