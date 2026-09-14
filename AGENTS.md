@@ -265,12 +265,13 @@ OracleLinux 8/9/10; Rocky 8/9/10; AlmaLinux 8/9/10.
   `Sssd::IniSettings` Hash as INI text (insertion-ordered, `undef` settings
   omitted, Arrays comma-joined).
 - `lib/facter/sssd_version.rb` — the `sssd_version` fact (`sssd --version`).
-- `types/` — 16 data types constraining config values (`Sssd::Services`,
+- `types/` — 17 data types constraining config values (`Sssd::Services`,
   `Sssd::IdProvider`, `Sssd::AuthProvider`, `Sssd::AccessProvider`,
   `Sssd::ChpassProvider`, `Sssd::DebugLevel`, `Sssd::LdapSchema`,
   `Sssd::LdapAccessOrder`, `Sssd::LdapAccountExpirePol`, `Sssd::LdapDefaultAuthtok`,
   `Sssd::LdapDeref`, `Sssd::LdapTlsReqcert`, `Sssd::ADDefaultRight`,
-  `Sssd::IniSettings`, `Sssd::IniSectionName`, `Sssd::IniValue`).
+  `Sssd::Krb5Server`, `Sssd::IniSettings`, `Sssd::IniSectionName`,
+  `Sssd::IniValue`).
 - `templates/generic.epp` — INI section renderer: `[title]` + content.
 - `templates/service/custom_options.epp` — renders a `[service]` section from a
   raw `key => value` hash (used by the `custom_options` escape hatch).

@@ -453,6 +453,8 @@ expressed as a Hash of section name to setting name to value
   rather than replacing a section the module already manages
 * Settings with an `undef` value are omitted, and Array values are
   rendered as comma-separated lists
+* A section left with no settings to render is omitted entirely, so an
+  empty Hash never produces a bare `[section]` header
 * If both this and `custom_config` are set, the rendered sections are
   written first and the raw String is appended
 
@@ -4305,6 +4307,10 @@ Sections and settings are emitted in Hash insertion order, so the output is
 deterministic.  Settings with an ``undef`` value are omitted, and ``Array``
 values are rendered as comma-separated lists.
 
+A section with no settings left to render is omitted entirely, so an empty
+Hash -- or one whose every setting is ``undef`` -- does not leave a bare
+``[section]`` header behind.
+
 The returned String has no trailing newline; callers add one if the
 destination needs it.
 
@@ -4325,6 +4331,10 @@ Render structured configuration data as ``sssd.conf``-style INI content.
 Sections and settings are emitted in Hash insertion order, so the output is
 deterministic.  Settings with an ``undef`` value are omitted, and ``Array``
 values are rendered as comma-separated lists.
+
+A section with no settings left to render is omitted entirely, so an empty
+Hash -- or one whose every setting is ``undef`` -- does not leave a bare
+``[section]`` header behind.
 
 The returned String has no trailing newline; callers add one if the
 destination needs it.
@@ -4438,9 +4448,12 @@ header.  Brackets are *allowed* -- they are legitimate in values such as
 ``re_expression``, which contains regex character classes.
 
 ``Array`` values are rendered as comma-separated lists, so their elements
-may not contain a comma.
+may not contain a comma, and -- unlike a scalar value -- may not be empty.
 
-Alias of `Variant[Pattern[/\A[^\n]+\z/], Integer, Float, Boolean, Array[Variant[Pattern[/\A[^\n,]+\z/], Integer, Float], 1]]`
+The empty String is accepted for a scalar value: ``key =`` is meaningful to
+SSSD, which reads it as "explicitly unset" rather than "absent".
+
+Alias of `Variant[Pattern[/\A[^\n]*\z/], Integer, Float, Boolean, Array[Variant[Pattern[/\A[^\n,]+\z/], Integer, Float], 1]]`
 
 ### <a name="Sssd--Krb5Server"></a>`Sssd::Krb5Server`
 
