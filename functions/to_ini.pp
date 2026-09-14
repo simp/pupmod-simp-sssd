@@ -4,6 +4,10 @@
 # deterministic.  Settings with an ``undef`` value are omitted, and ``Array``
 # values are rendered as comma-separated lists.
 #
+# A section with no settings left to render is omitted entirely, so an empty
+# Hash -- or one whose every setting is ``undef`` -- does not leave a bare
+# ``[section]`` header behind.
+#
 # The returned String has no trailing newline; callers add one if the
 # destination needs it.
 #
@@ -32,6 +36,9 @@ function sssd::to_ini (
       "${_setting} = ${_rendered}"
     }
 
-    $memo + ["[${section[0]}]"] + $_lines
+    empty($_lines) ? {
+      true    => $memo,
+      default => $memo + ["[${section[0]}]"] + $_lines,
+    }
   }.join("\n")
 }

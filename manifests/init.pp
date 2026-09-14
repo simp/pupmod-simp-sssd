@@ -136,6 +136,8 @@
 #     rather than replacing a section the module already manages
 #   * Settings with an `undef` value are omitted, and Array values are
 #     rendered as comma-separated lists
+#   * A section left with no settings to render is omitted entirely, so an
+#     empty Hash never produces a bare `[section]` header
 #   * If both this and `custom_config` are set, the rendered sections are
 #     written first and the raw String is appended
 #
@@ -194,12 +196,11 @@ class sssd (
 
   $_custom_settings = pick_default($custom_settings, {})
 
-  $_custom_settings_content = empty($_custom_settings) ? {
-    true    => [],
-    default => [sssd::to_ini($_custom_settings)],
-  }
-
-  $_custom_content = ($_custom_settings_content + [$custom_config].delete_undef_values).join("\n")
+  # A Hash that renders to nothing -- empty, or every setting `undef` -- must
+  # drop out entirely rather than contribute a blank chunk to the join.
+  $_custom_content = [sssd::to_ini($_custom_settings), $custom_config].filter |$_chunk| {
+    ($_chunk =~ NotUndef) and !empty($_chunk)
+  }.join("\n")
 
   unless empty($_custom_content) {
     sssd::config::entry { 'puppet_custom':

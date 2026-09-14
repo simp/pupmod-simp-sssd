@@ -151,6 +151,34 @@ describe 'sssd' do
           it { is_expected.not_to create_sssd__config__entry('puppet_custom') }
         end
 
+        context 'with custom settings that render to nothing' do
+          let(:params) do
+            {
+              custom_settings: {
+                'domain/EXAMPLE.COM' => {},
+                'nss'                => { 'filter_users' => :undef },
+              },
+            }
+          end
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.not_to create_sssd__config__entry('puppet_custom') }
+        end
+
+        context 'with custom settings that render to nothing alongside a custom config' do
+          let(:params) do
+            {
+              custom_settings: { 'nss' => { 'filter_users' => :undef } },
+              custom_config:   "[pam]\npam_verbosity = 2",
+            }
+          end
+
+          it 'does not prepend a blank line to the raw String' do
+            is_expected.to create_sssd__config__entry('puppet_custom')
+              .with_content("[pam]\npam_verbosity = 2")
+          end
+        end
+
         context 'with invalid custom settings' do
           let(:params) { { custom_settings: { 'nss' => { 'filter_users' => "root\n[pam]" } } } }
 

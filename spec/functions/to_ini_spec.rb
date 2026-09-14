@@ -45,8 +45,30 @@ describe 'sssd::to_ini' do
       ).and_return("[nss]\nfilter_users = root")
     end
 
-    it 'still emits a section that has no remaining settings' do
-      is_expected.to run.with_params('nss' => { 'filter_users' => :undef }).and_return('[nss]')
+    it 'omits a section that has no remaining settings' do
+      is_expected.to run.with_params('nss' => { 'filter_users' => :undef }).and_return('')
+    end
+
+    it 'omits only the empty section, not the ones around it' do
+      is_expected.to run.with_params(
+        'pam'                => { 'pam_verbosity' => 1 },
+        'domain/EXAMPLE.COM' => { 'id_provider' => :undef },
+        'nss'                => { 'filter_users' => 'root' },
+      ).and_return("[pam]\npam_verbosity = 1\n[nss]\nfilter_users = root")
+    end
+  end
+
+  context 'with an empty section Hash' do
+    it 'does not emit a bare section header' do
+      is_expected.to run.with_params('domain/EXAMPLE.COM' => {}).and_return('')
+    end
+  end
+
+  context 'with an empty String value' do
+    it 'renders the bare assignment SSSD reads as "explicitly unset"' do
+      is_expected.to run.with_params(
+        'domain/EXAMPLE.COM' => { 'ldap_account_expire_policy' => '' },
+      ).and_return("[domain/EXAMPLE.COM]\nldap_account_expire_policy = ")
     end
   end
 
