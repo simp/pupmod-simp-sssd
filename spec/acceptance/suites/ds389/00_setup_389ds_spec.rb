@@ -3,7 +3,7 @@
 require 'spec_helper_acceptance'
 
 describe 'sssd' do
-  let(:ldapservers) { hosts_with_role(hosts, 'ldap') }
+  ldapservers = hosts_with_role(hosts, 'ldap')
 
   ldapservers.each do |host|
     let(:root_pw) { 's00perS3kr!tP@ssw0rd' }
@@ -33,6 +33,8 @@ describe 'sssd' do
     let(:sssd_extra) do
       <<~EOM
         simp_ds389::instances::accounts::root_pw: #{root_pw}
+        simp_ds389::instances::accounts::tls_params:
+          source: '/etc/pki/simp-testing/pki'
       EOM
     end
     let(:server_hieradata) do

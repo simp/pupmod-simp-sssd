@@ -12,7 +12,7 @@ fixtures:
     simplib: https://github.com/simp/pupmod-simp-simplib.git
     stdlib: https://github.com/simp/puppetlabs-stdlib.git
     augeasproviders_ssh: https://github.com/simp/augeasproviders_ssh.git
-    nsswitch: https://github.com/simp/puppet-nsswitch.git
+    nsswitch: https://github.com/simp/pupmod-puppet-nsswitch.git
     pam: https://github.com/simp/pupmod-simp-pam.git
     oddjob: https://github.com/simp/pupmod-simp-oddjob.git
     resolv: https://github.com/simp/pupmod-simp-resolv.git
