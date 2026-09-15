@@ -22,9 +22,6 @@ describe 'sssd::domain with access_provider => simple' do
     <<~EOF
       include 'sssd'
 
-      # sssctl comes from sssd-tools, which the module does not install
-      package { 'sssd-tools': ensure => 'installed' }
-
       sssd::domain { 'LDAP':
         description         => 'LDAP Users Domain',
         id_provider         => 'ldap',

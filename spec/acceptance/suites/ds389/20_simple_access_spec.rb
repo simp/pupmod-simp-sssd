@@ -21,9 +21,6 @@ describe 'sssd::domain using the simple access provider' do
       include 'sssd::service::pam'
       include 'sssd::service::ssh'
 
-      # sssctl comes from sssd-tools, which the module does not install
-      package { 'sssd-tools': ensure => 'installed' }
-
       sssd::domain { 'LDAP':
         description               => 'LDAP Users Domain',
         id_provider               => 'ldap',
