@@ -11,6 +11,10 @@
 # @param debug_microseconds
 # @param pam_cert_auth
 # @param reconnection_retries
+#   Removed from SSSD's schema in 2.10, with no successor.  Supplied from
+#   ``data/os/`` on the releases that still accept it and left ``undef``
+#   elsewhere; an explicitly set value is always written.
+#
 # @param command
 # @param offline_credentials_expiration
 # @param offline_failed_login_attempts
@@ -39,7 +43,7 @@ class sssd::service::pam (
   Boolean                      $debug_timestamps               = true,
   Boolean                      $debug_microseconds             = false,
   Boolean                      $pam_cert_auth                  = false,
-  Integer                      $reconnection_retries           = 3,
+  Optional[Integer]            $reconnection_retries           = undef,
   Optional[String]             $command                        = undef,
   Integer                      $offline_credentials_expiration = 0,
   Integer                      $offline_failed_login_attempts  = 3,
@@ -69,7 +73,9 @@ class sssd::service::pam (
     $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
 
     # Connection settings
-    $reconnection_retries_line = ["reconnection_retries = ${reconnection_retries}"]
+    # SSSD 2.10 removed reconnection_retries from its schema; supplied from
+    # data/os/ on the releases that still accept it, undef on EL10+.
+    $reconnection_retries_line = $reconnection_retries ? { undef => [], default => ["reconnection_retries = ${reconnection_retries}"] }
     $command_line = $command ? { undef => [], default => ["command = ${command}"] }
 
     # Offline settings

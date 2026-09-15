@@ -58,16 +58,12 @@ describe '389ds' do
       context 'on each client set up sssd' do
         let(:server_fqdn) { fact_on(server, 'networking.fqdn') }
         let(:domain) { fact_on(server, 'networking.domain') }
-        # set sssd domains for template
-        let(:sssd_extra) do
-          <<~EOM
-            sssd::enable_files_domain: true
-          EOM
-        end
         let(:fqdn) { fact_on(client, 'networking.fqdn') }
 
+        # sssd::enable_files_domain is deliberately not pinned here: the module
+        # sets it per release, and SSSD 2.10 rejects the option outright.
         let(:client_hieradata) do
-          ERB.new(File.read(File.expand_path('templates/ds389_hiera.yaml.erb', File.dirname(__FILE__)))).result(binding) + "\n#{sssd_extra}"
+          ERB.new(File.read(File.expand_path('templates/ds389_hiera.yaml.erb', File.dirname(__FILE__)))).result(binding)
         end
 
         it 'runs puppet' do

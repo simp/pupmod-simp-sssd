@@ -104,9 +104,11 @@ class sssd::config (
   # Domains configuration
   $domains_line = $_domains.empty ? { true => [], false => ["domains = ${Array($_domains).join(', ')}"] }
 
-  # Required configuration parameters
-  $config_file_version_line = ["config_file_version = ${_config_file_version}"]
-  $reconnection_retries_line = ["reconnection_retries = ${_reconnection_retries}"]
+  # Options SSSD 2.10 removed from its schema.  They are supplied from
+  # data/os/ on the releases that still accept them and are undef on EL10+,
+  # where sssctl rejects them outright.
+  $config_file_version_line = $_config_file_version ? { undef => [], default => ["config_file_version = ${_config_file_version}"] }
+  $reconnection_retries_line = $_reconnection_retries ? { undef => [], default => ["reconnection_retries = ${_reconnection_retries}"] }
 
   # Optional string parameters
   $re_expression_line = $_re_expression ? { undef => [], default => ["re_expression = ${_re_expression}"] }
@@ -114,6 +116,10 @@ class sssd::config (
 
   # Optional boolean parameters (special undef checking)
   $try_inotify_line = $_try_inotify ? { undef => [], default => ["try_inotify = ${_try_inotify}"] }
+
+  # Also removed in SSSD 2.10, and likewise supplied only from data/os/.  The
+  # EL10+ replacement is the LOCAL proxy domain created at the bottom of this
+  # class when $manage_base_domain is set.
   $enable_files_domain_line = $_enable_files_domain ? { undef => [], default => ["enable_files_domain = ${_enable_files_domain}"] }
 
   # Optional directory and user parameters

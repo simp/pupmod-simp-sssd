@@ -14,7 +14,6 @@ describe 'sssd::provider::krb5 with multiple servers' do
       'simp_options::pki::source' => '/etc/pki/simp-testing/pki',
       # auditd causes a lot of noise and reboots
       'sssd::auditd'              => false,
-      'sssd::enable_files_domain' => true,
       'sssd::domains'             => ['KRB5TEST'],
     }
   end
