@@ -33,6 +33,10 @@ RSpec/HookArgument:
 RSpec/DescribeSymbol:
   Exclude:
     - spec/unit/facter/**/*.rb
+RSpec/LeakyLocalVariable:
+  Exclude:
+    - spec/acceptance/suites/ds389/00_setup_389ds_spec.rb
+    - spec/acceptance/suites/ds389/10_setup_clients_spec.rb
 Style/BlockDelimiters:
   Description:
     Prefer braces for chaining. Mostly an aesthetical choice. Better to

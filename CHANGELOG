@@ -1,3 +1,8 @@
+* Tue Sep 15 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.3.1
+- Repair the ds389 acceptance suite
+- Point the nsswitch fixture at simp/pupmod-puppet-nsswitch
+- Remove the ldap acceptance suite
+
 * Mon Sep 14 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.3.0
 - Add `sssd::custom_settings`, a validated Hash alternative to
   `sssd::custom_config` for adding custom configuration sections

@@ -3,8 +3,10 @@ require 'spec_helper_acceptance'
 test_name 'Setup SSSD clients to talk to LDAP'
 
 describe '389ds' do
-  let(:ldap_servers) { hosts_with_role(hosts, 'ldap') }
-  let(:clients) { hosts_with_role(hosts, 'client') }
+  ldap_servers = hosts_with_role(hosts, 'ldap')
+  clients = hosts_with_role(hosts, 'client')
+  raise 'No hosts with role "ldap" found in the nodeset' if ldap_servers.empty?
+  raise 'No hosts with role "client" found in the nodeset' if clients.empty?
   # base dn must match what is set in server setup.
   let(:base_dn) { 'dc=test,dc=org' }
 
