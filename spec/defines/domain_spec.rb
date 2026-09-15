@@ -103,6 +103,27 @@ describe 'sssd::domain' do
                 .with_content(%r{^simple_allow_groups = linux-admins,linux-users$.*^ad_site = Default-First-Site-Name$}m)
             }
           end
+
+          # The two failures Sssd::IniListItem exists to prevent.  Both are
+          # rejected at compile time because sssd.conf offers no way to quote
+          # or escape either character.
+          context 'with a name containing a comma' do
+            # 'Contractors, External' is a legal LDAP/AD CN.  Rendered, sssd
+            # would read it as two groups, neither of which exists, and the
+            # deny rule would silently never fire -- access control failing
+            # open, which is worse than failing to compile.
+            let(:params) { super().merge(simple_deny_groups: ['Contractors, External']) }
+
+            it { is_expected.to compile.and_raise_error(%r{parameter 'simple_deny_groups'}) }
+          end
+
+          context 'with a name containing a newline' do
+            # Would inject an arbitrary extra line into the [domain/...]
+            # section.
+            let(:params) { super().merge(simple_allow_users: ["alice\ndebug_level = 9"]) }
+
+            it { is_expected.to compile.and_raise_error(%r{parameter 'simple_allow_users'}) }
+          end
         end
       end
     end

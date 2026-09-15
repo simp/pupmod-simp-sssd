@@ -276,26 +276,27 @@ sssd::provider::ad { $_my_ad_domain:
 The example above uses `access_provider => 'ad'`, which evaluates the
 GPO-based access control rules published by the domain.  To instead allow only
 specific AD groups to log in, switch that domain to the `simple` access
-provider and list the groups in `simple_allow_groups`:
+provider and list the groups in `simple_allow_groups`.
 
-```puppet
-sssd::domain { $_my_ad_domain:
-  access_provider           => 'simple',
-  simple_allow_groups       => ['linux-admins', 'linux-users'],
-  cache_credentials         => true,
-  id_provider               => 'ad',
-  realmd_tags               => 'manages-system joined-with-samba',
-  case_sensitive            => true,
-  max_id                    => 0,
-  ignore_group_members      => true,
-  use_fully_qualified_names => true,
-}
+This *amends* the `sssd::domain` resource declared above rather than adding a
+second one — declaring both as written would fail with `Duplicate declaration:
+Sssd::Domain[test.domain]`.  Change these lines:
+
+```diff
+ sssd::domain { $_my_ad_domain:
+-  access_provider           => 'ad',
++  access_provider           => 'simple',
++  simple_allow_groups       => ['linux-admins', 'linux-users'],
+   cache_credentials         => true,
+   id_provider               => 'ad',
 ```
 
 `simple_allow_users`, `simple_deny_users` and `simple_deny_groups` work the
 same way; each renders as the comma-separated list that `sssd-simple(5)`
-expects, and is omitted when unset.  See `sssd-simple(5)` for how the allow
-and deny lists interact.
+expects, and is omitted when unset or set to an empty list.  `sssd.conf`
+provides no way to quote or escape a comma, so a user or group name containing
+one cannot be expressed here and is rejected at compile time.  See
+`sssd-simple(5)` for how the allow and deny lists interact.
 
 Any domain option the define does not expose as a parameter can still be
 supplied through `custom_options`.  On `sssd::domain` that hash is **appended
