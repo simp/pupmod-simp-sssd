@@ -5,8 +5,8 @@
 # header.  Brackets are *allowed* -- they are legitimate in values such as
 # ``re_expression``, which contains regex character classes.
 #
-# ``Array`` values are rendered as comma-separated lists, so their elements
-# may not contain a comma, and -- unlike a scalar value -- may not be empty.
+# ``Array`` values are rendered as comma-separated lists, so their elements are
+# constrained by ``Sssd::IniListItem``.
 #
 # The empty String is accepted for a scalar value: ``key =`` is meaningful to
 # SSSD, which reads it as "explicitly unset" rather than "absent".
@@ -15,5 +15,5 @@ type Sssd::IniValue = Variant[
   Integer,
   Float,
   Boolean,
-  Array[Variant[Pattern[/\A[^\n,]+\z/], Integer, Float], 1]
+  Array[Variant[Sssd::IniListItem, Integer, Float], 1]
 ]

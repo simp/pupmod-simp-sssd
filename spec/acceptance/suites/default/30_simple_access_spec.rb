@@ -31,8 +31,9 @@ describe 'sssd::domain with access_provider => simple' do
         simple_allow_users  => ['alice', 'bob'],
         simple_deny_users   => ['mallory'],
         simple_allow_groups => ['operators', 'wheel'],
-        # Deliberately empty: an empty list must be omitted from the rendered
-        # config, because an empty value has its own meaning to sssd-simple(5)
+        # Deliberately empty: an empty list must be omitted rather than
+        # rendered as a bare 'simple_deny_groups =', since sssd-simple(5)
+        # documents no behaviour for an empty value
         simple_deny_groups  => [],
       }
       sssd::provider::ldap { 'LDAP':

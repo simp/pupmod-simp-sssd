@@ -74,6 +74,11 @@
 #   from the generated configuration.  See `sssd-simple(5)` for how the allow
 #   and deny lists interact.
 #
+#   * `sssd.conf` provides no way to quote or escape a comma, so a name that
+#     contains one cannot be expressed here and is rejected at compile time.
+#     Rendering it would split the name in two and silently produce a rule
+#     that matches nobody.
+#
 # @param simple_deny_users
 #   Users always denied access when `access_provider` is `simple`.
 #   Rendered like `simple_allow_users`.
@@ -157,10 +162,10 @@ define sssd::domain (
   Optional[String]                           $proxy_pam_target             = undef,
   Optional[String]                           $proxy_lib_name               = undef,
   Optional[String]                           $ldap_user_search_filter      = undef,
-  Optional[Array[String[1]]]                 $simple_allow_users           = undef,
-  Optional[Array[String[1]]]                 $simple_deny_users            = undef,
-  Optional[Array[String[1]]]                 $simple_allow_groups          = undef,
-  Optional[Array[String[1]]]                 $simple_deny_groups           = undef,
+  Optional[Array[Sssd::IniListItem]]         $simple_allow_users           = undef,
+  Optional[Array[Sssd::IniListItem]]         $simple_deny_users            = undef,
+  Optional[Array[Sssd::IniListItem]]         $simple_allow_groups          = undef,
+  Optional[Array[Sssd::IniListItem]]         $simple_deny_groups           = undef,
   Optional[Hash]                             $custom_options               = undef,
 ) {
   # Build configuration lines in order (matching expected test output)
@@ -231,13 +236,18 @@ define sssd::domain (
   $proxy_lib_name_line = $proxy_lib_name ? { undef => [], default => ["proxy_lib_name = ${proxy_lib_name}"] }
 
   # 'simple' access provider settings, rendered as the comma-separated lists
-  # that sssd-simple(5) expects; unset or empty lists are omitted
+  # that sssd-simple(5) expects.
+  #
+  # An empty list is omitted rather than rendered as a bare 'key =':
+  # sssd-simple(5) documents no behaviour for an empty value, so emitting one
+  # would commit this module to whatever sssd happens to do with it today.
+  # Omitting leaves the option unset, which the man page does define.
   $simple_access_lines = {
     'simple_allow_users'  => $simple_allow_users,
     'simple_deny_users'   => $simple_deny_users,
     'simple_allow_groups' => $simple_allow_groups,
     'simple_deny_groups'  => $simple_deny_groups,
-  }.filter |$_opt, $_value| { $_value =~ Array[String[1], 1] }.map |$_opt, $_value| { "${_opt} = ${_value.join(',')}" }
+  }.filter |$_opt, $_value| { $_value =~ Array[Sssd::IniListItem, 1] }.map |$_opt, $_value| { "${_opt} = ${_value.join(',')}" }
 
   # Custom options processing
   $custom_options_lines = $custom_options ? {
