@@ -16,10 +16,37 @@
 # @param debug_timestamps
 # @param debug_microseconds
 # @param description
+#
 # @param enable_files_domain
+#   Whether to write the ``enable_files_domain`` option into the ``[sssd]``
+#   section.
+#
+#   * SSSD 2.10 dismantled the implicit files domain and removed this option
+#     from its schema, so the module supplies it from ``data/os/`` only on the
+#     releases that still accept it and leaves it ``undef`` elsewhere.  On
+#     EL10+ the equivalent is a proxy domain with ``proxy_lib_name => 'files'``,
+#     which ``sssd::config::manage_base_domain`` creates as the ``LOCAL``
+#     domain.
+#   * An explicitly set value is always written, on every release.
+#
 # @param config_file_version
+#   Whether to write the ``config_file_version`` option into the ``[sssd]``
+#   section, and what value to use.
+#
+#   * SSSD 2.10 removed this option as obsolete, with no successor.  Supplied
+#     from ``data/os/`` on the releases that still accept it; ``undef``
+#     elsewhere.
+#
 # @param services
+#
 # @param reconnection_retries
+#   Whether to write the ``reconnection_retries`` option into the ``[sssd]``
+#   section, and what value to use.
+#
+#   * SSSD 2.10 removed this option -- it had already stopped being read --
+#     with no successor.  Supplied from ``data/os/`` on the releases that
+#     still accept it; ``undef`` elsewhere.
+#
 # @param re_expression
 # @param full_name_format
 # @param try_inotify
@@ -156,9 +183,9 @@ class sssd (
   Boolean                       $debug_timestamps      = true,
   Boolean                       $debug_microseconds    = false,
   Optional[String[1]]           $description           = undef,
-  Integer[1]                    $config_file_version   = 2,
+  Optional[Integer[1]]          $config_file_version   = undef,
   Sssd::Services                $services              = ['nss','pam','ssh','sudo'],
-  Integer[0]                    $reconnection_retries  = 3,
+  Optional[Integer[0]]          $reconnection_retries  = undef,
   Optional[String[1]]           $re_expression         = undef,
   Optional[String[1]]           $full_name_format      = undef,
   Optional[Boolean]             $try_inotify           = undef,
@@ -168,7 +195,7 @@ class sssd (
   Optional[String[1]]           $override_space        = undef,
   Optional[String[1]]           $certificate_verification = undef,
   Hash                          $ldap_providers        = {},
-  Boolean                       $enable_files_domain   = true,
+  Optional[Boolean]             $enable_files_domain   = undef,
   Boolean                       $enumerate_users       = false,
   Boolean                       $cache_credentials     = true,
   Boolean                       $include_svc_config    = true,

@@ -1,7 +1,21 @@
 require 'spec_helper'
 
-def default_content_with_domains
-  <<~EOM
+# SSSD 2.10 removed these options from its schema, so the module supplies them
+# from data/os/ only on the releases that still accept them.  Expected content
+# is written below as EL8/9 renders it; on EL10+ these lines are absent.
+#
+# `enable_files_domain` is passed in per-context rather than listed here,
+# because one context sets it explicitly -- and an explicitly set value is
+# written on every release.
+def for_release(content, os_facts, also_dropped = [])
+  return content if os_facts[:os][:release][:major].to_i < 10
+
+  dropped = (['config_file_version', 'reconnection_retries'] + also_dropped).join('|')
+  content.lines.grep_v(%r{^(?:#{dropped}) = }).join
+end
+
+def default_content_with_domains(os_facts)
+  for_release(<<~EOM, os_facts, ['enable_files_domain'])
     [sssd]
     # sssd::config
     services = nss,pam,ssh
@@ -84,7 +98,7 @@ describe 'sssd' do
           else
             it { is_expected.not_to contain_sssd__domain('LOCAL') }
           end
-          it_behaves_like 'a sssd::config', <<~EOM
+          it_behaves_like 'a sssd::config', for_release(<<~EOM, os_facts, ['enable_files_domain'])
             [sssd]
             # sssd::config
             services = nss,pam,ssh
@@ -102,14 +116,14 @@ describe 'sssd' do
           context 'when not joined to an IPA domain' do
             let(:facts) { os_facts }
 
-            it_behaves_like 'a sssd::config', default_content_with_domains
+            it_behaves_like 'a sssd::config', default_content_with_domains(os_facts)
             it { is_expected.not_to contain_class('sssd::config::ipa_domain') }
           end
 
           context 'when joined to an IPA domain' do
             let(:facts) { os_facts.merge(ipa_fact_joined) }
 
-            it_behaves_like 'a sssd::config', default_content_with_domains.gsub('FILE, LDAP', 'FILE, LDAP, ipa.example.com')
+            it_behaves_like 'a sssd::config', default_content_with_domains(os_facts).gsub('FILE, LDAP', 'FILE, LDAP, ipa.example.com')
             it { is_expected.to contain_class('sssd::config::ipa_domain') }
           end
 
@@ -127,7 +141,7 @@ describe 'sssd' do
             # The domain must not be added to the domains list nor
             # sssd::config::ipa_domain included, otherwise sssd.conf would
             # reference an unconfigured domain.
-            it_behaves_like 'a sssd::config', default_content_with_domains
+            it_behaves_like 'a sssd::config', default_content_with_domains(os_facts)
             it { is_expected.not_to contain_class('sssd::config::ipa_domain') }
           end
         end
@@ -150,7 +164,9 @@ describe 'sssd' do
             }
           end
 
-          it_behaves_like 'a sssd::config', <<~EOM
+          # enable_files_domain is set explicitly here, so it renders on every
+          # release, EL10 included.
+          it_behaves_like 'a sssd::config', for_release(<<~EOM, os_facts)
             [sssd]
             # sssd::config
             services = nss,pam,ssh
@@ -182,14 +198,14 @@ describe 'sssd' do
           end
 
           context 'when not joined to an IPA domain' do
-            it_behaves_like 'a sssd::config', default_content_with_domains
+            it_behaves_like 'a sssd::config', default_content_with_domains(os_facts)
             it { is_expected.not_to contain_class('sssd::config::ipa_domain') }
           end
 
           context 'when joined to an IPA domain' do
             let(:facts) { os_facts.merge(ipa_fact_joined) }
 
-            it_behaves_like 'a sssd::config', default_content_with_domains
+            it_behaves_like 'a sssd::config', default_content_with_domains(os_facts)
             it { is_expected.not_to contain_class('sssd::config::ipa_domain') }
           end
         end
@@ -198,7 +214,7 @@ describe 'sssd' do
           let(:params) { { domains: sssd_domains + sssd_domains } }
 
           # this verifies domain list is deduped in content
-          it_behaves_like 'a sssd::config', default_content_with_domains
+          it_behaves_like 'a sssd::config', default_content_with_domains(os_facts)
           it { is_expected.not_to contain_class('sssd::config::ipa_domain') }
         end
 

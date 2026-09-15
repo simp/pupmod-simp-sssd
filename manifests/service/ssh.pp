@@ -9,6 +9,12 @@
 # @param debug_timestamps
 # @param debug_microseconds
 # @param ssh_hash_known_hosts
+#   Removed from SSSD's schema in 2.10 along with the sssd-managed
+#   ``known_hosts`` workflow it controlled, which ``sss_ssh_knownhosts`` and
+#   OpenSSH's ``KnownHostsCommand`` now replace.  Supplied from ``data/os/`` on
+#   the releases that still accept it and left ``undef`` elsewhere; an
+#   explicitly set value is always written.
+#
 # @param ssh_known_hosts_timeout
 #
 # @param custom_options
@@ -26,7 +32,7 @@ class sssd::service::ssh (
   Optional[Sssd::DebugLevel]   $debug_level             = undef,
   Boolean                      $debug_timestamps        = true,
   Boolean                      $debug_microseconds      = false,
-  Boolean                      $ssh_hash_known_hosts    = true,
+  Optional[Boolean]            $ssh_hash_known_hosts    = undef,
   Optional[Integer]            $ssh_known_hosts_timeout = undef,
   Optional[Hash]               $custom_options          = undef,
 ) {
@@ -47,7 +53,10 @@ class sssd::service::ssh (
     $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
 
     # SSH-specific settings
-    $ssh_hash_known_hosts_line = ["ssh_hash_known_hosts = ${ssh_hash_known_hosts}"]
+    # SSSD 2.10 removed ssh_hash_known_hosts along with the sssd-managed
+    # known_hosts workflow it belonged to; supplied from data/os/ on the
+    # releases that still accept it, undef on EL10+.
+    $ssh_hash_known_hosts_line = $ssh_hash_known_hosts ? { undef => [], default => ["ssh_hash_known_hosts = ${ssh_hash_known_hosts}"] }
     $ssh_known_hosts_timeout_line = $ssh_known_hosts_timeout ? { undef => [], default => ["ssh_known_hosts_timeout = ${ssh_known_hosts_timeout}"] }
 
     # Combine all lines in order

@@ -10,6 +10,10 @@
 # @param debug_timestamps
 # @param debug_microseconds
 # @param reconnection_retries
+#   Removed from SSSD's schema in 2.10, with no successor.  Supplied from
+#   ``data/os/`` on the releases that still accept it and left ``undef``
+#   elsewhere; an explicitly set value is always written.
+#
 # @param fd_limit
 # @param command
 # @param enum_cache_timeout
@@ -42,7 +46,7 @@ class sssd::service::nss (
   Optional[Sssd::DebugLevel]   $debug_level                   = undef,
   Boolean                      $debug_timestamps              = true,
   Boolean                      $debug_microseconds            = false,
-  Integer                      $reconnection_retries          = 3,
+  Optional[Integer]            $reconnection_retries          = undef,
   Optional[Integer]            $fd_limit                      = undef,
   Optional[String]             $command                       = undef,
   Integer                      $enum_cache_timeout            = 120,
@@ -79,7 +83,9 @@ class sssd::service::nss (
     $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
 
     # Connection settings
-    $reconnection_retries_line = ["reconnection_retries = ${reconnection_retries}"]
+    # SSSD 2.10 removed reconnection_retries from its schema; supplied from
+    # data/os/ on the releases that still accept it, undef on EL10+.
+    $reconnection_retries_line = $reconnection_retries ? { undef => [], default => ["reconnection_retries = ${reconnection_retries}"] }
     $fd_limit_line = $fd_limit ? { undef => [], default => ["fd_limit = ${fd_limit}"] }
     $command_line = $command ? { undef => [], default => ["command = ${command}"] }
 

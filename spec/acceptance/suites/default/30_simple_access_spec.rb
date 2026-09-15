@@ -13,7 +13,6 @@ describe 'sssd::domain with access_provider => simple' do
       'simp_options::ldap::bind_pw' => '<PASSWORD>',
       # This causes a lot of noise and reboots
       'sssd::auditd'                => false,
-      'sssd::enable_files_domain'   => true,
       'sssd::domains'               => ['LDAP'],
     }
   end
