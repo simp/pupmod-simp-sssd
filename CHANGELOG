@@ -1,7 +1,13 @@
-* Mon Sep 14 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.2.1
+* Tue Sep 15 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.3.1
 - Repair the ds389 acceptance suite
 - Point the nsswitch fixture at simp/pupmod-puppet-nsswitch
 - Remove the ldap acceptance suite
+
+* Mon Sep 14 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.3.0
+- Add `sssd::custom_settings`, a validated Hash alternative to
+  `sssd::custom_config` for adding custom configuration sections
+- Add the `sssd::to_ini()` function and the `Sssd::IniSettings`,
+  `Sssd::IniSectionName`, and `Sssd::IniValue` data types
 
 * Wed Sep 09 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.2.0
 - Add `sssd::app_pki_group` to control the group ownership of the
