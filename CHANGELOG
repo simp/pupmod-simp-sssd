@@ -18,6 +18,17 @@
   and the new simple_* parameters.
 - Add acceptance tests for the simple_* parameters to the default and ds389
   suites.
+- Stop writing the six options SSSD 2.10 removed from its schema on EL10+:
+  config_file_version, reconnection_retries and enable_files_domain in
+  [sssd], reconnection_retries in [nss] and [pam], and ssh_hash_known_hosts
+  in [ssh].  Their values move to data/os/RedHat-{8,9}, so rendering on EL8/9
+  is unchanged and an explicitly set value is still written everywhere.
+  Sites setting any of these keys in their own Hiera should drop them on
+  EL10+.
+- Add the Sssd::IniListItem type and constrain the simple_* parameters with
+  it, rejecting the commas and newlines sssd.conf cannot express.
+- Fix an OS release string comparison in the default acceptance suite that
+  sorted '10' before '8' and skipped a domain check on EL10.
 
 * Tue Sep 15 2026 Hazel Caballero <hcaballero02@gmail.com> - 10.3.1
 - Repair the ds389 acceptance suite
