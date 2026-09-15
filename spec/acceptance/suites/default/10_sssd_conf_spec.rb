@@ -60,7 +60,6 @@ describe 'sssd' do
       let(:local_hiera) do
         hiera.merge(
           {
-            'sssd::enable_files_domain' => true,
             'sssd::domains' => [ 'LDAP' ],
           },
         )

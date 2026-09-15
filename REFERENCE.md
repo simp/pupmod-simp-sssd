@@ -44,6 +44,7 @@
 * [`Sssd::ChpassProvider`](#Sssd--ChpassProvider): List of valid types for sssd domain change password provider
 * [`Sssd::DebugLevel`](#Sssd--DebugLevel): Integer[0-9] or 2 byte Hexidecimal (ex. 0x0201)
 * [`Sssd::IdProvider`](#Sssd--IdProvider): List of valid type for sssd domain ID provider.
+* [`Sssd::IniListItem`](#Sssd--IniListItem): A single element of a comma-separated ``sssd.conf`` list value
 * [`Sssd::IniSectionName`](#Sssd--IniSectionName): The name of a section in an ``sssd.conf``-style file
 * [`Sssd::IniSettings`](#Sssd--IniSettings): An ``sssd.conf``-style configuration expressed as structured data
 * [`Sssd::IniValue`](#Sssd--IniValue): A single value for an ``sssd.conf`` setting
@@ -179,19 +180,33 @@ Default value: `undef`
 
 ##### <a name="-sssd--enable_files_domain"></a>`enable_files_domain`
 
-Data type: `Boolean`
+Data type: `Optional[Boolean]`
 
+Whether to write the ``enable_files_domain`` option into the ``[sssd]``
+section.
 
+* SSSD 2.10 dismantled the implicit files domain and removed this option
+  from its schema, so the module supplies it from ``data/os/`` only on the
+  releases that still accept it and leaves it ``undef`` elsewhere.  On
+  EL10+ the equivalent is a proxy domain with ``proxy_lib_name => 'files'``,
+  which ``sssd::config::manage_base_domain`` creates as the ``LOCAL``
+  domain.
+* An explicitly set value is always written, on every release.
 
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--config_file_version"></a>`config_file_version`
 
-Data type: `Integer[1]`
+Data type: `Optional[Integer[1]]`
 
+Whether to write the ``config_file_version`` option into the ``[sssd]``
+section, and what value to use.
 
+* SSSD 2.10 removed this option as obsolete, with no successor.  Supplied
+  from ``data/os/`` on the releases that still accept it; ``undef``
+  elsewhere.
 
-Default value: `2`
+Default value: `undef`
 
 ##### <a name="-sssd--services"></a>`services`
 
@@ -203,11 +218,16 @@ Default value: `['nss','pam','ssh','sudo']`
 
 ##### <a name="-sssd--reconnection_retries"></a>`reconnection_retries`
 
-Data type: `Integer[0]`
+Data type: `Optional[Integer[0]]`
 
+Whether to write the ``reconnection_retries`` option into the ``[sssd]``
+section, and what value to use.
 
+* SSSD 2.10 removed this option -- it had already stopped being read --
+  with no successor.  Supplied from ``data/os/`` on the releases that
+  still accept it; ``undef`` elsewhere.
 
-Default value: `3`
+Default value: `undef`
 
 ##### <a name="-sssd--re_expression"></a>`re_expression`
 
@@ -706,7 +726,7 @@ If defined, this hash will be used to create the service
 section instead of the parameters.  You must provide all options
 in the section you want to add.  Each entry in the hash will be
 added as a simple init pair key = value under the section in
-the sssd.conf file.
+the generated `/etc/sssd/conf.d/` drop-in file.
 No error checking will be performed.
 
 Default value: `undef`
@@ -797,7 +817,7 @@ section instead of the parameters.  You must provide all options
 in the section you want to add.  Each entry in the hash will be
 added as a simple init pair
  key = value
-under the section in the sssd.conf file.
+under the section in the generated `/etc/sssd/conf.d/` drop-in file.
 No error checking will be performed.
 
 Default value: `undef`
@@ -872,11 +892,13 @@ Default value: `false`
 
 ##### <a name="-sssd--service--nss--reconnection_retries"></a>`reconnection_retries`
 
-Data type: `Integer`
+Data type: `Optional[Integer]`
 
+Removed from SSSD's schema in 2.10, with no successor.  Supplied from
+``data/os/`` on the releases that still accept it and left ``undef``
+elsewhere; an explicitly set value is always written.
 
-
-Default value: `3`
+Default value: `undef`
 
 ##### <a name="-sssd--service--nss--fd_limit"></a>`fd_limit`
 
@@ -1014,7 +1036,7 @@ If defined, this hash will be used to create the service
 section instead of the parameters.  You must provide all options
 in the section you want to add.  Each entry in the hash will be
 added as a simple init pair key = value under the section in
-the sssd.conf file.
+the generated `/etc/sssd/conf.d/` drop-in file.
 No error checking will be performed.
 
 Default value: `undef`
@@ -1086,7 +1108,7 @@ If defined, this hash will be used to create the service
 section instead of the parameters.  You must provide all options
 in the section you want to add.  Each entry in the hash will be
 added as a simple init pair key = value under the section in
-the sssd.conf file.
+the generated `/etc/sssd/conf.d/` drop-in file.
 No error checking will be performed.
 
 Default value: `undef`
@@ -1159,11 +1181,11 @@ Default value: `false`
 
 ##### <a name="-sssd--service--pam--reconnection_retries"></a>`reconnection_retries`
 
-Data type: `Integer`
+Data type: `Optional[Integer]`
 
 
 
-Default value: `3`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pam--command"></a>`command`
 
@@ -1307,11 +1329,15 @@ Default value: `false`
 
 ##### <a name="-sssd--service--ssh--ssh_hash_known_hosts"></a>`ssh_hash_known_hosts`
 
-Data type: `Boolean`
+Data type: `Optional[Boolean]`
 
+Removed from SSSD's schema in 2.10 along with the sssd-managed
+``known_hosts`` workflow it controlled, which ``sss_ssh_knownhosts`` and
+OpenSSH's ``KnownHostsCommand`` now replace.  Supplied from ``data/os/`` on
+the releases that still accept it and left ``undef`` elsewhere; an
+explicitly set value is always written.
 
-
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--service--ssh--ssh_known_hosts_timeout"></a>`ssh_known_hosts_timeout`
 
@@ -1329,7 +1355,7 @@ If defined, this hash will be used to create the service
 section instead of the parameters.  You must provide all options
 in the section you want to add.  Each entry in the hash will be
 added as a simple init pair key = value under the section in
-the sssd.conf file.
+the generated `/etc/sssd/conf.d/` drop-in file.
 No error checking will be performed.
 
 Default value: `undef`
@@ -1412,7 +1438,7 @@ section instead of the parameters.  You must provide all options
 in the section you want to add.  Each entry in the hash will be
 added as a simple init pair
 key = value
-under the section in the sssd.conf file.
+under the section in the generated `/etc/sssd/conf.d/` drop-in file.
 No error checking will be performed.
 
 Default value: `undef`
@@ -1529,6 +1555,10 @@ The following parameters are available in the `sssd::domain` defined type:
 * [`proxy_pam_target`](#-sssd--domain--proxy_pam_target)
 * [`proxy_lib_name`](#-sssd--domain--proxy_lib_name)
 * [`ldap_user_search_filter`](#-sssd--domain--ldap_user_search_filter)
+* [`simple_allow_users`](#-sssd--domain--simple_allow_users)
+* [`simple_deny_users`](#-sssd--domain--simple_deny_users)
+* [`simple_allow_groups`](#-sssd--domain--simple_allow_groups)
+* [`simple_deny_groups`](#-sssd--domain--simple_deny_groups)
 * [`custom_options`](#-sssd--domain--custom_options)
 
 ##### <a name="-sssd--domain--name"></a>`name`
@@ -1886,16 +1916,77 @@ Data type: `Optional[String]`
 
 Default value: `undef`
 
+##### <a name="-sssd--domain--simple_allow_users"></a>`simple_allow_users`
+
+Data type: `Optional[Array[Sssd::IniListItem]]`
+
+Users always allowed to log in when `access_provider` is `simple`.
+
+Rendered as the comma-separated list that the `simple_allow_users` option
+of `sssd-simple(5)` expects.  When unset or empty, the option is omitted
+from the generated configuration.  See `sssd-simple(5)` for how the allow
+and deny lists interact.
+
+* `sssd.conf` provides no way to quote or escape a comma, so a name that
+  contains one cannot be expressed here and is rejected at compile time.
+  Rendering it would split the name in two and silently produce a rule
+  that matches nobody.
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--simple_deny_users"></a>`simple_deny_users`
+
+Data type: `Optional[Array[Sssd::IniListItem]]`
+
+Users always denied access when `access_provider` is `simple`.
+Rendered like `simple_allow_users`.
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--simple_allow_groups"></a>`simple_allow_groups`
+
+Data type: `Optional[Array[Sssd::IniListItem]]`
+
+Groups whose members are allowed to log in when `access_provider` is
+`simple`.  Rendered like `simple_allow_users`.
+
+Default value: `undef`
+
+##### <a name="-sssd--domain--simple_deny_groups"></a>`simple_deny_groups`
+
+Data type: `Optional[Array[Sssd::IniListItem]]`
+
+Groups whose members are denied access when `access_provider` is
+`simple`.  Rendered like `simple_allow_users`.
+
+Default value: `undef`
+
 ##### <a name="-sssd--domain--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
 
-If defined, this hash will be used to create the service
-section instead of the parameters.  You must provide all options
-in the section you want to add.  Each entry in the hash will be
-added as a simple init pair key = value under the section in
-the sssd.conf file.
-No error checking will be performed.
+A hash of additional options to add to this domain's section.
+
+Each entry in the hash is rendered as a simple init pair
+`key = value`, sorted by key, and **appended to** the lines generated by
+the other parameters.  Unlike the `sssd::service::*` classes, this does
+**not** replace the parameter-driven configuration.
+
+Use this for any `sssd.conf(5)` domain option that this define does not
+expose as a parameter:
+
+```puppet
+sssd::domain { 'my.ad.domain':
+  id_provider    => 'ad',
+  custom_options => {
+    'ad_site' => 'Default-First-Site-Name'
+  }
+}
+```
+
+No error checking is performed.  If a key here duplicates an option that
+is already set by a parameter, both lines are written to the generated
+`/etc/sssd/conf.d/` drop-in file, so set each option in only one place.
 
 Default value: `undef`
 
@@ -4395,6 +4486,20 @@ List of valid type for sssd domain ID provider.
 
 Alias of `Enum['proxy', 'ldap', 'ipa', 'ad', 'files']`
 
+### <a name="Sssd--IniListItem"></a>`Sssd::IniListItem`
+
+``sssd.conf`` has no quoting or escaping mechanism, so an element may contain
+neither a comma -- which sssd would read as a separator, silently splitting
+one entry into two -- nor a newline, which would let it forge a new
+``[section]`` header.  A name that genuinely contains a comma cannot be
+expressed in ``sssd.conf`` at all; rejecting it at compile time is preferable
+to rendering an access rule that never matches.
+
+Unlike a scalar value, an element may not be empty: it would render as a
+stray comma.
+
+Alias of `Pattern[/\A[^\n,]+\z/]`
+
 ### <a name="Sssd--IniSectionName"></a>`Sssd::IniSectionName`
 
 Covers the plain sections (``sssd``, ``nss``, ``pam``, ...) as well as the
@@ -4447,13 +4552,13 @@ per entry; a newline in a value would let it forge a new ``[section]``
 header.  Brackets are *allowed* -- they are legitimate in values such as
 ``re_expression``, which contains regex character classes.
 
-``Array`` values are rendered as comma-separated lists, so their elements
-may not contain a comma, and -- unlike a scalar value -- may not be empty.
+``Array`` values are rendered as comma-separated lists, so their elements are
+constrained by ``Sssd::IniListItem``.
 
 The empty String is accepted for a scalar value: ``key =`` is meaningful to
 SSSD, which reads it as "explicitly unset" rather than "absent".
 
-Alias of `Variant[Pattern[/\A[^\n]*\z/], Integer, Float, Boolean, Array[Variant[Pattern[/\A[^\n,]+\z/], Integer, Float], 1]]`
+Alias of `Variant[Pattern[/\A[^\n]*\z/], Integer, Float, Boolean, Array[Variant[Sssd::IniListItem, Integer, Float], 1]]`
 
 ### <a name="Sssd--Krb5Server"></a>`Sssd::Krb5Server`
 
