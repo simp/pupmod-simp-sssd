@@ -54,10 +54,10 @@ describe 'sssd::domain using the simple access provider' do
   end
 
   def access_check(client, user)
-    # sssctl user-checks drives the same pam_acct_mgmt call a real login
-    # makes, straight through sssd's PAM responder, without depending on the
-    # PAM stack configuration of the test VM.  Its exit code does not
-    # reflect the PAM verdict, so callers match the reported result instead.
+    # sssctl user-checks drives pam_acct_mgmt through the host's real PAM
+    # stack for the given service, exactly like a login would.  Its exit
+    # code does not reflect the PAM verdict, so callers match the reported
+    # result instead.
     on(client, "sssctl user-checks -a acct -s sshd #{user}", accept_all_exit_codes: true).output
   end
 
@@ -65,6 +65,16 @@ describe 'sssd::domain using the simple access provider' do
     context "on client #{client} allowing by user" do
       let(:fqdn) { fact_on(client, 'networking.fqdn') }
       let(:manifest) { manifest_with(fqdn, "simple_allow_users        => ['realuser'],") }
+
+      it 'wires pam_sss into the PAM stack' do
+        # The cloud images ship with no authselect profile and a bare
+        # pam_unix-only account phase, which approves any NSS-resolvable
+        # user without ever consulting sssd — every access check would
+        # falsely succeed.  A kickstarted EL system defaults to the sssd
+        # profile; select it explicitly here.  This also overwrites
+        # nsswitch.conf, which the puppet apply below re-asserts.
+        on(client, 'authselect select sssd --force')
+      end
 
       it 'applies with no errors' do
         apply_manifest_on(client, manifest, catch_failures: true)
