@@ -1,0 +1,10 @@
+---
+# Ubuntu sssd performs a strict ownership/permissions check at startup and
+# refuses to load sssd.conf if the file is group-readable. Unlike the Debian
+# package, Ubuntu's sssd service unit does not apply `chmod -R g+r /etc/sssd`
+# in ExecStartPre. The common.yaml default of root:sssd 0640 breaks the
+# service. Keep strict ownership here, matching EL8/9 behaviour.
+sssd::config::sssd_config_file_params:
+  owner: 'root'
+  group: 'root'
+  mode: '0600'

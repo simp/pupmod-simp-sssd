@@ -1,0 +1,13 @@
+---
+# Debian's sssd.service ExecStartPre runs:
+#   chown -f -R root:root /etc/sssd
+#   chmod -f -R g+r /etc/sssd
+# This resets ownership to root:root and adds group-read after every restart.
+# Set sssd_config_file_params to match that post-ExecStartPre state so Puppet
+# and sssd agree and files are idempotent.
+# Set manage_base_domain false: the LOCAL domain workaround is only needed on EL10+.
+sssd::config::manage_base_domain: false
+sssd::config::sssd_config_file_params:
+  owner: 'root'
+  group: 'root'
+  mode: '0640'
