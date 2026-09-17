@@ -65,7 +65,11 @@ describe 'sssd class' do
     context 'with default files domain set up' do
       # To make sssctl work ifd needs to be turned on in EL8 and
       # a files domain needs to be created in EL7.
-      os_release = fact_on(client, 'os.release.major')
+      #
+      # Compare the release as an integer: a string compare sorts '10' before
+      # '8', so the domain example below was silently skipped on EL10 -- the
+      # one release where the domain in question no longer exists.
+      os_release = fact_on(client, 'os.release.major').to_s.to_i
 
       it 'manifest should work with no errors' do
         set_hieradata_on(client, default_hieradata)
@@ -87,10 +91,19 @@ describe 'sssd class' do
         expect(result).to match(%r{.*- user id: 97979.*})
       end
 
-      if os_release >= '8'
+      # SSSD 2.10 dismantled the implicit files domain.  On EL10 the module
+      # configures the documented replacement instead -- the LOCAL proxy
+      # domain with proxy_lib_name => 'files' -- so assert whichever domain
+      # this release is supposed to have rather than skipping the check.
+      if os_release >= 10
+        it 'is running and has set up the LOCAL proxy domain' do
+          result = on(client, 'sssctl domain-list; sssctl domain-list').stdout
+          expect(result).to match(%r{LOCAL})
+        end
+      else
         it 'is running and have set up implicit_files domain' do
           result = on(client, 'sssctl domain-list; sssctl domain-list').stdout
-          expect(result).to match(%r{.*implicit_files.*})
+          expect(result).to match(%r{implicit_files})
         end
       end
 

@@ -116,7 +116,6 @@ describe 'sssd class' do
         # version of realmd.)
         hieradata + <<~EOM
           simp_options::dns::servers: ["#{ad_ip}"]
-          sssd::enable_files_domain: true
           sssd::domains: []
         EOM
       end

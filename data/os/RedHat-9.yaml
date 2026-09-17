@@ -1,4 +1,14 @@
 ---
+# Options SSSD 2.10 removed from its schema.  They are still accepted here, so
+# they are supplied per-release rather than as class defaults; on EL10+ no
+# value is set and the module omits the option entirely.
+sssd::config_file_version: 2
+sssd::reconnection_retries: 3
+sssd::enable_files_domain: true
+sssd::service::nss::reconnection_retries: 3
+sssd::service::pam::reconnection_retries: 3
+sssd::service::ssh::ssh_hash_known_hosts: true
+
 sssd::app_pki_group: 'root'
 sssd::service::sudo::manage_group_dropin_file: true
 sssd::config::sssd_config_dir_mode: 'go-rw'
