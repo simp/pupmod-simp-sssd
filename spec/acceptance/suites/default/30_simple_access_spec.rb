@@ -68,7 +68,7 @@ describe 'sssd::domain with access_provider => simple' do
 
       it 'omits simple_* options that are set to an empty list' do
         conf = on(host, "cat #{domain_conf}").stdout
-        expect(conf).not_to match(%r{simple_deny_groups})
+        expect(conf).not_to include('simple_deny_groups')
       end
 
       it 'is running sssd' do

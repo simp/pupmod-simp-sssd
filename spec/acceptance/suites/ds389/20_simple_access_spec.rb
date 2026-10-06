@@ -103,11 +103,11 @@ describe 'sssd::domain using the simple access provider' do
       end
 
       it 'permits the allowed user' do
-        expect(access_check(client, 'realuser')).to match(%r{pam_acct_mgmt: Success})
+        expect(access_check(client, 'realuser')).to include('pam_acct_mgmt: Success')
       end
 
       it 'denies a user missing from the allow list' do
-        expect(access_check(client, 'testuser')).to match(%r{pam_acct_mgmt: Permission denied})
+        expect(access_check(client, 'testuser')).to include('pam_acct_mgmt: Permission denied')
       end
     end
 
@@ -126,11 +126,11 @@ describe 'sssd::domain using the simple access provider' do
       end
 
       it 'permits a member of an allowed group' do
-        expect(access_check(client, 'testuser')).to match(%r{pam_acct_mgmt: Success})
+        expect(access_check(client, 'testuser')).to include('pam_acct_mgmt: Success')
       end
 
       it 'denies a user in none of the allowed groups' do
-        expect(access_check(client, 'realuser')).to match(%r{pam_acct_mgmt: Permission denied})
+        expect(access_check(client, 'realuser')).to include('pam_acct_mgmt: Permission denied')
       end
     end
   end

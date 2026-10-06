@@ -98,12 +98,12 @@ describe 'sssd class' do
       if os_release >= 10
         it 'is running and has set up the LOCAL proxy domain' do
           result = on(client, 'sssctl domain-list; sssctl domain-list').stdout
-          expect(result).to match(%r{LOCAL})
+          expect(result).to include('LOCAL')
         end
       else
         it 'is running and have set up implicit_files domain' do
           result = on(client, 'sssctl domain-list; sssctl domain-list').stdout
-          expect(result).to match(%r{implicit_files})
+          expect(result).to include('implicit_files')
         end
       end
 
