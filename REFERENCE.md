@@ -8,7 +8,7 @@
 
 * [`sssd`](#sssd): This class allows you to install and configure SSSD.  It will forcefully disable nscd which consequently prevents you from using an nscd modu
 * [`sssd::config`](#sssd--config): Configuration class called from sssd.  Sets up the ``[sssd]`` section of '/etc/sssd/sssd.conf', and, optionally, a domain section for the IPA
-* [`sssd::config::ipa_domain`](#sssd--config--ipa_domain): Configures SSSD for the IPA domain to which the host has joined.  When ``sssd::force_ipa_domain`` is true, the IPA domain is configured even 
+* [`sssd::config::ipa_domain`](#sssd--config--ipa_domain): Configures SSSD for the IPA domain to which the host has joined.  When ``sssd::force_ipa_domain`` is true, the IPA domain is configured even
 * [`sssd::install`](#sssd--install): Install the required packages for SSSD
 * [`sssd::install::client`](#sssd--install--client): Install the sssd-client package
 * [`sssd::pki`](#sssd--pki): Class: sssd::pki  Uses the following sssd class parameters to copy certs into a directory for the sssd application  $sssd::pki   * If 'simp',
@@ -33,7 +33,7 @@
 
 ### Functions
 
-* [`sssd::supported_version`](#sssd--supported_version): Returns ``true`` if the version of SSSD installed on the system is supported and ``false`` otherwise.  Assumes that the system is relatively 
+* [`sssd::supported_version`](#sssd--supported_version): Returns ``true`` if the version of SSSD installed on the system is supported and ``false`` otherwise.  Assumes that the system is relatively
 * [`sssd::to_ini`](#sssd--to_ini): Render structured configuration data as ``sssd.conf``-style INI content.  Sections and settings are emitted in Hash insertion order, so the o
 
 ### Data types
@@ -4407,7 +4407,7 @@ destination needs it.
 
 #### Examples
 
-##### 
+#####
 
 ```puppet
 sssd::to_ini({ 'nss' => { 'filter_users' => ['root','named'] } })
@@ -4434,7 +4434,7 @@ Returns: `String`
 
 ##### Examples
 
-###### 
+######
 
 ```puppet
 sssd::to_ini({ 'nss' => { 'filter_users' => ['root','named'] } })
@@ -4522,7 +4522,7 @@ Hiera-supplied Hash carry a ``~`` for "leave this one out".
 
 #### Examples
 
-##### 
+#####
 
 ```puppet
 {
@@ -4624,4 +4624,3 @@ Alias of `Enum['never', 'allow', 'try', 'demand', 'hard']`
 List of available sssd services
 
 Alias of `Array[Enum['nss','pam','sudo','autofs','ssh','pac','ifp']]`
-

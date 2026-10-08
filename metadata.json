@@ -1,6 +1,6 @@
 {
   "name": "simp-sssd",
-  "version": "10.4.0",
+  "version": "10.5.0",
   "author": "SIMP Team",
   "summary": "Manages SSSD",
   "license": "Apache-2.0",
@@ -29,7 +29,7 @@
     "optional_dependencies": [
       {
         "name": "simp/auditd",
-        "version_requirement": ">= 8.5.0 < 11.0.0"
+        "version_requirement": ">= 8.5.0 < 12.0.0"
       },
       {
         "name": "simp/pki",
@@ -81,7 +81,7 @@
   "requirements": [
     {
       "name": "openvox",
-      "version_requirement": ">= 8.0.0 < 9.0.0"
+      "version_requirement": ">= 8.0.0 < 10.0.0"
     }
   ]
 }
