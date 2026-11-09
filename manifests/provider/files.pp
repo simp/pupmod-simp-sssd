@@ -21,26 +21,14 @@ define sssd::provider::files (
   Optional[Array[Stdlib::Absolutepath]] $passwd_files = undef,
   Optional[Array[Stdlib::Absolutepath]] $group_files  = undef,
 ) {
-  # Build configuration lines in order (matching expected test output)
-  $passwd_files_line = ($passwd_files and !$passwd_files.empty) ? { true => ["passwd_files = ${passwd_files.join(', ')}"], false => [] }
-  $group_files_line = ($group_files and !$group_files.empty) ? { true => ["group_files = ${group_files.join(', ')}"], false => [] }
-
-  # Combine all lines in order
-  $config_lines = (
-    $passwd_files_line +
-    $group_files_line
-  )
-
-  # Join all configuration lines
-  $content = (['# sssd::provider::files'] + $config_lines).join("\n")
+  # Settings left undef, or set to an empty list, are not managed.
+  $_settings = {
+    'passwd_files' => $passwd_files ? { Array[Any, 1] => $passwd_files.join(', '), default => undef },
+    'group_files'  => $group_files ? { Array[Any, 1] => $group_files.join(', '), default => undef },
+  }
 
   sssd::config::entry { "puppet_provider_${name}_files":
-    content => epp(
-      "${module_name}/generic.epp",
-      {
-        'title'   => "domain/${title}",
-        'content' => $content,
-      }
-    ),
+    section  => "domain/${title}",
+    settings => $_settings,
   }
 }

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../../lib/sssd_spec_helpers'
 
 # Some of these tests depend upon simp_options::ldap::* being set in
 # spec/fixtures/hieradata/default.yaml.
@@ -19,7 +20,6 @@ describe 'sssd::provider::ldap' do
 
           expected = <<~EXPECTED
             [domain/#{title}]
-            # sssd::provider::ldap
             debug_microseconds = false
             krb5_canonicalize = false
             krb5_use_kdcinfo = true
@@ -42,7 +42,7 @@ describe 'sssd::provider::ldap' do
             ldap_sasl_canonicalize = false
             ldap_schema = rfc2307
             ldap_search_base = dc=example,dc=domain
-            ldap_sudo_include_netgroups  = true
+            ldap_sudo_include_netgroups = true
             ldap_sudo_include_regexp = true
             ldap_sudo_use_host_filter = true
             ldap_tls_cacertdir = /etc/pki/simp_apps/sssd/x509/cacerts
@@ -54,7 +54,7 @@ describe 'sssd::provider::ldap' do
             ldap_use_tokengroups = false
           EXPECTED
 
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap").with_content(expected)
+          expect(entry_content("puppet_provider_#{title}_ldap")).to content_matching(expected)
         end
       end
 
@@ -68,7 +68,6 @@ describe 'sssd::provider::ldap' do
 
           expected = <<~EXPECTED
             [domain/#{title}]
-            # sssd::provider::ldap
             debug_microseconds = false
             krb5_canonicalize = false
             krb5_use_kdcinfo = true
@@ -89,7 +88,7 @@ describe 'sssd::provider::ldap' do
             ldap_sasl_canonicalize = false
             ldap_schema = rfc2307
             ldap_search_base = dc=example,dc=domain
-            ldap_sudo_include_netgroups  = true
+            ldap_sudo_include_netgroups = true
             ldap_sudo_include_regexp = true
             ldap_sudo_use_host_filter = true
             ldap_tls_cacertdir = /etc/pki/simp_apps/sssd/x509/cacerts
@@ -101,7 +100,7 @@ describe 'sssd::provider::ldap' do
             ldap_use_tokengroups = false
           EXPECTED
 
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap").with_content(expected)
+          expect(entry_content("puppet_provider_#{title}_ldap")).to content_matching(expected)
         end
       end
 
@@ -110,8 +109,7 @@ describe 'sssd::provider::ldap' do
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
-            .with_content(%r{ldap_user_certificate = userCertificate;binary})
+          expect(entry_content("puppet_provider_#{title}_ldap")).to content_matching(%r{ldap_user_certificate = userCertificate;binary})
         }
       end
 
@@ -120,8 +118,7 @@ describe 'sssd::provider::ldap' do
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
-            .with_content(%r{ldap_tls_cacertdir = /path/to/ca})
+          expect(entry_content("puppet_provider_#{title}_ldap")).to content_matching(%r{ldap_tls_cacertdir = /path/to/ca})
         }
       end
 
@@ -130,8 +127,7 @@ describe 'sssd::provider::ldap' do
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
-            .with_content(%r{ldap_tls_key = /path/to/private/fqdn.pem})
+          expect(entry_content("puppet_provider_#{title}_ldap")).to content_matching(%r{ldap_tls_key = /path/to/private/fqdn.pem})
         }
       end
 
@@ -140,8 +136,7 @@ describe 'sssd::provider::ldap' do
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
-            .with_content(%r{ldap_tls_cert = /path/to/public/fqdn.pub})
+          expect(entry_content("puppet_provider_#{title}_ldap")).to content_matching(%r{ldap_tls_cert = /path/to/public/fqdn.pub})
         }
       end
 
@@ -150,8 +145,7 @@ describe 'sssd::provider::ldap' do
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
-            .without_content(%r{ldap_account_expire_policy})
+          expect(entry_content("puppet_provider_#{title}_ldap")).not_to include('ldap_account_expire_policy')
         }
       end
 
@@ -164,8 +158,7 @@ describe 'sssd::provider::ldap' do
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
-            .with_content(%r{ldap_uri = ldap://test1.example.domain,ldap://test2.example.domain})
+          expect(entry_content("puppet_provider_#{title}_ldap")).to content_matching(%r{ldap_uri = ldap://test1.example.domain,ldap://test2.example.domain})
         }
       end
 
@@ -174,10 +167,7 @@ describe 'sssd::provider::ldap' do
 
         it { is_expected.to compile.with_all_deps }
         it {
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap")
-            .without_content(%r{ldap_tls_cacertdir})
-            .without_content(%r{ldap_tls_key})
-            .without_content(%r{ldap_tls_cert})
+          expect(entry_content("puppet_provider_#{title}_ldap")).not_to match(%r{ldap_tls_cacertdir|ldap_tls_key|ldap_tls_cert})
         }
       end
 
@@ -310,7 +300,6 @@ describe 'sssd::provider::ldap' do
         it do
           expected = <<~EXPECTED
             [domain/#{title}]
-            # sssd::provider::ldap
             debug_level = 3
             debug_microseconds = false
             debug_timestamps = false
@@ -400,7 +389,7 @@ describe 'sssd::provider::ldap' do
             ldap_service_search_base = my_sldap_ervice_search_base
             ldap_sudo_full_refresh_interval = 22
             ldap_sudo_hostnames = sudo1.example.com sudo2.example.com
-            ldap_sudo_include_netgroups  = true
+            ldap_sudo_include_netgroups = true
             ldap_sudo_include_regexp = true
             ldap_sudo_ip = 2.3.4.1 2.3.4.2
             ldap_sudo_search_base = my_ldap_sudo_search_base
@@ -458,7 +447,7 @@ describe 'sssd::provider::ldap' do
             ldap_user_uuid = my_ldap_user_uuid
           EXPECTED
 
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ldap").with_content(expected)
+          expect(entry_content("puppet_provider_#{title}_ldap")).to content_matching(expected)
         end
       end
     end

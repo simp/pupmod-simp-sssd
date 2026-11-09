@@ -1,16 +1,56 @@
 # This class allows you to install and configure SSSD.
 #
-# It will forcefully disable nscd which consequently prevents you from
-# using an nscd module at the same time, which is the correct behavior.
+# A bare `include sssd` installs the SSSD packages and does nothing else.
+# Everything else is opt-in: each setting is written only when its parameter
+# is set, and each is edited in place, so settings this module does not
+# manage are left alone. Enforce the `simp:defaults` compliance_engine profile
+# to restore the behavior of earlier releases (see the README).
+#
+# The parameters that map to `[sssd]` settings in `/etc/sssd/sssd.conf`
+# follow the same three states:
+#
+# * `undef` (the default) leaves the setting alone
+# * a value sets it
+# * `'absent'` removes it
 #
 # Full documentation of the parameters that map directly to SSSD
 # configuration options can be found in the sssd.conf(5) man page.
 #
 # @param authoritative
-#   Whether or not to purge all unmanaged files from /etc/sssd/conf.d.
+#   Purge every file in /etc/sssd/conf.d that this catalog does not manage
+#
+#   * **Destructive:** this deletes snippets written by the OS, other tools,
+#     an administrator, or an earlier Puppet run with different settings.
+#
+# @param tidy_puppet_snippets
+#   Delete the `*_puppet_*.conf` files in /etc/sssd/conf.d that this catalog
+#   does not manage
+#
+#   * **Destructive:** a snippet written by an earlier run, for settings this
+#     run no longer manages, is deleted along with those settings.
+#   * Has no effect when `authoritative` is `true`, which purges them anyway.
+#
+# @param domains_entries
+#   The domains to list in the `domains` setting, each mapped to its options
+#
+#   * Listing a domain does **not** create it; declare `sssd::domain` and an
+#     `sssd::provider::*` with the same name as well.
+#   * Each entry is added to or, with `ensure => absent`, removed from the
+#     list on its own; domains listed by anything else are left alone.
+#   * The IPA domain (`auto_add_ipa_domain`) and the `LOCAL` domain
+#     (`sssd::config::manage_base_domain`) are added automatically.
+#
+# @option domains_entries [Enum['present', 'absent']] :ensure
+#   `absent` removes the domain from the list. Defaults to `present`.
 #
 # @param domains
-#   The sssd `domains` to be managed.
+#   Deprecated: use `domains_entries`
+#
+#   Domains to add to the `domains` setting. An entry prefixed with `--` is
+#   removed from it instead.
+#
+#   * While this is set, `domains_entries` is ignored, because this list
+#     replaced the module's default before 11.0.0.
 #
 # @param debug_level
 # @param debug_timestamps
@@ -37,7 +77,28 @@
 #     from ``data/os/`` on the releases that still accept it; ``undef``
 #     elsewhere.
 #
+# @param services_entries
+#   The responder services to list in the `services` setting, each mapped to
+#   its options
+#
+#   * `sudo` is never listed, because the sudo responder is socket-activated
+#     (see `sssd::service::sudo::socket_enable`).
+#   * When `include_svc_config` is `true`, the `sssd::service::<name>` class
+#     is included for every entry that is present, which manages that
+#     responder's section from its own parameters.
+#   * Each entry is added to or, with `ensure => absent`, removed from the
+#     list on its own; services listed by anything else are left alone.
+#
+# @option services_entries [Enum['present', 'absent']] :ensure
+#   `absent` removes the service from the list. Defaults to `present`.
+#
 # @param services
+#   Deprecated: use `services_entries`
+#
+#   Services to add to the `services` setting.
+#
+#   * While this is set, `services_entries` is ignored, because this list
+#     replaced the module's default before 11.0.0.
 #
 # @param reconnection_retries
 #   Whether to write the ``reconnection_retries`` option into the ``[sssd]``
@@ -70,23 +131,25 @@
 #       etc...
 #
 # @param enumerate_users
-#   Have SSSD list and cache all the users that it can find on the remote system
+#   Have SSSD list and cache all the users that it can find on the remote
+#   system, in the domain created by `auto_add_ipa_domain`
 #
 #   * Take care that you don't overwhelm your server if you enable this
 #
 # @param include_svc_config
-#   If set to true, config will loop through the services set in
-#   sssd:service and include the configuration section for it.
-#   At this time the service sections contain only the most common
-#   parameters used. If you need to set a param that is not included you
-#   can turn this off and create a custom manifest to add the section
-#   you need.  If you simply want to change a setting that exists, use hiera.
+#   Include the `sssd::service::<name>` class for each service in
+#   `services_entries`, so that each responder's section is managed from that
+#   class's parameters. Each of those classes manages only the settings whose
+#   parameters are set. Turn this off to manage the responder sections
+#   yourself.
 #
 # @param cache_credentials
-#   Have SSSD cache the credentials of users that login to the system
+#   Have SSSD cache the credentials of users that login to the system, in the
+#   domain created by `auto_add_ipa_domain`
 #
 # @param min_id
-#   The lowest user ID that SSSD should recognize from the server.
+#   The lowest user ID that SSSD should recognize from the server, in the
+#   domain created by `auto_add_ipa_domain`
 #
 # @param auditd
 # @param pki
@@ -130,6 +193,8 @@
 #   lockout for IPA-managed user accounts.  Otherwise, you must
 #   configure the IPA domain yourself.
 #
+#   * Off by default; the `simp:defaults` profile turns it on.
+#
 # @param force_ipa_domain
 #   Configure sssd for the IPA domain even when the ``ipa`` fact reports
 #   ``connected => false`` (or is absent).  Useful when pre-staging
@@ -147,26 +212,27 @@
 #   ``$facts['ipa']['server']`` is not available.
 #
 # @param custom_config
-#   Raw configuration that will be added to
-#   /etc/sssd/conf.d/99999_puppet_custom.conf *without validation*
+#   Raw configuration that will be written to
+#   /etc/sssd/conf.d/99999_puppet_custom_raw.conf *without validation*
+#
+#   * The file holds exactly this content, and nothing else
+#   * It sorts after the file `custom_settings` edits, so a setting in both
+#     takes this file's value
 #
 #   * Prefer `custom_settings` unless you need something the structured form
 #     cannot express
 #
 # @param custom_settings
-#   Configuration to add to /etc/sssd/conf.d/99999_puppet_custom.conf,
+#   Settings to manage in /etc/sssd/conf.d/99999_puppet_custom.conf,
 #   expressed as a Hash of section name to setting name to value
 #
 #   * Unlike `custom_config`, the section names, setting names, and values are
-#     type-validated at compile time and the file is rendered by the module
+#     type-validated at compile time, and each setting is edited in place
 #   * Unlike the per-section `custom_options` parameters, this *adds* sections
 #     rather than replacing a section the module already manages
-#   * Settings with an `undef` value are omitted, and Array values are
-#     rendered as comma-separated lists
-#   * A section left with no settings to render is omitted entirely, so an
-#     empty Hash never produces a bare `[section]` header
-#   * If both this and `custom_config` are set, the rendered sections are
-#     written first and the raw String is appended
+#   * Settings with an `undef` value are left alone, settings with the value
+#     `'absent'` are removed, and Array values are written as comma-separated
+#     lists
 #
 # @example Adding a section via `custom_settings`
 #   sssd::custom_settings:
@@ -177,43 +243,47 @@
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd (
-  Boolean                       $authoritative         = false,
-  Array[String[1, 255]]         $domains               = [],
-  Optional[Sssd::DebugLevel]    $debug_level           = undef,
-  Boolean                       $debug_timestamps      = true,
-  Boolean                       $debug_microseconds    = false,
-  Optional[String[1]]           $description           = undef,
-  Optional[Integer[1]]          $config_file_version   = undef,
-  Sssd::Services                $services              = ['nss','pam','ssh','sudo'],
-  Optional[Integer[0]]          $reconnection_retries  = undef,
-  Optional[String[1]]           $re_expression         = undef,
-  Optional[String[1]]           $full_name_format      = undef,
-  Optional[Boolean]             $try_inotify           = undef,
-  Optional[String[1]]           $krb5_rcache_dir       = undef,
-  Optional[String[1]]           $user                  = undef,
-  Optional[String[1]]           $default_domain_suffix = undef,
-  Optional[String[1]]           $override_space        = undef,
-  Optional[String[1]]           $certificate_verification = undef,
-  Hash                          $ldap_providers        = {},
-  Optional[Boolean]             $enable_files_domain   = undef,
-  Boolean                       $enumerate_users       = false,
-  Boolean                       $cache_credentials     = true,
-  Boolean                       $include_svc_config    = true,
-  Integer[0]                    $min_id                = 1,
-  Boolean                       $auditd                = simplib::lookup('simp_options::auditd', { 'default_value' => false }),
-  Variant[Boolean,Enum['simp']] $pki                   = simplib::lookup('simp_options::pki', { 'default_value' => false }),
-  Stdlib::Absolutepath          $app_pki_cert_source   = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' }),
-  Stdlib::Absolutepath          $app_pki_dir           = '/etc/pki/simp_apps/sssd/x509',
-  String[1]                     $app_pki_group         = 'root',
-  Boolean                       $auto_add_ipa_domain   = true,
-  Boolean                       $force_ipa_domain      = false,
-  Optional[String[1]]           $ipa_domain_name       = undef,
-  Optional[Array[Simplib::Host,1]] $ipa_servers         = undef,
-  Optional[String[1]]           $custom_config         = undef,
-  Optional[Sssd::IniSettings]   $custom_settings       = undef,
+  Boolean                                             $authoritative            = false,
+  Boolean                                             $tidy_puppet_snippets     = false,
+  Hash[String[1, 255], Sssd::EntryOptions]            $domains_entries          = {},
+  Array[String[1, 255]]                               $domains                  = [],
+  Optional[Variant[Sssd::DebugLevel, Enum['absent']]] $debug_level              = undef,
+  Optional[Variant[Boolean, Enum['absent']]]          $debug_timestamps         = undef,
+  Optional[Variant[Boolean, Enum['absent']]]          $debug_microseconds       = undef,
+  Optional[String[1]]                                 $description              = undef,
+  Optional[Variant[Integer[1], Enum['absent']]]       $config_file_version      = undef,
+  Hash[Sssd::Service, Sssd::EntryOptions]             $services_entries         = {},
+  Sssd::Services                                      $services                 = [],
+  Optional[Variant[Integer[0], Enum['absent']]]       $reconnection_retries     = undef,
+  Optional[String[1]]                                 $re_expression            = undef,
+  Optional[String[1]]                                 $full_name_format         = undef,
+  Optional[Variant[Boolean, Enum['absent']]]          $try_inotify              = undef,
+  Optional[String[1]]                                 $krb5_rcache_dir          = undef,
+  Optional[String[1]]                                 $user                     = undef,
+  Optional[String[1]]                                 $default_domain_suffix    = undef,
+  Optional[String[1]]                                 $override_space           = undef,
+  Optional[String[1]]                                 $certificate_verification = undef,
+  Hash                                                $ldap_providers           = {},
+  Optional[Variant[Boolean, Enum['absent']]]          $enable_files_domain      = undef,
+  Boolean                                             $enumerate_users          = false,
+  Boolean                                             $cache_credentials        = true,
+  Boolean                                             $include_svc_config       = true,
+  Integer[0]                                          $min_id                   = 1,
+  Boolean                                             $auditd                   = simplib::lookup('simp_options::auditd', { 'default_value' => false }),
+  Variant[Boolean,Enum['simp']]                       $pki                      = simplib::lookup('simp_options::pki', { 'default_value' => false }),
+  Stdlib::Absolutepath                                $app_pki_cert_source      = simplib::lookup('simp_options::pki::source', { 'default_value' => '/etc/pki/simp/x509' }),
+  Stdlib::Absolutepath                                $app_pki_dir              = '/etc/pki/simp_apps/sssd/x509',
+  String[1]                                           $app_pki_group            = 'root',
+  Boolean                                             $auto_add_ipa_domain      = false,
+  Boolean                                             $force_ipa_domain         = false,
+  Optional[String[1]]                                 $ipa_domain_name          = undef,
+  Optional[Array[Simplib::Host,1]]                    $ipa_servers              = undef,
+  Optional[String[1]]                                 $custom_config            = undef,
+  Optional[Sssd::IniSettings]                         $custom_settings          = undef,
 ) {
   include 'sssd::install'
   include 'sssd::config'
+  include 'sssd::service'
 
   unless sssd::supported_version() {
     fail "The ${module_name} module does not support SSSD < ${facts['sssd_version']}. Please update your system to continue."
@@ -221,18 +291,33 @@ class sssd (
 
   Class['sssd::install'] -> Class['sssd::config']
 
-  $_custom_settings = pick_default($custom_settings, {})
+  unless empty($domains) {
+    deprecation('sssd::domains', 'sssd::domains is deprecated and will be removed in a future major release; use sssd::domains_entries instead. While sssd::domains is set, sssd::domains_entries is ignored.', false)
+  }
 
-  # A Hash that renders to nothing -- empty, or every setting `undef` -- must
-  # drop out entirely rather than contribute a blank chunk to the join.
-  $_custom_content = [sssd::to_ini($_custom_settings), $custom_config].filter |$_chunk| {
-    ($_chunk =~ NotUndef) and !empty($_chunk)
-  }.join("\n")
+  unless empty($services) {
+    deprecation('sssd::services', 'sssd::services is deprecated and will be removed in a future major release; use sssd::services_entries instead. While sssd::services is set, sssd::services_entries is ignored.', false)
+  }
 
-  unless empty($_custom_content) {
-    sssd::config::entry { 'puppet_custom':
-      content => $_custom_content,
-      order   => 99999,
+  # One entry per section, all edited in place in the same file.
+  pick_default($custom_settings, {}).each |$_section, $_settings| {
+    sssd::config::entry { "puppet_custom ${_section}":
+      section  => $_section,
+      settings => $_settings,
+      path     => '/etc/sssd/conf.d/99999_puppet_custom.conf',
+    }
+  }
+
+  # Raw configuration can't be edited in place, so it gets a file of its own
+  # that holds only this parameter's content. It sorts after the
+  # custom_settings file, so it wins where both set the same setting.
+  if $custom_config {
+    file { '/etc/sssd/conf.d/99999_puppet_custom_raw.conf':
+      *       => $sssd::config::sssd_config_file_params,
+      ensure  => 'file',
+      content => "${custom_config}\n",
+      require => Package['sssd'],
+      notify  => Class['sssd::service'],
     }
   }
 

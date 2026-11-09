@@ -503,7 +503,7 @@ define sssd::provider::ldap (
     'ldap_sudo_full_refresh_interval',
     'ldap_sudo_smart_refresh_interval',
     'ldap_sudo_use_host_filter',
-    'ldap_sudo_include_netgroups ',
+    'ldap_sudo_include_netgroups',
     'ldap_sudo_include_regexp',
     'ldap_autofs_map_master_name',
     'ldap_autofs_map_object_class',
@@ -649,7 +649,7 @@ define sssd::provider::ldap (
     'ldap_sudo_full_refresh_interval'            => $ldap_sudo_full_refresh_interval,
     'ldap_sudo_smart_refresh_interval'           => $ldap_sudo_smart_refresh_interval,
     'ldap_sudo_use_host_filter'                  => $ldap_sudo_use_host_filter,
-    'ldap_sudo_include_netgroups '               => $ldap_sudo_include_netgroups,
+    'ldap_sudo_include_netgroups'                => $ldap_sudo_include_netgroups,
     'ldap_sudo_include_regexp'                   => $ldap_sudo_include_regexp,
     'ldap_autofs_map_master_name'                => $ldap_autofs_map_master_name,
     'ldap_autofs_map_object_class'               => $ldap_autofs_map_object_class,
@@ -673,16 +673,8 @@ define sssd::provider::ldap (
   }
 
   # Process simple parameters
-  $simple_config_lines = ($simple_params + $version_specific_params).filter |$param| {
-    $param_values[$param] != undef
-  }.map |$param| {
-    "${param} = ${$param_values[$param]}"
-  }
-
-  # Handle special case for ldap_account_expire_policy
-  $account_expire_line = $_ldap_account_expire_policy ? {
-    undef   => [],
-    default => ["ldap_account_expire_policy = ${_ldap_account_expire_policy}"],
+  $simple_settings = ($simple_params + $version_specific_params).reduce({}) |$memo, $param| {
+    $memo + { $param => $param_values[$param] }
   }
 
   # Process array parameters with custom separators
@@ -700,26 +692,23 @@ define sssd::provider::ldap (
     'krb5_backup_server'     => { 'value' => $krb5_backup_server, 'separator' => ',' },
   }
 
-  $array_config_lines = $array_params.filter |$param, $config| {
+  $array_settings = $array_params.filter |$param, $config| {
     $config['value'] != undef and !$config['value'].empty
-  }.map |$param, $config| {
+  }.reduce({}) |$memo, $param| {
     # flatten to accept a single value or an array without splitting a single
     # string into characters (which Array() would do)
-    $_values = [$config['value']].flatten.unique
-    "${param} = ${_values.join($config['separator'])}"
+    $_values = [$param[1]['value']].flatten.unique
+    $memo + { $param[0] => $_values.join($param[1]['separator']) }
   }
 
-  # Combine all configuration lines and sort them
-  $all_config_lines = ($simple_config_lines + $account_expire_line + $array_config_lines).sort
-  $content = (['# sssd::provider::ldap'] + $all_config_lines).join("\n")
+  $all_settings = $simple_settings + $array_settings + {
+    'ldap_account_expire_policy' => $_ldap_account_expire_policy,
+  }
 
+  # Settings left undef are not managed.  Sorted, so the settings are added to
+  # a new file in a stable order.
   sssd::config::entry { "puppet_provider_${title}_ldap":
-    content => epp(
-      "${module_name}/generic.epp",
-      {
-        'title'   => "domain/${title}",
-        'content' => $content,
-      },
-    ),
+    section  => "domain/${title}",
+    settings => $all_settings.keys.sort.reduce({}) |$memo, $key| { $memo + { $key => $all_settings[$key] } },
   }
 }

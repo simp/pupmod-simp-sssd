@@ -6,6 +6,9 @@ test_name 'sssd::provider::krb5 multiple servers'
 # value and an array must both render as a comma-separated list in the generated
 # drop-in (see #160).
 describe 'sssd::provider::krb5 with multiple servers' do
+  require_relative('lib/util')
+  include SssdTestUtil
+
   clients = hosts_with_role(hosts, 'client')
 
   let(:hieradata) do
@@ -14,7 +17,7 @@ describe 'sssd::provider::krb5 with multiple servers' do
       'simp_options::pki::source' => '/etc/pki/simp-testing/pki',
       # auditd causes a lot of noise and reboots
       'sssd::auditd'              => false,
-      'sssd::domains'             => ['KRB5TEST'],
+      'sssd::domains_entries'     => { 'KRB5TEST' => {} },
     }
   end
 
@@ -40,7 +43,8 @@ describe 'sssd::provider::krb5 with multiple servers' do
   clients.each do |client|
     context "on #{client}" do
       it 'applies the manifest' do
-        set_hieradata_on(client, hieradata)
+        with_compliance_engine(client)
+        set_hieradata_on(client, hieradata.merge(SssdTestUtil::SIMP_DEFAULTS))
         apply_manifest_on(client, manifest, catch_failures: true)
       end
 

@@ -1,0 +1,388 @@
+# Sicura Compliance Engine checks restoring the SSSD configuration this module
+# managed by default before 11.0.0, where a bare `include sssd` installs only
+# the packages. One `puppet-class-parameter` check per restored parameter; the
+# `simp:defaults` profile lists them (see profile-simp_defaults.yaml).
+#
+# Values that 10.x took from data/os/ are split per release with `confine:`.
+# `os.family: RedHat` covers every supported EL distribution, as the 10.x
+# "OS Family + Release" Hiera layer did.
+#
+# Not restored:
+#
+# * `sssd::domains`. 10.x module data listed `LOCAL` on every release, which
+#   is only declared (by `sssd::config::manage_base_domain`) on EL10. The
+#   module now lists `LOCAL` itself whenever it declares it.
+# * `sssd::auditd`, `sssd::pki`, `sssd::app_pki_cert_source` and
+#   `sssd::install::package_ensure`, which still default from
+#   `simp_options::*` lookups as before.
+# * `sssd::service::pam::pam_cert_auth`, which 10.x only wrote when `true`.
+# * `sssd::service::pac::allowed_uids`, which 10.x only wrote when non-empty.
+---
+version: 2.0.0
+checks:
+  # Service management: 10.x declared Service['sssd'] running and enabled.
+  simp:defaults.sssd.service.ensure:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::ensure
+      value: running
+  simp:defaults.sssd.service.enable:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::enable
+      value: true
+
+  # 10.x defaulted `services` to nss, pam, ssh and sudo, writing
+  # `services = nss,pam,ssh` (sudo is socket-activated) and including each
+  # responder's class.
+  simp:defaults.sssd.services_entries:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::services_entries
+      value: {nss: {}, pam: {}, ssh: {}, sudo: {}}
+
+  # On an IPA-joined host, declare the IPA domain and provider.
+  simp:defaults.sssd.auto_add_ipa_domain:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::auto_add_ipa_domain
+      value: true
+
+  # Destructive: delete *_puppet_*.conf snippets this catalog doesn't manage.
+  simp:defaults.sssd.tidy_puppet_snippets:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::tidy_puppet_snippets
+      value: true
+
+  # [sssd] settings 10.x always wrote.
+  simp:defaults.sssd.debug_timestamps:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::debug_timestamps
+      value: true
+  simp:defaults.sssd.debug_microseconds:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::debug_microseconds
+      value: false
+
+  # [nss] settings 10.x always wrote while `nss` was in `services`.
+  simp:defaults.sssd.service.nss.debug_timestamps:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::nss::debug_timestamps
+      value: true
+  simp:defaults.sssd.service.nss.debug_microseconds:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::nss::debug_microseconds
+      value: false
+  simp:defaults.sssd.service.nss.enum_cache_timeout:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::nss::enum_cache_timeout
+      value: 120
+  simp:defaults.sssd.service.nss.entry_cache_nowait_percentage:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::nss::entry_cache_nowait_percentage
+      value: 0
+  simp:defaults.sssd.service.nss.entry_negative_timeout:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::nss::entry_negative_timeout
+      value: 15
+  simp:defaults.sssd.service.nss.filter_users:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::nss::filter_users
+      value: root
+  simp:defaults.sssd.service.nss.filter_groups:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::nss::filter_groups
+      value: root
+  simp:defaults.sssd.service.nss.filter_users_in_groups:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::nss::filter_users_in_groups
+      value: true
+
+  # [pam] settings 10.x always wrote while `pam` was in `services`.
+  simp:defaults.sssd.service.pam.debug_timestamps:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pam::debug_timestamps
+      value: true
+  simp:defaults.sssd.service.pam.debug_microseconds:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pam::debug_microseconds
+      value: false
+  simp:defaults.sssd.service.pam.offline_credentials_expiration:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pam::offline_credentials_expiration
+      value: 0
+  simp:defaults.sssd.service.pam.offline_failed_login_attempts:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pam::offline_failed_login_attempts
+      value: 3
+  simp:defaults.sssd.service.pam.offline_failed_login_delay:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pam::offline_failed_login_delay
+      value: 5
+  simp:defaults.sssd.service.pam.pam_verbosity:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pam::pam_verbosity
+      value: 1
+  simp:defaults.sssd.service.pam.pam_id_timeout:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pam::pam_id_timeout
+      value: 5
+  simp:defaults.sssd.service.pam.pam_pwd_expiration_warning:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pam::pam_pwd_expiration_warning
+      value: 7
+
+  # [ssh] settings 10.x always wrote while `ssh` was in `services`.
+  simp:defaults.sssd.service.ssh.debug_timestamps:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::ssh::debug_timestamps
+      value: true
+  simp:defaults.sssd.service.ssh.debug_microseconds:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::ssh::debug_microseconds
+      value: false
+
+  # [sudo] settings 10.x always wrote while `sudo` was in `services`.
+  simp:defaults.sssd.service.sudo.debug_timestamps:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::sudo::debug_timestamps
+      value: true
+  simp:defaults.sssd.service.sudo.debug_microseconds:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::sudo::debug_microseconds
+      value: false
+  simp:defaults.sssd.service.sudo.sudo_threshold:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::sudo::sudo_threshold
+      value: 50
+  simp:defaults.sssd.service.sudo.sudo_timed:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::sudo::sudo_timed
+      value: false
+
+  # [autofs] settings 10.x always wrote while `autofs` was in `services`.
+  # The class is only included for a listed service, so nothing is written
+  # for autofs unless the site lists it.
+  simp:defaults.sssd.service.autofs.debug_timestamps:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::autofs::debug_timestamps
+      value: true
+  simp:defaults.sssd.service.autofs.debug_microseconds:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::autofs::debug_microseconds
+      value: false
+
+  # [ifp] settings 10.x always wrote while `ifp` was in `services`.
+  # The class is only included for a listed service, so nothing is written
+  # for ifp unless the site lists it.
+  simp:defaults.sssd.service.ifp.debug_timestamps:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::ifp::debug_timestamps
+      value: true
+  simp:defaults.sssd.service.ifp.debug_microseconds:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::ifp::debug_microseconds
+      value: false
+
+  # [pac] settings 10.x always wrote while `pac` was in `services`.
+  # The class is only included for a listed service, so nothing is written
+  # for pac unless the site lists it.
+  simp:defaults.sssd.service.pac.debug_timestamps:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pac::debug_timestamps
+      value: true
+  simp:defaults.sssd.service.pac.debug_microseconds:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pac::debug_microseconds
+      value: false
+
+  # 10.x enabled sssd-sudo.socket whenever the sudo responder was configured.
+  simp:defaults.sssd.service.sudo.socket_enable:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::sudo::socket_enable
+      value: true
+
+  # The /etc/sssd and /etc/sssd/conf.d directory modes (recursive within conf.d).
+  simp:defaults.sssd.config.sssd_config_dir_mode.RedHat-8:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::config::sssd_config_dir_mode
+      value: go-rw
+    confine:
+      os.family: RedHat
+      os.release.major: '8'
+  simp:defaults.sssd.config.sssd_config_dir_mode.RedHat-9:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::config::sssd_config_dir_mode
+      value: go-rw
+    confine:
+      os.family: RedHat
+      os.release.major: '9'
+  simp:defaults.sssd.config.sssd_config_dir_mode.RedHat-10:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::config::sssd_config_dir_mode
+      value: g-w,o-rw
+    confine:
+      os.family: RedHat
+      os.release.major: '10'
+
+  # EL10's SSSD needs a domain to start, and has no implicit files domain.
+  simp:defaults.sssd.config.manage_base_domain.RedHat-10:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::config::manage_base_domain
+      value: true
+    confine:
+      os.family: RedHat
+      os.release.major: '10'
+
+  # Options SSSD 2.10 (EL10) removed from its schema.
+  simp:defaults.sssd.config_file_version.RedHat-8:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::config_file_version
+      value: 2
+    confine:
+      os.family: RedHat
+      os.release.major: '8'
+  simp:defaults.sssd.config_file_version.RedHat-9:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::config_file_version
+      value: 2
+    confine:
+      os.family: RedHat
+      os.release.major: '9'
+  simp:defaults.sssd.reconnection_retries.RedHat-8:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::reconnection_retries
+      value: 3
+    confine:
+      os.family: RedHat
+      os.release.major: '8'
+  simp:defaults.sssd.reconnection_retries.RedHat-9:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::reconnection_retries
+      value: 3
+    confine:
+      os.family: RedHat
+      os.release.major: '9'
+  simp:defaults.sssd.enable_files_domain.RedHat-8:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::enable_files_domain
+      value: true
+    confine:
+      os.family: RedHat
+      os.release.major: '8'
+  simp:defaults.sssd.enable_files_domain.RedHat-9:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::enable_files_domain
+      value: true
+    confine:
+      os.family: RedHat
+      os.release.major: '9'
+  simp:defaults.sssd.service.nss.reconnection_retries.RedHat-8:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::nss::reconnection_retries
+      value: 3
+    confine:
+      os.family: RedHat
+      os.release.major: '8'
+  simp:defaults.sssd.service.nss.reconnection_retries.RedHat-9:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::nss::reconnection_retries
+      value: 3
+    confine:
+      os.family: RedHat
+      os.release.major: '9'
+  simp:defaults.sssd.service.pam.reconnection_retries.RedHat-8:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pam::reconnection_retries
+      value: 3
+    confine:
+      os.family: RedHat
+      os.release.major: '8'
+  simp:defaults.sssd.service.pam.reconnection_retries.RedHat-9:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::pam::reconnection_retries
+      value: 3
+    confine:
+      os.family: RedHat
+      os.release.major: '9'
+  simp:defaults.sssd.service.ssh.ssh_hash_known_hosts.RedHat-8:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::ssh::ssh_hash_known_hosts
+      value: true
+    confine:
+      os.family: RedHat
+      os.release.major: '8'
+  simp:defaults.sssd.service.ssh.ssh_hash_known_hosts.RedHat-9:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::ssh::ssh_hash_known_hosts
+      value: true
+    confine:
+      os.family: RedHat
+      os.release.major: '9'
+
+  # Runs sssd-sudo as root on EL8/9. It must stay off on EL10, where the
+  # responder can't read config.ldb as root.
+  simp:defaults.sssd.service.sudo.manage_group_dropin_file.RedHat-8:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::sudo::manage_group_dropin_file
+      value: true
+    confine:
+      os.family: RedHat
+      os.release.major: '8'
+  simp:defaults.sssd.service.sudo.manage_group_dropin_file.RedHat-9:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::service::sudo::manage_group_dropin_file
+      value: true
+    confine:
+      os.family: RedHat
+      os.release.major: '9'

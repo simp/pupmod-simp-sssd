@@ -70,8 +70,9 @@ describe 'sssd::config::ipa_domain' do
             <<~PRECOND
               function assert_private {}
               class { 'sssd':
-                force_ipa_domain => true,
-                ipa_servers      => ['fallback.ipa.example.com'],
+                auto_add_ipa_domain => true,
+                force_ipa_domain    => true,
+                ipa_servers         => ['fallback.ipa.example.com'],
               }
             PRECOND
           end
@@ -104,9 +105,10 @@ describe 'sssd::config::ipa_domain' do
             <<~PRECOND
               function assert_private {}
               class { 'sssd':
-                force_ipa_domain => true,
-                ipa_domain_name  => 'staged.example.com',
-                ipa_servers      => ['ipa1.example.com', 'ipa2.example.com'],
+                auto_add_ipa_domain => true,
+                force_ipa_domain    => true,
+                ipa_domain_name     => 'staged.example.com',
+                ipa_servers         => ['ipa1.example.com', 'ipa2.example.com'],
               }
             PRECOND
           end
@@ -125,7 +127,8 @@ describe 'sssd::config::ipa_domain' do
             <<~PRECOND
               function assert_private {}
               class { 'sssd':
-                force_ipa_domain => true,
+                auto_add_ipa_domain => true,
+                force_ipa_domain    => true,
               }
             PRECOND
           end

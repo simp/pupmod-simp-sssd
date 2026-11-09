@@ -1,38 +1,53 @@
 #
 # Configuration class called from sssd.
 #
-# Sets up the ``[sssd]`` section of '/etc/sssd/sssd.conf', and,
-# optionally, a domain section for the IPA domain to which the host
-# is joined.  When the IPA domain is configured, the IPA domain is
-# automatically added to ``$domains`` to generate the list of domains
-# in the ``[sssd]`` section.
+# Manages the ``[sssd]`` section of '/etc/sssd/sssd.conf' and, optionally, a
+# domain section for the IPA domain to which the host is joined.  When the IPA
+# domain is configured, it is automatically added to the ``domains`` setting.
+#
+# Each setting is edited in place and only when its parameter is set, so a
+# bare ``include sssd`` declares nothing here.
 #
 # @param authoritative
 #   Set to `true` to purge unmanaged configuration files
 #
 # @param manage_base_domain
-#   EL10+ requires a domain to be configured in order for SSSD to start.
-#   This parameter will be managed in hieradata by default.
+#   Declare a ``LOCAL`` proxy domain for the local ``files`` and list it in
+#   ``domains``
+#
+#   * EL10+ requires a domain to be configured in order for SSSD to start, and
+#     SSSD 2.10 no longer provides the implicit files domain that EL8/9 have.
+#   * Off by default; the `simp:defaults` profile turns it on for EL10.
 #
 # @param sssd_config_dir_mode
-#   The mode to set on the /etc/sssd/conf.d directory and, recursively,
-#   on the files within it
+#   The mode to set on the /etc/sssd and /etc/sssd/conf.d directories and,
+#   recursively, on the files within /etc/sssd/conf.d
+#
+#   * Unset, the directories are not managed.
 #
 # @param sssd_config_file_params
-#   A hash of parameters to apply to all files managed in /etc/sssd and /etc/sssd/conf.d.
-#   This should include at least the owner, group, and mode parameters.
+#   A hash of parameters to apply to every file this module edits in /etc/sssd
+#   and /etc/sssd/conf.d.  This should include at least the owner, group, and
+#   mode parameters.
+#
+#   * SSSD refuses to start with an `sssd.conf`, and ignores a `conf.d`
+#     snippet, whose ownership and permissions it doesn't accept, so a file is
+#     only edited with these applied.  The module data holds what each
+#     release's SSSD expects.
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::config (
-  Boolean $authoritative = pick(getvar("${module_name}::authoritative"), false),
-  Boolean $manage_base_domain,
-  String  $sssd_config_dir_mode,
-  Hash    $sssd_config_file_params,
+  Boolean             $authoritative           = pick(getvar("${module_name}::authoritative"), false),
+  Boolean             $manage_base_domain      = false,
+  Optional[String[1]] $sssd_config_dir_mode    = undef,
+  Hash                $sssd_config_file_params = {},
 ) {
   assert_private()
 
   include $module_name
+
+  $_sssd_conf = '/etc/sssd/sssd.conf'
 
   if $sssd::auto_add_ipa_domain and ($facts.dig('ipa', 'connected') or $sssd::force_ipa_domain) {
     # this host has joined an IPA domain, or the operator is forcing the
@@ -41,133 +56,112 @@ class sssd::config (
     if empty($_ipa_domain_name) {
       fail('The IPA domain must be provided by the ipa fact or set via sssd::ipa_domain_name')
     }
-    $_domains = unique(concat($sssd::domains, $_ipa_domain_name))
+    $_ipa_domain = { $_ipa_domain_name => 'present' }
     include 'sssd::config::ipa_domain'
   }
   else {
-    $_domains = unique($sssd::domains)
+    $_ipa_domain = {}
   }
 
-  $_debug_level           = $sssd::debug_level
-  $_debug_timestamps      = $sssd::debug_timestamps
-  $_debug_microseconds    = $sssd::debug_microseconds
-  $_description           = $sssd::description
-  $_enable_files_domain   = $sssd::enable_files_domain
-  $_config_file_version   = $sssd::config_file_version
-  $_services              = $sssd::services
-  $_reconnection_retries  = $sssd::reconnection_retries
-  $_re_expression         = $sssd::re_expression
-  $_full_name_format      = $sssd::full_name_format
-  $_try_inotify           = $sssd::try_inotify
-  $_krb5_rcache_dir       = $sssd::krb5_rcache_dir
-  $_user                  = $sssd::user
-  $_default_domain_suffix    = $sssd::default_domain_suffix
-  $_override_space           = $sssd::override_space
-  $_certificate_verification = $sssd::certificate_verification
+  # The domains this module declares itself must be listed for SSSD to use
+  # them, so they are added last and can't be removed by a domains entry.
+  $_base_domain = $manage_base_domain ? {
+    true    => { 'LOCAL' => 'present' },
+    default => {},
+  }
+
+  $_domains = sssd::entries($sssd::domains_entries, $sssd::domains) + $_base_domain + $_ipa_domain
+  $_services = sssd::entries($sssd::services_entries, $sssd::services)
 
   if $sssd::include_svc_config {
-    $_services.each | $service | {
-      include "sssd::service::${service}"
+    $_services.each |$_service, $_ensure| {
+      if $_ensure == 'present' {
+        include "sssd::service::${_service}"
+      }
     }
   }
 
-  file { '/etc/sssd':
-    ensure => 'directory',
-    mode   => $sssd_config_dir_mode,
+  if $sssd_config_dir_mode {
+    file { '/etc/sssd':
+      ensure  => 'directory',
+      mode    => $sssd_config_dir_mode,
+      require => Package['sssd'],
+    }
   }
 
-  file { '/etc/sssd/conf.d':
-    ensure  => 'directory',
-    mode    => $sssd_config_dir_mode,
-    purge   => $authoritative,
-    recurse => true,
+  if $sssd_config_dir_mode or $authoritative {
+    file { '/etc/sssd/conf.d':
+      ensure  => 'directory',
+      mode    => $sssd_config_dir_mode,
+      purge   => $authoritative,
+      recurse => true,
+      require => Package['sssd'],
+    }
   }
 
-  unless $authoritative {
+  if $sssd::tidy_puppet_snippets and !$authoritative {
     tidy { '/etc/sssd/conf.d':
       matches => '*_puppet_*.conf',
       recurse => true,
     }
   }
 
-  # Build configuration lines in order (matching expected test output)
-  # Services configuration - sudo has to be started by the socket
-  $filtered_services = Array($_services) - ['sudo']
-  $services_line = $_services.empty ? {
-    true => [],
-    false => $filtered_services.empty ? { true => [], false => ["services = ${filtered_services.join(',')}"] }
+  # Options SSSD 2.10 removed from its schema (config_file_version,
+  # reconnection_retries, enable_files_domain) are still accepted here for the
+  # releases that read them; the simp:defaults profile sets them on EL8/9 only.
+  sssd::config::entry { 'sssd':
+    section  => 'sssd',
+    path     => $_sssd_conf,
+    settings => {
+      'description'              => $sssd::description,
+      'config_file_version'      => $sssd::config_file_version,
+      'reconnection_retries'     => $sssd::reconnection_retries,
+      're_expression'            => $sssd::re_expression,
+      'full_name_format'         => $sssd::full_name_format,
+      'try_inotify'              => $sssd::try_inotify,
+      'krb5_rcache_dir'          => $sssd::krb5_rcache_dir,
+      'user'                     => $sssd::user,
+      'default_domain_suffix'    => $sssd::default_domain_suffix,
+      'override_space'           => $sssd::override_space,
+      'certificate_verification' => $sssd::certificate_verification,
+      'enable_files_domain'      => $sssd::enable_files_domain,
+      'debug_level'              => $sssd::debug_level,
+      'debug_timestamps'         => $sssd::debug_timestamps,
+      'debug_microseconds'       => $sssd::debug_microseconds,
+    },
   }
 
-  # Basic configuration
-  $description_line = $_description ? { undef => [], default => ["description = ${_description}"] }
+  # The services and domains lists are edited one entry at a time, so a list
+  # entry added by anything else stays in place.  sudo is never listed: its
+  # responder has to be started by its socket.
+  $_lists = {
+    'services' => $_services.filter |$_service, $_ensure| { $_service != 'sudo' },
+    'domains'  => $_domains,
+  }
 
-  # Domains configuration
-  $domains_line = $_domains.empty ? { true => [], false => ["domains = ${Array($_domains).join(', ')}"] }
+  $_lists.each |$_setting, $_entries| {
+    unless empty($_entries) {
+      ensure_resource('file', $_sssd_conf, $sssd_config_file_params + {
+          'ensure'  => 'file',
+          'require' => Package['sssd'],
+      })
+    }
 
-  # Options SSSD 2.10 removed from its schema.  They are supplied from
-  # data/os/ on the releases that still accept them and are undef on EL10+,
-  # where sssctl rejects them outright.
-  $config_file_version_line = $_config_file_version ? { undef => [], default => ["config_file_version = ${_config_file_version}"] }
-  $reconnection_retries_line = $_reconnection_retries ? { undef => [], default => ["reconnection_retries = ${_reconnection_retries}"] }
-
-  # Optional string parameters
-  $re_expression_line = $_re_expression ? { undef => [], default => ["re_expression = ${_re_expression}"] }
-  $full_name_format_line = $_full_name_format ? { undef => [], default => ["full_name_format = ${_full_name_format}"] }
-
-  # Optional boolean parameters (special undef checking)
-  $try_inotify_line = $_try_inotify ? { undef => [], default => ["try_inotify = ${_try_inotify}"] }
-
-  # Also removed in SSSD 2.10, and likewise supplied only from data/os/.  The
-  # EL10+ replacement is the LOCAL proxy domain created at the bottom of this
-  # class when $manage_base_domain is set.
-  $enable_files_domain_line = $_enable_files_domain ? { undef => [], default => ["enable_files_domain = ${_enable_files_domain}"] }
-
-  # Optional directory and user parameters
-  $krb5_rcache_dir_line = $_krb5_rcache_dir ? { undef => [], default => ["krb5_rcache_dir = ${_krb5_rcache_dir}"] }
-  $user_line = $_user ? { undef => [], default => ["user = ${_user}"] }
-  $default_domain_suffix_line = $_default_domain_suffix ? { undef => [], default => ["default_domain_suffix = ${_default_domain_suffix}"] }
-  $override_space_line = $_override_space ? { undef => [], default => ["override_space = ${_override_space}"] }
-  $certificate_verification_line = $_certificate_verification ? { undef => [], default => ["certificate_verification = ${_certificate_verification}"] }
-
-  # Debug configuration
-  $debug_level_line = $_debug_level ? { undef => [], default => ["debug_level = ${_debug_level}"] }
-  $debug_timestamps_line = ["debug_timestamps = ${_debug_timestamps}"]
-  $debug_microseconds_line = ["debug_microseconds = ${_debug_microseconds}"]
-
-  # Combine all lines in order
-  $config_lines = (
-    $services_line +
-    $description_line +
-    $domains_line +
-    $config_file_version_line +
-    $reconnection_retries_line +
-    $re_expression_line +
-    $full_name_format_line +
-    $try_inotify_line +
-    $krb5_rcache_dir_line +
-    $user_line +
-    $default_domain_suffix_line +
-    $override_space_line +
-    $certificate_verification_line +
-    $enable_files_domain_line +
-    $debug_level_line +
-    $debug_timestamps_line +
-    $debug_microseconds_line
-  )
-
-  # Join all configuration lines
-  $content = (['# sssd::config'] + $config_lines).join("\n")
-
-  file { '/etc/sssd/sssd.conf':
-    *       => $sssd_config_file_params,
-    content => epp(
-      "${module_name}/generic.epp",
-      {
-        'title'   => 'sssd',
-        'content' => $content,
-      },
-    ),
-    notify  => Class["${module_name}::service"],
+    $_entries.each |$_entry, $_ensure| {
+      ini_subsetting { "sssd ${_sssd_conf} [sssd] ${_setting} ${_entry}":
+        ensure               => $_ensure,
+        path                 => $_sssd_conf,
+        section              => 'sssd',
+        setting              => $_setting,
+        subsetting           => $_entry,
+        subsetting_separator => ',',
+        key_val_separator    => ' = ',
+        use_exact_match      => true,
+        delete_if_empty      => true,
+        require              => [Package['sssd'], File[$_sssd_conf]],
+        notify               => Class["${module_name}::service"],
+      }
+    }
   }
 
   if $manage_base_domain {

@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../../lib/sssd_spec_helpers'
 
 describe 'sssd::service::ifp' do
   context 'supported operating systems' do
@@ -7,44 +8,56 @@ describe 'sssd::service::ifp' do
         let(:facts) { os_facts }
 
         context 'with default params' do
-          let(:expected) do
-            <<~EXPECTED
-              [ifp]
-              # sssd::service::ifp
-              debug_timestamps = true
-              debug_microseconds = false
-            EXPECTED
-          end
-
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_class('sssd::service') }
-          it { is_expected.to create_sssd__config__entry('puppet_service_ifp').with_content(expected) }
+
+          # Every setting is left alone until its parameter is set.
+          it { is_expected.to have_ini_setting_resource_count(0) }
+          it { is_expected.not_to contain_file('/etc/sssd/conf.d/50_puppet_service_ifp.conf') }
         end
 
         context 'with parameters' do
           let(:params) do
             {
-              'wildcard_limit'  => 5,
-              'allowed_uids'    => ['me', 'you'],
-              'user_attributes' => ['x', 'y', 'z'],
+              debug_timestamps: true,
+              wildcard_limit: 5,
+              allowed_uids: ['me', 'you'],
+              user_attributes: ['x', 'y', 'z'],
             }
           end
 
-          let(:expected) do
-            <<~EXPECTED
-              [ifp]
-              # sssd::service::ifp
-              debug_timestamps = true
-              debug_microseconds = false
-              allowed_uids = me, you
-              user_attributes = x, y, z
-              wildcard_limit = 5
-            EXPECTED
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to contain_file('/etc/sssd/conf.d/50_puppet_service_ifp.conf').that_requires('Package[sssd]') }
+          it { expect(entry_content('puppet_service_ifp')).to eq(<<~CONTENT) }
+            [ifp]
+            debug_timestamps = true
+            allowed_uids = me, you
+            user_attributes = x, y, z
+            wildcard_limit = 5
+            CONTENT
+        end
+
+        context 'with a setting set to absent' do
+          let(:params) { { debug_level: 'absent' } }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to contain_ini_setting('sssd /etc/sssd/conf.d/50_puppet_service_ifp.conf [ifp] debug_level').with_ensure('absent') }
+        end
+
+        context 'with custom_options' do
+          let(:params) do
+            {
+              debug_level: 5,
+              custom_options: { 'key1' => 'value1', 'key2' => 'absent' },
+            }
           end
 
           it { is_expected.to compile.with_all_deps }
-          it { is_expected.to create_class('sssd::service') }
-          it { is_expected.to create_sssd__config__entry('puppet_service_ifp').with_content(expected) }
+
+          # The custom options are managed instead of the typed parameters.
+          it { is_expected.to contain_ini_setting('sssd /etc/sssd/conf.d/50_puppet_service_ifp.conf [ifp] key1').with_value('value1') }
+          it { is_expected.to contain_ini_setting('sssd /etc/sssd/conf.d/50_puppet_service_ifp.conf [ifp] key2').with_ensure('absent') }
+          it { is_expected.not_to contain_ini_setting('sssd /etc/sssd/conf.d/50_puppet_service_ifp.conf [ifp] debug_level') }
         end
       end
     end

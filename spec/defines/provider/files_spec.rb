@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../../lib/sssd_spec_helpers'
 
 describe 'sssd::provider::files' do
   context 'supported operating systems' do
@@ -13,10 +14,9 @@ describe 'sssd::provider::files' do
           it {
             expected = <<~EOM
               [domain/#{title}]
-              # sssd::provider::files
             EOM
 
-            is_expected.to create_sssd__config__entry("puppet_provider_#{title}_files").with_content(expected)
+            expect(entry_content("puppet_provider_#{title}_files")).to content_matching(expected)
           }
         end
 
@@ -33,12 +33,11 @@ describe 'sssd::provider::files' do
           it {
             expected = <<~EOM
               [domain/#{title}]
-              # sssd::provider::files
               passwd_files = /etc/passwd1, /etc/passwd2
               group_files = /etc/group1, /etc/group2
             EOM
 
-            is_expected.to create_sssd__config__entry("puppet_provider_#{title}_files").with_content(expected)
+            expect(entry_content("puppet_provider_#{title}_files")).to content_matching(expected)
           }
         end
       end

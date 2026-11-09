@@ -1,6 +1,9 @@
 require 'spec_helper_acceptance'
 
 describe 'sssd' do
+  require_relative('lib/util')
+  include SssdTestUtil
+
   let(:hiera) do
     {
       'simp_options::pki'           => true,
@@ -19,7 +22,7 @@ describe 'sssd' do
       'simp_options::ldap::bind_pw' => '<PASSWORD>',
       # This causes a lot of noise and reboots
       'sssd::auditd'                => false,
-      'sssd::domains'               => [ 'local', 'LDAP' ],
+      'sssd::domains_entries'       => { 'local' => {}, 'LDAP' => {} },
     }
   end
 
@@ -60,13 +63,14 @@ describe 'sssd' do
       let(:local_hiera) do
         hiera.merge(
           {
-            'sssd::domains' => [ 'LDAP' ],
+            'sssd::domains_entries' => { 'LDAP' => {} },
           },
         )
       end
 
       it 'applies enough to generate sssd.conf' do
-        set_hieradata_on(host, local_hiera)
+        with_compliance_engine(host)
+        set_hieradata_on(host, local_hiera.merge(SssdTestUtil::SIMP_DEFAULTS))
         apply_manifest_on(host, manifest)
       end
 

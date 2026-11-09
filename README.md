@@ -9,6 +9,10 @@
 <!-- vim-markdown-toc GFM -->
 
   * [Overview](#overview)
+  * [Breaking changes in 11.0.0](#breaking-changes-in-1100)
+    * [What a bare include no longer does](#what-a-bare-include-no-longer-does)
+    * [Restoring the earlier behavior](#restoring-the-earlier-behavior)
+    * [Other changes](#other-changes)
   * [> Use an older version of the module if you need lower version support](#-use-an-older-version-of-the-module-if-you-need-lower-version-support)
   * [This is a SIMP module](#this-is-a-simp-module)
   * [Module Description](#module-description)
@@ -24,6 +28,7 @@
         * [Using Active Directory](#using-active-directory)
           * [Restricting Access with the simple Access Provider](#restricting-access-with-the-simple-access-provider)
     * [Using Services](#using-services)
+    * [Applying changes when the service is unmanaged](#applying-changes-when-the-service-is-unmanaged)
 * [Development](#development)
 
 <!-- vim-markdown-toc -->
@@ -32,6 +37,10 @@
 
 This module installs and manages SSSD. It allows you to set configuration
 options in sssd.conf through puppet / hiera.
+
+A bare `include sssd` installs the SSSD packages and does nothing else. Every
+other behavior is opt-in, and each setting is edited in place, so settings the
+module isn't asked to manage are left exactly as they are.
 
 ----------------------------------------------------------------------
 > WARNING
@@ -42,6 +51,114 @@ options in sssd.conf through puppet / hiera.
 ----------------------------------------------------------------------
 
 See [REFERENCE.md](./REFERENCE.md) for full API details
+
+## Breaking changes in 11.0.0
+
+### What a bare include no longer does
+
+Before 11.0.0, `include sssd` took over the host's SSSD configuration and
+daemon. It now declares only the `sssd`, `sssd-dbus`, `sssd-client` and
+`sssd-tools` packages. In particular, it no longer:
+
+* writes `/etc/sssd/sssd.conf` as a whole file, or always writes
+  `debug_timestamps` and `debug_microseconds` into `[sssd]`;
+* writes the `[nss]`, `[pam]`, `[ssh]` and `[sudo]` responder sections, or
+  lists `nss`, `pam` and `ssh` in `services`: `sssd::services_entries` is
+  empty, and every `sssd::service::*` parameter defaults to `undef`;
+* manages `Service['sssd']` (`sssd::service::ensure` and `enable`), or
+  enables `sssd-sudo.socket` (`sssd::service::sudo::socket_enable`);
+* manages the `/etc/sssd` and `/etc/sssd/conf.d` directory modes
+  (`sssd::config::sssd_config_dir_mode`);
+* deletes `*_puppet_*.conf` snippets it no longer manages
+  (`sssd::tidy_puppet_snippets`);
+* declares the EL10 `LOCAL` proxy domain (`sssd::config::manage_base_domain`);
+* configures the IPA domain on an IPA-joined host (`sssd::auto_add_ipa_domain`);
+* adds the EL8/9 `sssd-sudo.service` drop-in
+  (`sssd::service::sudo::manage_group_dropin_file`);
+* writes the EL8/9-only `config_file_version`, `reconnection_retries`,
+  `enable_files_domain` and `ssh_hash_known_hosts` settings.
+
+Every section the module manages, `[sssd]` included, is now edited one setting
+at a time with `ini_setting` (from `puppetlabs/inifile`, a new dependency).
+Each parameter that maps to a setting has three states:
+
+| Value | Effect |
+|---|---|
+| `undef` (the default) | the setting is left alone |
+| a value | the setting is written |
+| `'absent'` | the setting is removed |
+
+The `services` and `domains` lists are edited one entry at a time through the
+new `sssd::services_entries` and `sssd::domains_entries` Hashes, merged with
+`deep`, so one Hiera layer can add or remove an entry (`ensure: absent`)
+without restating the rest. The `sssd::services` and `sssd::domains` Arrays
+are deprecated; while one is set it is used instead of its Hash, as it
+replaced the module's default list before.
+
+Because nothing is rendered as a whole file any more, upgrading leaves every
+existing file in `/etc/sssd` in place, and a setting a later run stops
+managing keeps its value.
+
+### Restoring the earlier behavior
+
+There are two ways to get the earlier behavior back.
+
+1. **Enforce the `simp:defaults` profile.** The module ships a
+   `simp:defaults` compliance_engine profile
+   (`SIMP/compliance_profiles/`) that sets every parameter above back to its
+   earlier value, per OS release. With the
+   [compliance_engine](https://github.com/simp/rubygem-simp-compliance_engine)
+   Hiera backend in your hierarchy, one key restores it:
+
+   ```yaml
+   compliance_engine::enforcement:
+     - simp:defaults
+   ```
+
+   This is a drop-in restoration of the earlier behavior, including its
+   destructive parts: it manages the service, and deletes `*_puppet_*.conf`
+   snippets the catalog doesn't manage. Site Hiera outranks the profile, so
+   to keep the earlier behavior but leave the stale snippets alone, add:
+
+   ```yaml
+   sssd::tidy_puppet_snippets: false
+   ```
+
+2. **Set the parameters you want.** For example, to manage the service and
+   configure the `nss` and `pam` responders:
+
+   ```yaml
+   sssd::service::ensure: running
+   sssd::service::enable: true
+   sssd::services_entries:
+     nss: {}
+     pam: {}
+   sssd::service::nss::filter_users: root
+   sssd::service::pam::offline_failed_login_attempts: 3
+   ```
+
+A responder's section is only managed while it is listed in
+`sssd::services_entries` (or the deprecated `sssd::services`), as before.
+
+### Other changes
+
+* `sssd::custom_config` is written to its own file,
+  `/etc/sssd/conf.d/99999_puppet_custom_raw.conf`, which sorts after
+  `99999_puppet_custom.conf` and so still wins over `sssd::custom_settings`.
+  On a host upgraded from 10.x, `99999_puppet_custom.conf` keeps the raw
+  content it was given before until you remove it, or until
+  `sssd::tidy_puppet_snippets` does (when nothing else writes to it).
+* `custom_options` on a `sssd::service::*` class still replaces the
+  parameter-driven settings, but only those settings are managed: other
+  settings in the section are no longer removed.
+* `sssd::service::pam::pam_cert_auth => false` now writes
+  `pam_cert_auth = False`, rather than leaving the setting out.
+* `sssd::service::sudo::manage_group_dropin_file => false` now removes the
+  drop-in; leave it `undef` to leave the drop-in alone.
+* The `[domain/...]` sections written by `sssd::domain` and the
+  `sssd::provider::*` defines are edited in place too, so a setting a
+  declaration no longer passes is left alone rather than removed. Their
+  parameters keep their defaults: declaring one is itself the opt-in.
 
 ## This is a SIMP module
 
@@ -74,34 +191,29 @@ It allows connection via krb5, ldap and local authentication.
 
 ### What simp sssd affects
 
-Files managed by `simp/sssd`:
-* /etc/sssd/sssd.conf
-* /etc/init.d/sssd
-* (Optional) /etc/sssd/pki with `simp/pki` enabled
+Packages installed by a bare `include sssd`:
+* sssd and sssd-dbus
+* sssd-client (`sssd::install::install_client`)
+* sssd-tools (`sssd::install::install_user_tools`)
 
-Services and operations managed or affected:
-* sssd (running)
-* nscd (stopped)
-
-Packages installed:
-* sssd (latest by Default)
-* sssd-tools (optionally, latest by Default)
-* sssd-dbus (optionally, if ifp is included in sssd::services)
+Only when the corresponding parameters are set:
+* individual settings in /etc/sssd/sssd.conf and in snippets in
+  /etc/sssd/conf.d, along with the ownership and permissions SSSD requires of
+  those files
+* the /etc/sssd and /etc/sssd/conf.d directory modes
+* the sssd service and the sssd-sudo.socket unit
+* /etc/pki/simp_apps/sssd/x509 with `simp/pki` enabled
 
 ## Usage
 
 ### Beginning with SIMP SSSD
 
-The following will install and manage the service for SSSD.
-It will configure the services defined in sssd::services
-(by default nss, pam, ssh and sudo.)  If the host is joined to an
-IPA domain it will  configure SSSD for the IPA domain.  Otherwise
-the module does not create sssd domains or providers automatically.
-If the host is EL6 or EL7 the module will fail if you do not create
-a sssd domain.
+The following installs the SSSD packages, and nothing else until you set
+parameters (or enforce the `simp:defaults` profile, see
+[Restoring the earlier behavior](#restoring-the-earlier-behavior)):
 
 ```puppet
-include ::sssd
+include sssd
 ```
 
 To enable integration with the existing SIMP PKI module, set the
@@ -124,12 +236,14 @@ simp_options::auditd: true
 ### Creating Domains and Providers
 
 To create an SSSD domain you must instantiate a sssd::domain defined type and
-add the domain name to the array of domains in hiera:
+add the domain name to the domains in hiera:
 
 In hiera:
 
 ```yaml
-sssd::domains: ['ldapusers', 'LOCAL']
+sssd::domains_entries:
+  ldapusers: {}
+  LOCAL: {}
 ```
 
 Create a manifest:
@@ -176,16 +290,22 @@ sssd::provider::krb5 { 'ldapusers':
 Using the `LOCAL` provider is supported for EL6 but has been deprecated by the
 vendor and is not recommended for use so is not documented here.
 
-The following method works on EL7+ and is recommended by the vendor.
-
-Add the following to your Hieradata:
+On EL8 and EL9, SSSD provides an implicit files domain:
 
 ```yaml
 ---
 sssd::enable_files_domain: true
 ```
 
-More information can be found in `sssd-local(5)`.
+SSSD 2.10 (EL10) removed it. There, declare a `LOCAL` proxy domain for the
+local files instead, which the module also lists in `domains`:
+
+```yaml
+---
+sssd::config::manage_base_domain: true
+```
+
+More information can be found in `sssd-files(5)` and `sssd-proxy(5)`.
 
 ##### Using LDAP (Generic)
 
@@ -212,10 +332,10 @@ sssd::provider::ldap { 'my_ldap':
 
 ##### Using FreeIPA or Red Hat Directory Server
 
-The `sssd` class, by default, configures SSSD for an IPA domain,
-when the host is joined to an IPA domain.  If you want to manage this
-configuration yourself, set `sssd::auto_add_ipa_domain` to false.
-Then, configure the domain and `ipa` provider as follows
+With `sssd::auto_add_ipa_domain: true` (set by the `simp:defaults` profile),
+the `sssd` class configures SSSD for the IPA domain the host is joined to.
+To manage this configuration yourself, leave it `false` and configure the
+domain and `ipa` provider as follows
 
 ```puppet
 sssd::domain { 'my.domain':
@@ -293,15 +413,15 @@ Sssd::Domain[test.domain]`.  Change these lines:
 
 `simple_allow_users`, `simple_deny_users` and `simple_deny_groups` work the
 same way; each renders as the comma-separated list that `sssd-simple(5)`
-expects, and is omitted when unset or set to an empty list.  `sssd.conf`
+expects, and is left alone when unset or set to an empty list.  `sssd.conf`
 provides no way to quote or escape a comma, so a user or group name containing
 one cannot be expressed here and is rejected at compile time.  See
 `sssd-simple(5)` for how the allow and deny lists interact.
 
 Any domain option the define does not expose as a parameter can still be
-supplied through `custom_options`.  On `sssd::domain` that hash is **appended
+supplied through `custom_options`.  On `sssd::domain` that hash is **added
 to** the options generated by the other parameters, so it never discards
-anything else the domain sets.
+anything else the domain sets.  A value of `'absent'` removes that option.
 
 > NOTE
 >
@@ -321,19 +441,25 @@ The following services can be managed by `simp/sssd`.
 * ssh
 * sudo
 
-Adding a service to the array of services in sssd::services will
-configure it using the defaults from its module, sssd::service::*\{service name\}* .
-Use hiera to override the defaults.
+Adding a service to `sssd::services_entries` lists it in the `services`
+setting and includes its class, `sssd::service::`*\{service name\}*, which
+manages the settings whose parameters you set in hiera.  `sudo` is never
+listed in `services`, because its responder is started by `sssd-sudo.socket`.
 
 ```yaml
-  sssd::services: [ 'nss', 'pam', 'autofs']
+  sssd::services_entries:
+    nss: {}
+    pam: {}
+    autofs: {}
+    ssh:
+      ensure: absent
+  sssd::service::autofs::autofs_negative_timeout: 15
 ```
 
 The settings for the services have been known to change from one version of sssd
 to the next.  To overcome this problem, a parameter, ``custom_options``  has been
 added.  It accepts a hash of options for the service.  It will ignore the other
-parameters in the service and use only these so you must add all options
-that differ from the system defaults.
+parameters in the service and manage only these settings.
 
 ```yaml
   sssd::service::nss::custom_options:
@@ -347,9 +473,19 @@ that differ from the system defaults.
 > NOTE
 >
 > `custom_options` on `sssd::domain` behaves differently: there the hash is
-> *appended to* the options generated by the other parameters instead of
+> *added to* the options generated by the other parameters instead of
 > replacing them.  See [Restricting Access with the simple Access
 > Provider](#restricting-access-with-the-simple-access-provider).
+
+### Applying changes when the service is unmanaged
+
+The `sssd` service is only managed when `sssd::service::ensure` or
+`sssd::service::enable` is set.  Otherwise configuration changes are written
+to disk, but a running `sssd` doesn't read them until it is restarted:
+
+```sh
+sssctl config-check && systemctl restart sssd
+```
 
 # Development
 

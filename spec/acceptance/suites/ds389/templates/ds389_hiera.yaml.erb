@@ -13,6 +13,11 @@ simp_options::ldap::bind_dn: "cn=hostAuth,ou=Hosts,<%= base_dn %>"
 simp_options::ldap::base_dn: "<%= base_dn %>"
 simp_options::ldap::bind_pw: 'asouighoahgh3whg8arewhghaesdhgeahgoha'
 simp_options::ldap::bind_hash: '{SSHA}24M0TnXrhTsYzaaR+T4kDCKhu7dnVNBCG0qPMQ=='
-sssd::domains: ['LDAP']
-sssd::services: ['nss', 'pam', 'ssh']
+compliance_engine::enforcement: ['simp:defaults']
+sssd::domains_entries:
+  LDAP: {}
+sssd::services_entries:
+  nss: {}
+  pam: {}
+  ssh: {}
 sssd::auditd: false
