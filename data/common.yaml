@@ -1,13 +1,23 @@
 ---
+lookup_options:
+  # A higher Hiera layer, or the simp:defaults profile below it, can add,
+  # change or remove one entry without restating the rest.
+  sssd::domains_entries:
+    merge: deep
+  sssd::services_entries:
+    merge: deep
+
+# Only what the module needs to work correctly on each release lives here.
+# What earlier releases configured by default is restored by the
+# `simp:defaults` compliance_engine profile (SIMP/compliance_profiles/).
+
 # On EL10+, sssd_be runs as the unprivileged 'sssd' user and must be able to
 # read the pki::copy'd TLS certificates (simp/pupmod-simp-sssd#212).  Releases
 # where sssd runs as root override this back to 'root' in data/os/.
 sssd::app_pki_group: 'sssd'
-sssd::domains:
-  - 'LOCAL'
-sssd::service::sudo::manage_group_dropin_file: false
-sssd::config::manage_base_domain: true
-sssd::config::sssd_config_dir_mode: 'g-w,o-rw'
+
+# The ownership and permissions SSSD requires of sssd.conf and the conf.d
+# snippets.  Applied only to files this module edits.
 sssd::config::sssd_config_file_params:
   owner: 'root'
   group: 'sssd'

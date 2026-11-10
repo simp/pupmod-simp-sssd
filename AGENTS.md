@@ -17,50 +17,56 @@ module manages three things:
 3. **Responder services** (`sssd::service::{nss,pam,ssh,sudo,autofs,ifp,pac}`) —
    the `[<responder>]` sections that configure the individual SSSD front-ends.
 
-The module writes `[sssd]` into `/etc/sssd/sssd.conf` and writes every other
-section (domains, providers, responders) as an ordered snippet in
-`/etc/sssd/conf.d/`. Applying the base `sssd` class with no domains configured
-gives you a running daemon that does very little — domains and providers are
-supplied by the operator (directly, or via the `ldap_providers` hash / IPA
-auto-detection).
-
-**It forcefully disables `nscd`** — you cannot run an `nscd` module at the same
-time; this is intentional (`manifests/init.pp`).
+The module edits `[sssd]` in `/etc/sssd/sssd.conf` and every other section
+(domains, providers, responders) in an ordered snippet in `/etc/sssd/conf.d/`,
+**one setting at a time** with `ini_setting` (`puppetlabs/inifile`). Since
+11.0.0 a bare `include sssd` installs the packages and declares nothing else:
+every setting, the service, the directories, the responders, the IPA and
+`LOCAL` domains and the stale-snippet tidy are opt-in through parameters. The
+shipped `simp:defaults` compliance_engine profile
+(`SIMP/compliance_profiles/`) sets them back to their 10.x values.
 
 ### Business logic
 
-The config-file model is the heart of this module. Almost every section is
-emitted the same way: a manifest builds an array of `key = value` lines, joins
-them, wraps the result in an INI section header via `templates/generic.epp`, and
-hands it to the **`sssd::config::entry`** define, which writes it to a
-`conf.d/<order>_<name>.conf` file and notifies the daemon.
+The config-file model is the heart of this module. Every section is emitted
+the same way: a manifest builds a Hash of setting name → value and hands it,
+with the section name, to the **`sssd::config::entry`** define, which edits
+each setting in place in `conf.d/<order>_<name>.conf` (or `sssd.conf`) and
+notifies `Class['sssd::service']`. A value of `undef` leaves the setting
+alone, `'absent'` removes it, anything else writes it.
 
 - **`sssd` (`manifests/init.pp`)** — Public entry class (consumers
   `include 'sssd'`; not `assert_private()`'d). Key parameters:
-  - `$domains` (`Array[String]`, default `[]`, `init.pp`) — the domain names
-    to list in the `[sssd]` `domains =` line. Listing a domain here does **not**
-    create it; you still declare `sssd::domain` / `sssd::provider::*` resources.
-  - `$services` (`Sssd::Services`, default `['nss','pam','ssh','sudo']`,
-    `init.pp`) — the responder services.
+  - `$domains_entries` (`Hash[String, Sssd::EntryOptions]`, default `{}`,
+    deep-merged) — the domain names to list in the `[sssd]` `domains =` line,
+    each edited as its own `ini_subsetting`. Listing a domain does **not**
+    create it; you still declare `sssd::domain` / `sssd::provider::*`
+    resources. `$domains` is the deprecated Array form (default `undef`);
+    while it is set, even to `[]`, it is used *instead of* the Hash
+    (`functions/entries.pp`).
+  - `$services_entries` (`Hash[Sssd::Service, Sssd::EntryOptions]`, default
+    `{}`, deep-merged) — the responder services; `$services` is its
+    deprecated Array form, with the same precedence.
   - `$ldap_providers` (`Hash`, default `{}`, `init.pp`) — Hiera-driven
     convenience: each entry is splatted into an `sssd::provider::ldap` resource
     (`init.pp`).
-  - `$auto_add_ipa_domain` (`Boolean`, default `true`, `init.pp`) — when the
+  - `$auto_add_ipa_domain` (`Boolean`, default `false`, `init.pp`) — when the
     host is IPA-joined, auto-configure the IPA domain (see IPA path below).
   - `$auditd` / `$pki` / `$app_pki_cert_source` (`init.pp`) — SIMP
     integration toggles fed by the `simp_options::*` seam (table below).
-  - `$custom_config` (`Optional[String]`, `init.pp`) — raw config appended
-    verbatim to `conf.d/99999_puppet_custom.conf` **without validation**
-    (`init.pp`).
+  - `$custom_config` (`Optional[String]`, `init.pp`) — raw config written
+    verbatim, as the whole of `conf.d/99999_puppet_custom_raw.conf`, **without
+    validation** (`init.pp`).
   - `$custom_settings` (`Optional[Sssd::IniSettings]`, `init.pp`) — a Hash of
-    section name → setting name → value, validated at compile time and rendered
-    into the same `conf.d/99999_puppet_custom.conf` via `sssd::to_ini()`
-    (structured sections first, then any raw `$custom_config`). Unlike
-    `custom_options` it *adds* sections rather than replacing module-managed
-    ones. Prefer it over `$custom_config`.
+    section name → setting name → value, validated at compile time and edited
+    in place in `conf.d/99999_puppet_custom.conf` (one `sssd::config::entry`
+    per section). Unlike `custom_options` it *adds* sections rather than
+    replacing module-managed ones. Prefer it over `$custom_config`.
+  - `$tidy_puppet_snippets` (`Boolean`, default `false`) — destructive opt-in
+    that `tidy`s unmanaged `*_puppet_*.conf` snippets.
 
   Control flow:
-  - `include 'sssd::install'` then `include 'sssd::config'`, ordered
+  - `include 'sssd::install'`, `'sssd::config'` and `'sssd::service'`, ordered
     `Class['sssd::install'] -> Class['sssd::config']` (`init.pp`).
   - **Version guard** (`init.pp`): `unless sssd::supported_version() {
     fail(...) }` — refuses to proceed on SSSD older than the supported baseline.
@@ -85,26 +91,39 @@ hands it to the **`sssd::config::entry`** define, which writes it to a
   - **IPA auto-detection** (`config.pp`): if `$sssd::auto_add_ipa_domain`
     and the `ipa` fact is present, `include 'sssd::config::ipa_domain'` and merge
     `$facts['ipa']['domain']` into the computed domain list.
-  - **Responder loop** (`config.pp`): when `$sssd::include_svc_config`,
-    `include "sssd::service::${service}"` for each service in `$services`.
-  - Manages `/etc/sssd` and `/etc/sssd/conf.d` directories; `purge` on `conf.d`
-    is driven by `$authoritative` (`config.pp`). When **not**
-    authoritative it instead `tidy`s stale `*_puppet_*.conf` files
-    (`config.pp`).
-  - Builds the `[sssd]` line array and writes `/etc/sssd/sssd.conf` via
-    `generic.epp`, `notify => Class['sssd::service']` (`config.pp`). Note
-    `sudo` is filtered out of the `services =` line because it is socket-activated
-    (`config.pp`).
-  - **`manage_base_domain`** (`config.pp`): EL10+ requires at least one
-    domain for SSSD to start, so a `LOCAL` proxy-to-`files` domain is declared
-    when this is true. This is set in module Hiera per OS.
+  - **Responders** (`config.pp`): when `$sssd::include_svc_config`, all seven
+    `sssd::service::*` classes are included, listed or not, so a responder
+    setting enforced alone takes effect. Listing only decides what runs.
+  - Manages `/etc/sssd` and `/etc/sssd/conf.d` only when
+    `$sssd_config_dir_mode` is set (or `$authoritative`, which purges
+    `conf.d`). `tidy` of stale `*_puppet_*.conf` only with
+    `$sssd::tidy_puppet_snippets` (`config.pp`).
+  - Declares an `sssd::config::entry` for `[sssd]` in `/etc/sssd/sssd.conf`,
+    and an `ini_subsetting` per `services`/`domains` entry, each new entry
+    inserted after the one declared before it. While
+    `sssd::service::sudo::socket_enable` is `true` and `sssd::sudo_on()`
+    allows it, or `sudo` is in the deprecated `sssd::services`, `sudo` is
+    edited as `absent`, because the socket refuses to start while `sudo` is
+    listed; otherwise a `sudo` entry is edited like any other (`config.pp`).
+    Read other classes' *parameters* (set at declaration), never variables
+    from their bodies, so the result doesn't depend on evaluation order. `sssd.conf` is only declared as a `file` when an entry
+    will be written into it: SSSD can't parse an empty one.
+  - **`manage_base_domain`** (`config.pp`, default `false`): EL10+ requires at
+    least one domain for SSSD to start, so a `LOCAL` proxy-to-`files` domain is
+    declared when this is true. It is not listed automatically: the
+    `simp:defaults` profile sets this and `domains_entries: {LOCAL: {}}` on
+    EL10.
 
 - **`sssd::config::entry` (`manifests/config/entry.pp`, `assert_private`
-  at :17)** — the central snippet writer used by *every* domain, provider, and
-  responder. Writes `/etc/sssd/conf.d/<order>_<title>.conf` (via
-  `simplib::safe_filename`, default `$order` = 50), applies
-  `$sssd::config::sssd_config_file_params`, and `notify => Class['sssd::service']`.
-  Rejects a fully-qualified `$name` (`entry.pp`).
+  at :17)** — the central section editor used by *every* domain, provider, and
+  responder. Takes `$section` and a `$settings` Hash and declares one
+  `ini_setting` per non-`undef` setting in `/etc/sssd/conf.d/<order>_<title>.conf`
+  (via `simplib::safe_filename`, default `$order` = 50) or `$path`. The file
+  itself is declared (contentless) only to apply
+  `$sssd::config::sssd_config_file_params` — SSSD rejects files with looser
+  permissions. Everything requires `Package['sssd']` and notifies
+  `Class['sssd::service']`. Rejects a fully-qualified `$name` unless `$path`
+  is set (`entry.pp`).
 
 - **`sssd::config::ipa_domain` (`manifests/config/ipa_domain.pp`,
   `assert_private` at :4)** — when `$facts.dig('ipa','connected')`, declares an
@@ -112,18 +131,19 @@ hands it to the **`sssd::config::entry`** define, which writes it to a
   keyed to the detected IPA domain/server (`ipa_domain.pp`).
 
 - **`sssd::service` (`manifests/service.pp`, `assert_private` at :15)** —
-  the actual `service { 'sssd' }` resource. `$ensure`/`$enable` both default to
-  `sssd::supported_version()` (`service.pp`), i.e. the daemon is only
-  running/enabled on a supported SSSD.
+  the actual `service { 'sssd' }` resource, declared only when `$ensure` or
+  `$enable` (both default `undef`) is set (`service.pp`). The class is always
+  included, so `notify => Class['sssd::service']` is safe either way.
 
 - **`sssd::service::{nss,pam,ssh,sudo,autofs,ifp,pac}`** — the **responder**
   config sections. Each is a class whose parameters map to `sssd.conf(5)`
-  options; it builds a line array, renders it through `generic.epp` (title =
-  responder name), and emits an `sssd::config::entry`. If a `$custom_options`
-  hash is supplied instead, it renders `templates/service/custom_options.epp`
-  and skips the typed parameters entirely (see `service/nss.pp` for the
-  canonical shape). `sudo` additionally manages a systemd drop-in / the
-  `sssd-sudo.socket` (socket activation).
+  options, all `undef` by default; it builds a settings Hash and emits an
+  `sssd::config::entry`. If a `$custom_options` hash is supplied instead, only
+  those settings are managed and the typed parameters are skipped (see
+  `service/nss.pp` for the canonical shape). `sudo` additionally manages a
+  systemd drop-in (`manage_group_dropin_file`) and `sssd-sudo.socket`
+  (`socket_enable`), each only when set; `true` is ignored while sudo is
+  turned off in the services list (`absent`, or a legacy Array without it).
 
 - **`sssd::pki` (`manifests/pki.pp`, `assert_private` at :26)** — when
   `$sssd::pki` is truthy, `pki::copy { 'sssd' }` copies certs from
@@ -158,42 +178,52 @@ hands it to the **`sssd::config::entry`** define, which writes it to a
 
 ### Gotchas / non-obvious details
 
-- **Declaring a domain is three steps, not one.** Add the name to `sssd::domains`
+- **Declaring a domain is three steps, not one.** Add the name to `sssd::domains_entries`
   (so it lands in the `[sssd]` `domains =` line), declare `sssd::domain { NAME }`
   with an `id_provider`, and declare the matching
   `sssd::provider::<type> { NAME }` for the actual back-end settings. The name
   is the join key across all three (`domain.pp`; `init.pp`).
 - **Everything routes through `sssd::config::entry`.** Domains, providers, and
-  responders all become `conf.d/<order>_<name>.conf` snippets, never direct edits
-  to `sssd.conf`. Only the `[sssd]` section itself lives in `sssd.conf`
-  (`config.pp`). This is the seam a new section should hook into.
-- **`sudo` is socket-activated and is stripped from the `services =` line**
-  (`config.pp`); the `sssd::service::sudo` responder manages the
-  `sssd-sudo.socket` instead. Don't "fix" the missing `sudo` in the services
-  line.
+  responders all become settings in `conf.d/<order>_<name>.conf` snippets.
+  Only the `[sssd]` section itself lives in `sssd.conf` (`config.pp`). This is
+  the seam a new section should hook into. Never render a section as a whole
+  file: an unset parameter must leave its setting alone.
+- **The defines keep literal defaults.** `sssd::domain` and `sssd::provider::*`
+  write their defaults whenever declared (declaring one is the opt-in), and
+  the profile can't reach define parameters, so changing those defaults is a
+  silent behavior change for every consumer.
+- **`sudo` is removed from the `services =` line while the socket is
+  enabled** (`config.pp`): `sssd-sudo.socket`'s `ExecStartPre` fails while
+  `sudo` is listed. Don't "fix" the missing `sudo` in the services line.
+- **Never create a file without writing into it.** `sssd::config::entry`
+  declares its `file` only when a setting is written, not for `'absent'`
+  ones: SSSD can't parse an empty `sssd.conf`, and an empty snippet fails
+  `sssctl config-check`.
+- **Responder classes are always `include`d**, so a resource-like
+  `class { 'sssd::service::<name>': }` must be evaluated before
+  `include sssd`; prefer Hiera.
 - **`$custom_config` and per-section `custom_options` bypass validation.** They
-  are written verbatim (`init.pp`; `service/nss.pp` via
-  `custom_options.epp`). Typos land in `sssd.conf` unchecked and can stop the
+  are written verbatim (`init.pp`; `service/nss.pp`). Typos land in `sssd.conf` unchecked and can stop the
   daemon. `$custom_settings` is the validated alternative — its structure is
   type-checked at compile time (`types/inisettings.pp`), though setting *names*
   are only pattern-checked, not validated against sssd's schema.
-- **`authoritative` is a foot-gun.** `true` purges *all* unmanaged files in
-  `/etc/sssd/conf.d` (`config.pp`); `false` only tidies Puppet's own
-  `*_puppet_*.conf` (`config.pp`).
-- **EL10 needs a domain to even start.** `manage_base_domain` (module Hiera,
-  `config.pp`) declares a `LOCAL` proxy/`files` domain so SSSD can start
-  on a host with no real domain configured.
-- **IPA auto-config is on by default.** On an IPA-joined host, a domain +
-  `ipa` provider are created automatically (`config.pp`;
-  `config/ipa_domain.pp`). Set `auto_add_ipa_domain => false` to manage it
-  yourself.
+- **`authoritative` and `tidy_puppet_snippets` are foot-guns, off by
+  default.** `authoritative` purges *all* unmanaged files in `/etc/sssd/conf.d`;
+  `tidy_puppet_snippets` removes Puppet's own unmanaged `*_puppet_*.conf`
+  (`config.pp`). The `simp:defaults` profile turns the tidy on.
+- **EL10 needs a domain to even start.** `manage_base_domain` (`config.pp`)
+  declares a `LOCAL` proxy/`files` domain so SSSD can start on a host with no
+  real domain configured; it still has to be listed in `domains_entries`.
+  The profile does both on EL10 only.
+- **IPA auto-config is opt-in.** With `auto_add_ipa_domain => true` (set by the
+  profile), on an IPA-joined host a domain + `ipa` provider are created
+  automatically (`config.pp`; `config/ipa_domain.pp`).
 - **The version guard depends on the `sssd_version` fact.** `sssd_version`
   shells out to `sssd --version` and is only present when the `sssd` binary is
   on `PATH` (`lib/facter/sssd_version.rb`); `sssd::supported_version()`
   returns `true` when the fact is absent (assumes a modern system) and `false`
   only when it is present and `< 1.16.0` (`functions/supported_version.pp`).
-  When the fact is missing, the daemon defaults to running/enabled
-  (`service.pp`).
+  The guard does not decide whether the service is managed (`service.pp`).
 - **`simp/pki` and `simp/auditd` are optional dependencies**, asserted at
   runtime with `simplib::assert_optional_dependency` only when the corresponding
   toggle is on (`init.pp`) — they are *not* hard `metadata.json`
@@ -265,18 +295,25 @@ OracleLinux 8/9/10; Rocky 8/9/10; AlmaLinux 8/9/10.
   `Sssd::IniSettings` Hash as INI text (insertion-ordered, `undef` settings
   omitted, Arrays comma-joined).
 - `lib/facter/sssd_version.rb` — the `sssd_version` fact (`sssd --version`).
-- `types/` — 17 data types constraining config values (`Sssd::Services`,
+- `types/` — 21 data types constraining config values (`Sssd::Services`,
+  `Sssd::Service`, `Sssd::EntryOptions`, `Sssd::IniListItem`,
+  `Sssd::SimpleAccessList`,
   `Sssd::IdProvider`, `Sssd::AuthProvider`, `Sssd::AccessProvider`,
   `Sssd::ChpassProvider`, `Sssd::DebugLevel`, `Sssd::LdapSchema`,
   `Sssd::LdapAccessOrder`, `Sssd::LdapAccountExpirePol`, `Sssd::LdapDefaultAuthtok`,
   `Sssd::LdapDeref`, `Sssd::LdapTlsReqcert`, `Sssd::ADDefaultRight`,
   `Sssd::Krb5Server`, `Sssd::IniSettings`, `Sssd::IniSectionName`,
   `Sssd::IniValue`).
-- `templates/generic.epp` — INI section renderer: `[title]` + content.
-- `templates/service/custom_options.epp` — renders a `[service]` section from a
-  raw `key => value` hash (used by the `custom_options` escape hatch).
-- `data/`, `hiera.yaml` — module data (e.g. `manage_base_domain`,
-  `sssd_config_file_params` per OS).
+- `functions/entries.pp` — `sssd::entries()`: resolves a `*_entries` Hash (or
+  its deprecated Array) to entry → `present`/`absent`.
+- `functions/sudo_on.pp` — `sssd::sudo_on()`: whether the services list
+  leaves the sudo responder on; shared by `config.pp` and `service/sudo.pp`.
+- `SIMP/compliance_profiles/` — the `simp:defaults` profile and its checks;
+  per-release values use `confine:`. `spec/classes/simp_defaults_profile_spec.rb`
+  asserts it reproduces the 10.x catalog.
+- `data/`, `hiera.yaml` — module data, limited to what the module needs to
+  work on each release (`sssd_config_file_params`, `app_pki_group`) and the
+  `deep` merge of the `*_entries` Hashes. 10.x defaults belong in the profile.
 - `spec/classes/`, `spec/defines/` — rspec-puppet unit tests.
 - `spec/acceptance/` — beaker suites; nodesets under
   `spec/acceptance/nodesets/`.
@@ -321,10 +358,13 @@ to `~> 1.88.0`. The `Gemfile` installs **both** the `openvox` and `puppet` gems
 
 ## Conventions
 
-- **Emit new config sections through `sssd::config::entry`**, building a line
-  array + `generic.epp` the way the existing domain/provider/responder manifests
-  do. Do not write to `sssd.conf` directly — only the `[sssd]` section lives
+- **Emit new config sections through `sssd::config::entry`**, building a
+  settings Hash the way the existing domain/provider/responder manifests do.
+  Do not write to `sssd.conf` directly — only the `[sssd]` section lives
   there.
+- **New class parameters default to `undef`** (leave the setting alone) and
+  accept `'absent'`; when one restores 10.x behavior, add a check to
+  `SIMP/compliance_profiles/` and the profile spec.
 - **Keep the domain ↔ provider `$name` contract.** A `sssd::provider::*`
   attaches to a `sssd::domain` solely by sharing its `$name`.
 - **Guard optional integrations** (`simp/pki`, `simp/auditd`) with

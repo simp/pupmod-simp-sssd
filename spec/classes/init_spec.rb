@@ -8,6 +8,7 @@ describe 'sssd' do
         # On EL10+ sssd runs as the unprivileged 'sssd' user, which must be
         # able to read the copied certs (simp/pupmod-simp-sssd#212)
         let(:expected_app_pki_group) { (facts[:os][:release][:major].to_i >= 10) ? 'sssd' : 'root' }
+        let(:expected_mode) { (facts[:os][:release][:major].to_i >= 10) ? '0640' : '0600' }
 
         context 'with_defaults' do
           it { is_expected.to compile.with_all_deps }
@@ -19,6 +20,7 @@ describe 'sssd' do
           it { is_expected.not_to create_audit__rule('sssd') }
           it { is_expected.not_to create_class('sssd::pki') }
           it { is_expected.not_to create_pki__copy('sssd') }
+          it { is_expected.not_to create_service('sssd') }
         end
 
         context 'with an unsupported version of sssd' do
@@ -99,13 +101,24 @@ describe 'sssd' do
         end
 
         context 'with a custom config' do
-          let(:params) { { custom_config: 'foo' } }
+          let(:params) { { custom_config: "[pam]\npam_verbosity = 2" } }
 
+          # Raw configuration can't be edited in place, so it gets a file
+          # holding only this parameter's content.
           it {
-            is_expected.to create_sssd__config__entry('puppet_custom')
-              .with_content('foo')
-              .with_order(99_999)
+            is_expected.to create_file('/etc/sssd/conf.d/99999_puppet_custom_raw.conf')
+              .with_content("[pam]\npam_verbosity = 2\n")
+              .with_mode(expected_mode)
+              .that_requires('Package[sssd]')
+              .that_notifies('Class[sssd::service]')
           }
+          it { is_expected.not_to create_file('/etc/sssd/conf.d/99999_puppet_custom.conf') }
+        end
+
+        context 'with custom_config absent' do
+          let(:params) { { custom_config: 'absent' } }
+
+          it { is_expected.to create_file('/etc/sssd/conf.d/99999_puppet_custom_raw.conf').with_ensure('absent') }
         end
 
         context 'with custom settings' do
@@ -116,67 +129,34 @@ describe 'sssd' do
                   'matchrule' => '<ISSUER>CN=Example CA',
                   'priority'  => 10,
                 },
+                'nss' => {
+                  'filter_users'     => ['root', 'named'],
+                  'memcache_timeout' => 'absent',
+                  'fallback_homedir' => :undef,
+                },
               },
             }
           end
 
           it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_file('/etc/sssd/conf.d/99999_puppet_custom.conf').with_mode(expected_mode).without_content }
           it {
-            is_expected.to create_sssd__config__entry('puppet_custom')
-              .with_content(
-                "[certmap/EXAMPLE.COM/rule1]\nmatchrule = <ISSUER>CN=Example CA\npriority = 10",
-              )
-              .with_order(99_999)
+            is_expected.to create_ini_setting('sssd /etc/sssd/conf.d/99999_puppet_custom.conf [certmap/EXAMPLE.COM/rule1] matchrule')
+              .with_section('certmap/EXAMPLE.COM/rule1')
+              .with_value('<ISSUER>CN=Example CA')
           }
-        end
-
-        context 'with both custom settings and a custom config' do
-          let(:params) do
-            {
-              custom_settings: { 'nss' => { 'memcache_timeout' => 300 } },
-              custom_config:   "[pam]\npam_verbosity = 2",
-            }
-          end
-
-          it 'renders the structured sections first and appends the raw String' do
-            is_expected.to create_sssd__config__entry('puppet_custom')
-              .with_content("[nss]\nmemcache_timeout = 300\n[pam]\npam_verbosity = 2")
-          end
+          it { is_expected.to create_ini_setting('sssd /etc/sssd/conf.d/99999_puppet_custom.conf [certmap/EXAMPLE.COM/rule1] priority').with_value('10') }
+          it { is_expected.to create_ini_setting('sssd /etc/sssd/conf.d/99999_puppet_custom.conf [nss] filter_users').with_value('root, named') }
+          it { is_expected.to create_ini_setting('sssd /etc/sssd/conf.d/99999_puppet_custom.conf [nss] memcache_timeout').with_ensure('absent') }
+          it { is_expected.not_to create_ini_setting('sssd /etc/sssd/conf.d/99999_puppet_custom.conf [nss] fallback_homedir') }
+          it { is_expected.not_to create_file('/etc/sssd/conf.d/99999_puppet_custom_raw.conf') }
         end
 
         context 'with an empty custom settings Hash' do
-          let(:params) { { custom_settings: {} } }
+          let(:params) { { custom_settings: { 'domain/EXAMPLE.COM' => {} } } }
 
           it { is_expected.to compile.with_all_deps }
-          it { is_expected.not_to create_sssd__config__entry('puppet_custom') }
-        end
-
-        context 'with custom settings that render to nothing' do
-          let(:params) do
-            {
-              custom_settings: {
-                'domain/EXAMPLE.COM' => {},
-                'nss'                => { 'filter_users' => :undef },
-              },
-            }
-          end
-
-          it { is_expected.to compile.with_all_deps }
-          it { is_expected.not_to create_sssd__config__entry('puppet_custom') }
-        end
-
-        context 'with custom settings that render to nothing alongside a custom config' do
-          let(:params) do
-            {
-              custom_settings: { 'nss' => { 'filter_users' => :undef } },
-              custom_config:   "[pam]\npam_verbosity = 2",
-            }
-          end
-
-          it 'does not prepend a blank line to the raw String' do
-            is_expected.to create_sssd__config__entry('puppet_custom')
-              .with_content("[pam]\npam_verbosity = 2")
-          end
+          it { is_expected.not_to create_file('/etc/sssd/conf.d/99999_puppet_custom.conf') }
         end
 
         context 'with invalid custom settings' do

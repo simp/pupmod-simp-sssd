@@ -6,25 +6,25 @@
 
 ### Classes
 
-* [`sssd`](#sssd): This class allows you to install and configure SSSD.  It will forcefully disable nscd which consequently prevents you from using an nscd modu
-* [`sssd::config`](#sssd--config): Configuration class called from sssd.  Sets up the ``[sssd]`` section of '/etc/sssd/sssd.conf', and, optionally, a domain section for the IPA
+* [`sssd`](#sssd): This class allows you to install and configure SSSD.  A bare `include sssd` installs the SSSD packages and does nothing else. Everything else
+* [`sssd::config`](#sssd--config): Configuration class called from sssd.  Manages the ``[sssd]`` section of '/etc/sssd/sssd.conf' and, optionally, a domain section for the IPA
 * [`sssd::config::ipa_domain`](#sssd--config--ipa_domain): Configures SSSD for the IPA domain to which the host has joined.  When ``sssd::force_ipa_domain`` is true, the IPA domain is configured even
 * [`sssd::install`](#sssd--install): Install the required packages for SSSD
 * [`sssd::install::client`](#sssd--install--client): Install the sssd-client package
 * [`sssd::pki`](#sssd--pki): Class: sssd::pki  Uses the following sssd class parameters to copy certs into a directory for the sssd application  $sssd::pki   * If 'simp',
-* [`sssd::service`](#sssd--service): Control the `sssd` service
-* [`sssd::service::autofs`](#sssd--service--autofs): This class sets up the [autofs] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of t
-* [`sssd::service::ifp`](#sssd--service--ifp): This class sets up the [ifp] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
-* [`sssd::service::nss`](#sssd--service--nss): This class sets up the [nss] section of /etc/sssd.conf. You may only have one of these per system.  The class parameters map directly to SSSD
-* [`sssd::service::pac`](#sssd--service--pac): This class sets up the [pac] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
-* [`sssd::service::pam`](#sssd--service--pam)
-* [`sssd::service::ssh`](#sssd--service--ssh): This class sets up the [ssh] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of thes
-* [`sssd::service::sudo`](#sssd--service--sudo): This class sets up the [sudo] section of /etc/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of the
+* [`sssd::service`](#sssd--service): Control the `sssd` service  The service is only declared when `ensure` or `enable` is set.  Either may be left `undef`, which leaves that hal
+* [`sssd::service::autofs`](#sssd--service--autofs): This class sets up the [autofs] section of /etc/sssd/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation
+* [`sssd::service::ifp`](#sssd--service--ifp): This class sets up the [ifp] section of /etc/sssd/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of
+* [`sssd::service::nss`](#sssd--service--nss): This class sets up the [nss] section of /etc/sssd/sssd.conf. You may only have one of these per system.  The class parameters map directly to
+* [`sssd::service::pac`](#sssd--service--pac): This class sets up the [pac] section of /etc/sssd/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of
+* [`sssd::service::pam`](#sssd--service--pam): This class sets up the [pam] section of /etc/sssd/sssd.conf. You may only have one of these per system.  The class parameters map directly to
+* [`sssd::service::ssh`](#sssd--service--ssh): This class sets up the [ssh] section of /etc/sssd/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation of
+* [`sssd::service::sudo`](#sssd--service--sudo): This class sets up the [sudo] section of /etc/sssd/sssd.conf.  The class parameters map directly to SSSD configuration.  Full documentation o
 
 ### Defined types
 
-* [`sssd::config::entry`](#sssd--config--entry): Add an entry to the /etc/sssd/conf.d directory
-* [`sssd::domain`](#sssd--domain): Define: sssd::domain  This define sets up a domain section of /etc/sssd.conf. This domain will be named after '$name' and should be listed in
+* [`sssd::config::entry`](#sssd--config--entry): Manage the settings of one section of an SSSD configuration file
+* [`sssd::domain`](#sssd--domain): Define: sssd::domain  This define sets up a domain section in /etc/sssd/conf.d. This domain will be named after '$name' and should be listed
 * [`sssd::provider::ad`](#sssd--provider--ad): Set up the 'ad' (Active Directory) id_provider section of a particular domain.
 * [`sssd::provider::files`](#sssd--provider--files): Configures the 'files' id_provider section of a particular domain.
 * [`sssd::provider::ipa`](#sssd--provider--ipa): This define sets up the 'ipa' provider section of a particular domain. $name should be the name of the associated domain in sssd.conf.  See s
@@ -33,6 +33,8 @@
 
 ### Functions
 
+* [`sssd::entries`](#sssd--entries): Resolve a `*_entries` Hash parameter, or its deprecated Array form.  Each entry's `ensure` defaults to `present`.  Before 11.0.0 the Array re
+* [`sssd::sudo_on`](#sssd--sudo_on): Whether the sudo responder is turned on by the services list  It is turned off when `sudo` is `absent` in the `services_entries` Hash, or the
 * [`sssd::supported_version`](#sssd--supported_version): Returns ``true`` if the version of SSSD installed on the system is supported and ``false`` otherwise.  Assumes that the system is relatively
 * [`sssd::to_ini`](#sssd--to_ini): Render structured configuration data as ``sssd.conf``-style INI content.  Sections and settings are emitted in Hash insertion order, so the o
 
@@ -43,6 +45,7 @@
 * [`Sssd::AuthProvider`](#Sssd--AuthProvider): List of valid types for sssd domain authentication provider
 * [`Sssd::ChpassProvider`](#Sssd--ChpassProvider): List of valid types for sssd domain change password provider
 * [`Sssd::DebugLevel`](#Sssd--DebugLevel): Integer[0-9] or 2 byte Hexidecimal (ex. 0x0201)
+* [`Sssd::EntryOptions`](#Sssd--EntryOptions): Options for one entry of a list parameter
 * [`Sssd::IdProvider`](#Sssd--IdProvider): List of valid type for sssd domain ID provider.
 * [`Sssd::IniListItem`](#Sssd--IniListItem): A single element of a comma-separated ``sssd.conf`` list value
 * [`Sssd::IniSectionName`](#Sssd--IniSectionName): The name of a section in an ``sssd.conf``-style file
@@ -55,7 +58,10 @@
 * [`Sssd::LdapDeref`](#Sssd--LdapDeref): List of valid values for ldap provider deref setting
 * [`Sssd::LdapSchema`](#Sssd--LdapSchema): List of valid setting for ldap provider ldap_schema setting.
 * [`Sssd::LdapTlsReqcert`](#Sssd--LdapTlsReqcert): List of valid setting for ldap provider ldap_tls_reqcert.
+* [`Sssd::Service`](#Sssd--Service): An SSSD responder service
 * [`Sssd::Services`](#Sssd--Services): List of available sssd services
+* [`Sssd::SimpleAccessList`](#Sssd--SimpleAccessList): A `simple` access provider list: the names, or `absent` to remove
+the setting
 
 ## Classes
 
@@ -63,8 +69,18 @@
 
 This class allows you to install and configure SSSD.
 
-It will forcefully disable nscd which consequently prevents you from
-using an nscd module at the same time, which is the correct behavior.
+A bare `include sssd` installs the SSSD packages and does nothing else.
+Everything else is opt-in: each setting is written only when its parameter
+is set, and each is edited in place, so settings this module does not
+manage are left alone. Enforce the `simp:defaults` compliance_engine profile
+to restore the behavior of earlier releases (see the README).
+
+The parameters that map to `[sssd]` settings in `/etc/sssd/sssd.conf`
+follow the same three states:
+
+* `undef` (the default) leaves the setting alone
+* a value sets it
+* `'absent'` removes it
 
 Full documentation of the parameters that map directly to SSSD
 configuration options can be found in the sssd.conf(5) man page.
@@ -96,6 +112,8 @@ sssd::custom_settings:
 The following parameters are available in the `sssd` class:
 
 * [`authoritative`](#-sssd--authoritative)
+* [`tidy_puppet_snippets`](#-sssd--tidy_puppet_snippets)
+* [`domains_entries`](#-sssd--domains_entries)
 * [`domains`](#-sssd--domains)
 * [`debug_level`](#-sssd--debug_level)
 * [`debug_timestamps`](#-sssd--debug_timestamps)
@@ -103,6 +121,7 @@ The following parameters are available in the `sssd` class:
 * [`description`](#-sssd--description)
 * [`enable_files_domain`](#-sssd--enable_files_domain)
 * [`config_file_version`](#-sssd--config_file_version)
+* [`services_entries`](#-sssd--services_entries)
 * [`services`](#-sssd--services)
 * [`reconnection_retries`](#-sssd--reconnection_retries)
 * [`re_expression`](#-sssd--re_expression)
@@ -134,21 +153,66 @@ The following parameters are available in the `sssd` class:
 
 Data type: `Boolean`
 
-Whether or not to purge all unmanaged files from /etc/sssd/conf.d.
+Purge every file in /etc/sssd/conf.d that this catalog does not manage
+
+* **Destructive:** this deletes snippets written by the OS, other tools,
+  an administrator, or an earlier Puppet run with different settings.
 
 Default value: `false`
 
+##### <a name="-sssd--tidy_puppet_snippets"></a>`tidy_puppet_snippets`
+
+Data type: `Boolean`
+
+Delete the `*_puppet_*.conf` files in /etc/sssd/conf.d that this catalog
+does not manage
+
+* **Destructive:** a snippet written by an earlier run, for settings this
+  run no longer manages, is deleted along with those settings.
+* Has no effect when `authoritative` is `true`, which purges them anyway.
+
+Default value: `false`
+
+##### <a name="-sssd--domains_entries"></a>`domains_entries`
+
+Data type: `Hash[String[1, 255], Sssd::EntryOptions]`
+
+The domains to list in the `domains` setting, each mapped to its options
+
+* Listing a domain does **not** create it; declare `sssd::domain` and an
+  `sssd::provider::*` with the same name as well.
+* Each entry is added to or, with `ensure => absent`, removed from the
+  list on its own; domains listed by anything else are left alone.
+* The IPA domain (`auto_add_ipa_domain`) is added automatically. The
+  `LOCAL` domain (`sssd::config::manage_base_domain`) is not; list it
+  here, as the `simp:defaults` profile does on EL10.
+
+Options:
+
+* **:ensure** `Enum['present', 'absent']`: `absent` removes the domain from the list. Defaults to `present`.
+
+Default value: `{}`
+
 ##### <a name="-sssd--domains"></a>`domains`
 
-Data type: `Array[String[1, 255]]`
+Data type: `Optional[Array[String[1, 255]]]`
 
-The sssd `domains` to be managed.
+Deprecated: use `domains_entries`
 
-Default value: `[]`
+Domains to add to the `domains` setting. An entry prefixed with `--` is
+removed from it instead.
+
+* While this is set, even to `[]`, `domains_entries` is ignored, because
+  this list replaced the module's default before 11.0.0.
+* An entry dropped from this list is no longer managed and stays listed;
+  remove it with a `--<name>` entry, or with `ensure => absent` in
+  `domains_entries` once this is unset.
+
+Default value: `undef`
 
 ##### <a name="-sssd--debug_level"></a>`debug_level`
 
-Data type: `Optional[Sssd::DebugLevel]`
+Data type: `Optional[Variant[Sssd::DebugLevel, Enum['absent']]]`
 
 
 
@@ -156,19 +220,19 @@ Default value: `undef`
 
 ##### <a name="-sssd--debug_timestamps"></a>`debug_timestamps`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--debug_microseconds"></a>`debug_microseconds`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `false`
+Default value: `undef`
 
 ##### <a name="-sssd--description"></a>`description`
 
@@ -180,7 +244,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--enable_files_domain"></a>`enable_files_domain`
 
-Data type: `Optional[Boolean]`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 Whether to write the ``enable_files_domain`` option into the ``[sssd]``
 section.
@@ -197,7 +261,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--config_file_version"></a>`config_file_version`
 
-Data type: `Optional[Integer[1]]`
+Data type: `Optional[Variant[Integer[1], Enum['absent']]]`
 
 Whether to write the ``config_file_version`` option into the ``[sssd]``
 section, and what value to use.
@@ -208,17 +272,45 @@ section, and what value to use.
 
 Default value: `undef`
 
+##### <a name="-sssd--services_entries"></a>`services_entries`
+
+Data type: `Hash[Sssd::Service, Sssd::EntryOptions]`
+
+The responder services to list in the `services` setting, each mapped to
+its options
+
+* While `sssd::service::sudo::socket_enable` enables `sssd-sudo.socket`,
+  `sudo` is removed from the list, whatever its entry says, because the
+  socket refuses to start while it is listed. Otherwise a `sudo` entry is
+  edited like any other, and sssd starts a listed sudo responder itself.
+* Each entry is added to or, with `ensure => absent`, removed from the
+  list on its own; services listed by anything else are left alone.
+
+Options:
+
+* **:ensure** `Enum['present', 'absent']`: `absent` removes the service from the list. Defaults to `present`.
+
+Default value: `{}`
+
 ##### <a name="-sssd--services"></a>`services`
 
-Data type: `Sssd::Services`
+Data type: `Optional[Sssd::Services]`
 
+Deprecated: use `services_entries`
 
+Services to add to the `services` setting.
 
-Default value: `['nss','pam','ssh','sudo']`
+* While this is set, even to `[]`, `services_entries` is ignored, because
+  this list replaced the module's default before 11.0.0.
+* An entry dropped from this list is no longer managed and stays listed;
+  to remove it, unset this and set `ensure => absent` for it in
+  `services_entries`.
+
+Default value: `undef`
 
 ##### <a name="-sssd--reconnection_retries"></a>`reconnection_retries`
 
-Data type: `Optional[Integer[0]]`
+Data type: `Optional[Variant[Integer[0], Enum['absent']]]`
 
 Whether to write the ``reconnection_retries`` option into the ``[sssd]``
 section, and what value to use.
@@ -247,7 +339,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--try_inotify"></a>`try_inotify`
 
-Data type: `Optional[Boolean]`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
@@ -308,7 +400,8 @@ Default value: `{}`
 
 Data type: `Boolean`
 
-Have SSSD list and cache all the users that it can find on the remote system
+Have SSSD list and cache all the users that it can find on the remote
+system, in the domain created by `auto_add_ipa_domain`
 
 * Take care that you don't overwhelm your server if you enable this
 
@@ -318,12 +411,11 @@ Default value: `false`
 
 Data type: `Boolean`
 
-If set to true, config will loop through the services set in
-sssd:service and include the configuration section for it.
-At this time the service sections contain only the most common
-parameters used. If you need to set a param that is not included you
-can turn this off and create a custom manifest to add the section
-you need.  If you simply want to change a setting that exists, use hiera.
+Include every `sssd::service::<name>` class, so that each responder's
+section is managed from that class's parameters, whether or not the
+responder is listed in `services_entries`. Each of those classes manages
+only the settings whose parameters are set, so with none set they manage
+nothing. Turn this off to manage the responder sections yourself.
 
 Default value: `true`
 
@@ -331,7 +423,8 @@ Default value: `true`
 
 Data type: `Boolean`
 
-Have SSSD cache the credentials of users that login to the system
+Have SSSD cache the credentials of users that login to the system, in the
+domain created by `auto_add_ipa_domain`
 
 Default value: `true`
 
@@ -339,7 +432,8 @@ Default value: `true`
 
 Data type: `Integer[0]`
 
-The lowest user ID that SSSD should recognize from the server.
+The lowest user ID that SSSD should recognize from the server, in the
+domain created by `auto_add_ipa_domain`
 
 Default value: `1`
 
@@ -415,7 +509,9 @@ to an IPA domain. When enabled, this feature helps to prevent user
 lockout for IPA-managed user accounts.  Otherwise, you must
 configure the IPA domain yourself.
 
-Default value: `true`
+* Off by default; the `simp:defaults` profile turns it on.
+
+Default value: `false`
 
 ##### <a name="-sssd--force_ipa_domain"></a>`force_ipa_domain`
 
@@ -450,11 +546,16 @@ Default value: `undef`
 
 ##### <a name="-sssd--custom_config"></a>`custom_config`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[String[1], Enum['absent']]]`
 
-Raw configuration that will be added to
-/etc/sssd/conf.d/99999_puppet_custom.conf *without validation*
+Raw configuration that will be written to
+/etc/sssd/conf.d/99999_puppet_custom_raw.conf *without validation*
 
+* The file holds exactly this content, and nothing else
+* It sorts after the file `custom_settings` edits, so a setting in both
+  takes this file's value
+
+* `'absent'` removes the file
 * Prefer `custom_settings` unless you need something the structured form
   cannot express
 
@@ -464,19 +565,16 @@ Default value: `undef`
 
 Data type: `Optional[Sssd::IniSettings]`
 
-Configuration to add to /etc/sssd/conf.d/99999_puppet_custom.conf,
+Settings to manage in /etc/sssd/conf.d/99999_puppet_custom.conf,
 expressed as a Hash of section name to setting name to value
 
 * Unlike `custom_config`, the section names, setting names, and values are
-  type-validated at compile time and the file is rendered by the module
+  type-validated at compile time, and each setting is edited in place
 * Unlike the per-section `custom_options` parameters, this *adds* sections
   rather than replacing a section the module already manages
-* Settings with an `undef` value are omitted, and Array values are
-  rendered as comma-separated lists
-* A section left with no settings to render is omitted entirely, so an
-  empty Hash never produces a bare `[section]` header
-* If both this and `custom_config` are set, the rendered sections are
-  written first and the raw String is appended
+* Settings with an `undef` value are left alone, settings with the value
+  `'absent'` are removed, and Array values are written as comma-separated
+  lists
 
 Default value: `undef`
 
@@ -484,11 +582,12 @@ Default value: `undef`
 
 Configuration class called from sssd.
 
-Sets up the ``[sssd]`` section of '/etc/sssd/sssd.conf', and,
-optionally, a domain section for the IPA domain to which the host
-is joined.  When the IPA domain is configured, the IPA domain is
-automatically added to ``$domains`` to generate the list of domains
-in the ``[sssd]`` section.
+Manages the ``[sssd]`` section of '/etc/sssd/sssd.conf' and, optionally, a
+domain section for the IPA domain to which the host is joined.  When the IPA
+domain is configured, it is automatically added to the ``domains`` setting.
+
+Each setting is edited in place and only when its parameter is set, so a
+bare ``include sssd`` declares nothing here.
 
 #### Parameters
 
@@ -511,28 +610,41 @@ Default value: `pick(getvar("${module_name}::authoritative"), false)`
 
 Data type: `Boolean`
 
-EL10+ requires a domain to be configured in order for SSSD to start.
-This parameter will be managed in hieradata by default.
+Declare a ``LOCAL`` proxy domain for the local ``files``
 
-Default value: `true`
+* Like any other domain, it is only used once it is listed, e.g. with
+  ``sssd::domains_entries: { LOCAL: {} }``.
+* EL10+ requires a domain to be configured in order for SSSD to start, and
+  SSSD 2.10 no longer provides the implicit files domain that EL8/9 have.
+* Off by default; the `simp:defaults` profile turns it on for EL10.
+
+Default value: `false`
 
 ##### <a name="-sssd--config--sssd_config_dir_mode"></a>`sssd_config_dir_mode`
 
-Data type: `String`
+Data type: `Optional[String[1]]`
 
-The mode to set on the /etc/sssd/conf.d directory and, recursively,
-on the files within it
+The mode to set on the /etc/sssd and /etc/sssd/conf.d directories and,
+recursively, on the files within /etc/sssd/conf.d
 
-Default value: `'g-w,o-rw'`
+* Unset, the directories are not managed.
+
+Default value: `undef`
 
 ##### <a name="-sssd--config--sssd_config_file_params"></a>`sssd_config_file_params`
 
 Data type: `Hash`
 
-A hash of parameters to apply to all files managed in /etc/sssd and /etc/sssd/conf.d.
-This should include at least the owner, group, and mode parameters.
+A hash of parameters to apply to every file this module edits in /etc/sssd
+and /etc/sssd/conf.d.  This should include at least the owner, group, and
+mode parameters.
 
-Default value: `{ 'owner' => 'root', 'group' => 'sssd', 'mode' => '0640' }`
+* SSSD refuses to start with an `sssd.conf`, and ignores a `conf.d`
+  snippet, whose ownership and permissions it doesn't accept, so a file is
+  only edited with these applied.  The module data holds what each
+  release's SSSD expects.
+
+Default value: `{}`
 
 ### <a name="sssd--config--ipa_domain"></a>`sssd::config::ipa_domain`
 
@@ -636,6 +748,13 @@ $sssd::app_pki_group
 
 Control the `sssd` service
 
+The service is only declared when `ensure` or `enable` is set.  Either may
+be left `undef`, which leaves that half of the service unmanaged.
+
+With the service unmanaged, configuration changes are written to disk but
+are not loaded into a running `sssd` until it is restarted, e.g. with
+`systemctl restart sssd`.
+
 #### Parameters
 
 The following parameters are available in the `sssd::service` class:
@@ -645,27 +764,31 @@ The following parameters are available in the `sssd::service` class:
 
 ##### <a name="-sssd--service--ensure"></a>`ensure`
 
-Data type: `Variant[String[1],Boolean]`
+Data type: `Optional[Variant[String[1],Boolean]]`
 
 The `ensure` parameter of the service resource
 
-Default value: `sssd::supported_version()`
+Default value: `undef`
 
 ##### <a name="-sssd--service--enable"></a>`enable`
 
-Data type: `Boolean`
+Data type: `Optional[Boolean]`
 
 The `enable` parameter of the service resource
 
-Default value: `sssd::supported_version()`
+Default value: `undef`
 
 ### <a name="sssd--service--autofs"></a>`sssd::service::autofs`
 
-This class sets up the [autofs] section of /etc/sssd.conf.
+This class sets up the [autofs] section of /etc/sssd/sssd.conf.
 
 The class parameters map directly to SSSD configuration.  Full
 documentation of these configuration options can be found in the
 sssd.conf(5) man page.
+
+Each parameter that maps to a setting follows three states: `undef` (the
+default) leaves the setting alone, a value sets it, and `'absent'` removes
+it.  The class manages nothing until one of them is set.
 
 #### Parameters
 
@@ -688,7 +811,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--autofs--debug_level"></a>`debug_level`
 
-Data type: `Optional[Sssd::DebugLevel]`
+Data type: `Optional[Variant[Sssd::DebugLevel, Enum['absent']]]`
 
 
 
@@ -696,23 +819,23 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--autofs--debug_timestamps"></a>`debug_timestamps`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--service--autofs--debug_microseconds"></a>`debug_microseconds`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `false`
+Default value: `undef`
 
 ##### <a name="-sssd--service--autofs--autofs_negative_timeout"></a>`autofs_negative_timeout`
 
-Data type: `Optional[Integer]`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
@@ -722,22 +845,25 @@ Default value: `undef`
 
 Data type: `Optional[Hash]`
 
-If defined, this hash will be used to create the service
-section instead of the parameters.  You must provide all options
-in the section you want to add.  Each entry in the hash will be
-added as a simple init pair key = value under the section in
-the generated `/etc/sssd/conf.d/` drop-in file.
+If defined, these settings are managed in the section *instead of* the
+ones from the other parameters, which are then ignored.  Each entry is
+edited in place as `key = value` in the generated `/etc/sssd/conf.d/`
+drop-in file; a value of `'absent'` removes that setting.
 No error checking will be performed.
 
 Default value: `undef`
 
 ### <a name="sssd--service--ifp"></a>`sssd::service::ifp`
 
-This class sets up the [ifp] section of /etc/sssd.conf.
+This class sets up the [ifp] section of /etc/sssd/sssd.conf.
 
 The class parameters map directly to SSSD configuration.  Full
 documentation of these configuration options can be found in the
 sssd.conf(5) and sssd-ifp man pages.
+
+Each parameter that maps to a setting follows three states: `undef` (the
+default) leaves the setting alone, a value sets it, and `'absent'` removes
+it.  The class manages nothing until one of them is set.
 
 #### Parameters
 
@@ -762,7 +888,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--ifp--debug_level"></a>`debug_level`
 
-Data type: `Optional[Sssd::Debuglevel]`
+Data type: `Optional[Variant[Sssd::DebugLevel, Enum['absent']]]`
 
 
 
@@ -770,23 +896,23 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--ifp--debug_timestamps"></a>`debug_timestamps`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--service--ifp--debug_microseconds"></a>`debug_microseconds`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `false`
+Default value: `undef`
 
 ##### <a name="-sssd--service--ifp--wildcard_limit"></a>`wildcard_limit`
 
-Data type: `Optional[Integer[0]]`
+Data type: `Optional[Variant[Integer[0], Enum['absent']]]`
 
 
 
@@ -794,7 +920,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--ifp--allowed_uids"></a>`allowed_uids`
 
-Data type: `Optional[Array[String[1]]]`
+Data type: `Optional[Variant[Array[String[1]], Enum['absent']]]`
 
 
 
@@ -802,7 +928,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--ifp--user_attributes"></a>`user_attributes`
 
-Data type: `Optional[Array[String[1]]]`
+Data type: `Optional[Variant[Array[String[1]], Enum['absent']]]`
 
 
 
@@ -812,24 +938,26 @@ Default value: `undef`
 
 Data type: `Optional[Hash]`
 
-If defined, this hash will be used to create the service
-section instead of the parameters.  You must provide all options
-in the section you want to add.  Each entry in the hash will be
-added as a simple init pair
- key = value
-under the section in the generated `/etc/sssd/conf.d/` drop-in file.
+If defined, these settings are managed in the section *instead of* the
+ones from the other parameters, which are then ignored.  Each entry is
+edited in place as `key = value` in the generated `/etc/sssd/conf.d/`
+drop-in file; a value of `'absent'` removes that setting.
 No error checking will be performed.
 
 Default value: `undef`
 
 ### <a name="sssd--service--nss"></a>`sssd::service::nss`
 
-This class sets up the [nss] section of /etc/sssd.conf.
+This class sets up the [nss] section of /etc/sssd/sssd.conf.
 You may only have one of these per system.
 
 The class parameters map directly to SSSD configuration.  Full
 documentation of these configuration options can be found in the
 sssd.conf(5) man page.
+
+Each parameter that maps to a setting follows three states: `undef` (the
+default) leaves the setting alone, a value sets it, and `'absent'` removes
+it.  The class manages nothing until one of them is set.
 
 #### Parameters
 
@@ -868,7 +996,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--nss--debug_level"></a>`debug_level`
 
-Data type: `Optional[Sssd::DebugLevel]`
+Data type: `Optional[Variant[Sssd::DebugLevel, Enum['absent']]]`
 
 
 
@@ -876,33 +1004,32 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--nss--debug_timestamps"></a>`debug_timestamps`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--service--nss--debug_microseconds"></a>`debug_microseconds`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `false`
+Default value: `undef`
 
 ##### <a name="-sssd--service--nss--reconnection_retries"></a>`reconnection_retries`
 
-Data type: `Optional[Integer]`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
-Removed from SSSD's schema in 2.10, with no successor.  Supplied from
-``data/os/`` on the releases that still accept it and left ``undef``
-elsewhere; an explicitly set value is always written.
+Removed from SSSD's schema in 2.10, with no successor.  The
+`simp:defaults` profile sets it on the releases that still accept it.
 
 Default value: `undef`
 
 ##### <a name="-sssd--service--nss--fd_limit"></a>`fd_limit`
 
-Data type: `Optional[Integer]`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
@@ -918,51 +1045,51 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--nss--enum_cache_timeout"></a>`enum_cache_timeout`
 
-Data type: `Integer`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
-Default value: `120`
+Default value: `undef`
 
 ##### <a name="-sssd--service--nss--entry_cache_nowait_percentage"></a>`entry_cache_nowait_percentage`
 
-Data type: `Integer`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
-Default value: `0`
+Default value: `undef`
 
 ##### <a name="-sssd--service--nss--entry_negative_timeout"></a>`entry_negative_timeout`
 
-Data type: `Integer`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
-Default value: `15`
+Default value: `undef`
 
 ##### <a name="-sssd--service--nss--filter_users"></a>`filter_users`
 
-Data type: `String`
+Data type: `Optional[String]`
 
 
 
-Default value: `'root'`
+Default value: `undef`
 
 ##### <a name="-sssd--service--nss--filter_groups"></a>`filter_groups`
 
-Data type: `String`
+Data type: `Optional[String]`
 
 
 
-Default value: `'root'`
+Default value: `undef`
 
 ##### <a name="-sssd--service--nss--filter_users_in_groups"></a>`filter_users_in_groups`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--service--nss--override_homedir"></a>`override_homedir`
 
@@ -1006,7 +1133,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--nss--get_domains_timeout"></a>`get_domains_timeout`
 
-Data type: `Optional[Integer]`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
@@ -1014,7 +1141,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--nss--memcache_timeout"></a>`memcache_timeout`
 
-Data type: `Optional[Integer]`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
@@ -1032,22 +1159,25 @@ Default value: `undef`
 
 Data type: `Optional[Hash]`
 
-If defined, this hash will be used to create the service
-section instead of the parameters.  You must provide all options
-in the section you want to add.  Each entry in the hash will be
-added as a simple init pair key = value under the section in
-the generated `/etc/sssd/conf.d/` drop-in file.
+If defined, these settings are managed in the section *instead of* the
+ones from the other parameters, which are then ignored.  Each entry is
+edited in place as `key = value` in the generated `/etc/sssd/conf.d/`
+drop-in file; a value of `'absent'` removes that setting.
 No error checking will be performed.
 
 Default value: `undef`
 
 ### <a name="sssd--service--pac"></a>`sssd::service::pac`
 
-This class sets up the [pac] section of /etc/sssd.conf.
+This class sets up the [pac] section of /etc/sssd/sssd.conf.
 
 The class parameters map directly to SSSD configuration.  Full
 documentation of these configuration options can be found in the
 sssd.conf(5) man page.
+
+Each parameter that maps to a setting follows three states: `undef` (the
+default) leaves the setting alone, a value sets it, and `'absent'` removes
+it.  The class manages nothing until one of them is set.
 
 #### Parameters
 
@@ -1070,7 +1200,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--pac--debug_level"></a>`debug_level`
 
-Data type: `Optional[Sssd::DebugLevel]`
+Data type: `Optional[Variant[Sssd::DebugLevel, Enum['absent']]]`
 
 
 
@@ -1078,44 +1208,52 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--pac--debug_timestamps"></a>`debug_timestamps`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pac--debug_microseconds"></a>`debug_microseconds`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `false`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pac--allowed_uids"></a>`allowed_uids`
 
-Data type: `Array[String]`
+Data type: `Optional[Variant[Array[String], Enum['absent']]]`
 
+An empty Array is treated as `undef`.
 
-
-Default value: `[]`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pac--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
 
-If defined, this hash will be used to create the service
-section instead of the parameters.  You must provide all options
-in the section you want to add.  Each entry in the hash will be
-added as a simple init pair key = value under the section in
-the generated `/etc/sssd/conf.d/` drop-in file.
+If defined, these settings are managed in the section *instead of* the
+ones from the other parameters, which are then ignored.  Each entry is
+edited in place as `key = value` in the generated `/etc/sssd/conf.d/`
+drop-in file; a value of `'absent'` removes that setting.
 No error checking will be performed.
 
 Default value: `undef`
 
 ### <a name="sssd--service--pam"></a>`sssd::service::pam`
 
-The sssd::service::pam class.
+This class sets up the [pam] section of /etc/sssd/sssd.conf.
+You may only have one of these per system.
+
+The class parameters map directly to SSSD configuration.  Full
+documentation of these configuration options can be found in the
+sssd.conf(5) man page.
+
+Each parameter that maps to a setting follows three states: `undef` (the
+default) leaves the setting alone, a value sets it, and `'absent'` removes
+it.  The class manages nothing until one of them is set.
 
 #### Parameters
 
@@ -1149,7 +1287,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--pam--debug_level"></a>`debug_level`
 
-Data type: `Optional[Sssd::DebugLevel]`
+Data type: `Optional[Variant[Sssd::DebugLevel, Enum['absent']]]`
 
 
 
@@ -1157,33 +1295,34 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--pam--debug_timestamps"></a>`debug_timestamps`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pam--debug_microseconds"></a>`debug_microseconds`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `false`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pam--pam_cert_auth"></a>`pam_cert_auth`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
+`true` writes `pam_cert_auth = True` and `false` writes `pam_cert_auth = False`.
 
-
-Default value: `false`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pam--reconnection_retries"></a>`reconnection_retries`
 
-Data type: `Optional[Integer]`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
-
+Removed from SSSD's schema in 2.10, with no successor.  The
+`simp:defaults` profile sets it on the releases that still accept it.
 
 Default value: `undef`
 
@@ -1197,55 +1336,55 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--pam--offline_credentials_expiration"></a>`offline_credentials_expiration`
 
-Data type: `Integer`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
-Default value: `0`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pam--offline_failed_login_attempts"></a>`offline_failed_login_attempts`
 
-Data type: `Integer`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
-Default value: `3`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pam--offline_failed_login_delay"></a>`offline_failed_login_delay`
 
-Data type: `Integer`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
-Default value: `5`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pam--pam_verbosity"></a>`pam_verbosity`
 
-Data type: `Integer`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
-Default value: `1`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pam--pam_id_timeout"></a>`pam_id_timeout`
 
-Data type: `Integer`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
-Default value: `5`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pam--pam_pwd_expiration_warning"></a>`pam_pwd_expiration_warning`
 
-Data type: `Integer`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
-Default value: `7`
+Default value: `undef`
 
 ##### <a name="-sssd--service--pam--get_domains_timeout"></a>`get_domains_timeout`
 
-Data type: `Optional[Integer]`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
@@ -1271,17 +1410,25 @@ Default value: `undef`
 
 Data type: `Optional[Hash]`
 
-
+If defined, these settings are managed in the section *instead of* the
+ones from the other parameters, which are then ignored.  Each entry is
+edited in place as `key = value` in the generated `/etc/sssd/conf.d/`
+drop-in file; a value of `'absent'` removes that setting.
+No error checking will be performed.
 
 Default value: `undef`
 
 ### <a name="sssd--service--ssh"></a>`sssd::service::ssh`
 
-This class sets up the [ssh] section of /etc/sssd.conf.
+This class sets up the [ssh] section of /etc/sssd/sssd.conf.
 
 The class parameters map directly to SSSD configuration.  Full
 documentation of these configuration options can be found in the
 sssd.conf(5) man page.
+
+Each parameter that maps to a setting follows three states: `undef` (the
+default) leaves the setting alone, a value sets it, and `'absent'` removes
+it.  The class manages nothing until one of them is set.
 
 #### Parameters
 
@@ -1305,7 +1452,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--ssh--debug_level"></a>`debug_level`
 
-Data type: `Optional[Sssd::DebugLevel]`
+Data type: `Optional[Variant[Sssd::DebugLevel, Enum['absent']]]`
 
 
 
@@ -1313,35 +1460,34 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--ssh--debug_timestamps"></a>`debug_timestamps`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--service--ssh--debug_microseconds"></a>`debug_microseconds`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `false`
+Default value: `undef`
 
 ##### <a name="-sssd--service--ssh--ssh_hash_known_hosts"></a>`ssh_hash_known_hosts`
 
-Data type: `Optional[Boolean]`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 Removed from SSSD's schema in 2.10 along with the sssd-managed
 ``known_hosts`` workflow it controlled, which ``sss_ssh_knownhosts`` and
-OpenSSH's ``KnownHostsCommand`` now replace.  Supplied from ``data/os/`` on
-the releases that still accept it and left ``undef`` elsewhere; an
-explicitly set value is always written.
+OpenSSH's ``KnownHostsCommand`` now replace.  The `simp:defaults` profile
+sets it on the releases that still accept it.
 
 Default value: `undef`
 
 ##### <a name="-sssd--service--ssh--ssh_known_hosts_timeout"></a>`ssh_known_hosts_timeout`
 
-Data type: `Optional[Integer]`
+Data type: `Optional[Variant[Integer, Enum['absent']]]`
 
 
 
@@ -1351,22 +1497,25 @@ Default value: `undef`
 
 Data type: `Optional[Hash]`
 
-If defined, this hash will be used to create the service
-section instead of the parameters.  You must provide all options
-in the section you want to add.  Each entry in the hash will be
-added as a simple init pair key = value under the section in
-the generated `/etc/sssd/conf.d/` drop-in file.
+If defined, these settings are managed in the section *instead of* the
+ones from the other parameters, which are then ignored.  Each entry is
+edited in place as `key = value` in the generated `/etc/sssd/conf.d/`
+drop-in file; a value of `'absent'` removes that setting.
 No error checking will be performed.
 
 Default value: `undef`
 
 ### <a name="sssd--service--sudo"></a>`sssd::service::sudo`
 
-This class sets up the [sudo] section of /etc/sssd.conf.
+This class sets up the [sudo] section of /etc/sssd/sssd.conf.
 
 The class parameters map directly to SSSD configuration.  Full
 documentation of these configuration options can be found in the
 sssd.conf(5) man page.
+
+Each parameter that maps to a setting follows three states: `undef` (the
+default) leaves the setting alone, a value sets it, and `'absent'` removes
+it.  The class manages nothing until one of them is set.
 
 #### Parameters
 
@@ -1380,6 +1529,7 @@ The following parameters are available in the `sssd::service::sudo` class:
 * [`sudo_timed`](#-sssd--service--sudo--sudo_timed)
 * [`custom_options`](#-sssd--service--sudo--custom_options)
 * [`manage_group_dropin_file`](#-sssd--service--sudo--manage_group_dropin_file)
+* [`socket_enable`](#-sssd--service--sudo--socket_enable)
 
 ##### <a name="-sssd--service--sudo--description"></a>`description`
 
@@ -1391,7 +1541,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--sudo--debug_level"></a>`debug_level`
 
-Data type: `Optional[Sssd::Debuglevel]`
+Data type: `Optional[Variant[Sssd::DebugLevel, Enum['absent']]]`
 
 
 
@@ -1399,83 +1549,122 @@ Default value: `undef`
 
 ##### <a name="-sssd--service--sudo--debug_timestamps"></a>`debug_timestamps`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `true`
+Default value: `undef`
 
 ##### <a name="-sssd--service--sudo--debug_microseconds"></a>`debug_microseconds`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `false`
+Default value: `undef`
 
 ##### <a name="-sssd--service--sudo--sudo_threshold"></a>`sudo_threshold`
 
-Data type: `Integer[1]`
+Data type: `Optional[Variant[Integer[1], Enum['absent']]]`
 
 
 
-Default value: `50`
+Default value: `undef`
 
 ##### <a name="-sssd--service--sudo--sudo_timed"></a>`sudo_timed`
 
-Data type: `Boolean`
+Data type: `Optional[Variant[Boolean, Enum['absent']]]`
 
 
 
-Default value: `false`
+Default value: `undef`
 
 ##### <a name="-sssd--service--sudo--custom_options"></a>`custom_options`
 
 Data type: `Optional[Hash]`
 
-If defined, this hash will be used to create the service
-section instead of the parameters.  You must provide all options
-in the section you want to add.  Each entry in the hash will be
-added as a simple init pair
-key = value
-under the section in the generated `/etc/sssd/conf.d/` drop-in file.
+If defined, these settings are managed in the section *instead of* the
+ones from the other parameters, which are then ignored.  Each entry is
+edited in place as `key = value` in the generated `/etc/sssd/conf.d/`
+drop-in file; a value of `'absent'` removes that setting.
 No error checking will be performed.
 
 Default value: `undef`
 
 ##### <a name="-sssd--service--sudo--manage_group_dropin_file"></a>`manage_group_dropin_file`
 
-Data type: `Boolean`
+Data type: `Optional[Boolean]`
 
-If true, a systemd drop-in file will be created to ensure the sssd-sudo service runs as root.
+Manage a systemd drop-in file that runs the sssd-sudo service as root
 
-Default value: `false`
+* `true` creates it, `false` removes it, and `undef` leaves it alone.
+* Needed on EL8 and EL9, where the `simp:defaults` profile turns it on.
+* `true` is ignored while sudo is turned off; see `socket_enable`.
+
+Default value: `undef`
+
+##### <a name="-sssd--service--sudo--socket_enable"></a>`socket_enable`
+
+Data type: `Optional[Boolean]`
+
+The `enable` state of the `sssd-sudo.socket` unit, which starts the sudo
+responder
+
+* Unset, the socket is not managed.
+* `true` is ignored while sudo is turned off: when `sudo` is `absent` in
+  `sssd::services_entries`, or the deprecated `sssd::services` is set
+  without it.  `false` is always applied.
+* While this enables the socket, `sudo` is removed from the `services`
+  line, because the socket refuses to start while it is listed.
+
+Default value: `undef`
 
 ## Defined types
 
 ### <a name="sssd--config--entry"></a>`sssd::config::entry`
 
-Add an entry to the /etc/sssd/conf.d directory
+Each setting is edited in place with its own `ini_setting`, so only the
+settings passed in are managed. Anything else in the file, whether added by
+an administrator, another tool or an earlier Puppet run, is left alone.
+
+* A setting whose value is `undef` is not managed at all.
+* A setting whose value is `'absent'` is removed from the section.
+* Any other value is written as `key = value`; an Array is joined with
+  `', '`.
+
+The file itself is declared only to apply `sssd::config::sssd_config_file_params`
+(owner, group and mode), because SSSD refuses to start with an `sssd.conf`,
+and ignores a `conf.d` snippet, that has looser permissions than it expects.
+It is never given any content.
 
 #### Parameters
 
 The following parameters are available in the `sssd::config::entry` defined type:
 
 * [`name`](#-sssd--config--entry--name)
-* [`content`](#-sssd--config--entry--content)
+* [`section`](#-sssd--config--entry--section)
+* [`settings`](#-sssd--config--entry--settings)
 * [`order`](#-sssd--config--entry--order)
+* [`path`](#-sssd--config--entry--path)
 
 ##### <a name="-sssd--config--entry--name"></a>`name`
 
 A unique name that will be used for generating the target filename
 
-Should not be fully qualified
+Should not be fully qualified, unless `path` is set
 
-##### <a name="-sssd--config--entry--content"></a>`content`
+##### <a name="-sssd--config--entry--section"></a>`section`
 
-Data type: `String`
+Data type: `String[1]`
 
-The content of the target file
+The INI section to manage, without the brackets, e.g. `nss` or
+`domain/EXAMPLE.COM`
+
+##### <a name="-sssd--config--entry--settings"></a>`settings`
+
+Data type: `Hash[String[1], Any]`
+
+The settings to manage in `section`, as setting name to value
 
 ##### <a name="-sssd--config--entry--order"></a>`order`
 
@@ -1485,13 +1674,25 @@ The order in which the file should be processed
 
 Default value: `50`
 
+##### <a name="-sssd--config--entry--path"></a>`path`
+
+Data type: `Optional[Stdlib::Absolutepath]`
+
+The file to edit. Defaults to `/etc/sssd/conf.d/<order>_<name>.conf`.
+
+Default value: `undef`
+
 ### <a name="sssd--domain"></a>`sssd::domain`
 
 Define: sssd::domain
 
-This define sets up a domain section of /etc/sssd.conf. This domain will be
-named after '$name' and should be listed in your main sssd.conf if you wish
-to activate it.
+This define sets up a domain section in /etc/sssd/conf.d. This domain will
+be named after '$name' and should be listed in `sssd::domains_entries` if
+you wish to activate it.
+
+Each setting is edited in place, so settings in the section that this
+define does not manage are left alone, and a parameter left `undef` leaves
+its setting alone.
 
 You will need to call the associated provider segments to make this fully
 functional.
@@ -1918,14 +2119,17 @@ Default value: `undef`
 
 ##### <a name="-sssd--domain--simple_allow_users"></a>`simple_allow_users`
 
-Data type: `Optional[Array[Sssd::IniListItem]]`
+Data type: `Optional[Sssd::SimpleAccessList]`
 
 Users always allowed to log in when `access_provider` is `simple`.
 
 Rendered as the comma-separated list that the `simple_allow_users` option
-of `sssd-simple(5)` expects.  When unset or empty, the option is omitted
-from the generated configuration.  See `sssd-simple(5)` for how the allow
-and deny lists interact.
+of `sssd-simple(5)` expects.  When unset or empty, the option is not
+managed, and `'absent'` removes it.  See `sssd-simple(5)` for how the
+allow and deny lists interact.
+
+* Dropping this parameter from a declaration leaves the setting in place,
+  so set it to `'absent'` to stop allowing these users.
 
 * `sssd.conf` provides no way to quote or escape a comma, so a name that
   contains one cannot be expressed here and is rejected at compile time.
@@ -1936,7 +2140,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--domain--simple_deny_users"></a>`simple_deny_users`
 
-Data type: `Optional[Array[Sssd::IniListItem]]`
+Data type: `Optional[Sssd::SimpleAccessList]`
 
 Users always denied access when `access_provider` is `simple`.
 Rendered like `simple_allow_users`.
@@ -1945,7 +2149,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--domain--simple_allow_groups"></a>`simple_allow_groups`
 
-Data type: `Optional[Array[Sssd::IniListItem]]`
+Data type: `Optional[Sssd::SimpleAccessList]`
 
 Groups whose members are allowed to log in when `access_provider` is
 `simple`.  Rendered like `simple_allow_users`.
@@ -1954,7 +2158,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--domain--simple_deny_groups"></a>`simple_deny_groups`
 
-Data type: `Optional[Array[Sssd::IniListItem]]`
+Data type: `Optional[Sssd::SimpleAccessList]`
 
 Groups whose members are denied access when `access_provider` is
 `simple`.  Rendered like `simple_allow_users`.
@@ -1967,10 +2171,10 @@ Data type: `Optional[Hash]`
 
 A hash of additional options to add to this domain's section.
 
-Each entry in the hash is rendered as a simple init pair
-`key = value`, sorted by key, and **appended to** the lines generated by
-the other parameters.  Unlike the `sssd::service::*` classes, this does
-**not** replace the parameter-driven configuration.
+Each entry in the hash is managed as a setting `key = value`, **in
+addition to** the settings from the other parameters.  A value of
+`'absent'` removes that setting.  Unlike the `sssd::service::*` classes,
+this does **not** replace the parameter-driven configuration.
 
 Use this for any `sssd.conf(5)` domain option that this define does not
 expose as a parameter:
@@ -1985,8 +2189,7 @@ sssd::domain { 'my.ad.domain':
 ```
 
 No error checking is performed.  If a key here duplicates an option that
-is already set by a parameter, both lines are written to the generated
-`/etc/sssd/conf.d/` drop-in file, so set each option in only one place.
+is already set by a parameter, the value here is the one written.
 
 Default value: `undef`
 
@@ -4370,6 +4573,125 @@ Default value: `false`
 
 ## Functions
 
+### <a name="sssd--entries"></a>`sssd::entries`
+
+Type: Puppet Language
+
+Resolve a `*_entries` Hash parameter, or its deprecated Array form.
+
+Each entry's `ensure` defaults to `present`.
+
+Before 11.0.0 the Array replaced the module's default list, so while it is
+set, even to `[]`, it is used *instead of* the Hash, including Hash entries
+from the `simp:defaults` profile. An Array entry prefixed with `--` (a Hiera
+knockout) becomes `absent`.
+
+The Array only decides what is listed: an entry dropped from it is no longer
+managed and stays in the list until it is removed with a `--` entry.
+
+#### Examples
+
+#####
+
+```puppet
+sssd::entries({ 'nss' => {}, 'ssh' => { 'ensure' => 'absent' } })
+
+# => { 'nss' => 'present', 'ssh' => 'absent' }
+```
+
+##### With the deprecated Array set
+
+```puppet
+sssd::entries({ 'nss' => {} }, ['pam', '--ssh'])
+
+# => { 'pam' => 'present', 'ssh' => 'absent' }
+```
+
+#### `sssd::entries(Hash[String[1], Sssd::EntryOptions] $entries, Optional[Array[String[1]]] $legacy = undef)`
+
+Resolve a `*_entries` Hash parameter, or its deprecated Array form.
+
+Each entry's `ensure` defaults to `present`.
+
+Before 11.0.0 the Array replaced the module's default list, so while it is
+set, even to `[]`, it is used *instead of* the Hash, including Hash entries
+from the `simp:defaults` profile. An Array entry prefixed with `--` (a Hiera
+knockout) becomes `absent`.
+
+The Array only decides what is listed: an entry dropped from it is no longer
+managed and stays in the list until it is removed with a `--` entry.
+
+Returns: `Hash[String[1], Enum['present', 'absent']]` Each entry mapped to its resolved `ensure`
+
+##### Examples
+
+######
+
+```puppet
+sssd::entries({ 'nss' => {}, 'ssh' => { 'ensure' => 'absent' } })
+
+# => { 'nss' => 'present', 'ssh' => 'absent' }
+```
+
+###### With the deprecated Array set
+
+```puppet
+sssd::entries({ 'nss' => {} }, ['pam', '--ssh'])
+
+# => { 'pam' => 'present', 'ssh' => 'absent' }
+```
+
+##### `entries`
+
+Data type: `Hash[String[1], Sssd::EntryOptions]`
+
+The entries, each mapped to its options
+
+##### `legacy`
+
+Data type: `Optional[Array[String[1]]]`
+
+The entries of the deprecated Array parameter, or `undef` when it is
+unset
+
+### <a name="sssd--sudo_on"></a>`sssd::sudo_on`
+
+Type: Puppet Language
+
+Whether the sudo responder is turned on by the services list
+
+It is turned off when `sudo` is `absent` in the `services_entries` Hash, or
+the deprecated Array is set without it, so that enforcing `simp:defaults`
+doesn't start a responder a site dropped from its list.
+
+Computed from class parameters only, so every caller gets the same answer
+whatever order the classes are evaluated in.
+
+#### `sssd::sudo_on(Hash[String[1], Sssd::EntryOptions] $entries, Optional[Array[String[1]]] $legacy = undef)`
+
+Whether the sudo responder is turned on by the services list
+
+It is turned off when `sudo` is `absent` in the `services_entries` Hash, or
+the deprecated Array is set without it, so that enforcing `simp:defaults`
+doesn't start a responder a site dropped from its list.
+
+Computed from class parameters only, so every caller gets the same answer
+whatever order the classes are evaluated in.
+
+Returns: `Boolean`
+
+##### `entries`
+
+Data type: `Hash[String[1], Sssd::EntryOptions]`
+
+The `sssd::services_entries` Hash
+
+##### `legacy`
+
+Data type: `Optional[Array[String[1]]]`
+
+The deprecated `sssd::services` Array, or `undef` when it is unset
+
 ### <a name="sssd--supported_version"></a>`sssd::supported_version`
 
 Type: Puppet Language
@@ -4479,6 +4801,13 @@ Alias of `Enum['ldap', 'krb5', 'ipa', 'ad', 'proxy', 'none']`
 Integer[0-9] or 2 byte Hexidecimal (ex. 0x0201)
 
 Alias of `Variant[Integer[0,9], Pattern[/0x\h{4}$/]]`
+
+### <a name="Sssd--EntryOptions"></a>`Sssd::EntryOptions`
+
+An empty Hash means `{ ensure => present }`. New options are added here as
+Optional keys, so existing data keeps validating.
+
+Alias of `Struct[{ Optional['ensure'] => Enum['present', 'absent'] }]`
 
 ### <a name="Sssd--IdProvider"></a>`Sssd::IdProvider`
 
@@ -4619,8 +4948,21 @@ List of valid setting for ldap provider ldap_tls_reqcert.
 
 Alias of `Enum['never', 'allow', 'try', 'demand', 'hard']`
 
+### <a name="Sssd--Service"></a>`Sssd::Service`
+
+An SSSD responder service
+
+Alias of `Enum['nss', 'pam', 'sudo', 'autofs', 'ssh', 'pac', 'ifp']`
+
 ### <a name="Sssd--Services"></a>`Sssd::Services`
 
 List of available sssd services
 
-Alias of `Array[Enum['nss','pam','sudo','autofs','ssh','pac','ifp']]`
+Alias of `Array[Sssd::Service]`
+
+### <a name="Sssd--SimpleAccessList"></a>`Sssd::SimpleAccessList`
+
+A `simple` access provider list: the names, or `absent` to remove
+the setting
+
+Alias of `Variant[Array[Sssd::IniListItem], Enum['absent']]`

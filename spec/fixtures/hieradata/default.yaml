@@ -1,5 +1,4 @@
 ---
-sssd::domains: ['example.domain']
 simp_options::ldap::uri:
   - 'ldap://test.example.domain'
 simp_options::ldap::base_dn: 'dc=example,dc=domain'

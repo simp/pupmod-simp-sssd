@@ -3,6 +3,9 @@ require 'spec_helper_acceptance'
 test_name 'sssd::domain simple access provider parameters'
 
 describe 'sssd::domain with access_provider => simple' do
+  require_relative('lib/util')
+  include SssdTestUtil
+
   let(:hiera) do
     {
       'simp_options::pki'           => true,
@@ -13,7 +16,7 @@ describe 'sssd::domain with access_provider => simple' do
       'simp_options::ldap::bind_pw' => '<PASSWORD>',
       # This causes a lot of noise and reboots
       'sssd::auditd'                => false,
-      'sssd::domains'               => ['LDAP'],
+      'sssd::domains_entries'       => { 'LDAP' => {} },
     }
   end
 
@@ -50,7 +53,8 @@ describe 'sssd::domain with access_provider => simple' do
       let(:domain_conf) { '/etc/sssd/conf.d/50_puppet_domain_LDAP.conf' }
 
       it 'applies with no errors' do
-        set_hieradata_on(host, hiera)
+        with_compliance_engine(host)
+        set_hieradata_on(host, hiera.merge(SssdTestUtil::SIMP_DEFAULTS))
         apply_manifest_on(host, manifest, catch_failures: true)
       end
 

@@ -1,0 +1,2 @@
+---
+sssd::config::sssd_config_dir_mode: 'go-rw'

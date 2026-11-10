@@ -1,8 +1,12 @@
-# This class sets up the [autofs] section of /etc/sssd.conf.
+# This class sets up the [autofs] section of /etc/sssd/sssd.conf.
 #
 # The class parameters map directly to SSSD configuration.  Full
 # documentation of these configuration options can be found in the
 # sssd.conf(5) man page.
+#
+# Each parameter that maps to a setting follows three states: `undef` (the
+# default) leaves the setting alone, a value sets it, and `'absent'` removes
+# it.  The class manages nothing until one of them is set.
 #
 # @param description
 # @param debug_level
@@ -11,64 +15,35 @@
 # @param autofs_negative_timeout
 #
 # @param custom_options
-#   If defined, this hash will be used to create the service
-#   section instead of the parameters.  You must provide all options
-#   in the section you want to add.  Each entry in the hash will be
-#   added as a simple init pair key = value under the section in
-#   the generated `/etc/sssd/conf.d/` drop-in file.
+#   If defined, these settings are managed in the section *instead of* the
+#   ones from the other parameters, which are then ignored.  Each entry is
+#   edited in place as `key = value` in the generated `/etc/sssd/conf.d/`
+#   drop-in file; a value of `'absent'` removes that setting.
 #   No error checking will be performed.
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::service::autofs (
-  Optional[String]            $description              = undef,
-  Optional[Sssd::DebugLevel]  $debug_level              = undef,
-  Boolean                     $debug_timestamps         = true,
-  Boolean                     $debug_microseconds       = false,
-  Optional[Integer]           $autofs_negative_timeout  = undef,
-  Optional[Hash]              $custom_options           = undef,
+  Optional[String]                                    $description             = undef,
+  Optional[Variant[Sssd::DebugLevel, Enum['absent']]] $debug_level             = undef,
+  Optional[Variant[Boolean, Enum['absent']]]          $debug_timestamps        = undef,
+  Optional[Variant[Boolean, Enum['absent']]]          $debug_microseconds      = undef,
+  Optional[Variant[Integer, Enum['absent']]]          $autofs_negative_timeout = undef,
+  Optional[Hash]                                      $custom_options          = undef,
 ) {
-  if $custom_options {
-    $_content = epp(
-      "${module_name}/service/custom_options.epp",
-      {
-        'service_name' => 'autofs',
-        'options'      => $custom_options,
-      },
-    )
-  } else {
-    # Build configuration lines in order (matching expected test output)
-    # Debug settings
-    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
-    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
-    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
-    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
-
-    # AutoFS-specific settings
-    $autofs_negative_timeout_line = $autofs_negative_timeout ? { undef => [], default => ["autofs_negative_timeout = ${autofs_negative_timeout}"] }
-
-    # Combine all lines in order
-    $config_lines = (
-      $description_line +
-      $debug_level_line +
-      $debug_timestamps_line +
-      $debug_microseconds_line +
-      $autofs_negative_timeout_line
-    )
-
-    # Join all configuration lines
-    $content = (['# sssd::service::autofs'] + $config_lines).join("\n")
-
-    $_content = epp(
-      "${module_name}/generic.epp",
-      {
-        'title'   => 'autofs',
-        'content' => $content,
-      },
-    )
+  $_settings = $custom_options ? {
+    undef   => {
+      'description'             => $description,
+      'debug_level'             => $debug_level,
+      'debug_timestamps'        => $debug_timestamps,
+      'debug_microseconds'      => $debug_microseconds,
+      'autofs_negative_timeout' => $autofs_negative_timeout,
+    },
+    default => $custom_options,
   }
 
   sssd::config::entry { 'puppet_service_autofs':
-    content => $_content,
+    section  => 'autofs',
+    settings => $_settings,
   }
 }

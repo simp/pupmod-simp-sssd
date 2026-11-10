@@ -3,6 +3,9 @@ require 'spec_helper_acceptance'
 test_name 'Setup SSSD clients to talk to LDAP'
 
 describe '389ds' do
+  require_relative('../default/lib/util')
+  include SssdTestUtil
+
   ldap_servers = hosts_with_role(hosts, 'ldap')
   clients = hosts_with_role(hosts, 'client')
   raise 'No hosts with role "ldap" found in the nodeset' if ldap_servers.empty?
@@ -60,13 +63,15 @@ describe '389ds' do
         let(:domain) { fact_on(server, 'networking.domain') }
         let(:fqdn) { fact_on(client, 'networking.fqdn') }
 
-        # sssd::enable_files_domain is deliberately not pinned here: the module
-        # sets it per release, and SSSD 2.10 rejects the option outright.
+        # sssd::enable_files_domain is deliberately not pinned here: the
+        # simp:defaults profile sets it per release, and SSSD 2.10 rejects the
+        # option outright.
         let(:client_hieradata) do
           ERB.new(File.read(File.expand_path('templates/ds389_hiera.yaml.erb', File.dirname(__FILE__)))).result(binding)
         end
 
         it 'runs puppet' do
+          with_compliance_engine(client)
           set_hieradata_on(client, client_hieradata)
           apply_manifest_on(client, client_manifest, catch_failures: true)
         end

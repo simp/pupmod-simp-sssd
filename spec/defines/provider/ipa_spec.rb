@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../../lib/sssd_spec_helpers'
 
 describe 'sssd::provider::ipa' do
   context 'supported operating systems' do
@@ -19,7 +20,6 @@ describe 'sssd::provider::ipa' do
           it {
             expected = <<~EXPECTED
               [domain/#{title}]
-              # sssd::provider::ipa
               ipa_domain = #{facts[:networking][:domain]}
               ipa_server = _srv_,ipaserver.#{facts[:networking][:domain]}
               ipa_enable_dns_sites = false
@@ -32,7 +32,7 @@ describe 'sssd::provider::ipa' do
               ldap_tls_cipher_suite = HIGH:-SSLv2
             EXPECTED
 
-            is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ipa").with_content(expected)
+            expect(entry_content("puppet_provider_#{title}_ipa")).to content_matching(expected)
           }
         end
 
@@ -77,7 +77,6 @@ describe 'sssd::provider::ipa' do
           it {
             expected = <<~EXPECTED
               [domain/#{title}]
-              # sssd::provider::ipa
               ipa_domain = #{facts[:networking][:domain]}
               ipa_server = ipaserver1.#{facts[:networking][:domain]}
               ipa_backup_server = ipaserver2.#{facts[:networking][:domain]}
@@ -108,7 +107,7 @@ describe 'sssd::provider::ipa' do
               ldap_tls_cipher_suite = HIGH
             EXPECTED
 
-            is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ipa").with_content(expected)
+            expect(entry_content("puppet_provider_#{title}_ipa")).to content_matching(expected)
           }
         end
       end

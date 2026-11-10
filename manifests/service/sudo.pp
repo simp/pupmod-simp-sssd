@@ -1,8 +1,12 @@
-# This class sets up the [sudo] section of /etc/sssd.conf.
+# This class sets up the [sudo] section of /etc/sssd/sssd.conf.
 #
 # The class parameters map directly to SSSD configuration.  Full
 # documentation of these configuration options can be found in the
 # sssd.conf(5) man page.
+#
+# Each parameter that maps to a setting follows three states: `undef` (the
+# default) leaves the setting alone, a value sets it, and `'absent'` removes
+# it.  The class manages nothing until one of them is set.
 #
 # @param description
 # @param debug_level
@@ -12,73 +16,58 @@
 # @param sudo_timed
 #
 # @param custom_options
-#   If defined, this hash will be used to create the service
-#   section instead of the parameters.  You must provide all options
-#   in the section you want to add.  Each entry in the hash will be
-#   added as a simple init pair
-#   key = value
-#   under the section in the generated `/etc/sssd/conf.d/` drop-in file.
+#   If defined, these settings are managed in the section *instead of* the
+#   ones from the other parameters, which are then ignored.  Each entry is
+#   edited in place as `key = value` in the generated `/etc/sssd/conf.d/`
+#   drop-in file; a value of `'absent'` removes that setting.
 #   No error checking will be performed.
 #
 # @param manage_group_dropin_file
-#   If true, a systemd drop-in file will be created to ensure the sssd-sudo service runs as root.
+#   Manage a systemd drop-in file that runs the sssd-sudo service as root
+#
+#   * `true` creates it, `false` removes it, and `undef` leaves it alone.
+#   * Needed on EL8 and EL9, where the `simp:defaults` profile turns it on.
+#   * `true` is ignored while sudo is turned off; see `socket_enable`.
+#
+# @param socket_enable
+#   The `enable` state of the `sssd-sudo.socket` unit, which starts the sudo
+#   responder
+#
+#   * Unset, the socket is not managed.
+#   * `true` is ignored while sudo is turned off: when `sudo` is `absent` in
+#     `sssd::services_entries`, or the deprecated `sssd::services` is set
+#     without it.  `false` is always applied.
+#   * While this enables the socket, `sudo` is removed from the `services`
+#     line, because the socket refuses to start while it is listed.
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::service::sudo (
-  Optional[String]            $description        = undef,
-  Optional[Sssd::Debuglevel]  $debug_level        = undef,
-  Boolean                     $debug_timestamps   = true,
-  Boolean                     $debug_microseconds = false,
-  Boolean                     $sudo_timed         = false,
-  Integer[1]                  $sudo_threshold     = 50,
-  Optional[Hash]              $custom_options     = undef,
-  Boolean                     $manage_group_dropin_file, # In data
+  Optional[String]                                    $description              = undef,
+  Optional[Variant[Sssd::DebugLevel, Enum['absent']]] $debug_level              = undef,
+  Optional[Variant[Boolean, Enum['absent']]]          $debug_timestamps         = undef,
+  Optional[Variant[Boolean, Enum['absent']]]          $debug_microseconds       = undef,
+  Optional[Variant[Boolean, Enum['absent']]]          $sudo_timed               = undef,
+  Optional[Variant[Integer[1], Enum['absent']]]       $sudo_threshold           = undef,
+  Optional[Hash]                                      $custom_options           = undef,
+  Optional[Boolean]                                   $manage_group_dropin_file = undef,
+  Optional[Boolean]                                   $socket_enable            = undef,
 ) {
-  if $custom_options {
-    $_content = epp(
-      "${module_name}/service/custom_options.epp",
-      {
-        'service_name' => 'sudo',
-        'options'      => $custom_options,
-      },
-    )
-  } else {
-    # Build configuration lines in order (matching expected test output)
-    # Debug settings
-    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
-    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
-    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
-    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
-
-    # Sudo-specific settings
-    $sudo_threshold_line = ["sudo_threshold = ${sudo_threshold}"]
-    $sudo_timed_line = ["sudo_timed = ${sudo_timed}"]
-
-    # Combine all lines in order
-    $config_lines = (
-      $description_line +
-      $debug_level_line +
-      $debug_timestamps_line +
-      $debug_microseconds_line +
-      $sudo_threshold_line +
-      $sudo_timed_line
-    )
-
-    # Join all configuration lines
-    $content = (['# sssd::service::sudo'] + $config_lines).join("\n")
-
-    $_content = epp(
-      "${module_name}/generic.epp",
-      {
-        'title'   => 'sudo',
-        'content' => $content,
-      },
-    )
+  $_settings = $custom_options ? {
+    undef   => {
+      'description'        => $description,
+      'debug_level'        => $debug_level,
+      'debug_timestamps'   => $debug_timestamps,
+      'debug_microseconds' => $debug_microseconds,
+      'sudo_threshold'     => $sudo_threshold,
+      'sudo_timed'         => $sudo_timed,
+    },
+    default => $custom_options,
   }
 
   sssd::config::entry { 'puppet_service_sudo':
-    content => $_content,
+    section  => 'sudo',
+    settings => $_settings,
   }
 
   $_override_content = @(END)
@@ -91,22 +80,38 @@ class sssd::service::sudo (
     Group=root
     | END
 
-  if $manage_group_dropin_file {
+  # sudo is turned off when the services list says so, so that enforcing
+  # simp:defaults doesn't start a responder a site dropped from its list.
+  include 'sssd'
+  $_sudo_on = sssd::sudo_on($sssd::services_entries, $sssd::services)
+
+  $_dropin = $_sudo_on ? {
+    true    => $manage_group_dropin_file,
+    default => $manage_group_dropin_file ? { true => undef, default => $manage_group_dropin_file },
+  }
+  $_socket = $_sudo_on ? {
+    true    => $socket_enable,
+    default => $socket_enable ? { true => undef, default => $socket_enable },
+  }
+
+  if $_dropin =~ NotUndef {
     systemd::dropin_file { '00_sssd_sudo_user_group.conf':
-      ensure                  => 'present',
+      ensure                  => $_dropin.bool2str('present', 'absent'),
       unit                    => 'sssd-sudo.service',
       content                 => $_override_content,
       selinux_ignore_defaults => true,
     }
-
-    Systemd::Dropin_file['00_sssd_sudo_user_group.conf'] -> Service['sssd-sudo.socket']
   }
 
-  service { 'sssd-sudo.socket':
-    enable  => true,
-    require => [
-      Sssd::Config::Entry['puppet_service_sudo'],
-    ],
-    notify  => Class["${module_name}::service"],
+  if $_socket =~ NotUndef {
+    service { 'sssd-sudo.socket':
+      enable  => $_socket,
+      require => [Package['sssd'], Sssd::Config::Entry['puppet_service_sudo']],
+      notify  => Class["${module_name}::service"],
+    }
+
+    if $_dropin {
+      Systemd::Dropin_file['00_sssd_sudo_user_group.conf'] -> Service['sssd-sudo.socket']
+    }
   }
 }

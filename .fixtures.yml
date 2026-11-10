@@ -5,7 +5,13 @@ fixtures:
     augeas_core: https://github.com/puppetlabs/puppetlabs-augeas_core.git
     augeasproviders_core: https://github.com/simp/augeasproviders_core.git
     augeasproviders_grub: https://github.com/simp/augeasproviders_grub.git
+    # Only needed so spec tests can resolve `compliance_engine::enforcement`
+    # for the `simp:defaults` profile. NOT a module dependency (see metadata.json).
+    compliance_engine:
+      repo: https://github.com/simp/rubygem-simp-compliance_engine.git
+      ref: '1.0.0'
     concat: https://github.com/simp/puppetlabs-concat.git
+    inifile: https://github.com/simp/puppetlabs-inifile.git
     logrotate: https://github.com/simp/pupmod-simp-logrotate.git
     pki: https://github.com/simp/pupmod-simp-pki.git
     rsyslog: https://github.com/simp/pupmod-simp-rsyslog.git

@@ -1,73 +1,50 @@
-# This class sets up the [pac] section of /etc/sssd.conf.
+# This class sets up the [pac] section of /etc/sssd/sssd.conf.
 #
 # The class parameters map directly to SSSD configuration.  Full
 # documentation of these configuration options can be found in the
 # sssd.conf(5) man page.
+#
+# Each parameter that maps to a setting follows three states: `undef` (the
+# default) leaves the setting alone, a value sets it, and `'absent'` removes
+# it.  The class manages nothing until one of them is set.
 #
 # @param description
 # @param debug_level
 # @param debug_timestamps
 # @param debug_microseconds
 # @param allowed_uids
+#   An empty Array is treated as `undef`.
 #
 # @param custom_options
-#   If defined, this hash will be used to create the service
-#   section instead of the parameters.  You must provide all options
-#   in the section you want to add.  Each entry in the hash will be
-#   added as a simple init pair key = value under the section in
-#   the generated `/etc/sssd/conf.d/` drop-in file.
+#   If defined, these settings are managed in the section *instead of* the
+#   ones from the other parameters, which are then ignored.  Each entry is
+#   edited in place as `key = value` in the generated `/etc/sssd/conf.d/`
+#   drop-in file; a value of `'absent'` removes that setting.
 #   No error checking will be performed.
+#
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
 class sssd::service::pac (
-  Optional[String]             $description        = undef,
-  Optional[Sssd::DebugLevel]   $debug_level        = undef,
-  Boolean                      $debug_timestamps   = true,
-  Boolean                      $debug_microseconds = false,
-  Array[String]                $allowed_uids       = [],
-  Optional[Hash]               $custom_options     = undef,
+  Optional[String]                                    $description        = undef,
+  Optional[Variant[Sssd::DebugLevel, Enum['absent']]] $debug_level        = undef,
+  Optional[Variant[Boolean, Enum['absent']]]          $debug_timestamps   = undef,
+  Optional[Variant[Boolean, Enum['absent']]]          $debug_microseconds = undef,
+  Optional[Variant[Array[String], Enum['absent']]]    $allowed_uids       = undef,
+  Optional[Hash]                                      $custom_options     = undef,
 ) {
-  if $custom_options {
-    $_content = epp(
-      "${module_name}/service/custom_options.epp",
-      {
-        'service_name' => 'pac',
-        'options'      => $custom_options,
-      },
-    )
-  } else {
-    # Build configuration lines in order (matching expected test output)
-    # Debug settings
-    $description_line = $description ? { undef => [], default => ["description = ${description}"] }
-    $debug_level_line = $debug_level ? { undef => [], default => ["debug_level = ${debug_level}"] }
-    $debug_timestamps_line = ["debug_timestamps = ${debug_timestamps}"]
-    $debug_microseconds_line = ["debug_microseconds = ${debug_microseconds}"]
-
-    # PAC-specific settings
-    $allowed_uids_line = $allowed_uids.empty ? { true => [], false => ["allowed_uids = ${allowed_uids.join(',')}"] }
-
-    # Combine all lines in order
-    $config_lines = (
-      $description_line +
-      $debug_level_line +
-      $debug_timestamps_line +
-      $debug_microseconds_line +
-      $allowed_uids_line
-    )
-
-    # Join all configuration lines
-    $content = (['# sssd::service::pac'] + $config_lines).join("\n")
-
-    $_content = epp(
-      "${module_name}/generic.epp",
-      {
-        'title'   => 'pac',
-        'content' => $content,
-      },
-    )
+  $_settings = $custom_options ? {
+    undef   => {
+      'description'        => $description,
+      'debug_level'        => $debug_level,
+      'debug_timestamps'   => $debug_timestamps,
+      'debug_microseconds' => $debug_microseconds,
+      'allowed_uids'       => $allowed_uids ? { Array[String, 1] => $allowed_uids.join(','), Array => undef, default => $allowed_uids },
+    },
+    default => $custom_options,
   }
 
   sssd::config::entry { 'puppet_service_pac':
-    content => $_content,
+    section  => 'pac',
+    settings => $_settings,
   }
 }

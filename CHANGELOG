@@ -1,3 +1,64 @@
+* Mon Nov 09 2026 Mike Riddle <mike@sicura.us> - 11.0.0
+- BREAKING: A bare `include sssd` now installs the SSSD packages and does
+  nothing else.  It no longer writes sssd.conf or any conf.d snippet, lists
+  services, manages the sssd service or sssd-sudo.socket, manages the
+  /etc/sssd directory modes, deletes stale `*_puppet_*.conf` snippets,
+  declares the EL10 LOCAL domain, configures an IPA domain, adds the EL8/9
+  sssd-sudo drop-in, or writes the EL8/9-only sssd.conf settings.  Enforce
+  the new `simp:defaults` profile, or set the parameters, to restore them.
+- Add the `simp:defaults` compliance_engine profile, which restores the
+  behavior of earlier releases.  Activate it with Hiera
+  `compliance_engine::enforcement: ['simp:defaults']`.
+- BREAKING: Every section is edited one setting at a time with
+  `ini_setting`, and the `services` and `domains` lists one entry at a time,
+  instead of being rendered as whole files.  Settings and list entries the
+  module isn't asked to manage are left alone.  Adds a dependency on
+  puppetlabs/inifile.
+- BREAKING: The `[sssd]` and `sssd::service::*` parameters default to
+  `undef`, which leaves the setting alone; `'absent'` removes it.
+- BREAKING: `sssd::service::ensure` and `enable` default to `undef`; the
+  service is only managed when one is set.
+- BREAKING: `sssd::auto_add_ipa_domain` and
+  `sssd::config::manage_base_domain` default to `false`, and
+  `sssd::config::sssd_config_dir_mode` to `undef`.  `sssd::domains` no
+  longer lists `LOCAL` by default; list it in `sssd::domains_entries`.
+- BREAKING: `sssd::service::sudo::manage_group_dropin_file` defaults to
+  `undef`, and `false` now removes the drop-in.
+- BREAKING: `sssd::service::pam::pam_cert_auth => false` writes
+  `pam_cert_auth = False` instead of leaving the setting out.
+- BREAKING: `sssd::custom_config` is written to
+  /etc/sssd/conf.d/99999_puppet_custom_raw.conf, and `'absent'` removes it.
+  `sssd::custom_settings` values may be `'absent'`.
+- Add `sssd::services_entries` and `sssd::domains_entries`, which add or
+  remove (`ensure: absent`) one list entry at a time.  Deprecate
+  `sssd::services` and `sssd::domains`, which now default to `undef`; while
+  one is set, even to `[]`, it is used instead of its Hash.  An entry
+  dropped from the Array is no longer removed from the line; use a `--`
+  entry or `ensure: absent`.
+- BREAKING: Every `sssd::service::*` class is included whether or not the
+  responder is listed, so a responder setting takes effect on its own.
+  `sssd::service::sudo::socket_enable` and `manage_group_dropin_file` are
+  only turned on while sudo is not removed from the services list.
+- While `sssd::service::sudo::socket_enable` enables sssd-sudo.socket,
+  `sudo` is removed from the `services` line, since the socket won't start
+  while it is listed.  `sudo` in the deprecated `sssd::services` is never
+  listed, as before.
+- BREAKING: List entries are matched exactly, including case, and entries
+  already on a line keep their place; new entries are inserted in the
+  declared order.
+- BREAKING: Because every `sssd::service::*` class is included, a
+  resource-like declaration of one after `include sssd` fails as a
+  duplicate; use Hiera, or declare it first.
+- `sssd::domain`'s `simple_allow_*` and `simple_deny_*` accept `'absent'`,
+  which removes the setting.
+- Add `sssd::tidy_puppet_snippets` (destructive, default `false`) to delete
+  unmanaged `*_puppet_*.conf` snippets, and
+  `sssd::service::sudo::socket_enable` to manage sssd-sudo.socket.
+- A `custom_options` value of `'absent'` removes that setting, on
+  `sssd::domain` and the `sssd::service::*` classes.
+- Apply `sssd::config::sssd_config_file_params` to every file the module
+  edits, since SSSD rejects files with looser permissions.
+
 * Thu Oct 08 2026 Steven Pritchard <steve@sicura.us> - 10.5.0
 - Add support for OpenVox 9
 - Update metadata.json dependency ranges from the Forge

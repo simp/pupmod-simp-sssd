@@ -3,6 +3,9 @@ require 'spec_helper_acceptance'
 test_name 'SSSD connecting to an AD'
 
 describe 'sssd class' do
+  require_relative('../default/lib/util')
+  include SssdTestUtil
+
   let(:clients) { hosts_with_role(hosts, 'client') }
   let(:ad) { hosts_with_role(hosts, 'ad').first }
   let(:domain_pass) { '@dm1n=P@ssw0r' }
@@ -59,6 +62,7 @@ describe 'sssd class' do
   let(:hieradata) do
     <<~EOM
       ---
+      compliance_engine::enforcement: ['simp:defaults']
       simp_options::sssd: true
       simp_options::pki: true
       simp_options::pki::source: '/etc/pki/simp-testing/pki'
@@ -116,13 +120,13 @@ describe 'sssd class' do
         # version of realmd.)
         hieradata + <<~EOM
           simp_options::dns::servers: ["#{ad_ip}"]
-          sssd::domains: []
         EOM
       end
 
       let(:manifest) { v2_manifest }
 
       it 'runs puppet without error configure basic SSSD' do
+        with_compliance_engine(host)
         set_hieradata_on(host, client_hiera)
         apply_manifest_on(host, manifest, catch_failures: true)
       end
@@ -150,12 +154,13 @@ describe 'sssd class' do
     clients.each do |host|
       let(:manifest) { v2_manifest }
 
-      it 'updates sssd::domains in hiera' do
+      it 'updates sssd::domains_entries in hiera' do
         # you can't have the domain in sssd before joing the realm or it
         # errors out so add it n here.
         client_hiera = hieradata + <<~EOM
           simp_options::dns::servers:    ["#{ad_ip}"]
-          sssd::domains: ['AD']
+          sssd::domains_entries:
+            AD: {}
         EOM
 
         set_hieradata_on(host, client_hiera)

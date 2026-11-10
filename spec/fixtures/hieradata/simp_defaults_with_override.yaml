@@ -1,0 +1,9 @@
+---
+compliance_engine::enforcement:
+  - simp:defaults
+# Site Hiera outranks the profile: turn off its destructive tidy, and drop one
+# of its services without restating the others.
+sssd::tidy_puppet_snippets: false
+sssd::services_entries:
+  ssh:
+    ensure: absent

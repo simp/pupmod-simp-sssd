@@ -14,24 +14,24 @@ describe 'sssd::service' do
 
         it { is_expected.to compile.with_all_deps }
         it { is_expected.to create_class('sssd::service') }
-        it {
-          is_expected.to contain_service('sssd')
-            .with_ensure(true)
-            .with_enable(true)
-        }
 
-        context 'with an unsupported version of sssd' do
-          let(:facts) do
-            os_facts.merge(sssd_version: '1.14.0')
-          end
+        # The service is only managed when a site asks for it.
+        it { is_expected.not_to contain_service('sssd') }
 
-          it { is_expected.to compile.with_all_deps }
-          it { is_expected.to create_class('sssd::service') }
+        context 'with ensure and enable set' do
+          let(:params) { { ensure: 'running', enable: true } }
+
           it {
             is_expected.to contain_service('sssd')
-              .with_ensure(false)
-              .with_enable(false)
+              .with_ensure('running')
+              .with_enable(true)
           }
+        end
+
+        context 'with only enable set' do
+          let(:params) { { enable: true } }
+
+          it { is_expected.to contain_service('sssd').with_enable(true).without_ensure }
         end
       end
     end

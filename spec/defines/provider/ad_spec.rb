@@ -1,4 +1,5 @@
 require 'spec_helper'
+require_relative '../../lib/sssd_spec_helpers'
 
 describe 'sssd::provider::ad' do
   on_supported_os.each do |os, os_facts|
@@ -12,14 +13,13 @@ describe 'sssd::provider::ad' do
         it do
           expected = <<~EXPECTED
             [domain/#{title}]
-            # sssd::provider::ad
             dyndns_update = true
             krb5_store_password_if_offline = false
             ldap_id_mapping = true
             ldap_use_tokengroups = true
           EXPECTED
 
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ad").with_content(expected)
+          expect(entry_content("puppet_provider_#{title}_ad")).to content_matching(expected)
         end
       end
 
@@ -42,14 +42,13 @@ describe 'sssd::provider::ad' do
         it do
           expected = <<~EXPECTED
             [domain/#{title}]
-            # sssd::provider::ad
             dyndns_update = false
             krb5_store_password_if_offline = false
             ldap_id_mapping = true
             ldap_use_tokengroups = true
           EXPECTED
 
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ad").with_content(expected)
+          expect(entry_content("puppet_provider_#{title}_ad")).to content_matching(expected)
         end
       end
 
@@ -113,7 +112,6 @@ describe 'sssd::provider::ad' do
         it do
           expected = <<~EXPECTED
             [domain/#{title}]
-            # sssd::provider::ad
             ad_domain = my_ad_domain
             ad_enabled_domains = enabled_domain1, enabled_domain2
             ad_server = server1.example.domain, server2.example.domain
@@ -167,7 +165,7 @@ describe 'sssd::provider::ad' do
             ldap_user_ssh_public_key = altSecurityIdentities
           EXPECTED
 
-          is_expected.to create_sssd__config__entry("puppet_provider_#{title}_ad").with_content(expected)
+          expect(entry_content("puppet_provider_#{title}_ad")).to content_matching(expected)
         end
       end
     end
