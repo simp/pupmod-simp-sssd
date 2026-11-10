@@ -1599,6 +1599,9 @@ Manage a systemd drop-in file that runs the sssd-sudo service as root
 
 * `true` creates it, `false` removes it, and `undef` leaves it alone.
 * Needed on EL8 and EL9, where the `simp:defaults` profile turns it on.
+* Unset, it is still created on EL8 and EL9 while `sudo` in the
+  deprecated `sssd::services` Array enables the socket (see
+  `socket_enable`), as 10.x did.
 * `true` is ignored while sudo is turned off; see `socket_enable`.
 
 Default value: `undef`

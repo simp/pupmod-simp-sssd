@@ -42,8 +42,9 @@
 - While `sssd::service::sudo::socket_enable` enables sssd-sudo.socket,
   `sudo` is removed from the `services` line, since the socket won't start
   while it is listed.  `sudo` in the deprecated `sssd::services` is never
-  listed, and enables sssd-sudo.socket unless
-  `sssd::service::sudo::socket_enable` is set, as before.
+  listed, and enables sssd-sudo.socket (and, on EL8/9, the sssd-sudo
+  drop-in) unless `sssd::service::sudo::socket_enable` (or
+  `manage_group_dropin_file`) is set, as before.
 - BREAKING: List entries are matched exactly, including case, and entries
   already on a line keep their place; new entries are inserted in the
   declared order.

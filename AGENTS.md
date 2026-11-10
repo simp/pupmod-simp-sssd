@@ -145,7 +145,8 @@ alone, `'absent'` removes it, anything else writes it.
   (`socket_enable`), each only when set; `true` is ignored while sudo is
   turned off in the services list (`absent`, or a legacy Array without it).
   `sudo` in the legacy Array enables the socket while `socket_enable` is
-  unset, as 10.x did, so a newly built node still gets a responder.
+  unset, and on EL8/9 the drop-in while `manage_group_dropin_file` is unset,
+  as 10.x did, so a newly built node still gets a working responder.
 
 - **`sssd::pki` (`manifests/pki.pp`, `assert_private` at :26)** — when
   `$sssd::pki` is truthy, `pki::copy { 'sssd' }` copies certs from

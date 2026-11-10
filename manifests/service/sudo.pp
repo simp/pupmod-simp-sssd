@@ -27,6 +27,9 @@
 #
 #   * `true` creates it, `false` removes it, and `undef` leaves it alone.
 #   * Needed on EL8 and EL9, where the `simp:defaults` profile turns it on.
+#   * Unset, it is still created on EL8 and EL9 while `sudo` in the
+#     deprecated `sssd::services` Array enables the socket (see
+#     `socket_enable`), as 10.x did.
 #   * `true` is ignored while sudo is turned off; see `socket_enable`.
 #
 # @param socket_enable
@@ -89,16 +92,23 @@ class sssd::service::sudo (
   # sudo in the deprecated services Array keeps its 10.x meaning: the
   # responder is socket-activated, so the socket is enabled unless
   # socket_enable says otherwise.  sssd::config leaves it off the services
-  # line.
+  # line.  On EL8/9 the responder can't start without the drop-in, which
+  # 10.x also wrote there, so it is implied with the socket.
   $_legacy_sudo = $sssd::services =~ NotUndef and 'sudo' in $sssd::services
   $_socket_enable = ($socket_enable =~ Undef and $_legacy_sudo) ? {
     true    => true,
     default => $socket_enable,
   }
+  $_needs_dropin = Integer($facts['os']['release']['major']) < 10
+  $_dropin_file = ($manage_group_dropin_file =~ Undef and $_legacy_sudo
+    and $_socket_enable == true and $_needs_dropin) ? {
+    true    => true,
+    default => $manage_group_dropin_file,
+  }
 
   $_dropin = $_sudo_on ? {
-    true    => $manage_group_dropin_file,
-    default => $manage_group_dropin_file ? { true => undef, default => $manage_group_dropin_file },
+    true    => $_dropin_file,
+    default => $_dropin_file ? { true => undef, default => $_dropin_file },
   }
   $_socket = $_sudo_on ? {
     true    => $_socket_enable,

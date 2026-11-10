@@ -141,12 +141,28 @@ describe 'sssd::service::sudo' do
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to create_service('sssd-sudo.socket').with_enable(true) }
           it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
-          it { is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf') }
+
+          # The responder can't start without the drop-in on EL8/9, which
+          # 10.x also wrote there.
+          if os_facts[:os][:release][:major].to_i < 10
+            it { is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf').with_ensure('present') }
+            it { is_expected.to create_service('sssd-sudo.socket').that_requires('Systemd::Dropin_file[00_sssd_sudo_user_group.conf]') }
+          else
+            it { is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf') }
+          end
 
           context 'and socket_enable disabled' do
             let(:params) { { socket_enable: false } }
 
             it { is_expected.to create_service('sssd-sudo.socket').with_enable(false) }
+            it { is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf') }
+          end
+
+          context 'and manage_group_dropin_file disabled' do
+            let(:params) { { manage_group_dropin_file: false } }
+
+            it { is_expected.to create_service('sssd-sudo.socket').with_enable(true) }
+            it { is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf').with_ensure('absent') }
           end
         end
 

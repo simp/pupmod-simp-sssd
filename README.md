@@ -109,7 +109,9 @@ sssd::domains_entries:
 The deprecated `sssd::services` also keeps its 10.x meaning for `sudo`: listing
 it there means the responder is socket-activated, so `sudo` is removed from
 the `services` line rather than added, and `sssd-sudo.socket` is enabled
-unless `sssd::service::sudo::socket_enable` is set otherwise.
+unless `sssd::service::sudo::socket_enable` is set otherwise. On EL8/9, the
+`sssd-sudo.service` drop-in the responder needs there is also written unless
+`sssd::service::sudo::manage_group_dropin_file` is set.
 
 The lines are edited one entry at a time, which has two other effects:
 

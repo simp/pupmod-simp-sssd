@@ -231,7 +231,7 @@ describe 'sssd class' do
         on(client, 'systemctl disable --now sssd-sudo.socket sssd-sudo.service')
         on(client, 'systemctl stop sssd')
         on(client, 'rm -rf /etc/sssd/sssd.conf /etc/sssd/conf.d/* /etc/systemd/system/sssd-sudo.service.d')
-        on(client, 'systemctl daemon-reload')
+        on(client, 'systemctl daemon-reload && systemctl reset-failed')
       end
 
       it 'applies with no errors' do
@@ -247,10 +247,20 @@ describe 'sssd class' do
         expect(on(client, 'cat /etc/sssd/sssd.conf').stdout).to match(%r{^services = nss,pam,ssh$})
       end
 
-      it 'starts a sudo responder' do
+      it 'enables and starts the sudo socket' do
         on(client, 'systemctl is-enabled sssd-sudo.socket')
         on(client, 'systemctl start sssd-sudo.socket && systemctl is-active sssd-sudo.socket')
         on(client, 'test -S /var/lib/sss/pipes/sudo')
+      end
+
+      # Connecting starts sssd-sudo.service, which fails on EL8/9 without
+      # the drop-in.
+      it 'starts the sudo responder on a connection' do
+        # EL8 has no python3 by default, only platform-python.
+        python = '$(command -v python3 || echo /usr/libexec/platform-python)'
+        on(client, %(#{python} -c "import socket; socket.socket(socket.AF_UNIX).connect('/var/lib/sss/pipes/sudo')"))
+        retry_on(client, 'systemctl is-active sssd-sudo.service', max_retries: 10, retry_interval: 1)
+        on(client, 'pgrep -x sssd_sudo')
       end
     end
   end
