@@ -92,8 +92,24 @@ The `services` and `domains` lists are edited one entry at a time through the
 new `sssd::services_entries` and `sssd::domains_entries` Hashes, merged with
 `deep`, so one Hiera layer can add or remove an entry (`ensure: absent`)
 without restating the rest. The `sssd::services` and `sssd::domains` Arrays
-are deprecated; while one is set it is used instead of its Hash, as it
-replaced the module's default list before.
+are deprecated; while one is set (even to `[]`) it is used instead of its
+Hash, as it replaced the module's default list before.
+
+Unlike 10.x, removing an entry from one of these Arrays no longer removes it
+from the line: the entry is just no longer managed, so a domain dropped this
+way stays listed, and active. Remove it explicitly instead, with a `--<name>`
+entry in `sssd::domains`, or by moving to the Hash and setting it `absent`:
+
+```yaml
+sssd::domains_entries:
+  OLD_DOMAIN:
+    ensure: absent
+```
+
+The module now edits `sssd.conf` alongside the other tools that write to it
+(such as `ipa-client-install` and `realm join`) rather than owning the whole
+file, so sections those tools add stay, even under the `simp:defaults`
+profile.
 
 Because nothing is rendered as a whole file any more, upgrading leaves every
 existing file in `/etc/sssd` in place, and a setting a later run stops
@@ -137,13 +153,18 @@ There are two ways to get the earlier behavior back.
    sssd::service::pam::offline_failed_login_attempts: 3
    ```
 
-A responder's section is only managed while it is listed in
-`sssd::services_entries` (or the deprecated `sssd::services`), as before.
+Every `sssd::service::*` class is included, listed or not, so a responder
+setting takes effect on its own; listing a responder in `services` is what
+starts it. `sssd::service::sudo::socket_enable` and `manage_group_dropin_file`
+are the exception: `true` is ignored while sudo is turned off in the services
+list (`sudo: {ensure: absent}`, or a deprecated `sssd::services` without it),
+so the profile doesn't start a responder a site dropped.
 
 ### Other changes
 
 * `sssd::custom_config` is written to its own file,
-  `/etc/sssd/conf.d/99999_puppet_custom_raw.conf`, which sorts after
+  `/etc/sssd/conf.d/99999_puppet_custom_raw.conf` (`'absent'` removes it),
+  which sorts after
   `99999_puppet_custom.conf` and so still wins over `sssd::custom_settings`.
   On a host upgraded from 10.x, `99999_puppet_custom.conf` keeps the raw
   content it was given before until you remove it, or until
@@ -155,6 +176,12 @@ A responder's section is only managed while it is listed in
   `pam_cert_auth = False`, rather than leaving the setting out.
 * `sssd::service::sudo::manage_group_dropin_file => false` now removes the
   drop-in; leave it `undef` to leave the drop-in alone.
+* A `sudo` entry in the services list removes `sudo` from the `services`
+  line, where tools such as `ipa-client-install` often put it, since
+  `sssd-sudo.socket` refuses to start while it is listed.
+* The `LOCAL` domain declared by `sssd::config::manage_base_domain` is no
+  longer listed automatically; list it in `sssd::domains_entries`, as the
+  `simp:defaults` profile does on EL10.
 * The `[domain/...]` sections written by `sssd::domain` and the
   `sssd::provider::*` defines are edited in place too, so a setting a
   declaration no longer passes is left alone rather than removed. Their
@@ -298,11 +325,13 @@ sssd::enable_files_domain: true
 ```
 
 SSSD 2.10 (EL10) removed it. There, declare a `LOCAL` proxy domain for the
-local files instead, which the module also lists in `domains`:
+local files instead, and list it in `domains`:
 
 ```yaml
 ---
 sssd::config::manage_base_domain: true
+sssd::domains_entries:
+  LOCAL: {}
 ```
 
 More information can be found in `sssd-files(5)` and `sssd-proxy(5)`.
@@ -442,9 +471,11 @@ The following services can be managed by `simp/sssd`.
 * sudo
 
 Adding a service to `sssd::services_entries` lists it in the `services`
-setting and includes its class, `sssd::service::`*\{service name\}*, which
-manages the settings whose parameters you set in hiera.  `sudo` is never
-listed in `services`, because its responder is started by `sssd-sudo.socket`.
+setting.  Each service's class, `sssd::service::`*\{service name\}*, is
+included whether or not it is listed, and manages the settings whose
+parameters you set in hiera.  `sudo` is never listed in `services`, and a
+`sudo` entry removes it from the line, because its responder is started by
+`sssd-sudo.socket`.
 
 ```yaml
   sssd::services_entries:

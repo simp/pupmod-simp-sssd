@@ -41,8 +41,9 @@ alone, `'absent'` removes it, anything else writes it.
     deep-merged) — the domain names to list in the `[sssd]` `domains =` line,
     each edited as its own `ini_subsetting`. Listing a domain does **not**
     create it; you still declare `sssd::domain` / `sssd::provider::*`
-    resources. `$domains` is the deprecated Array form; while it is set it is
-    used *instead of* the Hash (`functions/entries.pp`).
+    resources. `$domains` is the deprecated Array form (default `undef`);
+    while it is set, even to `[]`, it is used *instead of* the Hash
+    (`functions/entries.pp`).
   - `$services_entries` (`Hash[Sssd::Service, Sssd::EntryOptions]`, default
     `{}`, deep-merged) — the responder services; `$services` is its
     deprecated Array form, with the same precedence.
@@ -90,20 +91,22 @@ alone, `'absent'` removes it, anything else writes it.
   - **IPA auto-detection** (`config.pp`): if `$sssd::auto_add_ipa_domain`
     and the `ipa` fact is present, `include 'sssd::config::ipa_domain'` and merge
     `$facts['ipa']['domain']` into the computed domain list.
-  - **Responder loop** (`config.pp`): when `$sssd::include_svc_config`,
-    `include "sssd::service::${service}"` for each *present* service entry.
+  - **Responders** (`config.pp`): when `$sssd::include_svc_config`, all seven
+    `sssd::service::*` classes are included, listed or not, so a responder
+    setting enforced alone takes effect. Listing only decides what runs.
   - Manages `/etc/sssd` and `/etc/sssd/conf.d` only when
     `$sssd_config_dir_mode` is set (or `$authoritative`, which purges
     `conf.d`). `tidy` of stale `*_puppet_*.conf` only with
     `$sssd::tidy_puppet_snippets` (`config.pp`).
   - Declares an `sssd::config::entry` for `[sssd]` in `/etc/sssd/sssd.conf`,
-    and an `ini_subsetting` per `services`/`domains` entry. Note `sudo` is
-    filtered out of the `services =` line because it is socket-activated
-    (`config.pp`).
+    and an `ini_subsetting` per `services`/`domains` entry. A `sudo` entry is
+    always edited as `absent`, because it is socket-activated and the socket
+    refuses to start while `sudo` is listed (`config.pp`).
   - **`manage_base_domain`** (`config.pp`, default `false`): EL10+ requires at
     least one domain for SSSD to start, so a `LOCAL` proxy-to-`files` domain is
-    declared, and listed in `domains`, when this is true. The `simp:defaults`
-    profile sets it on EL10.
+    declared when this is true. It is not listed automatically: the
+    `simp:defaults` profile sets this and `domains_entries: {LOCAL: {}}` on
+    EL10.
 
 - **`sssd::config::entry` (`manifests/config/entry.pp`, `assert_private`
   at :17)** — the central section editor used by *every* domain, provider, and
@@ -133,7 +136,8 @@ alone, `'absent'` removes it, anything else writes it.
   those settings are managed and the typed parameters are skipped (see
   `service/nss.pp` for the canonical shape). `sudo` additionally manages a
   systemd drop-in (`manage_group_dropin_file`) and `sssd-sudo.socket`
-  (`socket_enable`), each only when set.
+  (`socket_enable`), each only when set; `true` is ignored while sudo is
+  turned off in the services list (`absent`, or a legacy Array without it).
 
 - **`sssd::pki` (`manifests/pki.pp`, `assert_private` at :26)** — when
   `$sssd::pki` is truthy, `pki::copy { 'sssd' }` copies certs from
@@ -182,10 +186,10 @@ alone, `'absent'` removes it, anything else writes it.
   write their defaults whenever declared (declaring one is the opt-in), and
   the profile can't reach define parameters, so changing those defaults is a
   silent behavior change for every consumer.
-- **`sudo` is socket-activated and is stripped from the `services =` line**
+- **`sudo` is socket-activated and is removed from the `services =` line**
   (`config.pp`); the `sssd::service::sudo` responder manages the
-  `sssd-sudo.socket` instead. Don't "fix" the missing `sudo` in the services
-  line.
+  `sssd-sudo.socket` instead, whose `ExecStartPre` fails while `sudo` is
+  listed. Don't "fix" the missing `sudo` in the services line.
 - **`$custom_config` and per-section `custom_options` bypass validation.** They
   are written verbatim (`init.pp`; `service/nss.pp`). Typos land in `sssd.conf` unchecked and can stop the
   daemon. `$custom_settings` is the validated alternative — its structure is
@@ -197,7 +201,8 @@ alone, `'absent'` removes it, anything else writes it.
   (`config.pp`). The `simp:defaults` profile turns the tidy on.
 - **EL10 needs a domain to even start.** `manage_base_domain` (`config.pp`)
   declares a `LOCAL` proxy/`files` domain so SSSD can start on a host with no
-  real domain configured; the profile sets it on EL10 only.
+  real domain configured; it still has to be listed in `domains_entries`.
+  The profile does both on EL10 only.
 - **IPA auto-config is opt-in.** With `auto_add_ipa_domain => true` (set by the
   profile), on an IPA-joined host a domain + `ipa` provider are created
   automatically (`config.pp`; `config/ipa_domain.pp`).

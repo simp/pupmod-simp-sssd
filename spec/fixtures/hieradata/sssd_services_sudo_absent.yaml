@@ -1,0 +1,4 @@
+---
+sssd::services_entries:
+  sudo:
+    ensure: absent

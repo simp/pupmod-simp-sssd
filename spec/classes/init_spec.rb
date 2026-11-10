@@ -115,6 +115,12 @@ describe 'sssd' do
           it { is_expected.not_to create_file('/etc/sssd/conf.d/99999_puppet_custom.conf') }
         end
 
+        context 'with custom_config absent' do
+          let(:params) { { custom_config: 'absent' } }
+
+          it { is_expected.to create_file('/etc/sssd/conf.d/99999_puppet_custom_raw.conf').with_ensure('absent') }
+        end
+
         context 'with custom settings' do
           let(:params) do
             {

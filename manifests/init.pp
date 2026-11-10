@@ -37,8 +37,9 @@
 #     `sssd::provider::*` with the same name as well.
 #   * Each entry is added to or, with `ensure => absent`, removed from the
 #     list on its own; domains listed by anything else are left alone.
-#   * The IPA domain (`auto_add_ipa_domain`) and the `LOCAL` domain
-#     (`sssd::config::manage_base_domain`) are added automatically.
+#   * The IPA domain (`auto_add_ipa_domain`) is added automatically. The
+#     `LOCAL` domain (`sssd::config::manage_base_domain`) is not; list it
+#     here, as the `simp:defaults` profile does on EL10.
 #
 # @option domains_entries [Enum['present', 'absent']] :ensure
 #   `absent` removes the domain from the list. Defaults to `present`.
@@ -49,8 +50,11 @@
 #   Domains to add to the `domains` setting. An entry prefixed with `--` is
 #   removed from it instead.
 #
-#   * While this is set, `domains_entries` is ignored, because this list
-#     replaced the module's default before 11.0.0.
+#   * While this is set, even to `[]`, `domains_entries` is ignored, because
+#     this list replaced the module's default before 11.0.0.
+#   * An entry dropped from this list is no longer managed and stays listed;
+#     remove it with a `--<name>` entry, or with `ensure => absent` in
+#     `domains_entries` once this is unset.
 #
 # @param debug_level
 # @param debug_timestamps
@@ -81,11 +85,9 @@
 #   The responder services to list in the `services` setting, each mapped to
 #   its options
 #
-#   * `sudo` is never listed, because the sudo responder is socket-activated
-#     (see `sssd::service::sudo::socket_enable`).
-#   * When `include_svc_config` is `true`, the `sssd::service::<name>` class
-#     is included for every entry that is present, which manages that
-#     responder's section from its own parameters.
+#   * `sudo` is never listed, and is removed from the list wherever it has an
+#     entry, because the sudo responder is socket-activated (see
+#     `sssd::service::sudo::socket_enable`).
 #   * Each entry is added to or, with `ensure => absent`, removed from the
 #     list on its own; services listed by anything else are left alone.
 #
@@ -97,8 +99,11 @@
 #
 #   Services to add to the `services` setting.
 #
-#   * While this is set, `services_entries` is ignored, because this list
-#     replaced the module's default before 11.0.0.
+#   * While this is set, even to `[]`, `services_entries` is ignored, because
+#     this list replaced the module's default before 11.0.0.
+#   * An entry dropped from this list is no longer managed and stays listed;
+#     to remove it, unset this and set `ensure => absent` for it in
+#     `services_entries`.
 #
 # @param reconnection_retries
 #   Whether to write the ``reconnection_retries`` option into the ``[sssd]``
@@ -137,11 +142,11 @@
 #   * Take care that you don't overwhelm your server if you enable this
 #
 # @param include_svc_config
-#   Include the `sssd::service::<name>` class for each service in
-#   `services_entries`, so that each responder's section is managed from that
-#   class's parameters. Each of those classes manages only the settings whose
-#   parameters are set. Turn this off to manage the responder sections
-#   yourself.
+#   Include every `sssd::service::<name>` class, so that each responder's
+#   section is managed from that class's parameters, whether or not the
+#   responder is listed in `services_entries`. Each of those classes manages
+#   only the settings whose parameters are set, so with none set they manage
+#   nothing. Turn this off to manage the responder sections yourself.
 #
 # @param cache_credentials
 #   Have SSSD cache the credentials of users that login to the system, in the
@@ -219,6 +224,7 @@
 #   * It sorts after the file `custom_settings` edits, so a setting in both
 #     takes this file's value
 #
+#   * `'absent'` removes the file
 #   * Prefer `custom_settings` unless you need something the structured form
 #     cannot express
 #
@@ -246,14 +252,14 @@ class sssd (
   Boolean                                             $authoritative            = false,
   Boolean                                             $tidy_puppet_snippets     = false,
   Hash[String[1, 255], Sssd::EntryOptions]            $domains_entries          = {},
-  Array[String[1, 255]]                               $domains                  = [],
+  Optional[Array[String[1, 255]]]                     $domains                  = undef,
   Optional[Variant[Sssd::DebugLevel, Enum['absent']]] $debug_level              = undef,
   Optional[Variant[Boolean, Enum['absent']]]          $debug_timestamps         = undef,
   Optional[Variant[Boolean, Enum['absent']]]          $debug_microseconds       = undef,
   Optional[String[1]]                                 $description              = undef,
   Optional[Variant[Integer[1], Enum['absent']]]       $config_file_version      = undef,
   Hash[Sssd::Service, Sssd::EntryOptions]             $services_entries         = {},
-  Sssd::Services                                      $services                 = [],
+  Optional[Sssd::Services]                            $services                 = undef,
   Optional[Variant[Integer[0], Enum['absent']]]       $reconnection_retries     = undef,
   Optional[String[1]]                                 $re_expression            = undef,
   Optional[String[1]]                                 $full_name_format         = undef,
@@ -278,7 +284,7 @@ class sssd (
   Boolean                                             $force_ipa_domain         = false,
   Optional[String[1]]                                 $ipa_domain_name          = undef,
   Optional[Array[Simplib::Host,1]]                    $ipa_servers              = undef,
-  Optional[String[1]]                                 $custom_config            = undef,
+  Optional[Variant[String[1], Enum['absent']]]        $custom_config            = undef,
   Optional[Sssd::IniSettings]                         $custom_settings          = undef,
 ) {
   include 'sssd::install'
@@ -291,11 +297,11 @@ class sssd (
 
   Class['sssd::install'] -> Class['sssd::config']
 
-  unless empty($domains) {
+  if $domains =~ NotUndef {
     deprecation('sssd::domains', 'sssd::domains is deprecated and will be removed in a future major release; use sssd::domains_entries instead. While sssd::domains is set, sssd::domains_entries is ignored.', false)
   }
 
-  unless empty($services) {
+  if $services =~ NotUndef {
     deprecation('sssd::services', 'sssd::services is deprecated and will be removed in a future major release; use sssd::services_entries instead. While sssd::services is set, sssd::services_entries is ignored.', false)
   }
 
@@ -311,7 +317,13 @@ class sssd (
   # Raw configuration can't be edited in place, so it gets a file of its own
   # that holds only this parameter's content. It sorts after the
   # custom_settings file, so it wins where both set the same setting.
-  if $custom_config {
+  if $custom_config == 'absent' {
+    file { '/etc/sssd/conf.d/99999_puppet_custom_raw.conf':
+      ensure => 'absent',
+      notify => Class['sssd::service'],
+    }
+  }
+  elsif $custom_config {
     file { '/etc/sssd/conf.d/99999_puppet_custom_raw.conf':
       *       => $sssd::config::sssd_config_file_params,
       ensure  => 'file',

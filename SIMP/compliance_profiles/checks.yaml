@@ -9,9 +9,13 @@
 #
 # Not restored:
 #
-# * `sssd::domains`. 10.x module data listed `LOCAL` on every release, which
-#   is only declared (by `sssd::config::manage_base_domain`) on EL10. The
-#   module now lists `LOCAL` itself whenever it declares it.
+# * `LOCAL` in `domains` on EL8/9. 10.x module data listed it on every
+#   release, but only declared it (`sssd::config::manage_base_domain`) on
+#   EL10, so the profile lists it on EL10 only.
+# * The `[autofs]`, `[ifp]` and `[pac]` debug settings 10.x wrote while those
+#   responders were listed. Every responder class is now included, so
+#   restoring them would write sections 10.x didn't, and the values are
+#   SSSD's defaults anyway.
 # * `sssd::auditd`, `sssd::pki`, `sssd::app_pki_cert_source` and
 #   `sssd::install::package_ensure`, which still default from
 #   `simp_options::*` lookups as before.
@@ -185,48 +189,6 @@ checks:
       parameter: sssd::service::sudo::sudo_timed
       value: false
 
-  # [autofs] settings 10.x always wrote while `autofs` was in `services`.
-  # The class is only included for a listed service, so nothing is written
-  # for autofs unless the site lists it.
-  simp:defaults.sssd.service.autofs.debug_timestamps:
-    type: puppet-class-parameter
-    settings:
-      parameter: sssd::service::autofs::debug_timestamps
-      value: true
-  simp:defaults.sssd.service.autofs.debug_microseconds:
-    type: puppet-class-parameter
-    settings:
-      parameter: sssd::service::autofs::debug_microseconds
-      value: false
-
-  # [ifp] settings 10.x always wrote while `ifp` was in `services`.
-  # The class is only included for a listed service, so nothing is written
-  # for ifp unless the site lists it.
-  simp:defaults.sssd.service.ifp.debug_timestamps:
-    type: puppet-class-parameter
-    settings:
-      parameter: sssd::service::ifp::debug_timestamps
-      value: true
-  simp:defaults.sssd.service.ifp.debug_microseconds:
-    type: puppet-class-parameter
-    settings:
-      parameter: sssd::service::ifp::debug_microseconds
-      value: false
-
-  # [pac] settings 10.x always wrote while `pac` was in `services`.
-  # The class is only included for a listed service, so nothing is written
-  # for pac unless the site lists it.
-  simp:defaults.sssd.service.pac.debug_timestamps:
-    type: puppet-class-parameter
-    settings:
-      parameter: sssd::service::pac::debug_timestamps
-      value: true
-  simp:defaults.sssd.service.pac.debug_microseconds:
-    type: puppet-class-parameter
-    settings:
-      parameter: sssd::service::pac::debug_microseconds
-      value: false
-
   # 10.x enabled sssd-sudo.socket whenever the sudo responder was configured.
   simp:defaults.sssd.service.sudo.socket_enable:
     type: puppet-class-parameter
@@ -266,6 +228,14 @@ checks:
     settings:
       parameter: sssd::config::manage_base_domain
       value: true
+    confine:
+      os.family: RedHat
+      os.release.major: '10'
+  simp:defaults.sssd.domains_entries.RedHat-10:
+    type: puppet-class-parameter
+    settings:
+      parameter: sssd::domains_entries
+      value: {LOCAL: {}}
     confine:
       os.family: RedHat
       os.release.major: '10'

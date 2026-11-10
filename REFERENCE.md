@@ -180,8 +180,9 @@ The domains to list in the `domains` setting, each mapped to its options
   `sssd::provider::*` with the same name as well.
 * Each entry is added to or, with `ensure => absent`, removed from the
   list on its own; domains listed by anything else are left alone.
-* The IPA domain (`auto_add_ipa_domain`) and the `LOCAL` domain
-  (`sssd::config::manage_base_domain`) are added automatically.
+* The IPA domain (`auto_add_ipa_domain`) is added automatically. The
+  `LOCAL` domain (`sssd::config::manage_base_domain`) is not; list it
+  here, as the `simp:defaults` profile does on EL10.
 
 Options:
 
@@ -191,17 +192,20 @@ Default value: `{}`
 
 ##### <a name="-sssd--domains"></a>`domains`
 
-Data type: `Array[String[1, 255]]`
+Data type: `Optional[Array[String[1, 255]]]`
 
 Deprecated: use `domains_entries`
 
 Domains to add to the `domains` setting. An entry prefixed with `--` is
 removed from it instead.
 
-* While this is set, `domains_entries` is ignored, because this list
-  replaced the module's default before 11.0.0.
+* While this is set, even to `[]`, `domains_entries` is ignored, because
+  this list replaced the module's default before 11.0.0.
+* An entry dropped from this list is no longer managed and stays listed;
+  remove it with a `--<name>` entry, or with `ensure => absent` in
+  `domains_entries` once this is unset.
 
-Default value: `[]`
+Default value: `undef`
 
 ##### <a name="-sssd--debug_level"></a>`debug_level`
 
@@ -272,11 +276,9 @@ Data type: `Hash[Sssd::Service, Sssd::EntryOptions]`
 The responder services to list in the `services` setting, each mapped to
 its options
 
-* `sudo` is never listed, because the sudo responder is socket-activated
-  (see `sssd::service::sudo::socket_enable`).
-* When `include_svc_config` is `true`, the `sssd::service::<name>` class
-  is included for every entry that is present, which manages that
-  responder's section from its own parameters.
+* `sudo` is never listed, and is removed from the list wherever it has an
+  entry, because the sudo responder is socket-activated (see
+  `sssd::service::sudo::socket_enable`).
 * Each entry is added to or, with `ensure => absent`, removed from the
   list on its own; services listed by anything else are left alone.
 
@@ -288,16 +290,19 @@ Default value: `{}`
 
 ##### <a name="-sssd--services"></a>`services`
 
-Data type: `Sssd::Services`
+Data type: `Optional[Sssd::Services]`
 
 Deprecated: use `services_entries`
 
 Services to add to the `services` setting.
 
-* While this is set, `services_entries` is ignored, because this list
-  replaced the module's default before 11.0.0.
+* While this is set, even to `[]`, `services_entries` is ignored, because
+  this list replaced the module's default before 11.0.0.
+* An entry dropped from this list is no longer managed and stays listed;
+  to remove it, unset this and set `ensure => absent` for it in
+  `services_entries`.
 
-Default value: `[]`
+Default value: `undef`
 
 ##### <a name="-sssd--reconnection_retries"></a>`reconnection_retries`
 
@@ -402,11 +407,11 @@ Default value: `false`
 
 Data type: `Boolean`
 
-Include the `sssd::service::<name>` class for each service in
-`services_entries`, so that each responder's section is managed from that
-class's parameters. Each of those classes manages only the settings whose
-parameters are set. Turn this off to manage the responder sections
-yourself.
+Include every `sssd::service::<name>` class, so that each responder's
+section is managed from that class's parameters, whether or not the
+responder is listed in `services_entries`. Each of those classes manages
+only the settings whose parameters are set, so with none set they manage
+nothing. Turn this off to manage the responder sections yourself.
 
 Default value: `true`
 
@@ -537,7 +542,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--custom_config"></a>`custom_config`
 
-Data type: `Optional[String[1]]`
+Data type: `Optional[Variant[String[1], Enum['absent']]]`
 
 Raw configuration that will be written to
 /etc/sssd/conf.d/99999_puppet_custom_raw.conf *without validation*
@@ -546,6 +551,7 @@ Raw configuration that will be written to
 * It sorts after the file `custom_settings` edits, so a setting in both
   takes this file's value
 
+* `'absent'` removes the file
 * Prefer `custom_settings` unless you need something the structured form
   cannot express
 
@@ -600,9 +606,10 @@ Default value: `pick(getvar("${module_name}::authoritative"), false)`
 
 Data type: `Boolean`
 
-Declare a ``LOCAL`` proxy domain for the local ``files`` and list it in
-``domains``
+Declare a ``LOCAL`` proxy domain for the local ``files``
 
+* Like any other domain, it is only used once it is listed, e.g. with
+  ``sssd::domains_entries: { LOCAL: {} }``.
 * EL10+ requires a domain to be configured in order for SSSD to start, and
   SSSD 2.10 no longer provides the implicit files domain that EL8/9 have.
 * Off by default; the `simp:defaults` profile turns it on for EL10.
@@ -1588,6 +1595,7 @@ Manage a systemd drop-in file that runs the sssd-sudo service as root
 
 * `true` creates it, `false` removes it, and `undef` leaves it alone.
 * Needed on EL8 and EL9, where the `simp:defaults` profile turns it on.
+* `true` is ignored while sudo is turned off; see `socket_enable`.
 
 Default value: `undef`
 
@@ -1599,6 +1607,9 @@ The `enable` state of the `sssd-sudo.socket` unit, which starts the sudo
 responder
 
 * Unset, the socket is not managed.
+* `true` is ignored while sudo is turned off: when `sudo` is `absent` in
+  `sssd::services_entries`, or the deprecated `sssd::services` is set
+  without it.  `false` is always applied.
 
 Default value: `undef`
 
@@ -4562,10 +4573,12 @@ Resolve a `*_entries` Hash parameter, or its deprecated Array form.
 Each entry's `ensure` defaults to `present`.
 
 Before 11.0.0 the Array replaced the module's default list, so while it is
-set it is used *instead of* the Hash. A site's existing Array data then
-keeps meaning exactly what it did, whatever the Hash holds, including Hash
-entries from the `simp:defaults` profile. An Array entry prefixed with `--`
-(a Hiera knockout) becomes `absent`.
+set, even to `[]`, it is used *instead of* the Hash, including Hash entries
+from the `simp:defaults` profile. An Array entry prefixed with `--` (a Hiera
+knockout) becomes `absent`.
+
+The Array only decides what is listed: an entry dropped from it is no longer
+managed and stays in the list until it is removed with a `--` entry.
 
 #### Examples
 
@@ -4585,17 +4598,19 @@ sssd::entries({ 'nss' => {} }, ['pam', '--ssh'])
 # => { 'pam' => 'present', 'ssh' => 'absent' }
 ```
 
-#### `sssd::entries(Hash[String[1], Sssd::EntryOptions] $entries, Array[String[1]] $legacy = [])`
+#### `sssd::entries(Hash[String[1], Sssd::EntryOptions] $entries, Optional[Array[String[1]]] $legacy = undef)`
 
 Resolve a `*_entries` Hash parameter, or its deprecated Array form.
 
 Each entry's `ensure` defaults to `present`.
 
 Before 11.0.0 the Array replaced the module's default list, so while it is
-set it is used *instead of* the Hash. A site's existing Array data then
-keeps meaning exactly what it did, whatever the Hash holds, including Hash
-entries from the `simp:defaults` profile. An Array entry prefixed with `--`
-(a Hiera knockout) becomes `absent`.
+set, even to `[]`, it is used *instead of* the Hash, including Hash entries
+from the `simp:defaults` profile. An Array entry prefixed with `--` (a Hiera
+knockout) becomes `absent`.
+
+The Array only decides what is listed: an entry dropped from it is no longer
+managed and stays in the list until it is removed with a `--` entry.
 
 Returns: `Hash[String[1], Enum['present', 'absent']]` Each entry mapped to its resolved `ensure`
 
@@ -4625,9 +4640,10 @@ The entries, each mapped to its options
 
 ##### `legacy`
 
-Data type: `Array[String[1]]`
+Data type: `Optional[Array[String[1]]]`
 
-The entries of the deprecated Array parameter
+The entries of the deprecated Array parameter, or `undef` when it is
+unset
 
 ### <a name="sssd--supported_version"></a>`sssd::supported_version`
 

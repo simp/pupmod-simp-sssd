@@ -46,8 +46,10 @@ describe 'sssd' do
           ['nss', 'pam', 'ssh'].each do |service|
             is_expected.to contain_ini_subsetting("sssd /etc/sssd/sssd.conf [sssd] services #{service}").with_ensure('present')
           end
-          is_expected.not_to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo')
         end
+
+        # sudo-socket refuses to start while sudo is listed.
+        it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
 
         if os_facts[:os][:release][:major].to_i >= 10
           it { is_expected.to contain_sssd__domain('LOCAL').with_id_provider('proxy').with_proxy_lib_name('files') }
@@ -104,8 +106,11 @@ describe 'sssd' do
 
         it { is_expected.to contain_service('sssd-sudo.socket').with_enable(true) }
 
-        # Responders that weren't in the default services list stay unconfigured.
-        it { is_expected.not_to contain_class('sssd::service::ifp') }
+        # Responders that weren't in the default services list are included
+        # but stay unconfigured.
+        ['autofs', 'ifp', 'pac'].each do |service|
+          it { is_expected.not_to contain_file("/etc/sssd/conf.d/50_puppet_service_#{service}.conf") }
+        end
 
         context 'when joined to an IPA domain' do
           let(:facts) do
@@ -130,8 +135,23 @@ describe 'sssd' do
         # the profile's list stays.
         it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services ssh').with_ensure('absent') }
         it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services nss').with_ensure('present') }
-        it { is_expected.not_to contain_class('sssd::service::ssh') }
         it { is_expected.to contain_service('sssd').with_ensure('running') }
+      end
+
+      # The deprecated Arrays replace the profile's lists, as they replaced the
+      # module defaults in 10.x.
+      context 'with simp:defaults enforced and the deprecated lists' do
+        let(:hieradata) { 'simp_defaults_legacy_lists' }
+
+        it { is_expected.to compile.with_all_deps }
+        it { is_expected.not_to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services ssh') }
+        it { is_expected.not_to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo') }
+        it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] domains LDAP') }
+        it { is_expected.not_to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] domains LOCAL') }
+
+        # sudo was dropped from the list, so the profile doesn't turn it on.
+        it { is_expected.not_to contain_service('sssd-sudo.socket') }
+        it { is_expected.not_to contain_systemd__dropin_file('00_sssd_sudo_user_group.conf') }
       end
     end
   end

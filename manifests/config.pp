@@ -12,9 +12,10 @@
 #   Set to `true` to purge unmanaged configuration files
 #
 # @param manage_base_domain
-#   Declare a ``LOCAL`` proxy domain for the local ``files`` and list it in
-#   ``domains``
+#   Declare a ``LOCAL`` proxy domain for the local ``files``
 #
+#   * Like any other domain, it is only used once it is listed, e.g. with
+#     ``sssd::domains_entries: { LOCAL: {} }``.
 #   * EL10+ requires a domain to be configured in order for SSSD to start, and
 #     SSSD 2.10 no longer provides the implicit files domain that EL8/9 have.
 #   * Off by default; the `simp:defaults` profile turns it on for EL10.
@@ -63,21 +64,15 @@ class sssd::config (
     $_ipa_domain = {}
   }
 
-  # The domains this module declares itself must be listed for SSSD to use
-  # them, so they are added last and can't be removed by a domains entry.
-  $_base_domain = $manage_base_domain ? {
-    true    => { 'LOCAL' => 'present' },
-    default => {},
-  }
-
-  $_domains = sssd::entries($sssd::domains_entries, $sssd::domains) + $_base_domain + $_ipa_domain
+  $_domains = sssd::entries($sssd::domains_entries, $sssd::domains) + $_ipa_domain
   $_services = sssd::entries($sssd::services_entries, $sssd::services)
 
+  # Every responder class is included, listed or not, so a responder setting
+  # enforced on its own takes effect.  A class with no parameters set manages
+  # nothing.
   if $sssd::include_svc_config {
-    $_services.each |$_service, $_ensure| {
-      if $_ensure == 'present' {
-        include "sssd::service::${_service}"
-      }
+    ['nss', 'pam', 'ssh', 'sudo', 'autofs', 'ifp', 'pac'].each |$_service| {
+      include "sssd::service::${_service}"
     }
   }
 
@@ -133,9 +128,12 @@ class sssd::config (
 
   # The services and domains lists are edited one entry at a time, so a list
   # entry added by anything else stays in place.  sudo is never listed: its
-  # responder has to be started by its socket.
+  # responder has to be started by its socket, which refuses to start while
+  # sudo is in the list, so a sudo entry removes it.
   $_lists = {
-    'services' => $_services.filter |$_service, $_ensure| { $_service != 'sudo' },
+    'services' => $_services.map |$_service, $_ensure| {
+      [$_service, $_service ? { 'sudo' => 'absent', default => $_ensure }]
+    }.convert_to(Hash),
     'domains'  => $_domains,
   }
 

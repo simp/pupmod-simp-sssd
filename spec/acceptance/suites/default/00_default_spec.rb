@@ -72,12 +72,15 @@ describe 'sssd class' do
       end
 
       it 'leaves existing configuration alone' do
-        # An administrator's snippet, and one left behind by an earlier
-        # release of this module.
+        # An administrator's snippet, one left behind by an earlier release
+        # of this module, and the services line ipa-client-install and
+        # realm join write.
         [admin_snippet, stale_snippet].each do |snippet|
           create_remote_file(client, snippet, "[nss]\nmemcache_timeout = 301\n")
           on(client, "chown #{owner} #{snippet} && chmod #{mode} #{snippet}")
         end
+        create_remote_file(client, '/etc/sssd/sssd.conf', "[sssd]\nservices = nss, pam, sudo\n")
+        on(client, "chown #{owner} /etc/sssd/sssd.conf && chmod #{mode} /etc/sssd/sssd.conf")
 
         before = etc_sssd_state(client)
         apply_manifest_on(client, manifest, catch_changes: true)
@@ -95,14 +98,17 @@ describe 'sssd class' do
         apply_manifest_on(client, manifest, catch_changes: true)
       end
 
-      it 'starts sssd' do
+      it 'starts sssd and the sudo socket' do
         on(client, 'systemctl is-active sssd')
         on(client, 'systemctl is-enabled sssd')
+        on(client, 'systemctl restart sssd-sudo.socket && systemctl is-active sssd-sudo.socket')
       end
 
+      # sudo is removed from the line, or sssd-sudo.socket won't start.
       it 'writes the [sssd] settings in place' do
         conf = on(client, 'cat /etc/sssd/sssd.conf').stdout
         expect(conf).to match(%r{^services = nss,pam,ssh$})
+        expect(conf).not_to match(%r{^services = .*sudo})
         expect(conf).to match(%r{^debug_timestamps = true$})
         stat = on(client, 'stat -c "%U:%G %a" /etc/sssd/sssd.conf').stdout.strip
         expect(stat).to eq("#{owner} #{mode.delete_prefix('0')}")

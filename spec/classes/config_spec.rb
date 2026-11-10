@@ -55,8 +55,12 @@ describe 'sssd' do
           it { is_expected.not_to contain_tidy('/etc/sssd/conf.d') }
           it { is_expected.not_to contain_service('sssd') }
           it { is_expected.not_to contain_sssd__domain('LOCAL') }
-          it { is_expected.not_to contain_class('sssd::service::nss') }
           it { is_expected.not_to contain_class('sssd::config::ipa_domain') }
+
+          # Every responder class is included, so a responder setting enforced
+          # alone takes effect, but with nothing set it manages nothing.
+          it { is_expected.to contain_class('sssd::service::nss') }
+          it { is_expected.to have_ini_setting_resource_count(0) }
 
           context 'when joined to an IPA domain' do
             let(:facts) { os_facts.merge(ipa_fact_joined) }
@@ -166,8 +170,9 @@ describe 'sssd' do
 
           it { is_expected.to compile.with_all_deps }
 
-          # sudo is socket-activated, so it is never listed.
-          it { expect(sssd_list('services')).to eq('nss' => 'present', 'pam' => 'present', 'ssh' => 'absent') }
+          # sudo is socket-activated, and its socket won't start while it is
+          # listed, so a sudo entry removes it.
+          it { expect(sssd_list('services')).to eq('nss' => 'present', 'pam' => 'present', 'sudo' => 'absent', 'ssh' => 'absent') }
 
           it {
             is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services nss')
@@ -182,7 +187,7 @@ describe 'sssd' do
           it { is_expected.to contain_class('sssd::service::nss') }
           it { is_expected.to contain_class('sssd::service::pam') }
           it { is_expected.to contain_class('sssd::service::sudo') }
-          it { is_expected.not_to contain_class('sssd::service::ssh') }
+          it { is_expected.to contain_class('sssd::service::ssh') }
 
           context 'with include_svc_config disabled' do
             let(:params) { super().merge(include_svc_config: false) }
@@ -198,10 +203,24 @@ describe 'sssd' do
             # it is used instead of the Hash.
             it { is_expected.to compile.with_all_deps }
             it { expect(sssd_list('services')).to eq('ifp' => 'present', 'ssh' => 'present') }
-            it { is_expected.to contain_class('sssd::service::ifp') }
-            it { is_expected.to contain_class('sssd::service::ssh') }
-            it { is_expected.not_to contain_class('sssd::service::nss') }
           end
+        end
+
+        context 'with a responder setting and nothing listed' do
+          let(:pre_condition) { "class { 'sssd::service::pam': pam_cert_auth => true }" }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to contain_ini_setting('sssd /etc/sssd/conf.d/50_puppet_service_pam.conf [pam] pam_cert_auth').with_value('True') }
+          it { expect(sssd_list('services')).to eq({}) }
+        end
+
+        context 'with the deprecated services Array empty' do
+          let(:params) { { services: [], services_entries: { 'nss' => {} } } }
+
+          # An explicit [] replaces the Hash, as it replaced the default list
+          # before 11.0.0; it lists nothing and removes nothing.
+          it { is_expected.to compile.with_all_deps }
+          it { expect(sssd_list('services')).to eq({}) }
         end
 
         context 'with domains_entries and the deprecated domains Array' do
@@ -218,7 +237,7 @@ describe 'sssd' do
           it { expect(sssd_list('domains')).to eq('LDAP' => 'present', 'FILE' => 'absent') }
 
           context 'without the Array' do
-            let(:params) { super().merge(domains: []) }
+            let(:params) { super().except(:domains) }
 
             it { expect(sssd_list('domains')).to eq('FILE' => 'present', 'OLD' => 'absent') }
             it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] domains OLD').with_ensure('absent') }
@@ -279,8 +298,8 @@ describe 'sssd' do
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to contain_sssd__domain('LOCAL').with_id_provider('proxy').with_proxy_lib_name('files') }
 
-          # A domain the module declares itself is always listed.
-          it { expect(sssd_list('domains')).to include('LOCAL' => 'present') }
+          # Like any other domain, LOCAL is listed through domains_entries.
+          it { expect(sssd_list('domains')).to eq({}) }
         end
 
         context 'with sssd_config_dir_mode' do

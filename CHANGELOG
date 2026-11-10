@@ -21,19 +21,26 @@
 - BREAKING: `sssd::auto_add_ipa_domain` and
   `sssd::config::manage_base_domain` default to `false`, and
   `sssd::config::sssd_config_dir_mode` to `undef`.  `sssd::domains` no
-  longer lists `LOCAL` by default; the module lists it whenever it declares
-  the LOCAL domain.
+  longer lists `LOCAL` by default; list it in `sssd::domains_entries`.
 - BREAKING: `sssd::service::sudo::manage_group_dropin_file` defaults to
   `undef`, and `false` now removes the drop-in.
 - BREAKING: `sssd::service::pam::pam_cert_auth => false` writes
   `pam_cert_auth = False` instead of leaving the setting out.
 - BREAKING: `sssd::custom_config` is written to
-  /etc/sssd/conf.d/99999_puppet_custom_raw.conf.
+  /etc/sssd/conf.d/99999_puppet_custom_raw.conf, and `'absent'` removes it.
   `sssd::custom_settings` values may be `'absent'`.
 - Add `sssd::services_entries` and `sssd::domains_entries`, which add or
   remove (`ensure: absent`) one list entry at a time.  Deprecate
-  `sssd::services` and `sssd::domains`; while one is set it is used instead
-  of its Hash.
+  `sssd::services` and `sssd::domains`, which now default to `undef`; while
+  one is set, even to `[]`, it is used instead of its Hash.  An entry
+  dropped from the Array is no longer removed from the line; use a `--`
+  entry or `ensure: absent`.
+- BREAKING: Every `sssd::service::*` class is included whether or not the
+  responder is listed, so a responder setting takes effect on its own.
+  `sssd::service::sudo::socket_enable` and `manage_group_dropin_file` are
+  only turned on while sudo is not removed from the services list.
+- A `sudo` entry in the services list removes `sudo` from the `services`
+  line, since sssd-sudo.socket won't start while it is listed.
 - Add `sssd::tidy_puppet_snippets` (destructive, default `false`) to delete
   unmanaged `*_puppet_*.conf` snippets, and
   `sssd::service::sudo::socket_enable` to manage sssd-sudo.socket.

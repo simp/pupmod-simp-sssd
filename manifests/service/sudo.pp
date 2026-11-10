@@ -27,12 +27,16 @@
 #
 #   * `true` creates it, `false` removes it, and `undef` leaves it alone.
 #   * Needed on EL8 and EL9, where the `simp:defaults` profile turns it on.
+#   * `true` is ignored while sudo is turned off; see `socket_enable`.
 #
 # @param socket_enable
 #   The `enable` state of the `sssd-sudo.socket` unit, which starts the sudo
 #   responder
 #
 #   * Unset, the socket is not managed.
+#   * `true` is ignored while sudo is turned off: when `sudo` is `absent` in
+#     `sssd::services_entries`, or the deprecated `sssd::services` is set
+#     without it.  `false` is always applied.
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #
@@ -74,23 +78,38 @@ class sssd::service::sudo (
     Group=root
     | END
 
-  if $manage_group_dropin_file =~ NotUndef {
+  # sudo is turned off when the services list says so, so that enforcing
+  # simp:defaults doesn't start a responder a site dropped from its list.
+  include 'sssd'
+  $_sudo_entry = sssd::entries($sssd::services_entries, $sssd::services)['sudo']
+  $_sudo_on = $_sudo_entry == 'present' or ($_sudo_entry =~ Undef and $sssd::services =~ Undef)
+
+  $_dropin = $_sudo_on ? {
+    true    => $manage_group_dropin_file,
+    default => $manage_group_dropin_file ? { true => undef, default => $manage_group_dropin_file },
+  }
+  $_socket = $_sudo_on ? {
+    true    => $socket_enable,
+    default => $socket_enable ? { true => undef, default => $socket_enable },
+  }
+
+  if $_dropin =~ NotUndef {
     systemd::dropin_file { '00_sssd_sudo_user_group.conf':
-      ensure                  => $manage_group_dropin_file.bool2str('present', 'absent'),
+      ensure                  => $_dropin.bool2str('present', 'absent'),
       unit                    => 'sssd-sudo.service',
       content                 => $_override_content,
       selinux_ignore_defaults => true,
     }
   }
 
-  if $socket_enable =~ NotUndef {
+  if $_socket =~ NotUndef {
     service { 'sssd-sudo.socket':
-      enable  => $socket_enable,
+      enable  => $_socket,
       require => [Package['sssd'], Sssd::Config::Entry['puppet_service_sudo']],
       notify  => Class["${module_name}::service"],
     }
 
-    if $manage_group_dropin_file {
+    if $_dropin {
       Systemd::Dropin_file['00_sssd_sudo_user_group.conf'] -> Service['sssd-sudo.socket']
     }
   }

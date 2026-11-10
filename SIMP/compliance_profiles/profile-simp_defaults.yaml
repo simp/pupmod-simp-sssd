@@ -37,17 +37,12 @@ profiles:
       simp:defaults.sssd.service.sudo.debug_microseconds: true
       simp:defaults.sssd.service.sudo.sudo_threshold: true
       simp:defaults.sssd.service.sudo.sudo_timed: true
-      simp:defaults.sssd.service.autofs.debug_timestamps: true
-      simp:defaults.sssd.service.autofs.debug_microseconds: true
-      simp:defaults.sssd.service.ifp.debug_timestamps: true
-      simp:defaults.sssd.service.ifp.debug_microseconds: true
-      simp:defaults.sssd.service.pac.debug_timestamps: true
-      simp:defaults.sssd.service.pac.debug_microseconds: true
       simp:defaults.sssd.service.sudo.socket_enable: true
       simp:defaults.sssd.config.sssd_config_dir_mode.RedHat-8: true
       simp:defaults.sssd.config.sssd_config_dir_mode.RedHat-9: true
       simp:defaults.sssd.config.sssd_config_dir_mode.RedHat-10: true
       simp:defaults.sssd.config.manage_base_domain.RedHat-10: true
+      simp:defaults.sssd.domains_entries.RedHat-10: true
       simp:defaults.sssd.config_file_version.RedHat-8: true
       simp:defaults.sssd.config_file_version.RedHat-9: true
       simp:defaults.sssd.reconnection_retries.RedHat-8: true

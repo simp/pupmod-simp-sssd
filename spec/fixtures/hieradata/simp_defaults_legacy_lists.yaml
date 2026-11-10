@@ -1,0 +1,10 @@
+---
+compliance_engine::enforcement:
+  - simp:defaults
+# A site upgraded from 10.x with its own (deprecated) lists, which replace the
+# profile's, as they replaced the module defaults before 11.0.0.
+sssd::services:
+  - nss
+  - pam
+sssd::domains:
+  - LDAP

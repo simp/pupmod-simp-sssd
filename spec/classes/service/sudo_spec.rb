@@ -105,6 +105,39 @@ describe 'sssd::service::sudo' do
               .that_notifies('Class[sssd::service]')
           }
         end
+
+        context 'with sudo turned off in the services list' do
+          let(:hieradata) { 'sssd_services_sudo_absent' }
+
+          context 'and both enabled' do
+            let(:params) { { socket_enable: true, manage_group_dropin_file: true } }
+
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.not_to create_service('sssd-sudo.socket') }
+            it { is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf') }
+          end
+
+          context 'and both disabled' do
+            let(:params) { { socket_enable: false, manage_group_dropin_file: false } }
+
+            it { is_expected.to create_service('sssd-sudo.socket').with_enable(false) }
+            it { is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf').with_ensure('absent') }
+          end
+        end
+
+        context 'with the deprecated services Array set without sudo' do
+          let(:hieradata) { 'sssd_services_legacy_without_sudo' }
+          let(:params) { { socket_enable: true } }
+
+          it { is_expected.not_to create_service('sssd-sudo.socket') }
+        end
+
+        context 'with sudo listed' do
+          let(:hieradata) { 'sssd_services_sudo_listed' }
+          let(:params) { { socket_enable: true } }
+
+          it { is_expected.to create_service('sssd-sudo.socket').with_enable(true) }
+        end
       end
     end
   end
