@@ -41,7 +41,11 @@
   only turned on while sudo is not removed from the services list.
 - While `sssd::service::sudo::socket_enable` enables sssd-sudo.socket,
   `sudo` is removed from the `services` line, since the socket won't start
-  while it is listed.
+  while it is listed.  `sudo` in the deprecated `sssd::services` is never
+  listed, as before.
+- BREAKING: List entries are matched exactly, including case, and entries
+  already on a line keep their place; new entries are inserted in the
+  declared order.
 - BREAKING: Because every `sssd::service::*` class is included, a
   resource-like declaration of one after `include sssd` fails as a
   duplicate; use Hiera, or declare it first.

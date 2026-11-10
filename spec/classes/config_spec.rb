@@ -240,6 +240,26 @@ describe 'sssd' do
           it { is_expected.not_to contain_file('/etc/sssd/sssd.conf') }
         end
 
+        # 10.x always left sudo off the line and started it by its socket, so
+        # the deprecated Array keeps that meaning even with the socket
+        # unmanaged.
+        context 'with sudo in the deprecated services Array' do
+          let(:params) { { services: ['nss', 'sudo'] } }
+
+          it { expect(sssd_list('services')).to eq('nss' => 'present', 'sudo' => 'absent') }
+        end
+
+        context 'with several domains' do
+          let(:params) { { domains_entries: { 'CCC' => {}, 'OLD' => { 'ensure' => 'absent' }, 'BBB' => {}, 'AAA' => {} } } }
+
+          # A domain the line doesn't have yet goes after the one declared
+          # before it, so the declared lookup order is kept.
+          it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] domains CCC').with_insert_type('start').without_insert_value }
+          it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] domains BBB').with_insert_type('after').with_insert_value('CCC') }
+          it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] domains AAA').with_insert_type('after').with_insert_value('BBB') }
+          it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] domains OLD').without_insert_type }
+        end
+
         context 'with the deprecated services Array empty' do
           let(:params) { { services: [], services_entries: { 'nss' => {} } } }
 

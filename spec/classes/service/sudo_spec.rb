@@ -132,6 +132,15 @@ describe 'sssd::service::sudo' do
           it { is_expected.not_to create_service('sssd-sudo.socket') }
         end
 
+        # The class is declared before sssd here, the order a resource-like
+        # declaration needs; the services line must still drop sudo.
+        context 'with socket_enable set, declared before sssd' do
+          let(:params) { { socket_enable: true } }
+
+          it { is_expected.to create_service('sssd-sudo.socket').with_enable(true) }
+          it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
+        end
+
         context 'with sudo listed' do
           let(:hieradata) { 'sssd_services_sudo_listed' }
           let(:params) { { socket_enable: true } }

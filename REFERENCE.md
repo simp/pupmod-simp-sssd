@@ -34,6 +34,7 @@
 ### Functions
 
 * [`sssd::entries`](#sssd--entries): Resolve a `*_entries` Hash parameter, or its deprecated Array form.  Each entry's `ensure` defaults to `present`.  Before 11.0.0 the Array re
+* [`sssd::sudo_on`](#sssd--sudo_on): Whether the sudo responder is turned on by the services list  It is turned off when `sudo` is `absent` in the `services_entries` Hash, or the
 * [`sssd::supported_version`](#sssd--supported_version): Returns ``true`` if the version of SSSD installed on the system is supported and ``false`` otherwise.  Assumes that the system is relatively
 * [`sssd::to_ini`](#sssd--to_ini): Render structured configuration data as ``sssd.conf``-style INI content.  Sections and settings are emitted in Hash insertion order, so the o
 
@@ -4652,6 +4653,44 @@ Data type: `Optional[Array[String[1]]]`
 
 The entries of the deprecated Array parameter, or `undef` when it is
 unset
+
+### <a name="sssd--sudo_on"></a>`sssd::sudo_on`
+
+Type: Puppet Language
+
+Whether the sudo responder is turned on by the services list
+
+It is turned off when `sudo` is `absent` in the `services_entries` Hash, or
+the deprecated Array is set without it, so that enforcing `simp:defaults`
+doesn't start a responder a site dropped from its list.
+
+Computed from class parameters only, so every caller gets the same answer
+whatever order the classes are evaluated in.
+
+#### `sssd::sudo_on(Hash[String[1], Sssd::EntryOptions] $entries, Optional[Array[String[1]]] $legacy = undef)`
+
+Whether the sudo responder is turned on by the services list
+
+It is turned off when `sudo` is `absent` in the `services_entries` Hash, or
+the deprecated Array is set without it, so that enforcing `simp:defaults`
+doesn't start a responder a site dropped from its list.
+
+Computed from class parameters only, so every caller gets the same answer
+whatever order the classes are evaluated in.
+
+Returns: `Boolean`
+
+##### `entries`
+
+Data type: `Hash[String[1], Sssd::EntryOptions]`
+
+The `sssd::services_entries` Hash
+
+##### `legacy`
+
+Data type: `Optional[Array[String[1]]]`
+
+The deprecated `sssd::services` Array, or `undef` when it is unset
 
 ### <a name="sssd--supported_version"></a>`sssd::supported_version`
 

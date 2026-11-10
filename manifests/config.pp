@@ -128,13 +128,21 @@ class sssd::config (
 
   # The services and domains lists are edited one entry at a time, so a list
   # entry added by anything else stays in place.  sssd-sudo.socket refuses to
-  # start while sudo is listed, so whenever this catalog enables the socket,
-  # sudo is removed from the list, whatever its entry says.  Otherwise a sudo
-  # entry is edited like any other, and a listed sudo responder is started by
-  # sssd itself.
-  $_sudo_socket = getvar('sssd::service::sudo::_socket') == true
+  # start while sudo is listed, so sudo is removed from the list whenever
+  # this catalog enables the socket, whatever its entry says.  The deprecated
+  # services Array keeps its 10.x meaning, where sudo was socket-activated and
+  # never listed.  Otherwise a sudo entry is edited like any other, and a
+  # listed sudo responder is started by sssd itself.
+  #
+  # The socket is read from sssd::service::sudo's parameter, which is set as
+  # soon as the class is declared, rather than from its body, so this doesn't
+  # depend on which class is evaluated first.
+  $_sudo_socket = (getvar('sssd::service::sudo::socket_enable') == true
+    and sssd::sudo_on($sssd::services_entries, $sssd::services))
+  $_legacy_sudo = $sssd::services =~ NotUndef and 'sudo' in $sssd::services
+
   $_lists = {
-    'services' => $_sudo_socket ? {
+    'services' => ($_sudo_socket or $_legacy_sudo) ? {
       true    => $_services + { 'sudo' => 'absent' },
       default => $_services,
     },
@@ -149,6 +157,19 @@ class sssd::config (
     $_require = $_writes ? {
       true    => [Package['sssd'], File[$_sssd_conf]],
       default => Package['sssd'],
+    }
+
+    # An entry the line doesn't have yet is inserted after the entry declared
+    # before it, so the declared order (which decides SSSD's lookup order for
+    # domains) is kept.  Entries already on the line keep their place.
+    $_present = $_entries.filter |$_entry, $_ensure| { $_ensure == 'present' }.keys
+    $_insert = $_present.reduce({}) |$_memo, $_entry| {
+      $_memo + {
+        $_entry => empty($_memo) ? {
+          true    => { 'insert_type' => 'start' },
+          default => { 'insert_type' => 'after', 'insert_value' => $_memo.keys[-1] },
+        },
+      }
     }
 
     if $_writes {
@@ -171,6 +192,7 @@ class sssd::config (
         delete_if_empty      => true,
         require              => $_require,
         notify               => Class["${module_name}::service"],
+        *                    => pick($_insert[$_entry], {}),
       }
     }
   }

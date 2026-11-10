@@ -106,6 +106,25 @@ sssd::domains_entries:
     ensure: absent
 ```
 
+The deprecated `sssd::services` also keeps its 10.x meaning for `sudo`: listing
+it there means the responder is socket-activated, so `sudo` is removed from
+the `services` line rather than added. Hosts upgraded from 10.x keep the
+`sssd-sudo.socket` it enabled; set `sssd::service::sudo::socket_enable` (or
+enforce `simp:defaults`) to keep managing it.
+
+The lines are edited one entry at a time, which has two other effects:
+
+* An entry is matched exactly, including case: with `domains = example.com` on
+  disk, an `Example.com` entry is added next to it, and an `EXAMPLE.COM` entry
+  set to `absent` removes nothing. Use the spelling the line already has.
+* An entry the line doesn't have yet is inserted after the entry declared
+  before it, so the declared order, which is SSSD's domain lookup order, is
+  kept. Entries already on the line keep their place, though: the module
+  doesn't reorder a line it didn't write. To change the order, remove the
+  entries (`absent`) and add them back, or set SSSD's
+  `domain_resolution_order` with `sssd::custom_settings` (which makes SSSD
+  print fully-qualified names).
+
 The module now edits `sssd.conf` alongside the other tools that write to it
 (such as `ipa-client-install` and `realm join`) rather than owning the whole
 file, so sections those tools add stay, even under the `simp:defaults`
@@ -168,7 +187,11 @@ so the profile doesn't start a responder a site dropped.
   `99999_puppet_custom.conf` and so still wins over `sssd::custom_settings`.
   On a host upgraded from 10.x, `99999_puppet_custom.conf` keeps the raw
   content it was given before until you remove it, or until
-  `sssd::tidy_puppet_snippets` does (when nothing else writes to it).
+  `sssd::tidy_puppet_snippets` does (when nothing else writes to it). If you
+  also set `sssd::custom_settings`, which still writes to that file, the tidy
+  never removes it, and SSSD keeps reading the old raw lines even after you
+  change or remove `custom_config`. Delete the file once after upgrading;
+  the next run writes the `custom_settings` back into it.
 * `custom_options` on a `sssd::service::*` class still replaces the
   parameter-driven settings, but only those settings are managed: other
   settings in the section are no longer removed.
@@ -182,8 +205,8 @@ so the profile doesn't start a responder a site dropped.
   it is listed. Without the socket, a `sudo` entry is edited like any other.
 * Every `sssd::service::*` class is now included, so declaring one
   resource-style (`class { 'sssd::service::ifp': ... }`) after `include sssd`
-  fails with a duplicate declaration. Set its parameters in Hiera, or declare
-  the class before `include sssd`.
+  fails with a duplicate declaration. Set its parameters in Hiera (preferred),
+  or declare the class before `include sssd`.
 * The `simple_allow_*` and `simple_deny_*` parameters of `sssd::domain` are
   left alone when a declaration drops them, so an allow list stays in force.
   Set one to `'absent'` to remove it.

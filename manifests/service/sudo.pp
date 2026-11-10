@@ -83,8 +83,7 @@ class sssd::service::sudo (
   # sudo is turned off when the services list says so, so that enforcing
   # simp:defaults doesn't start a responder a site dropped from its list.
   include 'sssd'
-  $_sudo_entry = sssd::entries($sssd::services_entries, $sssd::services)['sudo']
-  $_sudo_on = $_sudo_entry == 'present' or ($_sudo_entry =~ Undef and $sssd::services =~ Undef)
+  $_sudo_on = sssd::sudo_on($sssd::services_entries, $sssd::services)
 
   $_dropin = $_sudo_on ? {
     true    => $manage_group_dropin_file,

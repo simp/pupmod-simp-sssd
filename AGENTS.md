@@ -99,11 +99,14 @@ alone, `'absent'` removes it, anything else writes it.
     `conf.d`). `tidy` of stale `*_puppet_*.conf` only with
     `$sssd::tidy_puppet_snippets` (`config.pp`).
   - Declares an `sssd::config::entry` for `[sssd]` in `/etc/sssd/sssd.conf`,
-    and an `ini_subsetting` per `services`/`domains` entry. While
-    `sssd::service::sudo` enables `sssd-sudo.socket` (its `$_socket`), `sudo`
-    is edited as `absent`, because the socket refuses to start while `sudo`
-    is listed; otherwise a `sudo` entry is edited like any other
-    (`config.pp`). `sssd.conf` is only declared as a `file` when an entry
+    and an `ini_subsetting` per `services`/`domains` entry, each new entry
+    inserted after the one declared before it. While
+    `sssd::service::sudo::socket_enable` is `true` and `sssd::sudo_on()`
+    allows it, or `sudo` is in the deprecated `sssd::services`, `sudo` is
+    edited as `absent`, because the socket refuses to start while `sudo` is
+    listed; otherwise a `sudo` entry is edited like any other (`config.pp`).
+    Read other classes' *parameters* (set at declaration), never variables
+    from their bodies, so the result doesn't depend on evaluation order. `sssd.conf` is only declared as a `file` when an entry
     will be written into it: SSSD can't parse an empty one.
   - **`manage_base_domain`** (`config.pp`, default `false`): EL10+ requires at
     least one domain for SSSD to start, so a `LOCAL` proxy-to-`files` domain is
@@ -303,6 +306,8 @@ OracleLinux 8/9/10; Rocky 8/9/10; AlmaLinux 8/9/10.
   `Sssd::IniValue`).
 - `functions/entries.pp` — `sssd::entries()`: resolves a `*_entries` Hash (or
   its deprecated Array) to entry → `present`/`absent`.
+- `functions/sudo_on.pp` — `sssd::sudo_on()`: whether the services list
+  leaves the sudo responder on; shared by `config.pp` and `service/sudo.pp`.
 - `SIMP/compliance_profiles/` — the `simp:defaults` profile and its checks;
   per-release values use `confine:`. `spec/classes/simp_defaults_profile_spec.rb`
   asserts it reproduces the 10.x catalog.
