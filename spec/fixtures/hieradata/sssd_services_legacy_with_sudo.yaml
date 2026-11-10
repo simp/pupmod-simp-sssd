@@ -1,0 +1,4 @@
+---
+sssd::services:
+  - nss
+  - sudo

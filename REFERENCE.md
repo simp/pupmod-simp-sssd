@@ -1610,7 +1610,8 @@ Data type: `Optional[Boolean]`
 The `enable` state of the `sssd-sudo.socket` unit, which starts the sudo
 responder
 
-* Unset, the socket is not managed.
+* Unset, the socket is not managed, except while `sudo` is in the
+  deprecated `sssd::services` Array, which enables it as 10.x did.
 * `true` is ignored while sudo is turned off: when `sudo` is `absent` in
   `sssd::services_entries`, or the deprecated `sssd::services` is set
   without it.  `false` is always applied.

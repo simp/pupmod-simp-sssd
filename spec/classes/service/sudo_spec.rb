@@ -132,6 +132,24 @@ describe 'sssd::service::sudo' do
           it { is_expected.not_to create_service('sssd-sudo.socket') }
         end
 
+        # 10.x enabled the socket whenever sudo was in the services Array, so
+        # a newly built node using the deprecated Array still gets a sudo
+        # responder.
+        context 'with sudo in the deprecated services Array' do
+          let(:hieradata) { 'sssd_services_legacy_with_sudo' }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_service('sssd-sudo.socket').with_enable(true) }
+          it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
+          it { is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf') }
+
+          context 'and socket_enable disabled' do
+            let(:params) { { socket_enable: false } }
+
+            it { is_expected.to create_service('sssd-sudo.socket').with_enable(false) }
+          end
+        end
+
         # The class is declared before sssd here, the order a resource-like
         # declaration needs; the services line must still drop sudo.
         context 'with socket_enable set, declared before sssd' do

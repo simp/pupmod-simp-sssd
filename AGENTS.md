@@ -144,6 +144,8 @@ alone, `'absent'` removes it, anything else writes it.
   systemd drop-in (`manage_group_dropin_file`) and `sssd-sudo.socket`
   (`socket_enable`), each only when set; `true` is ignored while sudo is
   turned off in the services list (`absent`, or a legacy Array without it).
+  `sudo` in the legacy Array enables the socket while `socket_enable` is
+  unset, as 10.x did, so a newly built node still gets a responder.
 
 - **`sssd::pki` (`manifests/pki.pp`, `assert_private` at :26)** — when
   `$sssd::pki` is truthy, `pki::copy { 'sssd' }` copies certs from

@@ -211,5 +211,47 @@ describe 'sssd class' do
         on(client, 'sssctl config-check')
       end
     end
+
+    # sudo in the deprecated services Array is socket-activated, as in 10.x,
+    # so a newly built node with no profile still gets a sudo responder.
+    context 'with sudo in the deprecated services Array on a newly built node' do
+      let(:hieradata) do
+        default_hieradata.merge(
+          'sssd::services'                   => ['nss', 'pam', 'ssh', 'sudo'],
+          'sssd::domains'                    => ['LOCAL'],
+          'sssd::config::manage_base_domain' => true,
+          'sssd::service::ensure'            => 'running',
+          'sssd::service::enable'            => true,
+        )
+      end
+
+      before(:context) do
+        # What a newly built node has: no configuration, and the socket in
+        # its packaged (disabled) state.
+        on(client, 'systemctl disable --now sssd-sudo.socket sssd-sudo.service')
+        on(client, 'systemctl stop sssd')
+        on(client, 'rm -rf /etc/sssd/sssd.conf /etc/sssd/conf.d/* /etc/systemd/system/sssd-sudo.service.d')
+        on(client, 'systemctl daemon-reload')
+      end
+
+      it 'applies with no errors' do
+        set_hieradata_on(client, hieradata)
+        apply_manifest_on(client, manifest, catch_failures: true)
+      end
+
+      it 'is idempotent' do
+        apply_manifest_on(client, manifest, catch_changes: true)
+      end
+
+      it 'leaves sudo off the services line' do
+        expect(on(client, 'cat /etc/sssd/sssd.conf').stdout).to match(%r{^services = nss,pam,ssh$})
+      end
+
+      it 'starts a sudo responder' do
+        on(client, 'systemctl is-enabled sssd-sudo.socket')
+        on(client, 'systemctl start sssd-sudo.socket && systemctl is-active sssd-sudo.socket')
+        on(client, 'test -S /var/lib/sss/pipes/sudo')
+      end
+    end
   end
 end

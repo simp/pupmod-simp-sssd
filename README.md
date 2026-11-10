@@ -108,9 +108,8 @@ sssd::domains_entries:
 
 The deprecated `sssd::services` also keeps its 10.x meaning for `sudo`: listing
 it there means the responder is socket-activated, so `sudo` is removed from
-the `services` line rather than added. Hosts upgraded from 10.x keep the
-`sssd-sudo.socket` it enabled; set `sssd::service::sudo::socket_enable` (or
-enforce `simp:defaults`) to keep managing it.
+the `services` line rather than added, and `sssd-sudo.socket` is enabled
+unless `sssd::service::sudo::socket_enable` is set otherwise.
 
 The lines are edited one entry at a time, which has two other effects:
 

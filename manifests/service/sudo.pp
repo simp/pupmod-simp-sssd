@@ -33,7 +33,8 @@
 #   The `enable` state of the `sssd-sudo.socket` unit, which starts the sudo
 #   responder
 #
-#   * Unset, the socket is not managed.
+#   * Unset, the socket is not managed, except while `sudo` is in the
+#     deprecated `sssd::services` Array, which enables it as 10.x did.
 #   * `true` is ignored while sudo is turned off: when `sudo` is `absent` in
 #     `sssd::services_entries`, or the deprecated `sssd::services` is set
 #     without it.  `false` is always applied.
@@ -85,13 +86,23 @@ class sssd::service::sudo (
   include 'sssd'
   $_sudo_on = sssd::sudo_on($sssd::services_entries, $sssd::services)
 
+  # sudo in the deprecated services Array keeps its 10.x meaning: the
+  # responder is socket-activated, so the socket is enabled unless
+  # socket_enable says otherwise.  sssd::config leaves it off the services
+  # line.
+  $_legacy_sudo = $sssd::services =~ NotUndef and 'sudo' in $sssd::services
+  $_socket_enable = ($socket_enable =~ Undef and $_legacy_sudo) ? {
+    true    => true,
+    default => $socket_enable,
+  }
+
   $_dropin = $_sudo_on ? {
     true    => $manage_group_dropin_file,
     default => $manage_group_dropin_file ? { true => undef, default => $manage_group_dropin_file },
   }
   $_socket = $_sudo_on ? {
-    true    => $socket_enable,
-    default => $socket_enable ? { true => undef, default => $socket_enable },
+    true    => $_socket_enable,
+    default => $_socket_enable ? { true => undef, default => $_socket_enable },
   }
 
   if $_dropin =~ NotUndef {
