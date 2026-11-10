@@ -59,6 +59,8 @@
 * [`Sssd::LdapTlsReqcert`](#Sssd--LdapTlsReqcert): List of valid setting for ldap provider ldap_tls_reqcert.
 * [`Sssd::Service`](#Sssd--Service): An SSSD responder service
 * [`Sssd::Services`](#Sssd--Services): List of available sssd services
+* [`Sssd::SimpleAccessList`](#Sssd--SimpleAccessList): A `simple` access provider list: the names, or `absent` to remove
+the setting
 
 ## Classes
 
@@ -276,9 +278,10 @@ Data type: `Hash[Sssd::Service, Sssd::EntryOptions]`
 The responder services to list in the `services` setting, each mapped to
 its options
 
-* `sudo` is never listed, and is removed from the list wherever it has an
-  entry, because the sudo responder is socket-activated (see
-  `sssd::service::sudo::socket_enable`).
+* While `sssd::service::sudo::socket_enable` enables `sssd-sudo.socket`,
+  `sudo` is removed from the list, whatever its entry says, because the
+  socket refuses to start while it is listed. Otherwise a `sudo` entry is
+  edited like any other, and sssd starts a listed sudo responder itself.
 * Each entry is added to or, with `ensure => absent`, removed from the
   list on its own; services listed by anything else are left alone.
 
@@ -1610,6 +1613,8 @@ responder
 * `true` is ignored while sudo is turned off: when `sudo` is `absent` in
   `sssd::services_entries`, or the deprecated `sssd::services` is set
   without it.  `false` is always applied.
+* While this enables the socket, `sudo` is removed from the `services`
+  line, because the socket refuses to start while it is listed.
 
 Default value: `undef`
 
@@ -2113,14 +2118,17 @@ Default value: `undef`
 
 ##### <a name="-sssd--domain--simple_allow_users"></a>`simple_allow_users`
 
-Data type: `Optional[Array[Sssd::IniListItem]]`
+Data type: `Optional[Sssd::SimpleAccessList]`
 
 Users always allowed to log in when `access_provider` is `simple`.
 
 Rendered as the comma-separated list that the `simple_allow_users` option
 of `sssd-simple(5)` expects.  When unset or empty, the option is not
-managed.  See `sssd-simple(5)` for how the allow
-and deny lists interact.
+managed, and `'absent'` removes it.  See `sssd-simple(5)` for how the
+allow and deny lists interact.
+
+* Dropping this parameter from a declaration leaves the setting in place,
+  so set it to `'absent'` to stop allowing these users.
 
 * `sssd.conf` provides no way to quote or escape a comma, so a name that
   contains one cannot be expressed here and is rejected at compile time.
@@ -2131,7 +2139,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--domain--simple_deny_users"></a>`simple_deny_users`
 
-Data type: `Optional[Array[Sssd::IniListItem]]`
+Data type: `Optional[Sssd::SimpleAccessList]`
 
 Users always denied access when `access_provider` is `simple`.
 Rendered like `simple_allow_users`.
@@ -2140,7 +2148,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--domain--simple_allow_groups"></a>`simple_allow_groups`
 
-Data type: `Optional[Array[Sssd::IniListItem]]`
+Data type: `Optional[Sssd::SimpleAccessList]`
 
 Groups whose members are allowed to log in when `access_provider` is
 `simple`.  Rendered like `simple_allow_users`.
@@ -2149,7 +2157,7 @@ Default value: `undef`
 
 ##### <a name="-sssd--domain--simple_deny_groups"></a>`simple_deny_groups`
 
-Data type: `Optional[Array[Sssd::IniListItem]]`
+Data type: `Optional[Sssd::SimpleAccessList]`
 
 Groups whose members are denied access when `access_provider` is
 `simple`.  Rendered like `simple_allow_users`.
@@ -4912,3 +4920,10 @@ Alias of `Enum['nss', 'pam', 'sudo', 'autofs', 'ssh', 'pac', 'ifp']`
 List of available sssd services
 
 Alias of `Array[Sssd::Service]`
+
+### <a name="Sssd--SimpleAccessList"></a>`Sssd::SimpleAccessList`
+
+A `simple` access provider list: the names, or `absent` to remove
+the setting
+
+Alias of `Variant[Array[Sssd::IniListItem], Enum['absent']]`

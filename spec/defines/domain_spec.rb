@@ -99,6 +99,15 @@ describe 'sssd::domain' do
             expect(entry_content("puppet_domain_#{title}")).not_to include('simple_allow_users')
           }
 
+          context 'with a list set to absent' do
+            let(:params) { super().merge(simple_allow_groups: 'absent') }
+
+            it {
+              is_expected.to contain_ini_setting("sssd /etc/sssd/conf.d/50_puppet_domain_#{title}.conf [domain/#{title}] simple_allow_groups")
+                .with_ensure('absent')
+            }
+          end
+
           it {
             expect(entry_content("puppet_domain_#{title}")).not_to include('simple_deny_groups')
           }

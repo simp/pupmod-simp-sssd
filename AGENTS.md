@@ -99,9 +99,12 @@ alone, `'absent'` removes it, anything else writes it.
     `conf.d`). `tidy` of stale `*_puppet_*.conf` only with
     `$sssd::tidy_puppet_snippets` (`config.pp`).
   - Declares an `sssd::config::entry` for `[sssd]` in `/etc/sssd/sssd.conf`,
-    and an `ini_subsetting` per `services`/`domains` entry. A `sudo` entry is
-    always edited as `absent`, because it is socket-activated and the socket
-    refuses to start while `sudo` is listed (`config.pp`).
+    and an `ini_subsetting` per `services`/`domains` entry. While
+    `sssd::service::sudo` enables `sssd-sudo.socket` (its `$_socket`), `sudo`
+    is edited as `absent`, because the socket refuses to start while `sudo`
+    is listed; otherwise a `sudo` entry is edited like any other
+    (`config.pp`). `sssd.conf` is only declared as a `file` when an entry
+    will be written into it: SSSD can't parse an empty one.
   - **`manage_base_domain`** (`config.pp`, default `false`): EL10+ requires at
     least one domain for SSSD to start, so a `LOCAL` proxy-to-`files` domain is
     declared when this is true. It is not listed automatically: the
@@ -186,10 +189,16 @@ alone, `'absent'` removes it, anything else writes it.
   write their defaults whenever declared (declaring one is the opt-in), and
   the profile can't reach define parameters, so changing those defaults is a
   silent behavior change for every consumer.
-- **`sudo` is socket-activated and is removed from the `services =` line**
-  (`config.pp`); the `sssd::service::sudo` responder manages the
-  `sssd-sudo.socket` instead, whose `ExecStartPre` fails while `sudo` is
-  listed. Don't "fix" the missing `sudo` in the services line.
+- **`sudo` is removed from the `services =` line while the socket is
+  enabled** (`config.pp`): `sssd-sudo.socket`'s `ExecStartPre` fails while
+  `sudo` is listed. Don't "fix" the missing `sudo` in the services line.
+- **Never create a file without writing into it.** `sssd::config::entry`
+  declares its `file` only when a setting is written, not for `'absent'`
+  ones: SSSD can't parse an empty `sssd.conf`, and an empty snippet fails
+  `sssctl config-check`.
+- **Responder classes are always `include`d**, so a resource-like
+  `class { 'sssd::service::<name>': }` must be evaluated before
+  `include sssd`; prefer Hiera.
 - **`$custom_config` and per-section `custom_options` bypass validation.** They
   are written verbatim (`init.pp`; `service/nss.pp`). Typos land in `sssd.conf` unchecked and can stop the
   daemon. `$custom_settings` is the validated alternative — its structure is
@@ -283,7 +292,9 @@ OracleLinux 8/9/10; Rocky 8/9/10; AlmaLinux 8/9/10.
   `Sssd::IniSettings` Hash as INI text (insertion-ordered, `undef` settings
   omitted, Arrays comma-joined).
 - `lib/facter/sssd_version.rb` — the `sssd_version` fact (`sssd --version`).
-- `types/` — 17 data types constraining config values (`Sssd::Services`,
+- `types/` — 21 data types constraining config values (`Sssd::Services`,
+  `Sssd::Service`, `Sssd::EntryOptions`, `Sssd::IniListItem`,
+  `Sssd::SimpleAccessList`,
   `Sssd::IdProvider`, `Sssd::AuthProvider`, `Sssd::AccessProvider`,
   `Sssd::ChpassProvider`, `Sssd::DebugLevel`, `Sssd::LdapSchema`,
   `Sssd::LdapAccessOrder`, `Sssd::LdapAccountExpirePol`, `Sssd::LdapDefaultAuthtok`,

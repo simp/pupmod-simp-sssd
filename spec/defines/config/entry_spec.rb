@@ -69,6 +69,25 @@ describe 'sssd::config::entry' do
           is_expected.to contain_ini_setting("sssd #{path} [nss] fallback_homedir")
             .with_ensure('absent')
             .without_value
+            .that_requires('Package[sssd]')
+        end
+
+        # SSSD can't parse an empty sssd.conf, and an empty snippet fails
+        # `sssctl config-check`, so nothing may create a file it doesn't
+        # write into.
+        context 'with only absent settings' do
+          let(:params) { { section: 'nss', settings: { 'filter_users' => 'absent', 'filter_groups' => :undef } } }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.not_to contain_file(path) }
+          it { is_expected.to contain_ini_setting("sssd #{path} [nss] filter_users").with_ensure('absent') }
+        end
+
+        context 'with only absent settings in sssd.conf' do
+          let(:title) { 'test_sssd' }
+          let(:params) { { section: 'sssd', settings: { 'debug_level' => 'absent' }, path: '/etc/sssd/sssd.conf' } }
+
+          it { is_expected.not_to contain_file('/etc/sssd/sssd.conf') }
         end
 
         context 'with every setting undef' do

@@ -154,6 +154,17 @@ describe 'sssd' do
 
           it { is_expected.to contain_ini_setting('sssd /etc/sssd/sssd.conf [sssd] config_file_version').with_ensure('absent') }
           it { is_expected.not_to contain_ini_setting('sssd /etc/sssd/sssd.conf [sssd] debug_level') }
+
+          # SSSD can't parse an empty sssd.conf.
+          it { is_expected.not_to contain_file('/etc/sssd/sssd.conf') }
+        end
+
+        context 'with only a services entry set to absent' do
+          let(:params) { { services_entries: { 'sudo' => { 'ensure' => 'absent' } } } }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent').that_requires('Package[sssd]') }
+          it { is_expected.not_to contain_file('/etc/sssd/sssd.conf') }
         end
 
         context 'with services_entries' do
@@ -170,9 +181,16 @@ describe 'sssd' do
 
           it { is_expected.to compile.with_all_deps }
 
-          # sudo is socket-activated, and its socket won't start while it is
-          # listed, so a sudo entry removes it.
-          it { expect(sssd_list('services')).to eq('nss' => 'present', 'pam' => 'present', 'sudo' => 'absent', 'ssh' => 'absent') }
+          # With the socket unmanaged, sssd starts a listed sudo responder.
+          it { expect(sssd_list('services')).to eq('nss' => 'present', 'pam' => 'present', 'sudo' => 'present', 'ssh' => 'absent') }
+
+          # sssd-sudo.socket won't start while sudo is listed.
+          context 'with the sudo socket enabled' do
+            let(:hieradata) { 'sssd_sudo_socket_enable' }
+
+            it { expect(sssd_list('services')).to include('sudo' => 'absent') }
+            it { is_expected.to contain_service('sssd-sudo.socket').with_enable(true) }
+          end
 
           it {
             is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services nss')
@@ -212,6 +230,14 @@ describe 'sssd' do
           it { is_expected.to compile.with_all_deps }
           it { is_expected.to contain_ini_setting('sssd /etc/sssd/conf.d/50_puppet_service_pam.conf [pam] pam_cert_auth').with_value('True') }
           it { expect(sssd_list('services')).to eq({}) }
+        end
+
+        context 'with the sudo socket enabled and no sudo entry' do
+          let(:hieradata) { 'sssd_sudo_socket_enable' }
+
+          # A services line written by ipa-client-install may list sudo.
+          it { expect(sssd_list('services')).to eq('sudo' => 'absent') }
+          it { is_expected.not_to contain_file('/etc/sssd/sssd.conf') }
         end
 
         context 'with the deprecated services Array empty' do

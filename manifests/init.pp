@@ -85,9 +85,10 @@
 #   The responder services to list in the `services` setting, each mapped to
 #   its options
 #
-#   * `sudo` is never listed, and is removed from the list wherever it has an
-#     entry, because the sudo responder is socket-activated (see
-#     `sssd::service::sudo::socket_enable`).
+#   * While `sssd::service::sudo::socket_enable` enables `sssd-sudo.socket`,
+#     `sudo` is removed from the list, whatever its entry says, because the
+#     socket refuses to start while it is listed. Otherwise a `sudo` entry is
+#     edited like any other, and sssd starts a listed sudo responder itself.
 #   * Each entry is added to or, with `ensure => absent`, removed from the
 #     list on its own; services listed by anything else are left alone.
 #

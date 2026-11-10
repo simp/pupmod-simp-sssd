@@ -37,6 +37,8 @@
 #   * `true` is ignored while sudo is turned off: when `sudo` is `absent` in
 #     `sssd::services_entries`, or the deprecated `sssd::services` is set
 #     without it.  `false` is always applied.
+#   * While this enables the socket, `sudo` is removed from the `services`
+#     line, because the socket refuses to start while it is listed.
 #
 # @author https://github.com/simp/pupmod-simp-sssd/graphs/contributors
 #

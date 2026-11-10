@@ -176,9 +176,17 @@ so the profile doesn't start a responder a site dropped.
   `pam_cert_auth = False`, rather than leaving the setting out.
 * `sssd::service::sudo::manage_group_dropin_file => false` now removes the
   drop-in; leave it `undef` to leave the drop-in alone.
-* A `sudo` entry in the services list removes `sudo` from the `services`
-  line, where tools such as `ipa-client-install` often put it, since
-  `sssd-sudo.socket` refuses to start while it is listed.
+* While `sssd::service::sudo::socket_enable` enables `sssd-sudo.socket`,
+  `sudo` is removed from the `services` line, where tools such as
+  `ipa-client-install` often put it, since the socket refuses to start while
+  it is listed. Without the socket, a `sudo` entry is edited like any other.
+* Every `sssd::service::*` class is now included, so declaring one
+  resource-style (`class { 'sssd::service::ifp': ... }`) after `include sssd`
+  fails with a duplicate declaration. Set its parameters in Hiera, or declare
+  the class before `include sssd`.
+* The `simple_allow_*` and `simple_deny_*` parameters of `sssd::domain` are
+  left alone when a declaration drops them, so an allow list stays in force.
+  Set one to `'absent'` to remove it.
 * The `LOCAL` domain declared by `sssd::config::manage_base_domain` is no
   longer listed automatically; list it in `sssd::domains_entries`, as the
   `simp:defaults` profile does on EL10.
@@ -442,7 +450,9 @@ Sssd::Domain[test.domain]`.  Change these lines:
 
 `simple_allow_users`, `simple_deny_users` and `simple_deny_groups` work the
 same way; each renders as the comma-separated list that `sssd-simple(5)`
-expects, and is left alone when unset or set to an empty list.  `sssd.conf`
+expects, is left alone when unset or set to an empty list, and is removed when
+set to `'absent'`.  Dropping one from a declaration leaves it in force, so set
+it to `'absent'` to revoke access.  `sssd.conf`
 provides no way to quote or escape a comma, so a user or group name containing
 one cannot be expressed here and is rejected at compile time.  See
 `sssd-simple(5)` for how the allow and deny lists interact.
@@ -473,9 +483,11 @@ The following services can be managed by `simp/sssd`.
 Adding a service to `sssd::services_entries` lists it in the `services`
 setting.  Each service's class, `sssd::service::`*\{service name\}*, is
 included whether or not it is listed, and manages the settings whose
-parameters you set in hiera.  `sudo` is never listed in `services`, and a
-`sudo` entry removes it from the line, because its responder is started by
-`sssd-sudo.socket`.
+parameters you set in hiera.  Declare these classes through Hiera (or
+before `include sssd`), since `sssd` includes every one of them.  While
+`sssd::service::sudo::socket_enable` enables `sssd-sudo.socket`, `sudo` is
+removed from `services`, because the socket won't start while it is listed;
+without the socket, a listed `sudo` responder is started by sssd.
 
 ```yaml
   sssd::services_entries:

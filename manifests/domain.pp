@@ -75,8 +75,11 @@
 #
 #   Rendered as the comma-separated list that the `simple_allow_users` option
 #   of `sssd-simple(5)` expects.  When unset or empty, the option is not
-#   managed.  See `sssd-simple(5)` for how the allow
-#   and deny lists interact.
+#   managed, and `'absent'` removes it.  See `sssd-simple(5)` for how the
+#   allow and deny lists interact.
+#
+#   * Dropping this parameter from a declaration leaves the setting in place,
+#     so set it to `'absent'` to stop allowing these users.
 #
 #   * `sssd.conf` provides no way to quote or escape a comma, so a name that
 #     contains one cannot be expressed here and is rejected at compile time.
@@ -165,10 +168,10 @@ define sssd::domain (
   Optional[String]                           $proxy_pam_target             = undef,
   Optional[String]                           $proxy_lib_name               = undef,
   Optional[String]                           $ldap_user_search_filter      = undef,
-  Optional[Array[Sssd::IniListItem]]         $simple_allow_users           = undef,
-  Optional[Array[Sssd::IniListItem]]         $simple_deny_users            = undef,
-  Optional[Array[Sssd::IniListItem]]         $simple_allow_groups          = undef,
-  Optional[Array[Sssd::IniListItem]]         $simple_deny_groups           = undef,
+  Optional[Sssd::SimpleAccessList]           $simple_allow_users           = undef,
+  Optional[Sssd::SimpleAccessList]           $simple_deny_users            = undef,
+  Optional[Sssd::SimpleAccessList]           $simple_allow_groups          = undef,
+  Optional[Sssd::SimpleAccessList]           $simple_deny_groups           = undef,
   Optional[Hash]                             $custom_options               = undef,
 ) {
   # Settings left undef are not managed.  subdomain_enumerate has always been
@@ -226,13 +229,14 @@ define sssd::domain (
   # An empty list is left unmanaged rather than written as a bare 'key =':
   # sssd-simple(5) documents no behaviour for an empty value, so writing one
   # would commit this module to whatever sssd happens to do with it today.
+  # 'absent' removes the setting.
   $_simple_access = {
     'simple_allow_users'  => $simple_allow_users,
     'simple_deny_users'   => $simple_deny_users,
     'simple_allow_groups' => $simple_allow_groups,
     'simple_deny_groups'  => $simple_deny_groups,
-  }.filter |$_opt, $_value| { $_value =~ Array[Sssd::IniListItem, 1] }.reduce({}) |$_memo, $_opt| {
-    $_memo + { $_opt[0] => $_opt[1].join(',') }
+  }.filter |$_opt, $_value| { $_value == 'absent' or $_value =~ Array[Sssd::IniListItem, 1] }.reduce({}) |$_memo, $_opt| {
+    $_memo + { $_opt[0] => $_opt[1] ? { Array => $_opt[1].join(','), default => $_opt[1] } }
   }
 
   # custom_options are added to the settings above, and win where both set the

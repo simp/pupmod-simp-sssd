@@ -39,8 +39,14 @@
   responder is listed, so a responder setting takes effect on its own.
   `sssd::service::sudo::socket_enable` and `manage_group_dropin_file` are
   only turned on while sudo is not removed from the services list.
-- A `sudo` entry in the services list removes `sudo` from the `services`
-  line, since sssd-sudo.socket won't start while it is listed.
+- While `sssd::service::sudo::socket_enable` enables sssd-sudo.socket,
+  `sudo` is removed from the `services` line, since the socket won't start
+  while it is listed.
+- BREAKING: Because every `sssd::service::*` class is included, a
+  resource-like declaration of one after `include sssd` fails as a
+  duplicate; use Hiera, or declare it first.
+- `sssd::domain`'s `simple_allow_*` and `simple_deny_*` accept `'absent'`,
+  which removes the setting.
 - Add `sssd::tidy_puppet_snippets` (destructive, default `false`) to delete
   unmanaged `*_puppet_*.conf` snippets, and
   `sssd::service::sudo::socket_enable` to manage sssd-sudo.socket.

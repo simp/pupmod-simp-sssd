@@ -127,18 +127,31 @@ class sssd::config (
   }
 
   # The services and domains lists are edited one entry at a time, so a list
-  # entry added by anything else stays in place.  sudo is never listed: its
-  # responder has to be started by its socket, which refuses to start while
-  # sudo is in the list, so a sudo entry removes it.
+  # entry added by anything else stays in place.  sssd-sudo.socket refuses to
+  # start while sudo is listed, so whenever this catalog enables the socket,
+  # sudo is removed from the list, whatever its entry says.  Otherwise a sudo
+  # entry is edited like any other, and a listed sudo responder is started by
+  # sssd itself.
+  $_sudo_socket = getvar('sssd::service::sudo::_socket') == true
   $_lists = {
-    'services' => $_services.map |$_service, $_ensure| {
-      [$_service, $_service ? { 'sudo' => 'absent', default => $_ensure }]
-    }.convert_to(Hash),
+    'services' => $_sudo_socket ? {
+      true    => $_services + { 'sudo' => 'absent' },
+      default => $_services,
+    },
     'domains'  => $_domains,
   }
 
   $_lists.each |$_setting, $_entries| {
-    unless empty($_entries) {
+    # SSSD can't parse an empty sssd.conf, so the file is only declared when
+    # an entry will be written into it.
+    $_writes = !empty($_entries.filter |$_entry, $_ensure| { $_ensure == 'present' })
+
+    $_require = $_writes ? {
+      true    => [Package['sssd'], File[$_sssd_conf]],
+      default => Package['sssd'],
+    }
+
+    if $_writes {
       ensure_resource('file', $_sssd_conf, $sssd_config_file_params + {
           'ensure'  => 'file',
           'require' => Package['sssd'],
@@ -156,7 +169,7 @@ class sssd::config (
         key_val_separator    => ' = ',
         use_exact_match      => true,
         delete_if_empty      => true,
-        require              => [Package['sssd'], File[$_sssd_conf]],
+        require              => $_require,
         notify               => Class["${module_name}::service"],
       }
     }

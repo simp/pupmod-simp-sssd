@@ -58,38 +58,45 @@ define sssd::config::entry (
   # written as an empty value.
   $_settings = $settings.filter |$_setting, $_value| { $_value =~ NotUndef }
 
-  unless empty($_settings) {
+  # The file is only declared when something will be written into it: SSSD
+  # can't parse an empty sssd.conf, and removing a setting from a file that
+  # doesn't exist needs no file.
+  $_writes = !empty($_settings.filter |$_setting, $_value| { $_value != 'absent' })
+
+  if $_writes {
     # Several sections can live in the same file (sssd::custom_settings), so
     # the file may already have been declared by another entry.
     ensure_resource('file', $_path, $sssd::config::sssd_config_file_params + {
         'ensure'  => 'file',
         'require' => Package['sssd'],
     })
+  }
 
-    $_settings.each |$_setting, $_value| {
-      $_ini_value = $_value ? {
-        'absent' => {
-          'ensure' => 'absent',
-        },
-        Array    => {
-          'ensure' => 'present',
-          'value'  => $_value.join(', '),
-        },
-        default  => {
-          'ensure' => 'present',
-          'value'  => String($_value),
-        },
-      }
+  $_settings.each |$_setting, $_value| {
+    $_ini_value = $_value ? {
+      'absent' => {
+        'ensure'  => 'absent',
+        'require' => Package['sssd'],
+      },
+      Array    => {
+        'ensure'  => 'present',
+        'value'   => $_value.join(', '),
+        'require' => [Package['sssd'], File[$_path]],
+      },
+      default  => {
+        'ensure'  => 'present',
+        'value'   => String($_value),
+        'require' => [Package['sssd'], File[$_path]],
+      },
+    }
 
-      ini_setting { "sssd ${_path} [${section}] ${_setting}":
-        path              => $_path,
-        section           => $section,
-        setting           => $_setting,
-        key_val_separator => ' = ',
-        require           => [Package['sssd'], File[$_path]],
-        notify            => Class["${module_name}::service"],
-        *                 => $_ini_value,
-      }
+    ini_setting { "sssd ${_path} [${section}] ${_setting}":
+      path              => $_path,
+      section           => $section,
+      setting           => $_setting,
+      key_val_separator => ' = ',
+      notify            => Class["${module_name}::service"],
+      *                 => $_ini_value,
     }
   }
 }
