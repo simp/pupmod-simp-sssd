@@ -417,6 +417,10 @@ responder is listed in `services_entries`. Each of those classes manages
 only the settings whose parameters are set, so with none set they manage
 nothing. Turn this off to manage the responder sections yourself.
 
+* With it off, `sudo` in the deprecated `services` Array still leaves
+  `sudo` off the `services` line, but its socket and EL8/9 drop-in are
+  only managed while `sssd::service::sudo` is declared, as in 10.x.
+
 Default value: `true`
 
 ##### <a name="-sssd--cache_credentials"></a>`cache_credentials`
@@ -1599,6 +1603,9 @@ Manage a systemd drop-in file that runs the sssd-sudo service as root
 
 * `true` creates it, `false` removes it, and `undef` leaves it alone.
 * Needed on EL8 and EL9, where the `simp:defaults` profile turns it on.
+* Unset, it is still created on EL8 and EL9 while `sudo` in the
+  deprecated `sssd::services` Array enables the socket (see
+  `socket_enable`), as 10.x did.
 * `true` is ignored while sudo is turned off; see `socket_enable`.
 
 Default value: `undef`
@@ -1610,7 +1617,8 @@ Data type: `Optional[Boolean]`
 The `enable` state of the `sssd-sudo.socket` unit, which starts the sudo
 responder
 
-* Unset, the socket is not managed.
+* Unset, the socket is not managed, except while `sudo` is in the
+  deprecated `sssd::services` Array, which enables it as 10.x did.
 * `true` is ignored while sudo is turned off: when `sudo` is `absent` in
   `sssd::services_entries`, or the deprecated `sssd::services` is set
   without it.  `false` is always applied.

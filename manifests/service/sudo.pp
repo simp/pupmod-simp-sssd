@@ -27,13 +27,17 @@
 #
 #   * `true` creates it, `false` removes it, and `undef` leaves it alone.
 #   * Needed on EL8 and EL9, where the `simp:defaults` profile turns it on.
+#   * Unset, it is still created on EL8 and EL9 while `sudo` in the
+#     deprecated `sssd::services` Array enables the socket (see
+#     `socket_enable`), as 10.x did.
 #   * `true` is ignored while sudo is turned off; see `socket_enable`.
 #
 # @param socket_enable
 #   The `enable` state of the `sssd-sudo.socket` unit, which starts the sudo
 #   responder
 #
-#   * Unset, the socket is not managed.
+#   * Unset, the socket is not managed, except while `sudo` is in the
+#     deprecated `sssd::services` Array, which enables it as 10.x did.
 #   * `true` is ignored while sudo is turned off: when `sudo` is `absent` in
 #     `sssd::services_entries`, or the deprecated `sssd::services` is set
 #     without it.  `false` is always applied.
@@ -85,13 +89,30 @@ class sssd::service::sudo (
   include 'sssd'
   $_sudo_on = sssd::sudo_on($sssd::services_entries, $sssd::services)
 
+  # sudo in the deprecated services Array keeps its 10.x meaning: the
+  # responder is socket-activated, so the socket is enabled unless
+  # socket_enable says otherwise.  sssd::config leaves it off the services
+  # line.  On EL8/9 the responder can't start without the drop-in, which
+  # 10.x also wrote there, so it is implied with the socket.
+  $_legacy_sudo = $sssd::services =~ NotUndef and 'sudo' in $sssd::services
+  $_socket_enable = ($socket_enable =~ Undef and $_legacy_sudo) ? {
+    true    => true,
+    default => $socket_enable,
+  }
+  $_needs_dropin = Integer($facts['os']['release']['major']) < 10
+  $_dropin_file = ($manage_group_dropin_file =~ Undef and $_legacy_sudo
+    and $_socket_enable == true and $_needs_dropin) ? {
+    true    => true,
+    default => $manage_group_dropin_file,
+  }
+
   $_dropin = $_sudo_on ? {
-    true    => $manage_group_dropin_file,
-    default => $manage_group_dropin_file ? { true => undef, default => $manage_group_dropin_file },
+    true    => $_dropin_file,
+    default => $_dropin_file ? { true => undef, default => $_dropin_file },
   }
   $_socket = $_sudo_on ? {
-    true    => $socket_enable,
-    default => $socket_enable ? { true => undef, default => $socket_enable },
+    true    => $_socket_enable,
+    default => $_socket_enable ? { true => undef, default => $_socket_enable },
   }
 
   if $_dropin =~ NotUndef {
@@ -112,6 +133,35 @@ class sssd::service::sudo (
 
     if $_dropin {
       Systemd::Dropin_file['00_sssd_sudo_user_group.conf'] -> Service['sssd-sudo.socket']
+    }
+  }
+
+  # sssd::config removes sudo from the services line while the socket is
+  # enabled, but it only sees socket_enable once this class is declared.
+  # With include_svc_config on, sssd::config includes this class first, and
+  # a resource-like declaration before `include sssd` works the same way.
+  # With it off, this class can be declared after sssd::config was
+  # evaluated, so sudo is removed here, whichever order the two are in.
+  if $_socket and !$sssd::include_svc_config {
+    $_services_sudo = 'sssd /etc/sssd/sssd.conf [sssd] services sudo'
+
+    if defined(Ini_subsetting[$_services_sudo]) {
+      Ini_subsetting <| title == $_services_sudo |> { ensure => 'absent' }
+    }
+    else {
+      ini_subsetting { $_services_sudo:
+        ensure               => 'absent',
+        path                 => '/etc/sssd/sssd.conf',
+        section              => 'sssd',
+        setting              => 'services',
+        subsetting           => 'sudo',
+        subsetting_separator => ',',
+        key_val_separator    => ' = ',
+        use_exact_match      => true,
+        delete_if_empty      => true,
+        require              => Package['sssd'],
+        notify               => Class["${module_name}::service"],
+      }
     }
   }
 }

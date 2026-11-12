@@ -149,6 +149,10 @@
 #   only the settings whose parameters are set, so with none set they manage
 #   nothing. Turn this off to manage the responder sections yourself.
 #
+#   * With it off, `sudo` in the deprecated `services` Array still leaves
+#     `sudo` off the `services` line, but its socket and EL8/9 drop-in are
+#     only managed while `sssd::service::sudo` is declared, as in 10.x.
+#
 # @param cache_credentials
 #   Have SSSD cache the credentials of users that login to the system, in the
 #   domain created by `auto_add_ipa_domain`

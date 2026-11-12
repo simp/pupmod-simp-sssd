@@ -106,7 +106,10 @@ alone, `'absent'` removes it, anything else writes it.
     edited as `absent`, because the socket refuses to start while `sudo` is
     listed; otherwise a `sudo` entry is edited like any other (`config.pp`).
     Read other classes' *parameters* (set at declaration), never variables
-    from their bodies, so the result doesn't depend on evaluation order. `sssd.conf` is only declared as a `file` when an entry
+    from their bodies. That only works once the class is declared, so with
+    `include_svc_config` off, `service/sudo.pp` also removes `sudo` itself
+    (overriding or declaring the `ini_subsetting`) when it is declared after
+    `sssd::config`. `sssd.conf` is only declared as a `file` when an entry
     will be written into it: SSSD can't parse an empty one.
   - **`manage_base_domain`** (`config.pp`, default `false`): EL10+ requires at
     least one domain for SSSD to start, so a `LOCAL` proxy-to-`files` domain is
@@ -144,6 +147,9 @@ alone, `'absent'` removes it, anything else writes it.
   systemd drop-in (`manage_group_dropin_file`) and `sssd-sudo.socket`
   (`socket_enable`), each only when set; `true` is ignored while sudo is
   turned off in the services list (`absent`, or a legacy Array without it).
+  `sudo` in the legacy Array enables the socket while `socket_enable` is
+  unset, and on EL8/9 the drop-in while `manage_group_dropin_file` is unset,
+  as 10.x did, so a newly built node still gets a working responder.
 
 - **`sssd::pki` (`manifests/pki.pp`, `assert_private` at :26)** — when
   `$sssd::pki` is truthy, `pki::copy { 'sssd' }` copies certs from
@@ -199,9 +205,9 @@ alone, `'absent'` removes it, anything else writes it.
   declares its `file` only when a setting is written, not for `'absent'`
   ones: SSSD can't parse an empty `sssd.conf`, and an empty snippet fails
   `sssctl config-check`.
-- **Responder classes are always `include`d**, so a resource-like
-  `class { 'sssd::service::<name>': }` must be evaluated before
-  `include sssd`; prefer Hiera.
+- **Responder classes are always `include`d** (unless `include_svc_config`
+  is off), so a resource-like `class { 'sssd::service::<name>': }` must be
+  evaluated before `include sssd`; prefer Hiera.
 - **`$custom_config` and per-section `custom_options` bypass validation.** They
   are written verbatim (`init.pp`; `service/nss.pp`). Typos land in `sssd.conf` unchecked and can stop the
   daemon. `$custom_settings` is the validated alternative — its structure is

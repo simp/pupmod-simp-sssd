@@ -108,9 +108,10 @@ sssd::domains_entries:
 
 The deprecated `sssd::services` also keeps its 10.x meaning for `sudo`: listing
 it there means the responder is socket-activated, so `sudo` is removed from
-the `services` line rather than added. Hosts upgraded from 10.x keep the
-`sssd-sudo.socket` it enabled; set `sssd::service::sudo::socket_enable` (or
-enforce `simp:defaults`) to keep managing it.
+the `services` line rather than added, and `sssd-sudo.socket` is enabled
+unless `sssd::service::sudo::socket_enable` is set otherwise. On EL8/9, the
+`sssd-sudo.service` drop-in the responder needs there is also written unless
+`sssd::service::sudo::manage_group_dropin_file` is set.
 
 The lines are edited one entry at a time, which has two other effects:
 
@@ -206,7 +207,9 @@ so the profile doesn't start a responder a site dropped.
 * Every `sssd::service::*` class is now included, so declaring one
   resource-style (`class { 'sssd::service::ifp': ... }`) after `include sssd`
   fails with a duplicate declaration. Set its parameters in Hiera (preferred),
-  or declare the class before `include sssd`.
+  or declare the class before `include sssd`. With
+  `sssd::include_svc_config: false` the classes aren't included, and
+  `sssd::service::sudo` may be declared in either order.
 * The `simple_allow_*` and `simple_deny_*` parameters of `sssd::domain` are
   left alone when a declaration drops them, so an allow list stays in force.
   Set one to `'absent'` to remove it.

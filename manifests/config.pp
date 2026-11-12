@@ -135,8 +135,9 @@ class sssd::config (
   # listed sudo responder is started by sssd itself.
   #
   # The socket is read from sssd::service::sudo's parameter, which is set as
-  # soon as the class is declared, rather than from its body, so this doesn't
-  # depend on which class is evaluated first.
+  # soon as the class is declared, rather than from its body.  That covers
+  # the class being included above or declared before this one; when it is
+  # declared later (include_svc_config off), it removes sudo itself.
   $_sudo_socket = (getvar('sssd::service::sudo::socket_enable') == true
     and sssd::sudo_on($sssd::services_entries, $sssd::services))
   $_legacy_sudo = $sssd::services =~ NotUndef and 'sudo' in $sssd::services

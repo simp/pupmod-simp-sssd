@@ -211,5 +211,82 @@ describe 'sssd class' do
         on(client, 'sssctl config-check')
       end
     end
+
+    # sudo in the deprecated services Array is socket-activated, as in 10.x,
+    # so a newly built node with no profile still gets a sudo responder.
+    context 'with sudo in the deprecated services Array on a newly built node' do
+      let(:hieradata) do
+        default_hieradata.merge(
+          'sssd::services'                   => ['nss', 'pam', 'ssh', 'sudo'],
+          'sssd::domains'                    => ['LOCAL'],
+          'sssd::config::manage_base_domain' => true,
+          'sssd::service::ensure'            => 'running',
+          'sssd::service::enable'            => true,
+        )
+      end
+
+      before(:context) do
+        # What a newly built node has: no configuration, and the socket in
+        # its packaged (disabled) state.
+        on(client, 'systemctl disable --now sssd-sudo.socket sssd-sudo.service')
+        on(client, 'systemctl stop sssd')
+        on(client, 'rm -rf /etc/sssd/sssd.conf /etc/sssd/conf.d/* /etc/systemd/system/sssd-sudo.service.d')
+        on(client, 'systemctl daemon-reload && systemctl reset-failed')
+      end
+
+      it 'applies with no errors' do
+        set_hieradata_on(client, hieradata)
+        apply_manifest_on(client, manifest, catch_failures: true)
+      end
+
+      it 'is idempotent' do
+        apply_manifest_on(client, manifest, catch_changes: true)
+      end
+
+      it 'leaves sudo off the services line' do
+        expect(on(client, 'cat /etc/sssd/sssd.conf').stdout).to match(%r{^services = nss,pam,ssh$})
+      end
+
+      it 'enables and starts the sudo socket' do
+        on(client, 'systemctl is-enabled sssd-sudo.socket')
+        on(client, 'systemctl start sssd-sudo.socket && systemctl is-active sssd-sudo.socket')
+        on(client, 'test -S /var/lib/sss/pipes/sudo')
+      end
+
+      # Connecting starts sssd-sudo.service, which fails on EL8/9 without
+      # the drop-in.
+      it 'starts the sudo responder on a connection' do
+        # EL8 has no python3 by default, only platform-python.
+        python = '$(command -v python3 || echo /usr/libexec/platform-python)'
+        on(client, %(#{python} -c "import socket; socket.socket(socket.AF_UNIX).connect('/var/lib/sss/pipes/sudo')"))
+        retry_on(client, 'systemctl is-active sssd-sudo.service', max_retries: 10, retry_interval: 1)
+        on(client, 'pgrep -x sssd_sudo')
+      end
+    end
+
+    # With include_svc_config off, sssd::service::sudo can be declared after
+    # sssd::config, which then can't see socket_enable; sudo must still come
+    # off the line, or the socket won't start.
+    context 'with the sudo socket enabled after sssd, include_svc_config off' do
+      let(:late_manifest) do
+        <<~EOS
+          class { 'sssd': include_svc_config => false }
+          class { 'sssd::service::sudo': socket_enable => true }
+        EOS
+      end
+
+      it 'removes sudo from the services line' do
+        # As ipa-client-install writes it.
+        on(client, %(sed -i 's/^services = .*/services = nss,pam,ssh,sudo/' /etc/sssd/sssd.conf))
+        set_hieradata_on(client, default_hieradata.merge('sssd::domains' => ['LOCAL'], 'sssd::config::manage_base_domain' => true))
+        apply_manifest_on(client, late_manifest, catch_failures: true)
+        apply_manifest_on(client, late_manifest, catch_changes: true)
+        expect(on(client, 'cat /etc/sssd/sssd.conf').stdout).to match(%r{^services = nss,pam,ssh$})
+      end
+
+      it 'starts the sudo socket' do
+        on(client, 'systemctl restart sssd && systemctl restart sssd-sudo.socket && systemctl is-active sssd-sudo.socket')
+      end
+    end
   end
 end

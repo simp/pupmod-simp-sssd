@@ -132,6 +132,40 @@ describe 'sssd::service::sudo' do
           it { is_expected.not_to create_service('sssd-sudo.socket') }
         end
 
+        # 10.x enabled the socket whenever sudo was in the services Array, so
+        # a newly built node using the deprecated Array still gets a sudo
+        # responder.
+        context 'with sudo in the deprecated services Array' do
+          let(:hieradata) { 'sssd_services_legacy_with_sudo' }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_service('sssd-sudo.socket').with_enable(true) }
+          it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
+
+          # The responder can't start without the drop-in on EL8/9, which
+          # 10.x also wrote there.
+          if os_facts[:os][:release][:major].to_i < 10
+            it { is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf').with_ensure('present') }
+            it { is_expected.to create_service('sssd-sudo.socket').that_requires('Systemd::Dropin_file[00_sssd_sudo_user_group.conf]') }
+          else
+            it { is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf') }
+          end
+
+          context 'and socket_enable disabled' do
+            let(:params) { { socket_enable: false } }
+
+            it { is_expected.to create_service('sssd-sudo.socket').with_enable(false) }
+            it { is_expected.not_to create_systemd__dropin_file('00_sssd_sudo_user_group.conf') }
+          end
+
+          context 'and manage_group_dropin_file disabled' do
+            let(:params) { { manage_group_dropin_file: false } }
+
+            it { is_expected.to create_service('sssd-sudo.socket').with_enable(true) }
+            it { is_expected.to create_systemd__dropin_file('00_sssd_sudo_user_group.conf').with_ensure('absent') }
+          end
+        end
+
         # The class is declared before sssd here, the order a resource-like
         # declaration needs; the services line must still drop sudo.
         context 'with socket_enable set, declared before sssd' do
@@ -139,6 +173,31 @@ describe 'sssd::service::sudo' do
 
           it { is_expected.to create_service('sssd-sudo.socket').with_enable(true) }
           it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
+        end
+
+        # With include_svc_config off the class can be declared after
+        # sssd::config, which then can't see socket_enable (#255).
+        context 'with socket_enable set, declared after sssd with include_svc_config off' do
+          let(:pre_condition) { "class { 'sssd': include_svc_config => false }" }
+          let(:params) { { socket_enable: true } }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_service('sssd-sudo.socket').with_enable(true) }
+          it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
+
+          context 'and sudo listed' do
+            let(:pre_condition) { "class { 'sssd': include_svc_config => false, services_entries => { 'nss' => {}, 'sudo' => {} } }" }
+
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
+            it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services nss').with_ensure('present') }
+          end
+
+          context 'and socket_enable disabled' do
+            let(:params) { { socket_enable: false } }
+
+            it { is_expected.not_to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo') }
+          end
         end
 
         context 'with sudo listed' do

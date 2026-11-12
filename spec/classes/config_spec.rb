@@ -241,12 +241,13 @@ describe 'sssd' do
         end
 
         # 10.x always left sudo off the line and started it by its socket, so
-        # the deprecated Array keeps that meaning even with the socket
-        # unmanaged.
+        # the deprecated Array keeps that meaning, enabling the socket while
+        # socket_enable is unset.
         context 'with sudo in the deprecated services Array' do
           let(:params) { { services: ['nss', 'sudo'] } }
 
           it { expect(sssd_list('services')).to eq('nss' => 'present', 'sudo' => 'absent') }
+          it { is_expected.to contain_service('sssd-sudo.socket').with_enable(true) }
         end
 
         context 'with several domains' do
