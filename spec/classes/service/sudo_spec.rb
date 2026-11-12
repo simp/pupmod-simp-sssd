@@ -175,6 +175,31 @@ describe 'sssd::service::sudo' do
           it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
         end
 
+        # With include_svc_config off the class can be declared after
+        # sssd::config, which then can't see socket_enable (#255).
+        context 'with socket_enable set, declared after sssd with include_svc_config off' do
+          let(:pre_condition) { "class { 'sssd': include_svc_config => false }" }
+          let(:params) { { socket_enable: true } }
+
+          it { is_expected.to compile.with_all_deps }
+          it { is_expected.to create_service('sssd-sudo.socket').with_enable(true) }
+          it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
+
+          context 'and sudo listed' do
+            let(:pre_condition) { "class { 'sssd': include_svc_config => false, services_entries => { 'nss' => {}, 'sudo' => {} } }" }
+
+            it { is_expected.to compile.with_all_deps }
+            it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo').with_ensure('absent') }
+            it { is_expected.to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services nss').with_ensure('present') }
+          end
+
+          context 'and socket_enable disabled' do
+            let(:params) { { socket_enable: false } }
+
+            it { is_expected.not_to contain_ini_subsetting('sssd /etc/sssd/sssd.conf [sssd] services sudo') }
+          end
+        end
+
         context 'with sudo listed' do
           let(:hieradata) { 'sssd_services_sudo_listed' }
           let(:params) { { socket_enable: true } }

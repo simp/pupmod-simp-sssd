@@ -263,5 +263,30 @@ describe 'sssd class' do
         on(client, 'pgrep -x sssd_sudo')
       end
     end
+
+    # With include_svc_config off, sssd::service::sudo can be declared after
+    # sssd::config, which then can't see socket_enable; sudo must still come
+    # off the line, or the socket won't start.
+    context 'with the sudo socket enabled after sssd, include_svc_config off' do
+      let(:late_manifest) do
+        <<~EOS
+          class { 'sssd': include_svc_config => false }
+          class { 'sssd::service::sudo': socket_enable => true }
+        EOS
+      end
+
+      it 'removes sudo from the services line' do
+        # As ipa-client-install writes it.
+        on(client, %(sed -i 's/^services = .*/services = nss,pam,ssh,sudo/' /etc/sssd/sssd.conf))
+        set_hieradata_on(client, default_hieradata.merge('sssd::domains' => ['LOCAL'], 'sssd::config::manage_base_domain' => true))
+        apply_manifest_on(client, late_manifest, catch_failures: true)
+        apply_manifest_on(client, late_manifest, catch_changes: true)
+        expect(on(client, 'cat /etc/sssd/sssd.conf').stdout).to match(%r{^services = nss,pam,ssh$})
+      end
+
+      it 'starts the sudo socket' do
+        on(client, 'systemctl restart sssd && systemctl restart sssd-sudo.socket && systemctl is-active sssd-sudo.socket')
+      end
+    end
   end
 end

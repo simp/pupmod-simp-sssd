@@ -417,6 +417,10 @@ responder is listed in `services_entries`. Each of those classes manages
 only the settings whose parameters are set, so with none set they manage
 nothing. Turn this off to manage the responder sections yourself.
 
+* With it off, `sudo` in the deprecated `services` Array still leaves
+  `sudo` off the `services` line, but its socket and EL8/9 drop-in are
+  only managed while `sssd::service::sudo` is declared, as in 10.x.
+
 Default value: `true`
 
 ##### <a name="-sssd--cache_credentials"></a>`cache_credentials`

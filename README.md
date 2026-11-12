@@ -207,7 +207,9 @@ so the profile doesn't start a responder a site dropped.
 * Every `sssd::service::*` class is now included, so declaring one
   resource-style (`class { 'sssd::service::ifp': ... }`) after `include sssd`
   fails with a duplicate declaration. Set its parameters in Hiera (preferred),
-  or declare the class before `include sssd`.
+  or declare the class before `include sssd`. With
+  `sssd::include_svc_config: false` the classes aren't included, and
+  `sssd::service::sudo` may be declared in either order.
 * The `simple_allow_*` and `simple_deny_*` parameters of `sssd::domain` are
   left alone when a declaration drops them, so an allow list stays in force.
   Set one to `'absent'` to remove it.

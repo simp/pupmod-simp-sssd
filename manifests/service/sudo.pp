@@ -135,4 +135,33 @@ class sssd::service::sudo (
       Systemd::Dropin_file['00_sssd_sudo_user_group.conf'] -> Service['sssd-sudo.socket']
     }
   }
+
+  # sssd::config removes sudo from the services line while the socket is
+  # enabled, but it only sees socket_enable once this class is declared.
+  # With include_svc_config on, sssd::config includes this class first, and
+  # a resource-like declaration before `include sssd` works the same way.
+  # With it off, this class can be declared after sssd::config was
+  # evaluated, so sudo is removed here, whichever order the two are in.
+  if $_socket and !$sssd::include_svc_config {
+    $_services_sudo = 'sssd /etc/sssd/sssd.conf [sssd] services sudo'
+
+    if defined(Ini_subsetting[$_services_sudo]) {
+      Ini_subsetting <| title == $_services_sudo |> { ensure => 'absent' }
+    }
+    else {
+      ini_subsetting { $_services_sudo:
+        ensure               => 'absent',
+        path                 => '/etc/sssd/sssd.conf',
+        section              => 'sssd',
+        setting              => 'services',
+        subsetting           => 'sudo',
+        subsetting_separator => ',',
+        key_val_separator    => ' = ',
+        use_exact_match      => true,
+        delete_if_empty      => true,
+        require              => Package['sssd'],
+        notify               => Class["${module_name}::service"],
+      }
+    }
+  }
 }
