@@ -60,6 +60,7 @@
   `sssd::domain` and the `sssd::service::*` classes.
 - Apply `sssd::config::sssd_config_file_params` to every file the module
   edits, since SSSD rejects files with looser permissions.
+- Support puppet/systemd 11
 
 * Thu Oct 08 2026 Steven Pritchard <steve@sicura.us> - 10.5.0
 - Add support for OpenVox 9
