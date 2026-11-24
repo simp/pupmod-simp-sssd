@@ -165,6 +165,9 @@ jobs:
       - ubuntu-latest
     strategy:
       matrix:
+        suite:
+          - default
+          - ds389
         node:
           - almalinux8
           - almalinux9
@@ -187,4 +190,4 @@ jobs:
           BEAKER_HYPERVISOR: 'vagrant_libvirt'
           VAGRANT_DEFAULT_PROVIDER: 'libvirt'
         run: |
-          bundle exec rake beaker:suites[default,${{ matrix.node }}]
+          bundle exec rake beaker:suites[${{ matrix.suite }},${{ matrix.node }}]
