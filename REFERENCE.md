@@ -36,7 +36,7 @@
 * [`sssd::entries`](#sssd--entries): Resolve a `*_entries` Hash parameter, or its deprecated Array form.  Each entry's `ensure` defaults to `present`.  Before 11.0.0 the Array re
 * [`sssd::sudo_on`](#sssd--sudo_on): Whether the sudo responder is turned on by the services list  It is turned off when `sudo` is `absent` in the `services_entries` Hash, or the
 * [`sssd::supported_version`](#sssd--supported_version): Returns ``true`` if the version of SSSD installed on the system is supported and ``false`` otherwise.  Assumes that the system is relatively
-* [`sssd::to_ini`](#sssd--to_ini): Render structured configuration data as ``sssd.conf``-style INI content.  Sections and settings are emitted in Hash insertion order, so the o
+* [`sssd::to_ini`](#sssd--to_ini): DEPRECATED: this function is no longer used by the module and will be removed in a future major release.  Render structured configuration dat
 
 ### Data types
 
@@ -4722,6 +4722,9 @@ Returns: `Boolean`
 
 Type: Puppet Language
 
+DEPRECATED: this function is no longer used by the module and will be
+removed in a future major release.
+
 Render structured configuration data as ``sssd.conf``-style INI content.
 
 Sections and settings are emitted in Hash insertion order, so the output is
@@ -4746,6 +4749,9 @@ sssd::to_ini({ 'nss' => { 'filter_users' => ['root','named'] } })
 ```
 
 #### `sssd::to_ini(Sssd::IniSettings $settings)`
+
+DEPRECATED: this function is no longer used by the module and will be
+removed in a future major release.
 
 Render structured configuration data as ``sssd.conf``-style INI content.
 

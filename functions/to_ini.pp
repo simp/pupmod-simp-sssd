@@ -1,3 +1,6 @@
+# DEPRECATED: this function is no longer used by the module and will be
+# removed in a future major release.
+#
 # Render structured configuration data as ``sssd.conf``-style INI content.
 #
 # Sections and settings are emitted in Hash insertion order, so the output is
@@ -24,6 +27,8 @@
 function sssd::to_ini (
   Sssd::IniSettings $settings,
 ) >> String {
+  deprecation('sssd::to_ini', 'sssd::to_ini() is deprecated and will be removed in a future major release. The module no longer uses it.', false)
+
   $settings.reduce([]) |$memo, $section| {
     $_lines = $section[1].filter |$_setting, $_value| {
       $_value =~ NotUndef

@@ -301,6 +301,15 @@ describe 'sssd' do
             it { is_expected.to compile.with_all_deps }
             it { is_expected.to contain_class('sssd::config::ipa_domain') }
             it { expect(sssd_list('domains')).to eq('LDAP' => 'present', 'ipa.example.com' => 'present') }
+
+            context 'with the IPA domain set to absent' do
+              let(:params) do
+                { auto_add_ipa_domain: true, domains_entries: { 'LDAP' => {}, 'ipa.example.com' => { 'ensure' => 'absent' } } }
+              end
+
+              it { is_expected.to compile.with_all_deps }
+              it { expect(sssd_list('domains')).to eq('LDAP' => 'present', 'ipa.example.com' => 'absent') }
+            end
           end
 
           context 'when not joined to an IPA domain' do

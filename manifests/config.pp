@@ -64,7 +64,10 @@ class sssd::config (
     $_ipa_domain = {}
   }
 
-  $_domains = sssd::entries($sssd::domains_entries, $sssd::domains) + $_ipa_domain
+  # An explicit entry for the IPA domain wins over the auto-added one, so
+  # `ensure => absent` removes it from the list.
+  $_domain_entries = sssd::entries($sssd::domains_entries, $sssd::domains)
+  $_domains = $_domain_entries + $_ipa_domain.filter |$_name, $_ensure| { !($_name in $_domain_entries) }
   $_services = sssd::entries($sssd::services_entries, $sssd::services)
 
   # Every responder class is included, listed or not, so a responder setting

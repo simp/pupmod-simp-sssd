@@ -1,3 +1,9 @@
+* Tue Nov 24 2026 Hazel Caballero <hazel@sicura.us> - 11.1.0
+- Fixed an `sssd::domains_entries` entry with `ensure: absent` for the IPA
+  domain being overridden when `sssd::auto_add_ipa_domain` is `true`
+- Deprecated the `sssd::to_ini()` function, which the module no longer uses.
+  It will be removed in a future major release
+
 * Mon Nov 09 2026 Mike Riddle <mike@sicura.us> - 11.0.0
 - BREAKING: A bare `include sssd` now installs the SSSD packages and does
   nothing else.  It no longer writes sssd.conf or any conf.d snippet, lists

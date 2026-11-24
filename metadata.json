@@ -1,6 +1,6 @@
 {
   "name": "simp-sssd",
-  "version": "11.0.0",
+  "version": "11.1.0",
   "author": "SIMP Team",
   "summary": "Manages SSSD",
   "license": "Apache-2.0",
