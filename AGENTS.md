@@ -297,7 +297,7 @@ OracleLinux 8/9/10; Rocky 8/9/10; AlmaLinux 8/9/10.
 - `manifests/provider/{ldap,ad,ipa,krb5,files}.pp` — the five provider defines.
 - `functions/supported_version.pp` — `sssd::supported_version()` (Puppet-lang
   function).
-- `functions/to_ini.pp` — `sssd::to_ini()` (Puppet-lang function): renders an
+- `functions/to_ini.pp` — `sssd::to_ini()` (deprecated; unused since 11.0.0) (Puppet-lang function): renders an
   `Sssd::IniSettings` Hash as INI text (insertion-ordered, `undef` settings
   omitted, Arrays comma-joined).
 - `lib/facter/sssd_version.rb` — the `sssd_version` fact (`sssd --version`).
