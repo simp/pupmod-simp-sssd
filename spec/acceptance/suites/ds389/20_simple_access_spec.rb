@@ -115,8 +115,10 @@ describe 'sssd::domain using the simple access provider' do
       let(:fqdn) { fact_on(client, 'networking.fqdn') }
       let(:manifest) do
         # 'testuser' here is the LDAP posixgroup of the same name, exercising
-        # group resolution through the id provider rather than a local group
-        manifest_with(fqdn, "simple_allow_groups       => ['testuser'],")
+        # group resolution through the id provider rather than a local group.
+        # Settings are edited in place, so the allow list from the previous
+        # context stays unless it is removed explicitly.
+        manifest_with(fqdn, "simple_allow_users        => 'absent',\n        simple_allow_groups       => ['testuser'],")
       end
 
       before(:context) { wire_pam_sss(client) }
